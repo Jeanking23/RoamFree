@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import {
   BedDouble,
-  Car, // For Transport & Car Rentals (now Car Rent)
+  Car, // For Transport
+  KeyRound, // For Car Rent
+  Landmark, // For Attractions (re-adding)
   Home, // For Rent Home
-  KeyRound, // For Car Rent (new icon based on image)
   ClipboardList, // For Buy Land/House
   HelpCircle,
   Globe,
@@ -17,6 +18,7 @@ const mainNavItems = [
   { href: '/#stays', label: 'Stays', icon: BedDouble, active: false },
   { href: '/#transport', label: 'Transport', icon: Car, active: false },
   { href: '/#car-rent', label: 'Car Rent', icon: KeyRound, active: true },
+  { href: '/#attractions', label: 'Attractions', icon: Landmark, active: false },
   { href: '/#rent-home', label: 'Rent Home', icon: Home, active: false },
   { href: '/#buy-property', label: 'Buy Land/House', icon: ClipboardList, active: false },
 ];
