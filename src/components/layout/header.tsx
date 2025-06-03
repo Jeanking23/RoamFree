@@ -1,15 +1,30 @@
 import Link from 'next/link';
-import { Plane, Briefcase, UserCircle2, Menu } from 'lucide-react';
+import { 
+  Plane, 
+  Briefcase, 
+  UserCircle2, 
+  Menu,
+  BedDouble,
+  Car,
+  CarFront,
+  TramFront,
+  Home,
+  LandPlot,
+  Compass
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import UserAuthButton from '@/components/auth/user-auth-button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 export default function Header() {
   const navItems = [
-    { href: '#stays', label: 'Stays' },
-    { href: '#rides', label: 'Rides' },
-    { href: '#cars', label: 'Cars' },
-    { href: '#explore', label: 'Explore' },
+    { href: '#stays', label: 'Stays', icon: BedDouble },
+    { href: '#rides', label: 'Rides', icon: Car },
+    { href: '#car-rent', label: 'Car Rent', icon: CarFront },
+    { href: '#transport', label: 'Transport', icon: TramFront },
+    { href: '#rent-home', label: 'Rent Home', icon: Home },
+    { href: '#buy-property', label: 'Buy Land/House', icon: LandPlot },
+    { href: '#explore', label: 'Explore', icon: Compass },
   ];
 
   return (
@@ -20,13 +35,14 @@ export default function Header() {
           <h1 className="text-3xl font-headline font-bold text-primary">RoamFree</h1>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-4 lg:gap-6">
           {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="text-foreground hover:text-primary transition-colors font-medium"
+              className="text-foreground hover:text-primary transition-colors font-medium flex items-center gap-2 text-sm lg:text-base"
             >
+              <item.icon className="h-5 w-5" />
               {item.label}
             </Link>
           ))}
@@ -56,8 +72,9 @@ export default function Header() {
                   <Link
                     key={item.label}
                     href={item.href}
-                    className="text-lg text-foreground hover:text-primary transition-colors font-medium"
+                    className="text-lg text-foreground hover:text-primary transition-colors font-medium flex items-center gap-3"
                   >
+                    <item.icon className="h-5 w-5" />
                     {item.label}
                   </Link>
                 ))}
