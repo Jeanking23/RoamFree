@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import {
   BedDouble,
-  Car, // For Transport
-  KeyRound, // For Car Rent
-  Landmark, // For Attractions (re-adding)
-  Home, // For Rent Home
-  ClipboardList, // For Buy Land/House
+  Car,
+  KeyRound,
+  Landmark,
+  Home,
+  ClipboardList,
   HelpCircle,
   Globe,
   Menu,
@@ -13,14 +13,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
-// Define navigation items for the lower bar
 const mainNavItems = [
-  { href: '/#stays', label: 'Stays', icon: BedDouble, active: false },
-  { href: '/#transport', label: 'Transport', icon: Car, active: false },
-  { href: '/#car-rent', label: 'Car Rent', icon: KeyRound, active: true },
-  { href: '/#attractions', label: 'Attractions', icon: Landmark, active: false },
-  { href: '/#rent-home', label: 'Rent Home', icon: Home, active: false },
-  { href: '/#buy-property', label: 'Buy Land/House', icon: ClipboardList, active: false },
+  { href: '/#stays', label: 'Stays', icon: BedDouble, active: false }, // Assuming Stays remains on homepage or gets its own page later
+  { href: '/transport', label: 'Transport', icon: Car, active: false },
+  { href: '/car-rent', label: 'Car Rent', icon: KeyRound, active: false }, // No longer hardcoding active
+  { href: '/attractions', label: 'Attractions', icon: Landmark, active: false },
+  { href: '/rent-home', label: 'Rent Home', icon: Home, active: false },
+  { href: '/buy-property', label: 'Buy Land/House', icon: ClipboardList, active: false },
 ];
 
 export default function Header() {
