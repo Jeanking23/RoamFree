@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,16 +18,21 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, MapPin, Users, Search } from "lucide-react";
+import { CalendarIcon, MapPin, Users, Search, ChevronsUpDown } from "lucide-react";
+import type { DateRange } from "react-day-picker";
 
 const accommodationSearchSchema = z.object({
   destination: z.string().min(1, "Destination is required"),
-  checkInDate: z.date({ required_error: "Check-in date is required." }),
-  checkOutDate: z.date({ required_error: "Check-out date is required." }),
-  guests: z.coerce.number().min(1, "At least 1 guest is required").max(10, "Maximum 10 guests"),
-}).refine(data => data.checkOutDate > data.checkInDate, {
-  message: "Check-out date must be after check-in date.",
-  path: ["checkOutDate"],
+  dateRange: z.object({
+    from: z.date({ required_error: "Check-in date is required." }),
+    to: z.date({ required_error: "Check-out date is required." }),
+  }, { required_error: "Date range is required." }).refine(data => data.from && data.to && data.to > data.from, {
+    message: "Check-out date must be after check-in date.",
+    path: ["to"],
+  }),
+  adults: z.coerce.number().min(1, "At least 1 adult is required").max(10, "Max 10 adults"),
+  children: z.coerce.number().min(0, "Children cannot be negative").max(10, "Max 10 children"),
+  rooms: z.coerce.number().min(1, "At least 1 room is required").max(5, "Max 5 rooms"),
 });
 
 type AccommodationSearchFormValues = z.infer<typeof accommodationSearchSchema>;
@@ -36,7 +42,13 @@ export default function AccommodationSearchForm() {
     resolver: zodResolver(accommodationSearchSchema),
     defaultValues: {
       destination: "",
-      guests: 1,
+      dateRange: {
+        from: undefined,
+        to: undefined,
+      },
+      adults: 2,
+      children: 0,
+      rooms: 1,
     },
   });
 
@@ -44,6 +56,11 @@ export default function AccommodationSearchForm() {
     console.log("Accommodation Search:", values);
     // Handle form submission, e.g., API call
   }
+
+  const { watch } = form;
+  const adults = watch("adults");
+  const children = watch("children");
+  const rooms = watch("rooms");
 
   return (
     <Form {...form}>
@@ -63,10 +80,10 @@ export default function AccommodationSearchForm() {
         />
         <FormField
           control={form.control}
-          name="checkInDate"
+          name="dateRange"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Check-in Date</FormLabel>
+              <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Check-in - Check-out</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -74,19 +91,31 @@ export default function AccommodationSearchForm() {
                       variant={"outline"}
                       className={cn(
                         "w-full justify-start text-left font-normal",
-                        !field.value && "text-muted-foreground"
+                        !field.value?.from && "text-muted-foreground"
                       )}
                     >
-                      {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                      {field.value?.from ? (
+                        field.value.to ? (
+                          <>
+                            {format(field.value.from, "LLL dd, y")} - {" "}
+                            {format(field.value.to, "LLL dd, y")}
+                          </>
+                        ) : (
+                          format(field.value.from, "LLL dd, y")
+                        )
+                      ) : (
+                        <span>Check-in - Check-out</span>
+                      )}
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
-                    mode="single"
-                    selected={field.value}
+                    mode="range"
+                    selected={field.value as DateRange}
                     onSelect={field.onChange}
-                    disabled={(date) => date < new Date(new Date().setHours(0,0,0,0)) }
+                    numberOfMonths={2}
+                    disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1))} // Disable past dates
                     initialFocus
                   />
                 </PopoverContent>
@@ -95,59 +124,79 @@ export default function AccommodationSearchForm() {
             </FormItem>
           )}
         />
+        
         <FormField
           control={form.control}
-          name="checkOutDate"
-          render={({ field }) => (
+          name="adults" // This field is mainly for the popover trigger, individual fields are handled inside
+          render={({ field }) => ( // We only use field for error display here if needed for the whole group
             <FormItem className="flex flex-col">
-              <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Check-out Date</FormLabel>
+              <FormLabel className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </FormControl>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal flex items-center"
+                  >
+                    <span>{`${adults} adult${adults !== 1 ? 's' : ''} · ${children} child${children !== 1 ? 'ren' : ''} · ${rooms} room${rooms !== 1 ? 's' : ''}`}</span>
+                    <ChevronsUpDown className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) => date < (form.getValues("checkInDate") || new Date(new Date().setHours(0,0,0,0)))}
-                    initialFocus
-                  />
+                <PopoverContent className="w-[300px] p-4" align="start">
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="adults"
+                      render={({ field: adultField }) => (
+                        <FormItem>
+                          <FormLabel>Adults</FormLabel>
+                          <FormControl>
+                            <Input type="number" min="1" max="10" {...adultField} onChange={e => adultField.onChange(parseInt(e.target.value,10) || 1)}/>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="children"
+                      render={({ field: childrenField }) => (
+                        <FormItem>
+                          <FormLabel>Children</FormLabel>
+                          <FormControl>
+                            <Input type="number" min="0" max="10" {...childrenField} onChange={e => childrenField.onChange(parseInt(e.target.value,10) || 0)}/>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="rooms"
+                      render={({ field: roomField }) => (
+                        <FormItem>
+                          <FormLabel>Rooms</FormLabel>
+                          <FormControl>
+                            <Input type="number" min="1" max="5" {...roomField} onChange={e => roomField.onChange(parseInt(e.target.value,10) || 1)}/>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </PopoverContent>
               </Popover>
-              <FormMessage />
+              {/* Display general errors for the group if needed, or specific errors under each input via FormMessage */}
+               <FormMessage>{form.formState.errors.adults?.message || form.formState.errors.children?.message || form.formState.errors.rooms?.message}</FormMessage>
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="guests"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests</FormLabel>
-                <FormControl>
-                  <Input type="number" min="1" max="10" placeholder="e.g., 2" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground">
-            <Search className="mr-2 h-4 w-4" /> Search
-          </Button>
-        </div>
+
+        <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground">
+          <Search className="mr-2 h-4 w-4" /> Search
+        </Button>
       </form>
     </Form>
   );
 }
+
+    
