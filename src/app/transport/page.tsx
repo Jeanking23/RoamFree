@@ -4,15 +4,43 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card'; // Added CardContent here
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   CircleDot,
   SquareDot,
   CalendarDays,
   Clock,
   ChevronDown,
+  MapPin,
+  LocateFixed,
 } from 'lucide-react';
 import Link from 'next/link';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, Controller } from "react-hook-form";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { useState, useEffect } from 'react';
+import { useToast } from "@/hooks/use-toast";
+
+const transportSchema = z.object({
+  pickupLocation: z.string().min(3, "Pickup location must be at least 3 characters."),
+  dropoffLocation: z.string().min(3, "Dropoff location must be at least 3 characters."),
+  pickupDate: z.date({ required_error: "Pickup date is required." }),
+  pickupTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)."),
+});
+
+type TransportFormValues = z.infer<typeof transportSchema>;
 
 const destinationSuggestions = [
   {
@@ -25,12 +53,94 @@ const destinationSuggestions = [
     name: 'William H. Gray III 30th Street Amtrak Train Station',
     address: '2955 Market St, Philadelphia, PA',
   },
+  {
+    id: 3,
+    name: 'Philadelphia Museum of Art',
+    address: '2600 Benjamin Franklin Pkwy, Philadelphia, PA',
+  },
 ];
 
 export default function TransportPage() {
+  const { toast } = useToast();
+  const [priceResult, setPriceResult] = useState<string | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+
+  const form = useForm<TransportFormValues>({
+    resolver: zodResolver(transportSchema),
+    defaultValues: {
+      pickupLocation: "",
+      dropoffLocation: "",
+      pickupDate: new Date(),
+      pickupTime: format(new Date(), "HH:mm"),
+    },
+  });
+
+  const { watch, setValue } = form;
+  const watchPickupDate = watch("pickupDate");
+  const watchPickupTime = watch("pickupTime");
+
+  async function onSubmit(data: TransportFormValues) {
+    console.log("Transport Request Submitted:", data);
+    // Simulate API call for price
+    setPriceResult(null); // Clear previous result
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
+    const randomPrice = (Math.random() * 50 + 10).toFixed(2);
+    setPriceResult(`Estimated price for your ride: $${randomPrice}. This is a simulation.`);
+    toast({
+      title: "Price Estimated!",
+      description: `Your ride from ${data.pickupLocation} to ${data.dropoffLocation} is estimated at $${randomPrice}.`,
+    });
+  }
+
+  const handleSuggestionClick = (name: string) => {
+    setValue("dropoffLocation", name, { shouldValidate: true });
+  };
+
+  const handleGeolocate = () => {
+    if (!navigator.geolocation) {
+      toast({
+        variant: "destructive",
+        title: "Geolocation Error",
+        description: "Geolocation is not supported by your browser.",
+      });
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // In a real app, you'd use a reverse geocoding service here
+        const { latitude, longitude } = position.coords;
+        const demoAddress = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)} (Demo Address)`;
+        setValue("pickupLocation", demoAddress, { shouldValidate: true });
+        toast({
+          title: "Location Found!",
+          description: "Pickup location set to your current position (simulated address).",
+        });
+        setIsLocating(false);
+      },
+      (error) => {
+        let errorMessage = "Could not get your location.";
+        if (error.code === error.PERMISSION_DENIED) {
+          errorMessage = "Geolocation permission denied. Please enable it in your browser settings.";
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          errorMessage = "Location information is unavailable.";
+        } else if (error.code === error.TIMEOUT) {
+          errorMessage = "The request to get user location timed out.";
+        }
+        toast({
+          variant: "destructive",
+          title: "Geolocation Error",
+          description: errorMessage,
+        });
+        setIsLocating(false);
+      }
+    );
+  };
+
+
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Top Page Navigation */}
       <nav className="mb-8">
         <ul className="flex flex-wrap justify-center md:justify-start items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
           <li>
@@ -38,76 +148,192 @@ export default function TransportPage() {
               Request a ride
             </Link>
           </li>
-          <li>
-            <Link href="#" className="hover:text-primary">
-              Reserve a ride
-            </Link>
-          </li>
-          <li>
-            <Link href="#" className="hover:text-primary">
-              See prices
-            </Link>
-          </li>
-          <li>
-            <Link href="#" className="hover:text-primary">
-              Explore ride options
-            </Link>
-          </li>
+          <li><Link href="#" className="hover:text-primary">Reserve a ride</Link></li>
+          <li><Link href="#" className="hover:text-primary">See prices</Link></li>
+          <li><Link href="#" className="hover:text-primary">Explore ride options</Link></li>
         </ul>
       </nav>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Form */}
         <div className="lg:col-span-1 space-y-6">
           <h1 className="text-4xl font-bold text-foreground">Request a ride</h1>
 
-          <div className="relative space-y-2 bg-white p-4 rounded-lg shadow">
-            {/* Pickup */}
-            <div className="flex items-center space-x-3">
-              <CircleDot className="h-6 w-6 text-black flex-shrink-0" />
-              <Input
-                placeholder="Pickup location"
-                className="bg-gray-100 border-0 focus-visible:ring-primary text-base h-12"
-              />
-            </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <Card className="relative p-4 shadow rounded-lg">
+                <FormField
+                  control={form.control}
+                  name="pickupLocation"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-3">
+                      <CircleDot className="h-6 w-6 text-black flex-shrink-0" />
+                      <FormControl>
+                        <div className="relative w-full">
+                        <Input
+                          placeholder="Pickup location"
+                          className="bg-gray-100 border-0 focus-visible:ring-primary text-base h-12 pr-10"
+                          {...field}
+                        />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleGeolocate}
+                            disabled={isLocating}
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 text-muted-foreground hover:text-primary"
+                            aria-label="Use current location"
+                          >
+                            {isLocating ? <Clock className="h-5 w-5 animate-spin" /> : <LocateFixed className="h-5 w-5" />}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage className="absolute -bottom-5 left-9 text-xs" />
+                    </FormItem>
+                  )}
+                />
+                <div className="absolute left-[11px] top-[38px] h-[calc(100%-100px)] min-h-[20px] w-0.5 bg-gray-300 z-0"></div>
+                <FormField
+                  control={form.control}
+                  name="dropoffLocation"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-3 pt-4">
+                       <SquareDot className="h-6 w-6 text-black flex-shrink-0" />
+                      <FormControl>
+                        <Input
+                          placeholder="Dropoff location"
+                          className="bg-gray-100 border-0 focus-visible:ring-primary text-base h-12"
+                          {...field}
+                        />
+                      </FormControl>
+                       <FormMessage className="absolute -bottom-5 left-9 text-xs" />
+                    </FormItem>
+                  )}
+                />
+              </Card>
 
-            {/* Vertical line */}
-            {/* Adjust height based on actual content, this is an approximation */}
-            <div className="absolute left-[11px] top-[38px] h-[calc(100%-76px)] min-h-[20px] w-0.5 bg-gray-300 z-0"></div>
-            
-            {/* Dropoff */}
-            <div className="flex items-center space-x-3 pt-1"> {/* Added pt-1 for slight spacing if needed */}
-              <SquareDot className="h-6 w-6 text-black flex-shrink-0" />
-              <Input
-                placeholder="Dropoff location"
-                className="bg-gray-100 border-0 focus-visible:ring-primary text-base h-12"
-              />
-            </div>
-          </div>
+              <Card className="p-4 rounded-lg shadow">
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="pickupDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "bg-gray-100 border-0 justify-start text-foreground hover:bg-gray-200 h-12 text-base",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                <CalendarDays className="mr-2 h-5 w-5 text-muted-foreground" />
+                                {field.value ? format(field.value, "PPP") : <span>Today</span>}
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={(date) => {
+                                field.onChange(date);
+                                // Also update time if date changes to today and time is in past
+                                if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) {
+                                  const currentTime = format(new Date(), "HH:mm");
+                                  if (form.getValues("pickupTime") < currentTime) {
+                                    form.setValue("pickupTime", currentTime, {shouldValidate: true});
+                                  }
+                                }
+                              }}
+                              disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage className="text-xs pt-1" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="pickupTime"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                         <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                               <Button
+                                variant="outline"
+                                className="bg-gray-100 border-0 justify-start text-foreground hover:bg-gray-200 h-12 text-base"
+                              >
+                                <Clock className="mr-2 h-5 w-5 text-muted-foreground" />
+                                {field.value ? format(new Date(`1970-01-01T${field.value}`), "p") : <span>Now</span>}
+                                <ChevronDown className="ml-auto h-5 w-5 text-muted-foreground" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-2">
+                            <Input 
+                              type="time" 
+                              value={field.value}
+                              onChange={(e) => {
+                                const newTime = e.target.value;
+                                const currentDate = format(form.getValues("pickupDate") || new Date(), 'yyyy-MM-dd');
+                                const todayDate = format(new Date(), 'yyyy-MM-dd');
+                                
+                                if (currentDate === todayDate && newTime < format(new Date(), "HH:mm")) {
+                                  field.onChange(format(new Date(), "HH:mm"));
+                                   toast({
+                                    variant: "destructive",
+                                    title: "Invalid Time",
+                                    description: "Cannot select a past time for today.",
+                                  });
+                                } else {
+                                  field.onChange(newTime);
+                                }
+                              }}
+                              className="bg-background border-input focus-visible:ring-primary"
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage className="text-xs pt-1" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </Card>
+              
+              <Button type="submit" className="w-full bg-black text-white hover:bg-gray-800 py-3 h-12 text-base font-medium">
+                See prices
+              </Button>
+            </form>
+          </Form>
+
+          {priceResult && (
+            <Card className="mt-6 p-4 shadow rounded-lg bg-accent/10 border-accent">
+              <CardHeader className="p-0 pb-2">
+                <CardTitle className="text-lg text-accent-foreground">Price Estimation</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <p className="text-accent-foreground/90">{priceResult}</p>
+              </CardContent>
+            </Card>
+          )}
           
-          <div className="grid grid-cols-2 gap-3 bg-white p-4 rounded-lg shadow">
-            <Button
-              variant="outline"
-              className="bg-gray-100 border-0 justify-start text-foreground hover:bg-gray-200 h-12 text-base"
-            >
-              <CalendarDays className="mr-2 h-5 w-5 text-muted-foreground" /> Today
-            </Button>
-            <Button
-              variant="outline"
-              className="bg-gray-100 border-0 justify-start text-foreground hover:bg-gray-200 h-12 text-base"
-            >
-              <Clock className="mr-2 h-5 w-5 text-muted-foreground" /> Now{' '}
-              <ChevronDown className="ml-auto h-5 w-5 text-muted-foreground" />
-            </Button>
-          </div>
-
-          <div className="bg-white p-4 rounded-lg shadow">
+          <Card className="bg-card p-4 rounded-lg shadow">
             <h2 className="text-sm font-medium text-muted-foreground mb-3">
               Destination suggestions
             </h2>
             <div className="space-y-4">
               {destinationSuggestions.map((suggestion) => (
-                <div key={suggestion.id} className="flex items-start space-x-3 cursor-pointer group">
+                <Button
+                  key={suggestion.id}
+                  variant="ghost"
+                  className="flex items-start space-x-3 cursor-pointer group w-full h-auto justify-start p-2 text-left"
+                  onClick={() => handleSuggestionClick(suggestion.name)}
+                >
                   <Clock className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="font-medium text-foreground group-hover:text-primary">
@@ -117,17 +343,13 @@ export default function TransportPage() {
                       {suggestion.address}
                     </p>
                   </div>
-                </div>
+                </Button>
               ))}
             </div>
-          </div>
+          </Card>
 
-          <Button className="w-full bg-black text-white hover:bg-gray-800 py-3 h-12 text-base font-medium">
-            See prices
-          </Button>
         </div>
 
-        {/* Right Column: Map */}
         <div className="lg:col-span-2 h-[400px] md:h-[600px] lg:h-auto">
           <Image
             src="https://placehold.co/800x1000.png"
@@ -142,13 +364,17 @@ export default function TransportPage() {
 
       <div className="mt-16">
         <h2 className="text-3xl font-bold text-foreground mb-6">Suggestions</h2>
-        {/* Placeholder for suggestion cards/list */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1,2,3].map(i => (
-            <Card key={i} className="p-6">
-              <CardContent className="p-0">
-                <h3 className="font-semibold mb-2">Suggested Item {i}</h3>
-                <p className="text-sm text-muted-foreground">More details about suggestion {i} will appear here.</p>
+          {[
+            { title: "Reserve for later", desc: "Schedule your rides in advance." },
+            { title: "Group rides", desc: "Share your ride and save money." },
+            { title: "Airport transfers", desc: "Reliable rides to and from the airport." }
+          ].map((item, i) => (
+            <Card key={i} className="shadow-lg rounded-lg overflow-hidden">
+              <CardContent className="p-6">
+                <h3 className="font-semibold text-xl mb-2 text-primary">{item.title}</h3>
+                <p className="text-sm text-muted-foreground">{item.desc}</p>
+                <Button variant="link" className="px-0 pt-3 text-primary">Learn more</Button>
               </CardContent>
             </Card>
           ))}
@@ -157,3 +383,4 @@ export default function TransportPage() {
     </div>
   );
 }
+
