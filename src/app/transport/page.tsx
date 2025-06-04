@@ -70,14 +70,22 @@ export default function TransportPage() {
     defaultValues: {
       pickupLocation: "",
       dropoffLocation: "",
-      pickupDate: new Date(),
-      pickupTime: format(new Date(), "HH:mm"),
+      // Initialize with undefined, will be set in useEffect
+      pickupDate: undefined, 
+      pickupTime: undefined,
     },
   });
 
-  const { watch, setValue } = form;
+  const { watch, setValue, getValues } = form; // Added getValues
   const watchPickupDate = watch("pickupDate");
   const watchPickupTime = watch("pickupTime");
+
+  useEffect(() => {
+    // Set dynamic default values on the client side after mount
+    setValue("pickupDate", new Date(), { shouldValidate: false });
+    setValue("pickupTime", format(new Date(), "HH:mm"), { shouldValidate: false });
+  }, [setValue]);
+
 
   async function onSubmit(data: TransportFormValues) {
     console.log("Transport Request Submitted:", data);
@@ -229,7 +237,7 @@ export default function TransportPage() {
                                 )}
                               >
                                 <CalendarDays className="mr-2 h-5 w-5 text-muted-foreground" />
-                                {field.value ? format(field.value, "PPP") : <span>Today</span>}
+                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
@@ -239,11 +247,10 @@ export default function TransportPage() {
                               selected={field.value}
                               onSelect={(date) => {
                                 field.onChange(date);
-                                // Also update time if date changes to today and time is in past
                                 if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) {
                                   const currentTime = format(new Date(), "HH:mm");
-                                  if (form.getValues("pickupTime") < currentTime) {
-                                    form.setValue("pickupTime", currentTime, {shouldValidate: true});
+                                  if (getValues("pickupTime") < currentTime) {
+                                    setValue("pickupTime", currentTime, {shouldValidate: true});
                                   }
                                 }
                               }}
@@ -269,7 +276,7 @@ export default function TransportPage() {
                                 className="bg-gray-100 border-0 justify-start text-foreground hover:bg-gray-200 h-12 text-base"
                               >
                                 <Clock className="mr-2 h-5 w-5 text-muted-foreground" />
-                                {field.value ? format(new Date(`1970-01-01T${field.value}`), "p") : <span>Now</span>}
+                                {field.value ? format(new Date(`1970-01-01T${field.value}`), "p") : <span>Pick a time</span>}
                                 <ChevronDown className="ml-auto h-5 w-5 text-muted-foreground" />
                               </Button>
                             </FormControl>
@@ -277,18 +284,20 @@ export default function TransportPage() {
                           <PopoverContent className="w-auto p-2">
                             <Input 
                               type="time" 
-                              value={field.value}
+                              value={field.value || ""} // Ensure value is not undefined for input
                               onChange={(e) => {
                                 const newTime = e.target.value;
-                                const currentDate = format(form.getValues("pickupDate") || new Date(), 'yyyy-MM-dd');
+                                const currentDateValue = getValues("pickupDate") || new Date();
+                                const currentDate = format(currentDateValue, 'yyyy-MM-dd');
                                 const todayDate = format(new Date(), 'yyyy-MM-dd');
                                 
                                 if (currentDate === todayDate && newTime < format(new Date(), "HH:mm")) {
-                                  field.onChange(format(new Date(), "HH:mm"));
+                                  const nowTime = format(new Date(), "HH:mm");
+                                  field.onChange(nowTime);
                                    toast({
                                     variant: "destructive",
                                     title: "Invalid Time",
-                                    description: "Cannot select a past time for today.",
+                                    description: "Cannot select a past time for today. Set to current time.",
                                   });
                                 } else {
                                   field.onChange(newTime);
@@ -383,4 +392,3 @@ export default function TransportPage() {
     </div>
   );
 }
-
