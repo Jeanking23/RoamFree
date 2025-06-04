@@ -13,10 +13,28 @@ import {
   ChevronDown,
   MapPin,
   LocateFixed,
+  User,
+  UserCog,
+  ShieldCheck,
+  DollarSign,
+  Map as MapIcon, // Renamed to avoid conflict with Map component
+  MessageSquare,
+  Star,
+  Settings,
+  Gift,
+  CalendarClock,
+  Car,
+  PhoneCall,
+  AlertTriangle,
+  Users,
+  ListChecks,
+  BarChart3,
+  Percent,
+  Pocket,
 } from 'lucide-react';
 import Link from 'next/link';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import {
   Form,
@@ -60,6 +78,14 @@ const destinationSuggestions = [
   },
 ];
 
+const FeatureItem = ({ icon: Icon, text }: { icon: React.ElementType, text: string }) => (
+  <li className="flex items-start gap-3 py-2">
+    <Icon className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+    <span>{text}</span>
+  </li>
+);
+
+
 export default function TransportPage() {
   const { toast } = useToast();
   const [priceResult, setPriceResult] = useState<string | null>(null);
@@ -70,18 +96,16 @@ export default function TransportPage() {
     defaultValues: {
       pickupLocation: "",
       dropoffLocation: "",
-      // Initialize with undefined, will be set in useEffect
-      pickupDate: undefined, 
+      pickupDate: undefined,
       pickupTime: undefined,
     },
   });
 
-  const { watch, setValue, getValues } = form; // Added getValues
+  const { watch, setValue, getValues } = form;
   const watchPickupDate = watch("pickupDate");
   const watchPickupTime = watch("pickupTime");
 
   useEffect(() => {
-    // Set dynamic default values on the client side after mount
     setValue("pickupDate", new Date(), { shouldValidate: false });
     setValue("pickupTime", format(new Date(), "HH:mm"), { shouldValidate: false });
   }, [setValue]);
@@ -89,9 +113,8 @@ export default function TransportPage() {
 
   async function onSubmit(data: TransportFormValues) {
     console.log("Transport Request Submitted:", data);
-    // Simulate API call for price
-    setPriceResult(null); // Clear previous result
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
+    setPriceResult(null);
+    await new Promise(resolve => setTimeout(resolve, 1000));
     const randomPrice = (Math.random() * 50 + 10).toFixed(2);
     setPriceResult(`Estimated price for your ride: $${randomPrice}. This is a simulation.`);
     toast({
@@ -117,7 +140,6 @@ export default function TransportPage() {
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        // In a real app, you'd use a reverse geocoding service here
         const { latitude, longitude } = position.coords;
         const demoAddress = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)} (Demo Address)`;
         setValue("pickupLocation", demoAddress, { shouldValidate: true });
@@ -249,7 +271,7 @@ export default function TransportPage() {
                                 field.onChange(date);
                                 if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) {
                                   const currentTime = format(new Date(), "HH:mm");
-                                  if (getValues("pickupTime") < currentTime) {
+                                  if (!getValues("pickupTime") || getValues("pickupTime") < currentTime) {
                                     setValue("pickupTime", currentTime, {shouldValidate: true});
                                   }
                                 }
@@ -282,15 +304,15 @@ export default function TransportPage() {
                             </FormControl>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-2">
-                            <Input 
-                              type="time" 
-                              value={field.value || ""} // Ensure value is not undefined for input
+                            <Input
+                              type="time"
+                              value={field.value || ""}
                               onChange={(e) => {
                                 const newTime = e.target.value;
                                 const currentDateValue = getValues("pickupDate") || new Date();
                                 const currentDate = format(currentDateValue, 'yyyy-MM-dd');
                                 const todayDate = format(new Date(), 'yyyy-MM-dd');
-                                
+
                                 if (currentDate === todayDate && newTime < format(new Date(), "HH:mm")) {
                                   const nowTime = format(new Date(), "HH:mm");
                                   field.onChange(nowTime);
@@ -313,7 +335,7 @@ export default function TransportPage() {
                   />
                 </div>
               </Card>
-              
+
               <Button type="submit" className="w-full bg-black text-white hover:bg-gray-800 py-3 h-12 text-base font-medium">
                 See prices
               </Button>
@@ -330,7 +352,7 @@ export default function TransportPage() {
               </CardContent>
             </Card>
           )}
-          
+
           <Card className="bg-card p-4 rounded-lg shadow">
             <h2 className="text-sm font-medium text-muted-foreground mb-3">
               Destination suggestions
@@ -389,6 +411,84 @@ export default function TransportPage() {
           ))}
         </div>
       </div>
+
+      <div className="mt-16 space-y-12">
+        <div>
+          <h2 className="text-3xl font-bold text-foreground mb-6 text-center">Transport Service Features</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="shadow-xl rounded-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-2xl font-headline text-primary">
+                  <User className="h-7 w-7" /> Rider App
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-muted-foreground">
+                  <FeatureItem icon={MapPin} text="Ride Booking (pickup, drop-off, fare estimate)" />
+                  <FeatureItem icon={MapIcon} text="Real-time GPS Tracking" />
+                  <FeatureItem icon={Clock} text="Driver ETA and Communication" />
+                  <FeatureItem icon={ListChecks} text="Ride History" />
+                  <FeatureItem icon={DollarSign} text="In-app Payment" />
+                  <FeatureItem icon={Star} text="Rating & Review Drivers" />
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-xl rounded-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-2xl font-headline text-primary">
+                  <UserCog className="h-7 w-7" /> Driver App
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-muted-foreground">
+                  <FeatureItem icon={ShieldCheck} text="Driver Registration/Verification" />
+                  <FeatureItem icon={Pocket} text="Accept/Reject Ride Requests" />
+                  <FeatureItem icon={MapIcon} text="Navigation via Maps" />
+                  <FeatureItem icon={BarChart3} text="Earnings Dashboard" />
+                  <FeatureItem icon={Settings} text="Availability Toggle (Online/Offline)" />
+                  <FeatureItem icon={Star} text="Ratings and Reviews from Riders" />
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-xl rounded-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-2xl font-headline text-primary">
+                  <Settings className="h-7 w-7" /> Admin Panel
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-muted-foreground">
+                  <FeatureItem icon={Users} text="User and Driver Management" />
+                  <FeatureItem icon={MapIcon} text="Ride Tracking & Monitoring" />
+                  <FeatureItem icon={ShieldCheck} text="Dispute Handling" />
+                  <FeatureItem icon={DollarSign} text="Payment/Commission Reports" />
+                  <FeatureItem icon={Percent} text="Promotions & Discounts Management" />
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-3xl font-bold text-foreground mb-6 text-center">🧪 Optional Add-ons</h2>
+          <Card className="shadow-xl rounded-lg">
+            <CardContent className="p-6">
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-muted-foreground">
+                <FeatureItem icon={CalendarClock} text="Schedule Rides in Advance" />
+                <FeatureItem icon={Car} text="Multiple Vehicle Types (Sedan, SUV, Luxury)" />
+                <FeatureItem icon={MessageSquare} text="In-app Chat/Call between Rider and Driver" />
+                <FeatureItem icon={AlertTriangle} text="SOS Button for Safety Emergencies" />
+                <FeatureItem icon={Gift} text="Loyalty or Referral Program" />
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
     </div>
   );
 }
+
+    
