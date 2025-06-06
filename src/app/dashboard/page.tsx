@@ -3,12 +3,15 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building, CarFront, LandPlot, ListPlus, BarChart3, MessageSquare, DollarSign, Eye, Edit3, Trash2, CalendarCheck2 } from 'lucide-react';
+import { Building, CarFront, LandPlot, ListPlus, BarChart3, MessageSquare, DollarSign, Eye, Edit3, Trash2, CalendarCheck2, Settings, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Progress } from "@/components/ui/progress";
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 // Mock data - replace with actual data fetching
 const mockListings = [
@@ -35,6 +38,10 @@ export default function DashboardPage() {
     });
     // In a real app, you'd call an API to delete the listing and update state
   };
+  
+  const handleToolClick = (toolName: string) => {
+    toast({ title: `${toolName} (Demo)`, description: `Accessing the ${toolName.toLowerCase()}. This is a placeholder action.` });
+  };
 
   return (
     <div className="space-y-8">
@@ -45,16 +52,17 @@ export default function DashboardPage() {
             Owner Dashboard
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Manage your property, car, and land listings, track performance, and connect with guests/buyers.
+            Manage your property, car, and land listings, track performance, and utilize host tools.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0 md:p-6">
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-6 p-1 h-auto">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5 mb-6 p-1 h-auto">
               <TabsTrigger value="overview" className="py-2"><BarChart3 className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Overview</TabsTrigger>
-              <TabsTrigger value="listings" className="py-2"><ListPlus className="h-5 w-5 mr-2 md:hidden lg:inline-block" />My Listings</TabsTrigger>
+              <TabsTrigger value="listings" className="py-2"><ListPlus className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Listings</TabsTrigger>
               <TabsTrigger value="bookings" className="py-2"><CalendarCheck2 className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Bookings</TabsTrigger>
               <TabsTrigger value="messages" className="py-2"><MessageSquare className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Messages</TabsTrigger>
+              <TabsTrigger value="tools" className="py-2"><Settings className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Host Tools</TabsTrigger>
             </TabsList>
 
             {/* Overview Tab */}
@@ -137,8 +145,8 @@ export default function DashboardPage() {
                         <p className="text-sm">Views: {listing.views} | Bookings: {listing.bookings} | Revenue: ${listing.revenue.toLocaleString()}</p>
                       </div>
                       <div className="flex gap-2 mt-2 md:mt-0 flex-shrink-0">
-                        <Button variant="outline" size="sm"><Eye className="mr-1 h-4 w-4" /> View</Button>
-                        <Button variant="outline" size="sm"><Edit3 className="mr-1 h-4 w-4" /> Edit</Button>
+                        <Button variant="outline" size="sm" onClick={() => toast({title: "View Listing (Demo)"})}><Eye className="mr-1 h-4 w-4" /> View</Button>
+                        <Button variant="outline" size="sm" onClick={() => toast({title: "Edit Listing (Demo)"})}><Edit3 className="mr-1 h-4 w-4" /> Edit</Button>
                         <Button variant="destructive" size="sm" onClick={() => handleDeleteListing(listing.id, listing.name)}><Trash2 className="mr-1 h-4 w-4" /> Delete</Button>
                       </div>
                     </Card>
@@ -183,6 +191,47 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </TabsContent>
+            
+            {/* Host Tools Tab */}
+            <TabsContent value="tools" className="p-4 md:p-0">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Host & Vendor Tools</CardTitle>
+                        <CardDescription>Access tools to optimize your listings and manage operations.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <Card className="p-4">
+                            <CardTitle className="text-lg mb-2">Automated Pricing Tool (Demo)</CardTitle>
+                            <p className="text-sm text-muted-foreground mb-3">Let AI suggest optimal pricing based on demand, season, and local events.</p>
+                            <Button onClick={() => handleToolClick("Smart Pricing Tool")}>Access Smart Pricing</Button>
+                        </Card>
+                        <Card className="p-4">
+                            <CardTitle className="text-lg mb-2">Dynamic Availability (Demo)</CardTitle>
+                            <p className="text-sm text-muted-foreground mb-3">Set custom rules for your listing's availability.</p>
+                            <div className="space-y-2">
+                                <div className="flex items-center space-x-2">
+                                    <Switch id="instant-booking" defaultChecked />
+                                    <Label htmlFor="instant-booking">Enable Instant Booking</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Switch id="request-to-book" />
+                                    <Label htmlFor="request-to-book">Enable Request to Book</Label>
+                                </div>
+                                <div>
+                                    <Label htmlFor="blackout-dates">Blackout Dates (e.g., MM/DD/YYYY, MM/DD/YYYY)</Label>
+                                    <Input id="blackout-dates" placeholder="Enter dates separated by commas" className="mt-1"/>
+                                </div>
+                            </div>
+                            <Button className="mt-3" variant="outline" onClick={() => handleToolClick("Availability Settings")}>Update Availability Settings</Button>
+                        </Card>
+                        <Card className="p-4">
+                            <CardTitle className="text-lg mb-2">Damage & Dispute Resolution (Demo)</CardTitle>
+                            <p className="text-sm text-muted-foreground mb-3">Submit photo/video-based damage claims and access mediation services.</p>
+                            <Button variant="secondary" onClick={() => handleToolClick("Dispute System")}><AlertTriangle className="mr-2 h-4 w-4"/>Open Dispute System</Button>
+                        </Card>
+                    </CardContent>
+                </Card>
+            </TabsContent>
 
           </Tabs>
         </CardContent>
@@ -190,5 +239,4 @@ export default function DashboardPage() {
     </div>
   );
 }
-
     

@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { KeyRound, Car, User, CheckCircle, CalendarDays, Users, Briefcase, ShieldCheck, Star } from 'lucide-react';
+import { KeyRound, Car, User, CheckCircle, CalendarDays, Users, Briefcase, ShieldCheck, Star, Luggage, TvIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -25,6 +25,7 @@ const carListings = [
     rating: 4.8,
     reviews: 120,
     insuranceIncluded: true,
+    ecoFriendly: true, // Demo
   },
   {
     id: 2,
@@ -40,6 +41,7 @@ const carListings = [
     rating: 4.5,
     reviews: 95,
     insuranceIncluded: true,
+    ecoFriendly: false,
   },
   {
     id: 3,
@@ -54,20 +56,25 @@ const carListings = [
     features: ["High Roof", "Ample Cargo Space", "Comfortable for Groups"],
     rating: 4.9,
     reviews: 70,
-    insuranceIncluded: false, // Example
+    insuranceIncluded: false, 
+    ecoFriendly: false,
   }
 ];
 
 
 export default function CarRentPage() {
   const [includeDriver, setIncludeDriver] = useState(false);
+  const [baggageAssistance, setBaggageAssistance] = useState(false);
 
   const handleRentNow = (carName: string) => {
     toast({
       title: "Rental Initiated (Demo)",
-      description: `You've started the rental process for ${carName}. ${includeDriver ? 'Driver service requested.' : ''}`,
+      description: `You've started the rental process for ${carName}. ${includeDriver ? 'Driver service requested.' : ''} ${baggageAssistance ? 'Baggage assistance requested.' : ''}`,
     });
-    // In a real app, this would navigate to a booking confirmation page or open a modal
+  };
+
+  const handle360View = (carName: string) => {
+    toast({ title: `360° View (Demo) - ${carName}`, description: "Showing immersive 360° view of the vehicle." });
   };
 
   return (
@@ -79,25 +86,45 @@ export default function CarRentPage() {
             Rent a Car
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Explore a wide range of rental cars to suit your travel needs. Easy booking and great prices.
+            Explore a wide range of rental cars, including eco-friendly options, to suit your travel needs.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="flex items-center space-x-2 mb-6 p-4 border rounded-md bg-muted/30">
-            <Checkbox
-              id="includeDriver"
-              checked={includeDriver}
-              onCheckedChange={(checked) => setIncludeDriver(checked as boolean)}
-            />
-            <Label htmlFor="includeDriver" className="text-base font-medium text-foreground">
-              Include a Driver (for intercity trips, airport transfers, or convenience)
-            </Label>
+          <div className="mb-6 p-4 border rounded-md bg-muted/30 space-y-3">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="includeDriver"
+                checked={includeDriver}
+                onCheckedChange={(checked) => setIncludeDriver(checked as boolean)}
+              />
+              <Label htmlFor="includeDriver" className="text-base font-medium text-foreground">
+                Include a Driver (for intercity trips, airport transfers, or convenience)
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="baggageAssistance"
+                checked={baggageAssistance}
+                onCheckedChange={(checked) => setBaggageAssistance(checked as boolean)}
+              />
+              <Label htmlFor="baggageAssistance" className="text-base font-medium text-foreground">
+                Include Baggage Assistance (Help for seniors or families)
+              </Label>
+            </div>
           </div>
+
 
           {includeDriver && (
             <div className="mb-6 p-4 border border-accent rounded-md bg-accent/10">
               <p className="text-accent-foreground font-semibold">
                 <Briefcase className="inline h-5 w-5 mr-2" /> Professional driver service selected. Additional charges may apply.
+              </p>
+            </div>
+          )}
+          {baggageAssistance && (
+            <div className="mb-6 p-4 border border-blue-500 rounded-md bg-blue-500/10">
+              <p className="text-blue-700 font-semibold">
+                <Luggage className="inline h-5 w-5 mr-2" /> Baggage assistance service selected.
               </p>
             </div>
           )}
@@ -107,6 +134,7 @@ export default function CarRentPage() {
               <Card key={car.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
                 <div className="relative w-full h-56">
                   <Image src={car.image} alt={car.name} layout="fill" objectFit="cover" data-ai-hint={car.dataAiHint} />
+                   {car.ecoFriendly && <Badge variant="secondary" className="absolute top-2 right-2 bg-green-500 text-white border-green-600">Eco-Friendly</Badge>}
                 </div>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-xl font-semibold">{car.name}</CardTitle>
@@ -119,7 +147,7 @@ export default function CarRentPage() {
                     <Car className="h-4 w-4 mr-2 text-primary" /> {car.transmission}
                   </div>
                   <ul className="space-y-1 text-sm">
-                    {car.features.slice(0,2).map(feature => ( // Show first 2 features
+                    {car.features.slice(0,2).map(feature => ( 
                        <li key={feature} className="flex items-center">
                          <CheckCircle className="h-4 w-4 mr-2 text-green-500 flex-shrink-0" /> {feature}
                        </li>
@@ -134,6 +162,9 @@ export default function CarRentPage() {
                     <span className="font-semibold">{car.rating}</span>
                     <span className="text-xs text-muted-foreground ml-1">({car.reviews} reviews)</span>
                   </div>
+                   <Button variant="outline" size="sm" className="w-full mt-2" onClick={() => handle360View(car.name)}>
+                    <TvIcon className="mr-2 h-4 w-4" /> 360° View (Demo)
+                  </Button>
                 </CardContent>
                 <CardFooter className="flex flex-col items-start bg-muted/50 p-4">
                   <p className="text-2xl font-bold text-primary mb-2">${car.pricePerDay}<span className="text-sm font-normal text-muted-foreground">/day</span></p>
@@ -154,5 +185,4 @@ export default function CarRentPage() {
     </div>
   );
 }
-
     

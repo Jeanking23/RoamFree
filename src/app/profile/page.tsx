@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building } from 'lucide-react';
+import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building, CreditCard, Video, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,13 +18,15 @@ const mockUser = {
   name: "Alex Johnson",
   email: "alex.johnson@example.com",
   joinDate: "2023-01-15",
-  isVerified: true,
+  isVerified: false, // Set to false to show verification button
   mfaEnabled: false,
   preferences: {
     travelStyle: "Adventure, Cultural",
     dietaryNeeds: "Vegetarian",
     interests: "Hiking, Photography, Local Markets",
-  }
+    pricingAlerts: true,
+  },
+  walletBalance: 75.50, // Demo wallet balance
 };
 
 const mockBookingHistory = [
@@ -41,15 +43,23 @@ const mockSavedListings = [
 export default function ProfilePage() {
 
   const handleIdVerification = () => {
-    toast({ title: "ID Verification", description: "Starting ID verification process (placeholder)." });
+    toast({ title: "ID Verification (Demo)", description: "Starting ID verification process. This would typically involve uploading documents or a video." });
+  };
+  
+  const handleVideoIdVerification = () => {
+    toast({ title: "Video ID Verification (Demo)", description: "Starting video-based ID verification. You might be asked to record a short video." });
   };
 
   const handleMfaSetup = () => {
-    toast({ title: "MFA Setup", description: "Navigating to MFA setup (placeholder)." });
+    toast({ title: "MFA Setup (Demo)", description: "Navigating to Multi-Factor Authentication setup." });
   };
   
   const handleSaveChanges = (section: string) => {
-    toast({ title: "Changes Saved", description: `Your ${section} have been updated (simulation).`});
+    toast({ title: "Changes Saved (Demo)", description: `Your ${section} have been updated.`});
+  };
+
+  const handleTopUpWallet = () => {
+    toast({ title: "Top Up Wallet (Demo)", description: "Proceeding to wallet top-up options." });
   };
 
   return (
@@ -66,11 +76,12 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent className="p-0 md:p-6">
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-6 p-1 h-auto">
-              <TabsTrigger value="profile" className="py-2"><UserCircle className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Profile Details</TabsTrigger>
-              <TabsTrigger value="history" className="py-2"><History className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Booking History</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-6 p-1 h-auto">
+              <TabsTrigger value="profile" className="py-2"><UserCircle className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Profile</TabsTrigger>
+              <TabsTrigger value="history" className="py-2"><History className="h-5 w-5 mr-2 md:hidden lg:inline-block" />History</TabsTrigger>
               <TabsTrigger value="preferences" className="py-2"><Settings className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Preferences</TabsTrigger>
               <TabsTrigger value="security" className="py-2"><ShieldCheck className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Security</TabsTrigger>
+              <TabsTrigger value="wallet" className="py-2"><CreditCard className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Wallet</TabsTrigger>
             </TabsList>
 
             <TabsContent value="profile" className="p-4 md:p-0">
@@ -124,7 +135,7 @@ export default function ProfilePage() {
                               </span>
                             </div>
                           </div>
-                           <Button variant="outline" size="sm" className="mt-3">View Details</Button>
+                           <Button variant="outline" size="sm" className="mt-3">View Details (Demo)</Button>
                         </li>
                       ))}
                     </ul>
@@ -133,7 +144,7 @@ export default function ProfilePage() {
                   )}
                 </CardContent>
                 <CardFooter className="border-t px-6 py-4 text-center">
-                    <p className="text-sm text-muted-foreground">Showing last {mockBookingHistory.length} bookings. <Link href="#" className="text-primary hover:underline">View all</Link></p>
+                    <p className="text-sm text-muted-foreground">Showing last {mockBookingHistory.length} bookings. <Link href="#" className="text-primary hover:underline">View all (Demo)</Link></p>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -157,8 +168,13 @@ export default function ProfilePage() {
                     <Label htmlFor="interests">Interests & Hobbies</Label>
                     <Textarea id="interests" defaultValue={mockUser.preferences.interests} placeholder="e.g., Hiking, Museums, Nightlife, Shopping"/>
                   </div>
+                  <div className="flex items-center space-x-2 pt-2">
+                    <Switch id="pricing-alerts" defaultChecked={mockUser.preferences.pricingAlerts} />
+                    <Label htmlFor="pricing-alerts">Enable AI Predictive Pricing Alerts (Demo)</Label>
+                  </div>
                   <div className="pt-2">
                     <p className="text-sm text-muted-foreground">More preference options (e.g., preferred airline, hotel chains) coming soon!</p>
+                    <p className="text-sm text-muted-foreground">Group travel coordination features will appear under 'My Trips' (Coming Soon).</p>
                   </div>
                 </CardContent>
                  <CardFooter className="border-t px-6 py-4">
@@ -171,19 +187,27 @@ export default function ProfilePage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Security Settings</CardTitle>
-                  <CardDescription>Manage your account security options.</CardDescription>
+                  <CardDescription>Manage your account security options. AI fraud detection is active.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-center justify-between p-4 border rounded-md">
                     <div>
-                      <h4 className="font-medium">Identity Verification</h4>
+                      <h4 className="font-medium">Standard ID Verification</h4>
                       <p className={`text-sm ${mockUser.isVerified ? "text-green-600" : "text-orange-600"}`}>
                         Status: {mockUser.isVerified ? "Verified" : "Not Verified"}
                       </p>
                        {!mockUser.isVerified && <p className="text-xs text-muted-foreground">Verification is required for listing properties or making certain bookings.</p>}
                     </div>
-                    {!mockUser.isVerified && <Button onClick={handleIdVerification}>Verify ID</Button>}
+                    {!mockUser.isVerified && <Button onClick={handleIdVerification}>Verify ID (Demo)</Button>}
                     {mockUser.isVerified && <ShieldCheck className="h-6 w-6 text-green-600" />}
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-4 border rounded-md">
+                    <div>
+                      <h4 className="font-medium">Video ID Verification</h4>
+                      <p className="text-sm text-muted-foreground">Enhance trust with video-based verification.</p>
+                    </div>
+                    <Button variant="outline" onClick={handleVideoIdVerification}><Video className="mr-2 h-4 w-4"/>Start Video Verification (Demo)</Button>
                   </div>
 
                   <div className="flex items-center justify-between p-4 border rounded-md">
@@ -200,19 +224,48 @@ export default function ProfilePage() {
                   <div className="p-4 border rounded-md">
                      <h4 className="font-medium">Password</h4>
                      <p className="text-sm text-muted-foreground mb-2">It's a good practice to use a strong, unique password.</p>
-                     <Button variant="outline">Change Password</Button>
+                     <Button variant="outline">Change Password (Demo)</Button>
                   </div>
                 </CardContent>
                  <CardFooter className="border-t px-6 py-4">
-                   <p className="text-xs text-muted-foreground">Last login: Today at {new Date().toLocaleTimeString()} (Simulated)</p>
+                   <p className="text-xs text-muted-foreground">Last login: Today at {new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} (Simulated)</p>
                 </CardFooter>
               </Card>
             </TabsContent>
+            
+            <TabsContent value="wallet" className="p-4 md:p-0">
+              <Card>
+                <CardHeader>
+                  <CardTitle>My RoamFree Wallet</CardTitle>
+                  <CardDescription>Manage your funds for seamless payments across the platform.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 border rounded-md bg-muted/50">
+                    <Label>Current Balance</Label>
+                    <p className="text-3xl font-bold text-primary">${mockUser.walletBalance.toFixed(2)}</p>
+                  </div>
+                  <Button onClick={handleTopUpWallet} className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
+                    <CreditCard className="mr-2 h-4 w-4"/> Top Up Wallet (Demo)
+                  </Button>
+                  <div>
+                    <h4 className="font-medium mt-4">Wallet Features (Coming Soon)</h4>
+                    <ul className="list-disc list-inside text-sm text-muted-foreground mt-2 space-y-1">
+                      <li>View transaction history</li>
+                      <li>Store funds in multiple currencies</li>
+                      <li>Withdraw funds to your bank account</li>
+                    </ul>
+                  </div>
+                </CardContent>
+                <CardFooter className="border-t px-6 py-4">
+                   <p className="text-xs text-muted-foreground">Wallet transactions are secure and encrypted.</p>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+
           </Tabs>
         </CardContent>
       </Card>
     </div>
   );
 }
-
     

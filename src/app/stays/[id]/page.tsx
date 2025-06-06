@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Users, Star, MapPin, CreditCard, MessageSquare, ShieldCheck, Camera, Share2, Heart, AlertTriangle, Car, Clock, CheckCircle, Ticket, Landmark as LandmarkIcon } from 'lucide-react';
+import { CalendarDays, Users, Star, MapPin, CreditCard, MessageSquare, ShieldCheck, Camera, Share2, Heart, AlertTriangle, Car, Clock, CheckCircle, Ticket, Landmark as LandmarkIcon, CloudSun, Calendar, Info, Plane, Percent, TvIcon, Contact, Waves } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -24,7 +24,7 @@ const mockAccommodation = {
   rating: 4.9,
   reviewsCount: 182,
   description: "Experience ultimate luxury in this stunning beachfront villa. Offering breathtaking ocean views, a private infinity pool, and direct beach access. Perfect for families or romantic getaways. Features 4 bedrooms, 5 bathrooms, a gourmet kitchen, and expansive outdoor living spaces.",
-  amenities: ["Private Pool", "Beachfront", "WiFi", "Air Conditioning", "Full Kitchen", "Free Parking", "Gym Access"],
+  amenities: ["Private Pool", "Beachfront", "WiFi", "Air Conditioning", "Full Kitchen", "Free Parking", "Gym Access", "Wheelchair Accessible (Demo)"],
   photos: [
     { id: "p1", src: "https://placehold.co/800x600.png?text=Villa+View+1", alt: "Villa ocean view", dataAiHint: "luxury villa ocean" },
     { id: "p2", src: "https://placehold.co/400x300.png?text=Pool", alt: "Infinity pool", dataAiHint: "infinity pool" },
@@ -38,7 +38,8 @@ const mockAccommodation = {
     { id: "r2", user: "Bob Williams", rating: 4, comment: "Great location and beautiful property. Pool was amazing. Minor issue with WiFi initially but was resolved quickly.", date: "2024-02-20" },
   ],
   availability: "Check availability calendar (placeholder)", // Placeholder
-  policies: { checkIn: "After 3:00 PM", checkOut: "Before 11:00 AM", cancellation: "Flexible - Free cancellation up to 5 days before check-in." }
+  policies: { checkIn: "After 3:00 PM", checkOut: "Before 11:00 AM", cancellation: "Flexible - Free cancellation up to 5 days before check-in." },
+  ecoFriendly: true, // Demo
 };
 
 const mockNearbyAttractions = [
@@ -90,14 +91,23 @@ export default function AccommodationProfilePage() {
   };
   
   const handleArView = () => {
-    toast({ title: "Augmented Reality View", description: "AR view feature is under development. This would use your phone's camera. (Placeholder)" });
+    toast({ title: "Augmented Reality View (Demo)", description: "AR property walkthrough feature using your phone's camera is under development." });
+  };
+  const handle360Tour = () => {
+    toast({ title: "360° Video Tour (Demo)", description: "Starting immersive 360° video tour. (Placeholder)" });
+  };
+  const handleDroneView = () => {
+    toast({ title: "Drone View (Demo)", description: "Displaying top-down drone footage of the property area. (Placeholder)" });
+  };
+  const handleFloorPlan = () => {
+    toast({ title: "Interactive Floor Plan (Demo)", description: "Showing clickable floor plan. (Placeholder)" });
   };
 
   const handleSuggestRides = () => {
     const now = new Date();
     toast({
       title: "Ride Suggestions (Demo)",
-      description: `Uber: ETA 5 mins, Fare ~$25. Lyft: ETA 7 mins, Fare ~$23. Recommended departure for airport: ${new Date(now.getTime() + 2 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}. (Current time: ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`,
+      description: `Uber: ETA 5 mins, Fare ~$25. Lyft: ETA 7 mins, Fare ~$23. Recommended departure for airport: ${new Date(now.getTime() + 2 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}. (Current time: ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}) Based on your flight arrival (if provided).`,
       duration: 10000,
     });
   };
@@ -110,16 +120,17 @@ export default function AccommodationProfilePage() {
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
         <CardHeader className="pb-4">
-          <div className="flex flex-col md:flex-row justify-between md:items-center gap-2">
+          <div className="flex flex-col md:flex-row justify-between md:items-start gap-2">
             <div>
               <CardTitle className="text-3xl md:text-4xl font-headline text-primary">{mockAccommodation.name}</CardTitle>
-              <div className="flex items-center gap-2 text-muted-foreground mt-1">
-                <MapPin className="h-5 w-5" /> <span>{mockAccommodation.location}</span>
-                <Separator orientation="vertical" className="h-5" />
-                <Star className="h-5 w-5 text-yellow-400" /> <span>{mockAccommodation.rating} ({mockAccommodation.reviewsCount} reviews)</span>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground mt-1">
+                <span className="flex items-center"><MapPin className="h-5 w-5 mr-1" /> {mockAccommodation.location}</span>
+                <Separator orientation="vertical" className="h-5 hidden sm:block" />
+                <span className="flex items-center"><Star className="h-5 w-5 text-yellow-400 mr-1" /> {mockAccommodation.rating} ({mockAccommodation.reviewsCount} reviews)</span>
+                 {mockAccommodation.ecoFriendly && <><Separator orientation="vertical" className="h-5 hidden sm:block" /><Badge variant="secondary" className="bg-green-100 text-green-700 border-green-300"><CheckCircle className="mr-1 h-3 w-3"/>Eco-Friendly</Badge></>}
               </div>
             </div>
-            <div className="flex items-center gap-2 mt-2 md:mt-0">
+            <div className="flex items-center gap-2 mt-2 md:mt-0 self-start">
               <Button variant="ghost" size="icon" onClick={handleToggleFavorite} aria-label={isFavorited ? "Remove from wishlist" : "Add to wishlist"}>
                 <Heart className={`h-6 w-6 ${isFavorited ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
               </Button>
@@ -146,8 +157,11 @@ export default function AccommodationProfilePage() {
                  <Image key={photo.id} src={photo.src} alt={photo.alt} width={80} height={60} className={`rounded object-cover cursor-pointer ${currentImage.id === photo.id ? 'ring-2 ring-primary' : ''}`} onClick={() => setCurrentImage(photo)} data-ai-hint={photo.dataAiHint}/>
              ))}
           </div>
-           <div className="text-center mt-2">
+           <div className="flex flex-wrap gap-2 justify-center mt-4">
              <Button variant="outline" onClick={handleArView}><Camera className="mr-2 h-4 w-4" /> Try AR View (Demo)</Button>
+             <Button variant="outline" onClick={handle360Tour}><TvIcon className="mr-2 h-4 w-4" /> 360° Video Tour (Demo)</Button>
+             <Button variant="outline" onClick={handleDroneView}><Plane className="mr-2 h-4 w-4" /> Drone View (Demo)</Button>
+             <Button variant="outline" onClick={handleFloorPlan}><Contact className="mr-2 h-4 w-4" /> Interactive Floor Plan (Demo)</Button>
            </div>
         </CardContent>
         
@@ -173,12 +187,23 @@ export default function AccommodationProfilePage() {
               <p className="text-sm text-muted-foreground"><strong>Check-out:</strong> {mockAccommodation.policies.checkOut}</p>
               <p className="text-sm text-muted-foreground"><strong>Cancellation:</strong> {mockAccommodation.policies.cancellation}</p>
             </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><CloudSun className="h-5 w-5"/> Smart Trip Info (Demo)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <p className="flex items-center gap-1"><CloudSun className="h-4 w-4 text-blue-500"/> Weather: Sunny, 24°C. Perfect for the beach!</p>
+                <p className="flex items-center gap-1"><Calendar className="h-4 w-4 text-purple-500"/> Local Event: Malibu Arts Festival (This Weekend)</p>
+                <p className="flex items-center gap-1"><Info className="h-4 w-4 text-orange-500"/> Cultural Tip: Tipping at restaurants is customary (15-20%).</p>
+              </CardContent>
+            </Card>
+            
             <div className="md:hidden"> 
               <Separator className="my-6" />
               <HostInfo />
               <Separator className="my-6" />
             </div>
-             {/* Nearby Attractions Section */}
             <div>
               <h3 className="text-2xl font-semibold my-4">Nearby Attractions</h3>
               <div className="grid sm:grid-cols-2 gap-4">
@@ -228,6 +253,8 @@ export default function AccommodationProfilePage() {
                   <CreditCard className="mr-2 h-5 w-5" /> Book Now
                 </Button>
                  <p className="text-xs text-muted-foreground text-center">You won't be charged yet (This is a demo)</p>
+                 <p className="text-xs text-muted-foreground text-center">Split Payment Available (Demo)</p>
+                 <p className="text-xs text-muted-foreground text-center">Pay with Klarna/Afterpay (Demo)</p>
               </CardContent>
             </Card>
 
@@ -240,7 +267,7 @@ export default function AccommodationProfilePage() {
                     <CardTitle className="flex items-center gap-2"><Car className="h-5 w-5"/> Transportation</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-sm text-muted-foreground mb-3">Need a ride to/from here or around town?</p>
+                    <p className="text-sm text-muted-foreground mb-3">Need a ride? Auto-suggestions based on flight arrivals (Demo).</p>
                     <Button variant="outline" className="w-full mb-2" onClick={handleSuggestRides}>
                        <Clock className="mr-2 h-4 w-4"/> Suggest Rides (Demo)
                     </Button>
@@ -248,7 +275,6 @@ export default function AccommodationProfilePage() {
                         <Button variant="outline" className="w-full" asChild><a href="https://m.uber.com" target="_blank" rel="noopener noreferrer">Open Uber</a></Button>
                         <Button variant="outline" className="w-full" asChild><a href="https://www.lyft.com/rider" target="_blank" rel="noopener noreferrer">Open Lyft</a></Button>
                     </div>
-                     <p className="text-xs text-muted-foreground mt-2">Real-time info & dynamic suggestions based on your booking (if applicable) would appear here.</p>
                 </CardContent>
             </Card>
           </div>
@@ -278,7 +304,7 @@ export default function AccommodationProfilePage() {
                 </CardContent>
               </Card>
             ))}
-            <Button variant="outline">Show all {mockAccommodation.reviewsCount} reviews</Button>
+            <Button variant="outline">Show all {mockAccommodation.reviewsCount} reviews (Demo)</Button>
           </div>
         </CardContent>
         <CardFooter className="border-t pt-6 flex flex-col items-start gap-4">
@@ -286,9 +312,8 @@ export default function AccommodationProfilePage() {
                 <AlertTriangle className="h-5 w-5 text-orange-500"/>
                 <span>Report this listing if you find any issues. (Placeholder)</span>
             </div>
-             <p className="text-xs text-muted-foreground">Calendar sync with Google/Apple Calendar and host platform sync (Airbnb, etc.) are planned features.</p>
-             <p className="text-xs text-muted-foreground">Offline access for bookings and key details is a planned feature.</p>
-             <p className="text-xs text-muted-foreground">Push notifications for price drops, availability, or trip reminders are planned.</p>
+             <p className="text-xs text-muted-foreground">Calendar sync (Google/Apple/Airbnb) & Offline access for bookings are planned features.</p>
+             <p className="text-xs text-muted-foreground">Push notifications (price drops, trip reminders, traffic, weather) are planned.</p>
         </CardFooter>
       </Card>
     </div>
@@ -316,3 +341,4 @@ function HostInfo() {
     </Card>
   );
 }
+    

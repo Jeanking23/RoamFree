@@ -1,17 +1,28 @@
 
 'use client';
 
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import {
-  CircleDot,
-  SquareDot,
+  MapPin,
   CalendarDays,
   Clock,
-  ChevronDown,
   LocateFixed,
+  Sparkles,
+  CircleDot,
+  SquareDot,
+  Plane,
+  User,
+  ShieldCheck,
+  Compass,
+  Briefcase,
+  Settings,
+  Tv,
+  Globe,
+  CreditCard,
+  MessageCircle,
+  Users2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +33,8 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormMessage, // Removed FormLabel as it wasn't explicitly used in the simplified form
+  FormMessage,
+  FormLabel,
 } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -68,15 +80,14 @@ export default function TransportPage() {
     defaultValues: {
       pickupLocation: "",
       dropoffLocation: "",
-      pickupDate: undefined, // Initialize as undefined
-      pickupTime: undefined, // Initialize as undefined
+      pickupDate: undefined,
+      pickupTime: undefined,
     },
   });
 
   const { setValue, getValues } = form;
 
   useEffect(() => {
-    // Set default date and time on client-side to avoid hydration issues
     setValue("pickupDate", new Date(), { shouldValidate: false });
     setValue("pickupTime", format(new Date(), "HH:mm"), { shouldValidate: false });
   }, [setValue]);
@@ -84,8 +95,7 @@ export default function TransportPage() {
 
   async function onSubmit(data: TransportFormValues) {
     console.log("Transport Request Submitted:", data);
-    setPriceResult(null); // Clear previous results
-    // Simulate API call
+    setPriceResult(null);
     await new Promise(resolve => setTimeout(resolve, 1000));
     const randomPrice = (Math.random() * 50 + 10).toFixed(2);
     setPriceResult(`Estimated price for your ride: $${randomPrice}. This is a simulation.`);
@@ -113,8 +123,6 @@ export default function TransportPage() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        // For demo purposes, we'll just use the lat/lng.
-        // In a real app, you'd use a reverse geocoding service.
         const demoAddress = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)} (Demo Address)`;
         setValue("pickupLocation", demoAddress, { shouldValidate: true });
         toast({
@@ -142,251 +150,221 @@ export default function TransportPage() {
     );
   };
 
-
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <nav className="mb-8">
-        <ul className="flex flex-wrap justify-center md:justify-start items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-          <li>
-            <Link href="#" className="hover:text-primary font-medium text-primary">
-              Request a ride
-            </Link>
-          </li>
-          <li><Link href="#" className="hover:text-primary">Reserve a ride</Link></li>
-          <li><Link href="#" className="hover:text-primary">See prices</Link></li>
-          <li><Link href="#" className="hover:text-primary">Explore ride options</Link></li>
-        </ul>
-      </nav>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-1 space-y-6">
-          <h1 className="text-4xl font-bold text-foreground">Request a ride</h1>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <Card className="relative p-4 shadow rounded-lg">
-                <FormField
-                  control={form.control}
-                  name="pickupLocation"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center space-x-3">
-                      <CircleDot className="h-6 w-6 text-black flex-shrink-0" />
-                      <FormControl>
-                        <div className="relative w-full">
-                        <Input
-                          placeholder="Pickup location"
-                          className="bg-gray-100 border-0 focus-visible:ring-primary text-base h-12 pr-10"
-                          {...field}
+    <div className="space-y-8">
+      <Card className="shadow-lg rounded-lg overflow-hidden">
+        <CardHeader className="bg-primary/10">
+          <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
+            <Plane className="h-8 w-8" />
+            Plan Your Journey
+          </CardTitle>
+          <CardDescription className="text-lg text-muted-foreground">
+            Request a ride, reserve in advance, or explore various transport options.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-2xl">Request a Ride</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                      <div className="relative space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="pickupLocation"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center gap-2"><CircleDot className="h-5 w-5 text-primary" /> Pickup Location</FormLabel>
+                              <div className="flex items-center gap-2">
+                                <FormControl>
+                                  <Input placeholder="Enter pickup location" {...field} />
+                                </FormControl>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={handleGeolocate}
+                                  disabled={isLocating}
+                                  aria-label="Use current location"
+                                >
+                                  {isLocating ? <Clock className="h-5 w-5 animate-spin" /> : <LocateFixed className="h-5 w-5" />}
+                                </Button>
+                              </div>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={handleGeolocate}
-                            disabled={isLocating}
-                            className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 text-muted-foreground hover:text-primary"
-                            aria-label="Use current location"
-                          >
-                            {isLocating ? <Clock className="h-5 w-5 animate-spin" /> : <LocateFixed className="h-5 w-5" />}
-                          </Button>
-                        </div>
-                      </FormControl>
-                      <FormMessage className="absolute -bottom-5 left-9 text-xs" />
-                    </FormItem>
-                  )}
-                />
-                <div className="absolute left-[11px] top-[38px] h-[calc(100%-100px)] min-h-[20px] w-0.5 bg-gray-300 z-0"></div>
-                <FormField
-                  control={form.control}
-                  name="dropoffLocation"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center space-x-3 pt-4">
-                       <SquareDot className="h-6 w-6 text-black flex-shrink-0" />
-                      <FormControl>
-                        <Input
-                          placeholder="Dropoff location"
-                          className="bg-gray-100 border-0 focus-visible:ring-primary text-base h-12"
-                          {...field}
+                        <div className="absolute left-[9px] top-[calc(2.5rem+10px)] h-[calc(100%-5rem-20px)] w-0.5 bg-gray-300 -translate-y-1/2 z-0"></div>
+                        <FormField
+                          control={form.control}
+                          name="dropoffLocation"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center gap-2"><SquareDot className="h-5 w-5 text-primary" /> Dropoff Location</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter dropoff location" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </FormControl>
-                       <FormMessage className="absolute -bottom-5 left-9 text-xs" />
-                    </FormItem>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="pickupDate"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                              <FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Pickup Date</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={"outline"}
+                                      className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !field.value && "text-muted-foreground"
+                                      )}
+                                    >
+                                      {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={field.value}
+                                    onSelect={(date) => {
+                                      field.onChange(date);
+                                      if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) {
+                                        const currentTime = format(new Date(), "HH:mm");
+                                        if (!getValues("pickupTime") || getValues("pickupTime") < currentTime) {
+                                          setValue("pickupTime", currentTime, {shouldValidate: true});
+                                        }
+                                      }
+                                    }}
+                                    disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="pickupTime"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                              <FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</FormLabel>
+                              <FormControl><Input type="time" {...field} /></FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+                        See Prices
+                      </Button>
+                    </form>
+                  </Form>
+                  {priceResult && (
+                    <Card className="mt-6 p-4 bg-green-50 border-green-200">
+                      <CardHeader className="p-0 pb-2">
+                        <CardTitle className="text-lg text-green-700">Price Estimation</CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        <p className="text-green-600">{priceResult}</p>
+                      </CardContent>
+                    </Card>
                   )}
-                />
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Other Transport Options</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                    <Button variant="outline" className="w-full justify-start" asChild><Link href="/car-rent">Rent a Car</Link></Button>
+                    <Button variant="outline" className="w-full justify-start" disabled>Flight Search & Booking (Coming Soon)</Button>
+                    <Button variant="outline" className="w-full justify-start" disabled>Reserve Ride in Advance (Coming Soon)</Button>
+                </CardContent>
               </Card>
 
-              <Card className="p-4 rounded-lg shadow">
-                <div className="grid grid-cols-2 gap-3">
-                  <FormField
-                    control={form.control}
-                    name="pickupDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "bg-gray-100 border-0 justify-start text-foreground hover:bg-gray-200 h-12 text-base",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                <CalendarDays className="mr-2 h-5 w-5 text-muted-foreground" />
-                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={(date) => {
-                                field.onChange(date);
-                                // If selected date is today, ensure time is not in the past
-                                if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) {
-                                  const currentTime = format(new Date(), "HH:mm");
-                                  if (!getValues("pickupTime") || getValues("pickupTime") < currentTime) {
-                                    setValue("pickupTime", currentTime, {shouldValidate: true});
-                                  }
-                                }
-                              }}
-                              disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} // Disable past dates, including today if time has passed
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage className="text-xs pt-1" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="pickupTime"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                         <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                               <Button
-                                variant="outline"
-                                className="bg-gray-100 border-0 justify-start text-foreground hover:bg-gray-200 h-12 text-base"
-                              >
-                                <Clock className="mr-2 h-5 w-5 text-muted-foreground" />
-                                {field.value ? format(new Date(`1970-01-01T${field.value}`), "p") : <span>Pick a time</span>}
-                                <ChevronDown className="ml-auto h-5 w-5 text-muted-foreground" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-2">
-                            <Input
-                              type="time"
-                              value={field.value || ""}
-                              onChange={(e) => {
-                                const newTime = e.target.value;
-                                const currentDateValue = getValues("pickupDate") || new Date(); // Ensure pickupDate is defined
-                                const currentDate = format(currentDateValue, 'yyyy-MM-dd');
-                                const todayDate = format(new Date(), 'yyyy-MM-dd');
-
-                                if (currentDate === todayDate && newTime < format(new Date(), "HH:mm")) {
-                                  // If the selected date is today and time is in the past, set to current time
-                                  const nowTime = format(new Date(), "HH:mm");
-                                  field.onChange(nowTime);
-                                   toast({
-                                    variant: "destructive",
-                                    title: "Invalid Time",
-                                    description: "Cannot select a past time for today. Set to current time.",
-                                  });
-                                } else {
-                                  field.onChange(newTime);
-                                }
-                              }}
-                              className="bg-background border-input focus-visible:ring-primary"
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage className="text-xs pt-1" />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </Card>
-
-              <Button type="submit" className="w-full bg-black text-white hover:bg-gray-800 py-3 h-12 text-base font-medium">
-                See prices
-              </Button>
-            </form>
-          </Form>
-
-          {priceResult && (
-            <Card className="mt-6 p-4 shadow rounded-lg bg-accent/10 border-accent">
-              <CardHeader className="p-0 pb-2">
-                <CardTitle className="text-lg text-accent-foreground">Price Estimation</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <p className="text-accent-foreground/90">{priceResult}</p>
-              </CardContent>
-            </Card>
-          )}
-
-          <Card className="bg-card p-4 rounded-lg shadow">
-            <h2 className="text-sm font-medium text-muted-foreground mb-3">
-              Destination suggestions
-            </h2>
-            <div className="space-y-4">
-              {destinationSuggestions.map((suggestion) => (
-                <Button
-                  key={suggestion.id}
-                  variant="ghost"
-                  className="flex items-start space-x-3 cursor-pointer group w-full h-auto justify-start p-2 text-left"
-                  onClick={() => handleSuggestionClick(suggestion.name)}
-                >
-                  <Clock className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-foreground group-hover:text-primary">
-                      {suggestion.name}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {suggestion.address}
-                    </p>
-                  </div>
-                </Button>
-              ))}
             </div>
-          </Card>
 
-        </div>
+            <div className="lg:col-span-1 space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Destination Suggestions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {destinationSuggestions.map((suggestion) => (
+                    <Button
+                      key={suggestion.id}
+                      variant="ghost"
+                      className="flex flex-col items-start space-x-0 p-3 w-full h-auto text-left hover:bg-muted/80"
+                      onClick={() => handleSuggestionClick(suggestion.name)}
+                    >
+                      <p className="font-medium text-foreground group-hover:text-primary">
+                        {suggestion.name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {suggestion.address}
+                      </p>
+                    </Button>
+                  ))}
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                    <CardTitle className="text-xl">Platform Features</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm text-muted-foreground">
+                    <p className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary"/> Driver Verification & Ratings</p>
+                    <p className="flex items-center gap-2"><Compass className="h-4 w-4 text-primary"/> Real-time GPS Tracking (Demo)</p>
+                    <p className="flex items-center gap-2"><MessageCircle className="h-4 w-4 text-primary"/> In-app Driver Communication (Demo)</p>
+                    <p className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-primary"/> Secure In-app Payments (Demo)</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        <div className="lg:col-span-2 h-[400px] md:h-[600px] lg:h-auto">
-          <Image
-            src="https://placehold.co/800x1000.png"
-            alt="Map of Philadelphia"
-            width={800}
-            height={1000}
-            className="rounded-lg object-cover w-full h-full shadow-md"
-            data-ai-hint="city map Philadelphia"
-          />
-        </div>
-      </div>
-
-      <div className="mt-16">
-        <h2 className="text-3xl font-bold text-foreground mb-6">Suggestions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3 text-2xl font-headline text-primary">
+            <Sparkles className="h-7 w-7" />
+            Enhance Your Trip
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { title: "Reserve for later", desc: "Schedule your rides in advance." },
-            { title: "Group rides", desc: "Share your ride and save money." },
-            { title: "Airport transfers", desc: "Reliable rides to and from the airport." }
+            { title: "Schedule Rides", desc: "Plan your airport transfers or important trips in advance.", icon: CalendarDays },
+            { title: "Multiple Vehicle Types", desc: "Choose from standard, premium, or XL vehicles.", icon: Users2 },
+            { title: "Group Travel Coordination", desc: "Share ride details and costs easily with your group.", icon: Briefcase }
           ].map((item, i) => (
-            <Card key={i} className="shadow-lg rounded-lg overflow-hidden">
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-xl mb-2 text-primary">{item.title}</h3>
-                <p className="text-sm text-muted-foreground">{item.desc}</p>
-                <Button variant="link" className="px-0 pt-3 text-primary">Learn more</Button>
+            <Card key={i} className="shadow-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-xl"><item.icon className="h-5 w-5 text-accent"/>{item.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{item.desc} (Coming Soon)</p>
               </CardContent>
             </Card>
           ))}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
+    

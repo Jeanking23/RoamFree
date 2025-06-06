@@ -18,7 +18,8 @@ import {
   Heart,
   Award,
   MessageSquare,
-  ShieldAlert, // SOS Icon
+  ShieldAlert, 
+  Users2 // For community forum
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -54,44 +55,42 @@ export default function Header() {
   const [currentHash, setCurrentHash] = useState('');
 
   useEffect(() => {
-    // This effect runs only on the client side
     if (typeof window !== 'undefined') {
       setCurrentHash(window.location.hash);
+      const handleHashChange = () => setCurrentHash(window.location.hash);
+      window.addEventListener('hashchange', handleHashChange);
+      return () => window.removeEventListener('hashchange', handleHashChange);
     }
-  }, [pathname]); // Re-run if pathname changes, though hash changes might need more specific handling if not tied to path
+  }, []); // Run once on mount
 
   useEffect(() => {
     setIsPopoverOpen(false);
     setIsMobileMenuOpen(false);
-  }, [pathname]);
+  }, [pathname, currentHash]); // Close menus on path or hash change
 
   const handleSosClick = () => {
     toast({
-      title: "SOS Activated",
-      description: "Emergency services are being contacted. (This is a simulation)",
+      title: "SOS Activated (Demo)",
+      description: "Emergency services are being contacted. This is a simulation.",
       variant: "destructive",
     });
   };
 
   const isLinkActive = (itemHref: string) => {
     if (itemHref.startsWith('/#')) {
-      // For hash links, check current path and hash
       return pathname === '/' && currentHash === itemHref.substring(1);
     }
-    // For regular links, just check pathname
     return pathname === itemHref;
   };
 
 
   return (
     <header className="bg-background text-foreground border-b print:hidden">
-      {/* Top Bar */}
       <div className="container mx-auto px-4 h-[60px] flex items-center justify-between">
         <Link href="/" className="text-3xl font-extrabold text-primary">
           RoamFree
         </Link>
 
-        {/* Desktop Top Right Items */}
         <div className="hidden md:flex items-center gap-2">
           <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
             <ShieldAlert className="h-6 w-6" />
@@ -109,7 +108,7 @@ export default function Header() {
                 <div className="space-y-2">
                   <h4 className="font-medium leading-none">Language & Region</h4>
                   <p className="text-sm text-muted-foreground">
-                    Choose your preferred language and region.
+                    Choose your preferred language. Region & Currency selection coming soon.
                   </p>
                 </div>
                 <Separator />
@@ -124,7 +123,7 @@ export default function Header() {
                         onClick={() => {
                           setSelectedLanguage(lang);
                           setIsPopoverOpen(false);
-                          toast({ title: "Language Changed", description: `Language set to ${lang.name}` });
+                          toast({ title: "Language Changed (Demo)", description: `Language set to ${lang.name}` });
                         }}
                       >
                         <span className="mr-2">{lang.flag}</span> {lang.name}
@@ -135,7 +134,7 @@ export default function Header() {
                 <Separator />
                  <div>
                   <Label className="font-medium">Region</Label>
-                   <p className="text-sm text-muted-foreground mt-1">Region selection coming soon.</p>
+                   <p className="text-sm text-muted-foreground mt-1">Global (Automatic Currency Conversion Demo)</p>
                 </div>
                 <Separator />
                 <div>
@@ -155,21 +154,23 @@ export default function Header() {
           <Link href="/dashboard" className="text-sm font-medium text-foreground hover:text-primary px-3 py-1.5 rounded-sm">
             Owner Dashboard
           </Link>
+           <Link href="/community-forum-demo" className="text-sm font-medium text-foreground hover:text-primary px-3 py-1.5 rounded-sm flex items-center gap-1">
+            <Users2 className="h-4 w-4"/> Forum
+          </Link>
           <Button
             variant="outline"
             className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium focus-visible:ring-primary"
           >
-            Register
+            Register (Demo)
           </Button>
           <Button
             variant="outline"
             className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium focus-visible:ring-primary"
           >
-            Sign in
+            Sign in (Demo)
           </Button>
         </div>
 
-        {/* Mobile Menu Trigger */}
         <div className="md:hidden flex items-center gap-2">
            <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
             <ShieldAlert className="h-6 w-6" />
@@ -217,6 +218,10 @@ export default function Header() {
                     <Award className="h-5 w-5" />
                     Loyalty Program
                   </Link>
+                   <Link href="/community-forum-demo" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/community-forum-demo' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
+                    <Users2 className="h-5 w-5" />
+                    Community Forum
+                  </Link>
                    <Separator className="my-2" />
                   <Link href="/list-property" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/list-property' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
                     <Building className="h-5 w-5" />
@@ -236,13 +241,13 @@ export default function Header() {
                         variant="outline"
                         className="w-full justify-start text-primary border-primary hover:bg-primary/10 px-3 h-10 rounded-sm text-base font-medium"
                       >
-                        Register
+                        Register (Demo)
                       </Button>
                       <Button
                          variant="outline"
                          className="w-full justify-start text-primary border-primary hover:bg-primary/10 px-3 h-10 rounded-sm text-base font-medium"
                       >
-                        Sign in
+                        Sign in (Demo)
                       </Button>
                   </div>
                 </nav>
@@ -252,7 +257,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Navigation Bar (Desktop) */}
       <nav className="hidden md:block container mx-auto px-4 h-[52px]">
         <ul className="flex items-center gap-1 h-full">
           {mainNavItems.map((item) => (
@@ -286,5 +290,4 @@ export default function Header() {
     </header>
   );
 }
-
     

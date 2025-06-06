@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +19,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, MapPin, Clock, Car, CarFront, Search } from "lucide-react";
+import { CalendarIcon, MapPin, Clock, Car, CarFront, Search, Plane } from "lucide-react"; // Added Plane
+import { toast } from "@/hooks/use-toast"; // Added toast
 
 const rideBookingSchema = z.object({
   pickupLocation: z.string().min(1, "Pickup location is required"),
@@ -34,14 +36,26 @@ const rentalCarSchema = z.object({
   pickupTime: z.string().min(1, "Pickup time is required (e.g., HH:MM)"),
   dropoffDate: z.date({ required_error: "Dropoff date is required." }),
   dropoffTime: z.string().min(1, "Dropoff time is required (e.g., HH:MM)"),
-}).refine(data => data.dropoffDate >= data.pickupDate, {
+}).refine(data => !data.dropoffDate || !data.pickupDate || data.dropoffDate >= data.pickupDate, { // Adjusted refine
   message: "Dropoff date must be on or after pickup date.",
   path: ["dropoffDate"],
+});
+
+const flightSearchSchema = z.object({
+  origin: z.string().min(3, "Origin airport/city code is required (e.g., JFK).").max(50),
+  destination: z.string().min(3, "Destination airport/city code is required (e.g., LHR).").max(50),
+  departureDate: z.date({ required_error: "Departure date is required."}),
+  returnDate: z.date().optional(),
+}).refine(data => !data.returnDate || data.returnDate >= data.departureDate, {
+  message: "Return date must be on or after departure date.",
+  path: ["returnDate"],
 });
 
 
 type RideBookingFormValues = z.infer<typeof rideBookingSchema>;
 type RentalCarFormValues = z.infer<typeof rentalCarSchema>;
+type FlightSearchFormValues = z.infer<typeof flightSearchSchema>;
+
 
 function RideBookingForm() {
   const form = useForm<RideBookingFormValues>({
@@ -51,6 +65,7 @@ function RideBookingForm() {
 
   function onSubmit(values: RideBookingFormValues) {
     console.log("Ride Booking:", values);
+    toast({title: "Ride Search (Demo)", description: "Searching for available rides..."});
   }
 
   return (
@@ -131,6 +146,7 @@ function RentalCarForm() {
 
   function onSubmit(values: RentalCarFormValues) {
     console.log("Rental Car:", values);
+    toast({title: "Car Rental Search (Demo)", description: "Searching for available rental cars..."});
   }
   return (
      <Form {...form}>
@@ -237,13 +253,106 @@ function RentalCarForm() {
   );
 }
 
+function FlightSearchForm() {
+  const form = useForm<FlightSearchFormValues>({
+    resolver: zodResolver(flightSearchSchema),
+    defaultValues: { origin: "", destination: ""},
+  });
+
+  function onSubmit(values: FlightSearchFormValues) {
+    console.log("Flight Search:", values);
+    toast({title: "Flight Search (Demo)", description: "Searching for available flights..."});
+  }
+  return (
+     <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="origin"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform -rotate-45" />Origin</FormLabel>
+                <FormControl><Input placeholder="Enter origin airport/city (e.g., JFK)" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="destination"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform rotate-45" />Destination</FormLabel>
+                <FormControl><Input placeholder="Enter destination airport/city (e.g., LHR)" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="departureDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Departure Date</FormLabel>
+                 <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>
+                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+           <FormField
+            control={form.control}
+            name="returnDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Return Date (Optional)</FormLabel>
+                 <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>
+                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < (form.getValues("departureDate") || new Date(new Date().setHours(0,0,0,0)))} initialFocus />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <Button type="submit" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
+           <Search className="mr-2 h-4 w-4" /> Search Flights
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
+
 export default function TransportationSearchForm() {
   return (
     <div className="p-6 bg-card shadow-lg rounded-lg border">
       <Tabs defaultValue="rides">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
+        <TabsList className="grid w-full grid-cols-3 mb-6"> {/* Changed to grid-cols-3 */}
           <TabsTrigger value="rides" className="gap-2"><Car className="h-5 w-5" />Ride Booking</TabsTrigger>
           <TabsTrigger value="cars" className="gap-2"><CarFront className="h-5 w-5" />Rental Cars</TabsTrigger>
+          <TabsTrigger value="flights" className="gap-2"><Plane className="h-5 w-5" />Flights</TabsTrigger> {/* Added Flights Tab */}
         </TabsList>
         <TabsContent value="rides">
           <RideBookingForm />
@@ -251,7 +360,11 @@ export default function TransportationSearchForm() {
         <TabsContent value="cars">
           <RentalCarForm />
         </TabsContent>
+        <TabsContent value="flights"> {/* Added Flights Content */}
+          <FlightSearchForm />
+        </TabsContent>
       </Tabs>
     </div>
   );
 }
+    

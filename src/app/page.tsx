@@ -5,7 +5,7 @@ import AccommodationSearchForm from '@/components/search/accommodation-search-fo
 import TransportationSearchForm from '@/components/search/transportation-search-form';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
 import POIRecommendationForm from '@/components/recommendations/poi-recommendation-form';
-import { BedDouble, Car, Compass, Sparkles, Brain, MapPin as MapPinIcon, User } from 'lucide-react';
+import { BedDouble, Car, Compass, Sparkles, Brain, MapPin as MapPinIcon, User, Briefcase } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,8 +15,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useState } from "react";
-import { getAiTripPlanAction } from "./actions"; // Assuming you'll create this
-import type { AiTripPlanOutput } from "@/ai/flows/trip-planner-flow"; // Assuming this type
+import { getAiTripPlanAction } from "./actions"; 
+import type { AiTripPlanOutput } from "@/ai/flows/trip-planner-flow"; 
 import Link from 'next/link';
 
 const tripPlannerSchema = z.object({
@@ -64,7 +64,7 @@ function AiTripPlannerSection() {
           AI Trip Planner
         </CardTitle>
         <CardDescription className="text-lg text-muted-foreground">
-          Let our AI craft the perfect itinerary for your next adventure based on your interests.
+          Let our AI craft the perfect itinerary for your next adventure, including lodging, transit, and activities.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -153,6 +153,13 @@ export default function HomePage() {
         <p className="text-xl text-foreground/80 max-w-2xl mx-auto">
           RoamFree helps you find the perfect stay, seamless transport, and exciting local experiences.
         </p>
+         <div className="mt-6">
+            <Button variant="link" asChild>
+                <Link href="/corporate-solutions-demo">
+                    <Briefcase className="mr-2 h-4 w-4"/> RoamFree for Business (Demo)
+                </Link>
+            </Button>
+        </div>
       </section>
 
       <section id="stays" className="scroll-mt-20">
@@ -176,7 +183,7 @@ export default function HomePage() {
           <Car className="h-10 w-10 text-primary" />
           <div>
             <h2 className="text-3xl font-headline font-semibold text-foreground">Travel With Ease</h2>
-            <p className="text-muted-foreground">Book rides and rental cars in one place.</p>
+            <p className="text-muted-foreground">Book rides, rental cars, and flights in one place.</p>
           </div>
         </div>
         <TransportationSearchForm />
@@ -213,5 +220,4 @@ export default function HomePage() {
     </div>
   );
 }
-
     

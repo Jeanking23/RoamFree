@@ -19,8 +19,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, MapPin, Users, Search, ChevronsUpDown, Building2 } from "lucide-react";
+import { CalendarIcon, MapPin, Users, Search, ChevronsUpDown, Building2, Smile, Accessibility, Leaf } from "lucide-react";
 import type { DateRange } from "react-day-picker";
+import { Checkbox } from "@/components/ui/checkbox"; // Added Checkbox
 
 const accommodationSearchSchema = z.object({
   destination: z.string().min(1, "Destination is required"),
@@ -35,6 +36,9 @@ const accommodationSearchSchema = z.object({
   children: z.coerce.number().min(0, "Children cannot be negative").max(10, "Max 10 children"),
   rooms: z.coerce.number().min(1, "At least 1 room is required").max(5, "Max 5 rooms"),
   propertyType: z.enum(["ANY", "HOTEL", "RENTAL", "LAND"]).default("ANY"),
+  mood: z.enum(["ANY", "PEACEFUL", "ROMANTIC", "ADVENTUROUS"]).default("ANY").optional(),
+  wheelchairAccessible: z.boolean().default(false).optional(),
+  ecoFriendly: z.boolean().default(false).optional(),
 });
 
 type AccommodationSearchFormValues = z.infer<typeof accommodationSearchSchema>;
@@ -52,13 +56,15 @@ export default function AccommodationSearchForm() {
       children: 0,
       rooms: 1,
       propertyType: "ANY",
+      mood: "ANY",
+      wheelchairAccessible: false,
+      ecoFriendly: false,
     },
   });
 
   function onSubmit(values: AccommodationSearchFormValues) {
     console.log("Accommodation Search:", values);
     // Handle form submission, e.g., API call
-    // For now, just log. In a real app, this would navigate to a search results page.
   }
 
   const { watch } = form;
@@ -68,12 +74,12 @@ export default function AccommodationSearchForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end p-6 bg-card shadow-lg rounded-lg border">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-end p-6 bg-card shadow-lg rounded-lg border">
         <FormField
           control={form.control}
           name="destination"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="lg:col-span-1 xl:col-span-1">
               <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Destination</FormLabel>
               <FormControl>
                 <Input placeholder="e.g., Paris, France" {...field} />
@@ -86,7 +92,7 @@ export default function AccommodationSearchForm() {
           control={form.control}
           name="dateRange"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
+            <FormItem className="flex flex-col lg:col-span-1 xl:col-span-1">
               <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Check-in - Check-out</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -119,7 +125,7 @@ export default function AccommodationSearchForm() {
                     selected={field.value as DateRange}
                     onSelect={field.onChange}
                     numberOfMonths={2}
-                    disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1))} // Disable past dates
+                    disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1))}
                     initialFocus
                   />
                 </PopoverContent>
@@ -131,10 +137,10 @@ export default function AccommodationSearchForm() {
         
         <FormField
           control={form.control}
-          name="adults" // This field is mainly for the popover trigger
+          name="adults" 
           render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests</FormLabel>
+            <FormItem className="flex flex-col lg:col-span-1 xl:col-span-1">
+              <FormLabel className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests & Rooms</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -198,7 +204,7 @@ export default function AccommodationSearchForm() {
           control={form.control}
           name="propertyType"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="lg:col-span-1 xl:col-span-1">
               <FormLabel className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Property Type</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
@@ -217,13 +223,70 @@ export default function AccommodationSearchForm() {
             </FormItem>
           )}
         />
+        
+        <FormField
+          control={form.control}
+          name="mood"
+          render={({ field }) => (
+            <FormItem className="lg:col-span-1 xl:col-span-1">
+              <FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-primary" />Mood (Optional)</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select mood" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="ANY">Any</SelectItem>
+                  <SelectItem value="PEACEFUL">Peaceful</SelectItem>
+                  <SelectItem value="ROMANTIC">Romantic</SelectItem>
+                  <SelectItem value="ADVENTUROUS">Adventurous</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-        <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground">
+        <div className="flex flex-col gap-2 lg:col-span-2 xl:col-span-2">
+            <FormField
+            control={form.control}
+            name="wheelchairAccessible"
+            render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm h-10">
+                <FormControl>
+                    <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    />
+                </FormControl>
+                <FormLabel className="font-normal flex items-center gap-2"><Accessibility className="h-4 w-4 text-primary"/>Wheelchair Accessible</FormLabel>
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="ecoFriendly"
+            render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm h-10">
+                <FormControl>
+                    <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    />
+                </FormControl>
+                <FormLabel className="font-normal flex items-center gap-2"><Leaf className="h-4 w-4 text-primary"/>Eco-Friendly Certified</FormLabel>
+                </FormItem>
+            )}
+            />
+        </div>
+
+
+        <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground lg:col-span-full xl:col-span-1">
           <Search className="mr-2 h-4 w-4" /> Search
         </Button>
       </form>
     </Form>
   );
 }
-
     

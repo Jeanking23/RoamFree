@@ -17,8 +17,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Building, DollarSign, Bed, Bath, Phone, Mail, MapPin } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Building, DollarSign, Bed, Bath, Phone, Mail, MapPin, Image as ImageIcon, CalendarCheck2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox"; // Added Checkbox
+import { toast } from "@/hooks/use-toast"; // Added toast
 
 const propertySchema = z.object({
   propertyName: z.string().min(3, "Property name must be at least 3 characters."),
@@ -30,6 +32,10 @@ const propertySchema = z.object({
   description: z.string().min(20, "Description must be at least 20 characters.").max(1000),
   contactEmail: z.string().email("Invalid email address."),
   contactPhone: z.string().min(7, "Phone number seems too short.").optional(),
+  photos: z.string().optional().describe("Placeholder for photo upload URLs or identifiers"),
+  instantBooking: z.boolean().default(true),
+  requestToBook: z.boolean().default(false),
+  blackoutDates: z.string().optional().describe("e.g., MM/DD/YYYY, MM/DD/YYYY-MM/DD/YYYY"),
 });
 
 type PropertyFormValues = z.infer<typeof propertySchema>;
@@ -47,13 +53,16 @@ export default function ListPropertyPage() {
       description: "",
       contactEmail: "",
       contactPhone: "",
+      photos: "",
+      instantBooking: true,
+      requestToBook: false,
+      blackoutDates: "",
     },
   });
 
   function onSubmit(data: PropertyFormValues) {
     console.log("Property Listing Submitted:", data);
-    // Here you would typically send data to your backend
-    alert("Property submitted! Check console for data.");
+    toast({title: "Property Submitted (Demo)", description: "Your listing has been submitted for review."});
     form.reset();
   }
 
@@ -134,7 +143,7 @@ export default function ListPropertyPage() {
                     <FormItem>
                       <FormLabel className="flex items-center gap-1"><DollarSign className="h-4 w-4 text-primary" />Price (USD)</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="e.g., 250000" {...field} />
+                        <Input type="number" placeholder="e.g., 250000 or 150/night" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -189,6 +198,65 @@ export default function ListPropertyPage() {
                 )}
               />
 
+              <FormField
+                  control={form.control}
+                  name="photos"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-primary" />Property Photos (Demo)</FormLabel>
+                      <FormControl>
+                        <Input type="file" multiple disabled {...field} />
+                      </FormControl>
+                       <FormDescription>Photo upload functionality is a demo. In a real app, you'd upload files here.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+              <Card>
+                <CardHeader>
+                    <CardTitle className="text-xl flex items-center gap-2"><CalendarCheck2 className="h-5 w-5 text-primary"/>Availability Settings (Demo)</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="instantBooking"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                                <FormLabel className="font-normal">Enable Instant Booking</FormLabel>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="requestToBook"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                                <FormLabel className="font-normal">Require Request to Book</FormLabel>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="blackoutDates"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Blackout Dates</FormLabel>
+                                <FormControl><Input placeholder="e.g., 12/24/2024, 01/01/2025-01/07/2025" {...field} /></FormControl>
+                                <FormDescription>Enter dates or date ranges separated by commas.</FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl">Contact Information</CardTitle>
@@ -233,3 +301,4 @@ export default function ListPropertyPage() {
     </div>
   );
 }
+    

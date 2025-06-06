@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { ClipboardList, Home, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Calculator, Search, Smile, FileText, Star } from 'lucide-react';
+import { ClipboardList, Home, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Calculator, Search, Smile, FileText, Star, TvIcon, Plane, Contact, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,7 +30,7 @@ const propertySearchSchema = z.object({
   propertyType: z.enum(["ANY", "HOUSE", "LAND", "APARTMENT"]).default("ANY").optional(),
   minSize: z.coerce.number().optional(), // sqft or acres
   zoning: z.string().optional(),
-  amenities: z.string().optional(), // Added amenities filter
+  amenities: z.string().optional(), 
 });
 
 type PropertySearchFormValues = z.infer<typeof propertySearchSchema>;
@@ -59,7 +59,7 @@ export default function BuyPropertyPage() {
     const interestRateMonthly = data.interestRate / 100 / 12;
     const numberOfPayments = data.loanTerm * 12;
 
-    if (interestRateMonthly === 0) { // Edge case for 0% interest
+    if (interestRateMonthly === 0) { 
         setMonthlyPayment((principal / numberOfPayments).toFixed(2));
         return;
     }
@@ -73,18 +73,20 @@ export default function BuyPropertyPage() {
 
   function onPropertySearchSubmit(data: PropertySearchFormValues) {
     console.log("Property Search Filters:", data);
-    toast({ title: "Search Submitted", description: "Filtering properties (simulation)." });
-    // In a real app, you would filter the properties array or fetch from an API
+    toast({ title: "Search Submitted (Demo)", description: "Filtering properties based on your criteria." });
   }
 
   const handleScheduleTour = (propertyName: string) => {
     toast({ title: "Tour Scheduled (Demo)", description: `A tour for ${propertyName} has been requested.` });
   };
   const handleVirtualWalkthrough = (propertyName: string) => {
-    toast({ title: "Virtual Walkthrough (Demo)", description: `Starting virtual walkthrough for ${propertyName}. This is a placeholder.`});
+    toast({ title: "Virtual Walkthrough (Demo)", description: `Starting virtual walkthrough for ${propertyName}.`});
   };
    const handleContactAgent = (propertyName: string) => {
-    toast({ title: "Contacting Agent (Demo)", description: `Connecting you with an agent for ${propertyName}. Chat, Call or Schedule Appointment options would appear here.` });
+    toast({ title: "Contacting Agent (Demo)", description: `Connecting you with an agent for ${propertyName}.` });
+  };
+  const handleMediaTool = (toolName: string, propertyName: string) => {
+    toast({ title: `${toolName} (Demo)`, description: `Showing ${toolName.toLowerCase()} for ${propertyName}.` });
   };
 
 
@@ -97,11 +99,10 @@ export default function BuyPropertyPage() {
             Buy Land or House
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Find properties for sale, including land and houses. Invest in your future.
+            Find properties for sale, including land and houses. Secure transactions with Blockchain-backed verification (Future Feature).
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          {/* Search and Filter Section */}
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Search className="h-6 w-6" /> Search Properties</CardTitle>
@@ -195,7 +196,6 @@ export default function BuyPropertyPage() {
             </CardContent>
           </Card>
 
-          {/* Property Listings Placeholder */}
           <h3 className="text-2xl font-semibold text-foreground mb-4 mt-8">Available Properties</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map(prop => (
@@ -210,12 +210,16 @@ export default function BuyPropertyPage() {
                   <p className="text-sm text-muted-foreground"><ClipboardList className="inline h-4 w-4 mr-1"/>Type: {prop.type}</p>
                   <p className="text-sm text-muted-foreground"><Maximize className="inline h-4 w-4 mr-1"/>Size: {prop.size}</p>
                   <p className="text-sm text-muted-foreground"><Layers className="inline h-4 w-4 mr-1"/>Zoning: {prop.zoning}</p>
+                  <div className="flex flex-wrap gap-1 pt-2">
+                      <Button variant="outline" size="xs" onClick={() => handleMediaTool("Drone View", prop.name)}><Plane className="mr-1 h-3 w-3"/>Drone View</Button>
+                      <Button variant="outline" size="xs" onClick={() => handleMediaTool("Floor Plan", prop.name)}><Contact className="mr-1 h-3 w-3"/>Floor Plan</Button>
+                  </div>
                 </CardContent>
                 <CardFooter className="flex flex-col sm:flex-row gap-2">
                   <Button variant="outline" size="sm" onClick={() => handleScheduleTour(prop.name)} className="w-full sm:w-auto">
                     <CalendarDays className="mr-2 h-4 w-4" /> Schedule Tour
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => handleVirtualWalkthrough(prop.name)} className="w-full sm:w-auto">Virtual Walkthrough</Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleVirtualWalkthrough(prop.name)} className="w-full sm:w-auto text-primary hover:text-primary/80"><TvIcon className="mr-2 h-4 w-4"/>Virtual Tour</Button>
                    <Button variant="secondary" size="sm" onClick={() => handleContactAgent(prop.name)} className="w-full sm:w-auto">
                     <Phone className="mr-2 h-4 w-4" /> Contact Agent
                   </Button>
@@ -228,7 +232,6 @@ export default function BuyPropertyPage() {
             <p className="text-muted-foreground mt-2">Discover your dream property shortly.</p>
           </div>
 
-          {/* Mortgage Calculator Section */}
           <Card className="mt-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Calculator className="h-6 w-6" /> Mortgage Calculator (Estimate)</CardTitle>
@@ -285,8 +288,9 @@ export default function BuyPropertyPage() {
           </Card>
 
           <div className="mt-8 p-4 border rounded-md bg-muted/30">
-            <h4 className="font-semibold text-foreground mb-2">Coming Soon:</h4>
+            <h4 className="font-semibold text-foreground mb-2">Enhanced Trust & Security (Coming Soon):</h4>
             <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+              <li><ShieldCheck className="inline h-4 w-4 mr-1 text-primary"/>Blockchain-based property ownership verification.</li>
               <li><FileText className="inline h-4 w-4 mr-1 text-primary"/>Secure Document Upload & E-signature for contracts.</li>
               <li><Star className="inline h-4 w-4 mr-1 text-primary"/>Verified Agent Rating & Review System.</li>
             </ul>
@@ -297,3 +301,4 @@ export default function BuyPropertyPage() {
     </div>
   );
 }
+    

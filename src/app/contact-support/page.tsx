@@ -17,11 +17,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Headset, Mail, MessageSquare, User, Phone, HelpCircleIcon, Bot, Send, ShieldAlert } from "lucide-react";
+import { Headset, Mail, MessageSquare, User, Phone, HelpCircleIcon, Bot, Send, ShieldAlert, Info } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { getSupportChatbotResponseAction } from "../actions"; // Assuming you'll create this
-import type { SupportChatbotOutput } from "@/ai/flows/support-chatbot-flow"; // Assuming this type
+import { getSupportChatbotResponseAction } from "../actions"; 
+import type { SupportChatbotOutput } from "@/ai/flows/support-chatbot-flow"; 
 import { toast } from "@/hooks/use-toast";
 
 const contactSchema = z.object({
@@ -55,7 +55,7 @@ export default function ContactSupportPage() {
 
   function onContactSubmit(data: ContactFormValues) {
     console.log("Contact Form Submitted:", data);
-    toast({ title: "Message Sent!", description: "Your message has been submitted. We'll get back to you soon."});
+    toast({ title: "Message Sent! (Demo)", description: "Your message has been submitted. We'll get back to you soon."});
     contactForm.reset();
   }
 
@@ -78,12 +78,11 @@ export default function ContactSupportPage() {
 
   const handleSosClick = () => {
     toast({
-      title: "SOS Activated",
+      title: "SOS Activated (Demo)",
       description: "Emergency services are being contacted. This is a simulation. If this were a real emergency, appropriate actions would be taken.",
       variant: "destructive",
-      duration: 10000, // Show longer
+      duration: 10000, 
     });
-     // In a real app, you would trigger actual emergency protocols here.
   };
 
   return (
@@ -95,12 +94,12 @@ export default function ContactSupportPage() {
             Customer Service
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            We're here to help! Reach out to us with any questions or concerns.
+            We're here to help! Reach out via message, chat with our AI Assistant, or use emergency SOS.
+            AI Smart Fraud Detection is always active to protect your account.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
           <div className="grid md:grid-cols-2 gap-12">
-            {/* Contact Form Section */}
             <div>
               <h3 className="text-xl font-semibold text-foreground mb-4">Send us a Message</h3>
               <Form {...contactForm}>
@@ -156,13 +155,11 @@ export default function ContactSupportPage() {
               </Form>
             </div>
 
-            {/* Other Contact Options & Chatbot */}
             <div className="space-y-8">
-              {/* AI Chatbot Section */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><Bot className="h-6 w-6 text-primary" /> AI Powered Chat Support</CardTitle>
-                  <CardDescription>Get instant answers to common questions from our AI assistant.</CardDescription>
+                  <CardTitle className="flex items-center gap-2"><Bot className="h-6 w-6 text-primary" /> AI Personal Travel Assistant</CardTitle>
+                  <CardDescription>Get instant help for planning, booking, adjusting trips, or general support from our AI.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="h-64 overflow-y-auto border rounded-md p-3 mb-4 space-y-2 bg-muted/30">
@@ -197,7 +194,6 @@ export default function ContactSupportPage() {
                 </CardContent>
               </Card>
 
-              {/* SOS Emergency Button */}
               <Card className="border-destructive">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-destructive"><ShieldAlert className="h-6 w-6" /> Emergency SOS</CardTitle>
@@ -210,7 +206,6 @@ export default function ContactSupportPage() {
                 </CardContent>
               </Card>
               
-              {/* Other contact methods */}
               <div className="space-y-4">
                 <div>
                   <h3 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2">
@@ -225,9 +220,17 @@ export default function ContactSupportPage() {
                   </h3>
                   <p className="text-muted-foreground">Many common questions are answered in our FAQ section.</p>
                   <Button variant="outline" className="mt-2" asChild>
-                    <Link href="/faq">Visit our FAQ Page</Link>
+                    <Link href="/faq">Visit our FAQ Page (Demo)</Link>
                   </Button>
-                  <p className="text-sm text-muted-foreground mt-1">(FAQ page coming soon!)</p>
+                </div>
+                 <div>
+                  <h3 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2">
+                    <Info className="h-5 w-5 text-primary" /> Trust & Safety
+                  </h3>
+                  <p className="text-muted-foreground">Learn about our security measures, including Blockchain verification for property (Future Feature) and cultural travel advisories.</p>
+                  <Button variant="link" className="mt-1 px-0" asChild>
+                    <Link href="/trust-safety-demo">Learn More (Demo)</Link>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -237,5 +240,4 @@ export default function ContactSupportPage() {
     </div>
   );
 }
-
     
