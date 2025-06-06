@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, MapPin, Users, Search, ChevronsUpDown, Building2, Smile, Accessibility, Leaf } from "lucide-react";
 import type { DateRange } from "react-day-picker";
-import { Checkbox } from "@/components/ui/checkbox"; // Added Checkbox
+import { Checkbox } from "@/components/ui/checkbox";
 
 const accommodationSearchSchema = z.object({
   destination: z.string().min(1, "Destination is required"),
@@ -35,7 +34,7 @@ const accommodationSearchSchema = z.object({
   adults: z.coerce.number().min(1, "At least 1 adult is required").max(10, "Max 10 adults"),
   children: z.coerce.number().min(0, "Children cannot be negative").max(10, "Max 10 children"),
   rooms: z.coerce.number().min(1, "At least 1 room is required").max(5, "Max 5 rooms"),
-  propertyType: z.enum(["ANY", "HOTEL", "RENTAL", "LAND"]).default("ANY"),
+  propertyType: z.enum(["ANY", "HOTEL", "RENTAL"]).default("ANY"), // Removed "LAND"
   mood: z.enum(["ANY", "PEACEFUL", "ROMANTIC", "ADVENTUROUS"]).default("ANY").optional(),
   wheelchairAccessible: z.boolean().default(false).optional(),
   ecoFriendly: z.boolean().default(false).optional(),
@@ -216,7 +215,6 @@ export default function AccommodationSearchForm() {
                   <SelectItem value="ANY">Any</SelectItem>
                   <SelectItem value="HOTEL">Hotel</SelectItem>
                   <SelectItem value="RENTAL">Rental (Vacation)</SelectItem>
-                  <SelectItem value="LAND">Land</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

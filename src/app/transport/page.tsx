@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -23,6 +22,9 @@ import {
   CreditCard,
   MessageCircle,
   Users2,
+  Map as MapIcon, // Renamed to avoid conflict with native Map
+  Building,
+  Phone,
 } from 'lucide-react';
 import Link from 'next/link';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,12 +44,13 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import Image from 'next/image'; // Added for map placeholder
 
 const transportSchema = z.object({
   pickupLocation: z.string().min(3, "Pickup location must be at least 3 characters."),
   dropoffLocation: z.string().min(3, "Dropoff location must be at least 3 characters."),
-  pickupDate: z.date({ required_error: "Pickup date is required." }),
-  pickupTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)."),
+  pickupDate: z.date({ required_error: "Pickup date is required." }).optional(),
+  pickupTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM).").optional(),
 });
 
 type TransportFormValues = z.infer<typeof transportSchema>;
@@ -87,7 +90,8 @@ export default function TransportPage() {
 
   const { setValue, getValues } = form;
 
-  useEffect(() => {
+   useEffect(() => {
+    // Set default date and time only on the client-side
     setValue("pickupDate", new Date(), { shouldValidate: false });
     setValue("pickupTime", format(new Date(), "HH:mm"), { shouldValidate: false });
   }, [setValue]);
@@ -96,6 +100,7 @@ export default function TransportPage() {
   async function onSubmit(data: TransportFormValues) {
     console.log("Transport Request Submitted:", data);
     setPriceResult(null);
+    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     const randomPrice = (Math.random() * 50 + 10).toFixed(2);
     setPriceResult(`Estimated price for your ride: $${randomPrice}. This is a simulation.`);
@@ -123,6 +128,7 @@ export default function TransportPage() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
+        // In a real app, you'd use a reverse geocoding service here
         const demoAddress = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)} (Demo Address)`;
         setValue("pickupLocation", demoAddress, { shouldValidate: true });
         toast({
@@ -290,13 +296,27 @@ export default function TransportPage() {
               
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-xl">Other Transport Options</CardTitle>
+                  <CardTitle className="text-xl flex items-center gap-2"><MapIcon className="h-5 w-5 text-primary"/>Real-Time Interactive Map</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start" asChild><Link href="/car-rent">Rent a Car</Link></Button>
-                    <Button variant="outline" className="w-full justify-start" disabled>Flight Search & Booking (Coming Soon)</Button>
-                    <Button variant="outline" className="w-full justify-start" disabled>Reserve Ride in Advance (Coming Soon)</Button>
+                    <p className="text-sm text-muted-foreground">
+                        View live vehicle locations, estimated arrival times, and route previews on an interactive map.
+                        (Full real-time map functionality requires backend services and mapping APIs like Google Maps or Mapbox, which are beyond the scope of this prototype.)
+                    </p>
+                    <div className="aspect-video bg-muted rounded-md flex items-center justify-center overflow-hidden border">
+                        <Image 
+                            src="https://placehold.co/800x450.png?text=Live+Map+View+Placeholder" 
+                            alt="Real-time map placeholder" 
+                            width={800} 
+                            height={450} 
+                            className="object-cover w-full h-full"
+                            data-ai-hint="city map vehicles"
+                        />
+                    </div>
                 </CardContent>
+                 <CardFooter>
+                    <p className="text-xs text-muted-foreground">Interactive map simulation.</p>
+                </CardFooter>
               </Card>
 
             </div>
@@ -326,6 +346,16 @@ export default function TransportPage() {
               </Card>
               <Card>
                 <CardHeader>
+                    <CardTitle className="text-xl">Other Transport Options</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                    <Button variant="outline" className="w-full justify-start" asChild><Link href="/car-rent">Rent a Car</Link></Button>
+                    <Button variant="outline" className="w-full justify-start" disabled>Flight Search & Booking (Coming Soon)</Button>
+                    <Button variant="outline" className="w-full justify-start" disabled>Reserve Ride in Advance (Coming Soon)</Button>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
                     <CardTitle className="text-xl">Platform Features</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm text-muted-foreground">
@@ -349,9 +379,9 @@ export default function TransportPage() {
         </CardHeader>
         <CardContent className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { title: "Schedule Rides", desc: "Plan your airport transfers or important trips in advance.", icon: CalendarDays },
-            { title: "Multiple Vehicle Types", desc: "Choose from standard, premium, or XL vehicles.", icon: Users2 },
-            { title: "Group Travel Coordination", desc: "Share ride details and costs easily with your group.", icon: Briefcase }
+            { title: "Schedule Rides", desc: "Plan your airport transfers or important trips in advance.", icon: CalendarDays, pageLink: "/transport#schedule" },
+            { title: "Multiple Vehicle Types", desc: "Choose from standard, premium, or XL vehicles.", icon: Users2, pageLink: "/transport#vehicles" },
+            { title: "Group Travel Coordination", desc: "Share ride details and costs easily with your group.", icon: Briefcase, pageLink: "/transport#group" }
           ].map((item, i) => (
             <Card key={i} className="shadow-sm">
               <CardHeader>
@@ -359,6 +389,7 @@ export default function TransportPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">{item.desc} (Coming Soon)</p>
+                 {/* <Button variant="link" asChild className="px-0"><Link href={item.pageLink}>Learn More</Link></Button> */}
               </CardContent>
             </Card>
           ))}
