@@ -16,9 +16,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Headset, Mail, MessageSquare, User, Phone, HelpCircleIcon } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Headset, Mail, MessageSquare, User, Phone, HelpCircleIcon, Bot, Send, ShieldAlert } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { getSupportChatbotResponseAction } from "../actions"; // Assuming you'll create this
+import type { SupportChatbotOutput } from "@/ai/flows/support-chatbot-flow"; // Assuming this type
+import { toast } from "@/hooks/use-toast";
 
 const contactSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters."),
@@ -29,23 +33,58 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
+const chatbotSchema = z.object({
+  userQuery: z.string().min(5, "Query must be at least 5 characters.").max(500),
+});
+type ChatbotFormValues = z.infer<typeof chatbotSchema>;
+
 export default function ContactSupportPage() {
-  const form = useForm<ContactFormValues>({
+  const contactForm = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
-    defaultValues: {
-      fullName: "",
-      email: "",
-      subject: "",
-      message: "",
-    },
+    defaultValues: { fullName: "", email: "", subject: "", message: "" },
   });
 
-  function onSubmit(data: ContactFormValues) {
+  const chatbotForm = useForm<ChatbotFormValues>({
+    resolver: zodResolver(chatbotSchema),
+    defaultValues: { userQuery: "" },
+  });
+
+  const [chatHistory, setChatHistory] = useState<{ sender: 'user' | 'bot'; text: string }[]>([]);
+  const [isBotLoading, setIsBotLoading] = useState(false);
+  const [botError, setBotError] = useState<string | undefined>(undefined);
+
+  function onContactSubmit(data: ContactFormValues) {
     console.log("Contact Form Submitted:", data);
-    // Here you would typically send data to your backend (e.g., email service, CRM)
-    alert("Your message has been sent! Check console for data. We'll get back to you soon.");
-    form.reset();
+    toast({ title: "Message Sent!", description: "Your message has been submitted. We'll get back to you soon."});
+    contactForm.reset();
   }
+
+  async function onChatbotSubmit(data: ChatbotFormValues) {
+    setIsBotLoading(true);
+    setBotError(undefined);
+    setChatHistory(prev => [...prev, { sender: 'user', text: data.userQuery }]);
+    
+    const result = await getSupportChatbotResponseAction({ query: data.userQuery });
+    
+    if ("error" in result) {
+      setBotError(result.error);
+      setChatHistory(prev => [...prev, { sender: 'bot', text: `Error: ${result.error}` }]);
+    } else {
+      setChatHistory(prev => [...prev, { sender: 'bot', text: result.response }]);
+    }
+    setIsBotLoading(false);
+    chatbotForm.reset();
+  }
+
+  const handleSosClick = () => {
+    toast({
+      title: "SOS Activated",
+      description: "Emergency services are being contacted. This is a simulation. If this were a real emergency, appropriate actions would be taken.",
+      variant: "destructive",
+      duration: 10000, // Show longer
+    });
+     // In a real app, you would trigger actual emergency protocols here.
+  };
 
   return (
     <div className="space-y-8">
@@ -60,63 +99,52 @@ export default function ContactSupportPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* Contact Form Section */}
             <div>
               <h3 className="text-xl font-semibold text-foreground mb-4">Send us a Message</h3>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <Form {...contactForm}>
+                <form onSubmit={contactForm.handleSubmit(onContactSubmit)} className="space-y-6">
                   <FormField
-                    control={form.control}
+                    control={contactForm.control}
                     name="fullName"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-1"><User className="h-4 w-4 text-primary" />Full Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="John Doe" {...field} />
-                        </FormControl>
+                        <FormControl><Input placeholder="John Doe" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={contactForm.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-1"><Mail className="h-4 w-4 text-primary" />Email Address</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="you@example.com" {...field} />
-                        </FormControl>
+                        <FormControl><Input type="email" placeholder="you@example.com" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={contactForm.control}
                     name="subject"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-1"><MessageSquare className="h-4 w-4 text-primary" />Subject</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., Issue with booking #12345" {...field} />
-                        </FormControl>
+                        <FormControl><Input placeholder="e.g., Issue with booking #12345" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={contactForm.control}
                     name="message"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Your Message</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Please describe your issue or question in detail..."
-                            rows={5}
-                            {...field}
-                          />
-                        </FormControl>
+                        <FormControl><Textarea placeholder="Please describe your issue or question in detail..." rows={5} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -127,36 +155,80 @@ export default function ContactSupportPage() {
                 </form>
               </Form>
             </div>
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2">
-                  <Phone className="h-5 w-5 text-primary" /> Call Us
-                </h3>
-                <p className="text-muted-foreground">
-                  For urgent matters, you can call us directly:
-                </p>
-                <p className="text-lg font-semibold text-primary mt-1">1-800-ROAMFREE (1-800-762-6373)</p>
-                <p className="text-sm text-muted-foreground">(Available 9 AM - 6 PM, Mon-Fri)</p>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2">
-                  <HelpCircleIcon className="h-5 w-5 text-primary" /> FAQs & Self-Help
-                </h3>
-                <p className="text-muted-foreground">
-                  Many common questions are answered in our FAQ section.
-                </p>
-                <Button variant="outline" className="mt-2" asChild>
-                  <Link href="/faq">Visit our FAQ Page</Link>
-                </Button>
-                 <p className="text-sm text-muted-foreground mt-1">(FAQ page coming soon!)</p>
-              </div>
-               <div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">Our Office</h3>
-                <p className="text-muted-foreground">
-                  RoamFree Headquarters<br />
-                  123 Travel Lane<br />
-                  Adventure City, AC 54321
-                </p>
+
+            {/* Other Contact Options & Chatbot */}
+            <div className="space-y-8">
+              {/* AI Chatbot Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Bot className="h-6 w-6 text-primary" /> AI Powered Chat Support</CardTitle>
+                  <CardDescription>Get instant answers to common questions from our AI assistant.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 overflow-y-auto border rounded-md p-3 mb-4 space-y-2 bg-muted/30">
+                    {chatHistory.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Ask the AI assistant a question to start...</p>}
+                    {chatHistory.map((chat, index) => (
+                      <div key={index} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`p-2 rounded-lg max-w-[80%] ${chat.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
+                          <p className="text-sm whitespace-pre-line">{chat.text}</p>
+                        </div>
+                      </div>
+                    ))}
+                    {isBotLoading && <p className="text-sm text-muted-foreground">Bot is typing...</p>}
+                  </div>
+                  <Form {...chatbotForm}>
+                    <form onSubmit={chatbotForm.handleSubmit(onChatbotSubmit)} className="flex gap-2 items-start">
+                      <FormField
+                        control={chatbotForm.control}
+                        name="userQuery"
+                        render={({ field }) => (
+                          <FormItem className="flex-grow">
+                            <FormControl><Textarea placeholder="Type your question here..." rows={1} className="min-h-[40px]" {...field} /></FormControl>
+                            <FormMessage className="text-xs" />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="submit" disabled={isBotLoading} size="icon" className="h-10 w-10 shrink-0">
+                        <Send className="h-5 w-5" />
+                      </Button>
+                    </form>
+                  </Form>
+                  {botError && <p className="text-sm text-destructive mt-2">{botError}</p>}
+                </CardContent>
+              </Card>
+
+              {/* SOS Emergency Button */}
+              <Card className="border-destructive">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-destructive"><ShieldAlert className="h-6 w-6" /> Emergency SOS</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-3">For urgent help or emergencies during your trip, use the SOS feature. This is a simulated feature for demo purposes.</p>
+                  <Button variant="destructive" className="w-full" onClick={handleSosClick}>
+                    Activate SOS
+                  </Button>
+                </CardContent>
+              </Card>
+              
+              {/* Other contact methods */}
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2">
+                    <Phone className="h-5 w-5 text-primary" /> Call Us
+                  </h3>
+                  <p className="text-muted-foreground">For urgent matters: <span className="text-lg font-semibold text-primary">1-800-ROAMFREE</span></p>
+                  <p className="text-sm text-muted-foreground">(Available 9 AM - 6 PM, Mon-Fri)</p>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2">
+                    <HelpCircleIcon className="h-5 w-5 text-primary" /> FAQs & Self-Help
+                  </h3>
+                  <p className="text-muted-foreground">Many common questions are answered in our FAQ section.</p>
+                  <Button variant="outline" className="mt-2" asChild>
+                    <Link href="/faq">Visit our FAQ Page</Link>
+                  </Button>
+                  <p className="text-sm text-muted-foreground mt-1">(FAQ page coming soon!)</p>
+                </div>
               </div>
             </div>
           </div>
@@ -165,3 +237,5 @@ export default function ContactSupportPage() {
     </div>
   );
 }
+
+    

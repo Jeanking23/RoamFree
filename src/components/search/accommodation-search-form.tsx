@@ -16,9 +16,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, MapPin, Users, Search, ChevronsUpDown } from "lucide-react";
+import { CalendarIcon, MapPin, Users, Search, ChevronsUpDown, Building2 } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 
 const accommodationSearchSchema = z.object({
@@ -33,6 +34,7 @@ const accommodationSearchSchema = z.object({
   adults: z.coerce.number().min(1, "At least 1 adult is required").max(10, "Max 10 adults"),
   children: z.coerce.number().min(0, "Children cannot be negative").max(10, "Max 10 children"),
   rooms: z.coerce.number().min(1, "At least 1 room is required").max(5, "Max 5 rooms"),
+  propertyType: z.enum(["ANY", "HOTEL", "RENTAL", "LAND"]).default("ANY"),
 });
 
 type AccommodationSearchFormValues = z.infer<typeof accommodationSearchSchema>;
@@ -49,12 +51,14 @@ export default function AccommodationSearchForm() {
       adults: 2,
       children: 0,
       rooms: 1,
+      propertyType: "ANY",
     },
   });
 
   function onSubmit(values: AccommodationSearchFormValues) {
     console.log("Accommodation Search:", values);
     // Handle form submission, e.g., API call
+    // For now, just log. In a real app, this would navigate to a search results page.
   }
 
   const { watch } = form;
@@ -64,7 +68,7 @@ export default function AccommodationSearchForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end p-6 bg-card shadow-lg rounded-lg border">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end p-6 bg-card shadow-lg rounded-lg border">
         <FormField
           control={form.control}
           name="destination"
@@ -127,8 +131,8 @@ export default function AccommodationSearchForm() {
         
         <FormField
           control={form.control}
-          name="adults" // This field is mainly for the popover trigger, individual fields are handled inside
-          render={({ field }) => ( // We only use field for error display here if needed for the whole group
+          name="adults" // This field is mainly for the popover trigger
+          render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests</FormLabel>
               <Popover>
@@ -185,8 +189,31 @@ export default function AccommodationSearchForm() {
                   </div>
                 </PopoverContent>
               </Popover>
-              {/* Display general errors for the group if needed, or specific errors under each input via FormMessage */}
                <FormMessage>{form.formState.errors.adults?.message || form.formState.errors.children?.message || form.formState.errors.rooms?.message}</FormMessage>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="propertyType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Property Type</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="ANY">Any</SelectItem>
+                  <SelectItem value="HOTEL">Hotel</SelectItem>
+                  <SelectItem value="RENTAL">Rental (Vacation)</SelectItem>
+                  <SelectItem value="LAND">Land</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
             </FormItem>
           )}
         />

@@ -12,7 +12,13 @@ import {
   HelpCircle,
   Globe,
   Menu,
-  Building, // Added for mobile "List your property"
+  Building,
+  UserCircle,
+  LayoutDashboard,
+  Heart,
+  Award,
+  MessageSquare,
+  ShieldAlert, // SOS Icon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -21,6 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { toast } from '@/hooks/use-toast';
 
 
 const mainNavItems = [
@@ -42,12 +49,38 @@ const languages = [
 export default function Header() {
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const [currentHash, setCurrentHash] = useState('');
 
-  // Close popover on route change
+  useEffect(() => {
+    // This effect runs only on the client side
+    if (typeof window !== 'undefined') {
+      setCurrentHash(window.location.hash);
+    }
+  }, [pathname]); // Re-run if pathname changes, though hash changes might need more specific handling if not tied to path
+
   useEffect(() => {
     setIsPopoverOpen(false);
+    setIsMobileMenuOpen(false);
   }, [pathname]);
+
+  const handleSosClick = () => {
+    toast({
+      title: "SOS Activated",
+      description: "Emergency services are being contacted. (This is a simulation)",
+      variant: "destructive",
+    });
+  };
+
+  const isLinkActive = (itemHref: string) => {
+    if (itemHref.startsWith('/#')) {
+      // For hash links, check current path and hash
+      return pathname === '/' && currentHash === itemHref.substring(1);
+    }
+    // For regular links, just check pathname
+    return pathname === itemHref;
+  };
 
 
   return (
@@ -59,7 +92,10 @@ export default function Header() {
         </Link>
 
         {/* Desktop Top Right Items */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
+            <ShieldAlert className="h-6 w-6" />
+          </Button>
           <span className="text-sm font-medium text-foreground">USD</span>
           
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -88,6 +124,7 @@ export default function Header() {
                         onClick={() => {
                           setSelectedLanguage(lang);
                           setIsPopoverOpen(false);
+                          toast({ title: "Language Changed", description: `Language set to ${lang.name}` });
                         }}
                       >
                         <span className="mr-2">{lang.flag}</span> {lang.name}
@@ -115,8 +152,8 @@ export default function Header() {
             </Button>
           </Link>
 
-          <Link href="/list-property" className="text-sm font-medium text-foreground hover:text-primary px-3 py-1.5 rounded-sm">
-            List your property
+          <Link href="/dashboard" className="text-sm font-medium text-foreground hover:text-primary px-3 py-1.5 rounded-sm">
+            Owner Dashboard
           </Link>
           <Button
             variant="outline"
@@ -133,27 +170,30 @@ export default function Header() {
         </div>
 
         {/* Mobile Menu Trigger */}
-        <div className="md:hidden">
-          <Sheet>
+        <div className="md:hidden flex items-center gap-2">
+           <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
+            <ShieldAlert className="h-6 w-6" />
+          </Button>
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-background text-foreground w-[280px] p-0">
+            <SheetContent side="right" className="bg-background text-foreground w-[300px] p-0">
               <div className="flex flex-col h-full">
                 <div className="p-6 border-b">
                    <Link href="/" className="text-2xl font-extrabold text-primary">
                     RoamFree
                   </Link>
                 </div>
-                <nav className="flex-grow p-4 space-y-1">
+                <nav className="flex-grow p-4 space-y-1 overflow-y-auto">
                   {mainNavItems.map((item) => (
                     <Link
                       key={item.label}
                       href={item.href}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${
-                        pathname === item.href ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'
+                        isLinkActive(item.href) ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'
                       }`}
                     >
                       <item.icon className="h-5 w-5" />
@@ -161,18 +201,35 @@ export default function Header() {
                     </Link>
                   ))}
                   <Separator className="my-2" />
-                  <Link href="/list-property" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 text-foreground">
+                  <Link href="/profile" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/profile' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
+                    <UserCircle className="h-5 w-5" />
+                    My Profile
+                  </Link>
+                  <Link href="/dashboard" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/dashboard' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
+                    <LayoutDashboard className="h-5 w-5" />
+                    Owner Dashboard
+                  </Link>
+                  <Link href="/wishlist" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/wishlist' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
+                    <Heart className="h-5 w-5" />
+                    Wishlist
+                  </Link>
+                  <Link href="/loyalty" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/loyalty' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
+                    <Award className="h-5 w-5" />
+                    Loyalty Program
+                  </Link>
+                   <Separator className="my-2" />
+                  <Link href="/list-property" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/list-property' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
                     <Building className="h-5 w-5" />
                     List your property
                   </Link>
-                  <Link href="/contact-support" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 text-foreground">
-                    <HelpCircle className="h-5 w-5" />
+                  <Link href="/contact-support" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/contact-support' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
+                    <MessageSquare className="h-5 w-5" />
                     Customer Service
                   </Link>
-                  <div className="flex items-center gap-3 px-3 py-2.5 text-foreground">
-                    <Globe className="h-5 w-5" />
+                  <Button variant="ghost" onClick={() => { setIsMobileMenuOpen(false); setIsPopoverOpen(true);}} className="w-full justify-start flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 text-foreground">
+                     <Globe className="h-5 w-5" />
                     <span className="text-base font-medium">{selectedLanguage.flag} {selectedLanguage.code.toUpperCase()} / USD</span>
-                  </div>
+                  </Button>
 
                   <div className="pt-4 space-y-2 border-t mt-4">
                      <Button
@@ -204,7 +261,7 @@ export default function Header() {
                 href={item.href}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors
                   ${
-                    pathname === item.href
+                    isLinkActive(item.href)
                       ? 'bg-primary/10 border border-primary text-primary'
                       : 'text-muted-foreground hover:bg-muted/50 hover:text-primary'
                   }`}
@@ -214,8 +271,20 @@ export default function Header() {
               </Link>
             </li>
           ))}
+           <Separator orientation="vertical" className="h-6 mx-2" />
+            <Link href="/profile" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/profile' ? 'bg-primary/10 border border-primary text-primary' : 'text-muted-foreground hover:bg-muted/50 hover:text-primary'}`}>
+                <UserCircle className="h-5 w-5" /> Profile
+            </Link>
+             <Link href="/wishlist" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/wishlist' ? 'bg-primary/10 border border-primary text-primary' : 'text-muted-foreground hover:bg-muted/50 hover:text-primary'}`}>
+                <Heart className="h-5 w-5" /> Wishlist
+            </Link>
+             <Link href="/loyalty" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/loyalty' ? 'bg-primary/10 border border-primary text-primary' : 'text-muted-foreground hover:bg-muted/50 hover:text-primary'}`}>
+                <Award className="h-5 w-5" /> Loyalty
+            </Link>
         </ul>
       </nav>
     </header>
   );
 }
+
+    
