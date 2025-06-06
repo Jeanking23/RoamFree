@@ -85,7 +85,8 @@ export default function RentHomePage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-1"><MapPin className="h-4 w-4 text-primary" />Location</FormLabel>
-                        <FormControl><Input placeholder="e.g., City, Neighborhood, Zip" {...field} /></FormControl>
+                        <FormControl><Input placeholder="e.g., City, Neighborhood, Zip" {...field} value={field.value || ''} /></FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -105,6 +106,7 @@ export default function RentHomePage() {
                             <SelectItem value="CONDO">Condo</SelectItem>
                           </SelectContent>
                         </Select>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -114,7 +116,8 @@ export default function RentHomePage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-1"><DollarSign className="h-4 w-4 text-primary" />Min Rent/Month</FormLabel>
-                        <FormControl><Input type="number" placeholder="e.g., 1500" {...field} /></FormControl>
+                        <FormControl><Input type="number" placeholder="e.g., 1500" {...field} value={field.value || ''} /></FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -124,7 +127,8 @@ export default function RentHomePage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-1"><DollarSign className="h-4 w-4 text-primary" />Max Rent/Month</FormLabel>
-                        <FormControl><Input type="number" placeholder="e.g., 3000" {...field} /></FormControl>
+                        <FormControl><Input type="number" placeholder="e.g., 3000" {...field} value={field.value || ''} /></FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -144,6 +148,7 @@ export default function RentHomePage() {
                                 <SelectItem value="4">4+</SelectItem>
                             </SelectContent>
                         </Select>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -153,7 +158,7 @@ export default function RentHomePage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-1"><Smile className="h-4 w-4 text-primary" />Amenities (Keywords)</FormLabel>
-                        <FormControl><Input placeholder="e.g., Pet-friendly, In-unit laundry" {...field} /></FormControl>
+                        <FormControl><Input placeholder="e.g., Pet-friendly, In-unit laundry" {...field} value={field.value || ''} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
