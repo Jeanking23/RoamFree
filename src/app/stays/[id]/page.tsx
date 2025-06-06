@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Input } from '@/components/ui/input'; // Added Input import
 
 // Mock data - in a real app, you'd fetch this based on params.id
 const mockAccommodation = {
@@ -68,7 +69,7 @@ export default function AccommodationProfilePage() {
     toast({ title: "Booking Initiated (Demo)", description: `Proceeding to payment for ${mockAccommodation.name}. This is a placeholder.` });
   };
 
-  const handleContactHost = ()_ => {
+  const handleContactHost = () => {
     toast({ title: "Contact Host (Demo)", description: `Opening chat with ${mockAccommodation.host.name}. This is a placeholder.`});
   }
   
@@ -322,7 +323,7 @@ export default function AccommodationProfilePage() {
 
 
 function HostInfo() {
-  const handleContactHost = ()_ => {
+  const handleContactHost = () => {
     toast({ title: "Contact Host (Demo)", description: `Opening chat with ${mockAccommodation.host.name}. This is a placeholder.`});
   }
   return (
