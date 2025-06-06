@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -15,14 +16,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Wand2, Lightbulb } from "lucide-react";
+import { Wand2, Lightbulb, User } from "lucide-react";
 import { getPoiRecommendationsAction } from "@/app/actions";
-import type { RecommendPoiOutput } from "@/ai/flows/poi-recommendation";
+import type { RecommendPoiOutput, RecommendPoiInput } from "@/ai/flows/poi-recommendation";
 import POIRecommendationResults from "./poi-recommendation-results";
 
 const poiRecommendationSchema = z.object({
   accommodationDescription: z.string().min(10, "Please provide a more detailed description (min 10 characters).").max(1000),
   userReviews: z.string().min(10, "Please provide some user reviews (min 10 characters).").max(1000),
+  userInterests: z.string().optional().describe("Optional user interests to refine recommendations."),
 });
 
 type POIRecommendationFormValues = z.infer<typeof poiRecommendationSchema>;
@@ -37,6 +39,7 @@ export default function POIRecommendationForm() {
     defaultValues: {
       accommodationDescription: "",
       userReviews: "",
+      userInterests: "",
     },
   });
 
@@ -45,7 +48,13 @@ export default function POIRecommendationForm() {
     setError(undefined);
     setRecommendations(undefined);
 
-    const result = await getPoiRecommendationsAction(values);
+    const input: RecommendPoiInput = {
+      accommodationDescription: values.accommodationDescription,
+      userReviews: values.userReviews,
+      ...(values.userInterests && { userInterests: values.userInterests }), // Conditionally add userInterests
+    };
+    
+    const result = await getPoiRecommendationsAction(input);
     
     if ("error" in result) {
       setError(result.error);
@@ -62,7 +71,7 @@ export default function POIRecommendationForm() {
         AI Powered Recommendations
       </h3>
       <p className="text-muted-foreground mb-4">
-        Get suggestions for points of interest near your chosen accommodation.
+        Get suggestions for points of interest near your chosen accommodation, tailored to your interests.
       </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -75,7 +84,7 @@ export default function POIRecommendationForm() {
                 <FormControl>
                   <Textarea
                     placeholder="e.g., A cozy beachfront villa with stunning ocean views and a private pool."
-                    rows={4}
+                    rows={3}
                     {...field}
                   />
                 </FormControl>
@@ -91,16 +100,36 @@ export default function POIRecommendationForm() {
             name="userReviews"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>User Reviews & Ratings</FormLabel>
+                <FormLabel>User Reviews & Ratings (of Accommodation)</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="e.g., Loved the location, very close to historical sites. Rating: 4.5/5."
-                    rows={4}
+                    rows={3}
                     {...field}
                   />
                 </FormControl>
                 <FormDescription>
                   Provide some user reviews or ratings for context.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="userInterests"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-1"><User className="h-4 w-4 text-primary" />Your Interests (Optional)</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="e.g., Interested in history, nature, local cuisine, nightlife."
+                    rows={2}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Tell us your interests to get more personalized recommendations.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

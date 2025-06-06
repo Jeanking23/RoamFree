@@ -6,12 +6,13 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Users, Star, MapPin, CreditCard, MessageSquare, ShieldCheck, Camera, Share2, Heart, AlertTriangle, Car, Clock } from 'lucide-react';
+import { CalendarDays, Users, Star, MapPin, CreditCard, MessageSquare, ShieldCheck, Camera, Share2, Heart, AlertTriangle, Car, Clock, CheckCircle, Ticket, Landmark as LandmarkIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 // Mock data - in a real app, you'd fetch this based on params.id
 const mockAccommodation = {
@@ -40,6 +41,12 @@ const mockAccommodation = {
   policies: { checkIn: "After 3:00 PM", checkOut: "Before 11:00 AM", cancellation: "Flexible - Free cancellation up to 5 days before check-in." }
 };
 
+const mockNearbyAttractions = [
+  { id: "attr1", name: "Malibu Pier", category: "Landmark", image: "https://placehold.co/300x200.png?text=Malibu+Pier", dataAiHint:"pier ocean", distance: "0.5 miles" },
+  { id: "attr2", name: "El Matador State Beach", category: "Nature", image: "https://placehold.co/300x200.png?text=El+Matador+Beach", dataAiHint:"beach cliffs", distance: "3 miles" },
+  { id: "attr3", name: "Nobu Malibu", category: "Dining", image: "https://placehold.co/300x200.png?text=Nobu+Restaurant", dataAiHint:"fancy restaurant", distance: "1 mile" },
+];
+
 export default function AccommodationProfilePage() {
   const params = useParams();
   const router = useRouter();
@@ -48,9 +55,6 @@ export default function AccommodationProfilePage() {
   const [checkInDate, setCheckInDate] = useState<Date | undefined>();
   const [checkOutDate, setCheckOutDate] = useState<Date | undefined>();
 
-  // In a real app, fetch data based on params.id
-  // For now, we use mockAccommodation regardless of ID.
-  // Add useEffect to handle if no accommodation found for a real ID.
   useEffect(() => {
     if (params.id !== mockAccommodation.id) {
       // console.warn("Displaying mock data as ID doesn't match. In a real app, fetch or show 404.");
@@ -61,7 +65,6 @@ export default function AccommodationProfilePage() {
 
   const handleBookNow = () => {
     toast({ title: "Booking Initiated (Demo)", description: `Proceeding to payment for ${mockAccommodation.name}. This is a placeholder.` });
-    // Simulate payment or navigation to a payment page
   };
 
   const handleContactHost = ()_ => {
@@ -100,13 +103,12 @@ export default function AccommodationProfilePage() {
   };
 
   if (!mockAccommodation) {
-    return <div>Loading accommodation details...</div>; // Or a 404 component
+    return <div>Loading accommodation details...</div>; 
   }
 
   return (
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
-        {/* Header Section */}
         <CardHeader className="pb-4">
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-2">
             <div>
@@ -128,7 +130,6 @@ export default function AccommodationProfilePage() {
           </div>
         </CardHeader>
 
-        {/* Image Gallery */}
         <CardContent className="px-0 md:px-6 pt-0">
           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2 md:max-h-[500px] overflow-hidden rounded-md">
             <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer" onClick={() => setCurrentImage(mockAccommodation.photos[0])}>
@@ -152,9 +153,7 @@ export default function AccommodationProfilePage() {
         
         <Separator className="my-6" />
 
-        {/* Main Content Area (Description, Booking, Host) */}
         <CardContent className="grid md:grid-cols-3 gap-8">
-          {/* Left Column: Description & Amenities */}
           <div className="md:col-span-2 space-y-6">
             <div>
               <h3 className="text-2xl font-semibold mb-2">About this {mockAccommodation.type.toLowerCase()}</h3>
@@ -174,14 +173,36 @@ export default function AccommodationProfilePage() {
               <p className="text-sm text-muted-foreground"><strong>Check-out:</strong> {mockAccommodation.policies.checkOut}</p>
               <p className="text-sm text-muted-foreground"><strong>Cancellation:</strong> {mockAccommodation.policies.cancellation}</p>
             </div>
-            <div className="md:hidden"> {/* Show host info earlier on mobile */}
+            <div className="md:hidden"> 
               <Separator className="my-6" />
               <HostInfo />
               <Separator className="my-6" />
             </div>
+             {/* Nearby Attractions Section */}
+            <div>
+              <h3 className="text-2xl font-semibold my-4">Nearby Attractions</h3>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {mockNearbyAttractions.map(attraction => (
+                  <Card key={attraction.id} className="overflow-hidden">
+                    <Link href={`/attractions/${attraction.id}`} className="block relative w-full h-32 group">
+                        <Image src={attraction.image} alt={attraction.name} layout="fill" objectFit="cover" data-ai-hint={attraction.dataAiHint}/>
+                         <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                            <LandmarkIcon className="h-8 w-8 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
+                        </div>
+                    </Link>
+                    <CardHeader className="p-3">
+                      <CardTitle className="text-base hover:text-primary">
+                        <Link href={`/attractions/${attraction.id}`}>{attraction.name}</Link>
+                      </CardTitle>
+                      <CardDescription className="text-xs">{attraction.category} &bull; {attraction.distance}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+               <Button variant="link" asChild className="mt-2 px-0"><Link href="/attractions">Explore more attractions</Link></Button>
+            </div>
           </div>
 
-          {/* Right Column: Booking Card & Host Info */}
           <div className="md:col-span-1 space-y-6">
             <Card className="shadow-md border sticky top-24">
               <CardHeader>
@@ -189,7 +210,6 @@ export default function AccommodationProfilePage() {
                 <CardDescription>{mockAccommodation.availability}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Date pickers placeholder */}
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label htmlFor="checkin" className="block text-sm font-medium text-muted-foreground">Check-in</label>
@@ -211,7 +231,7 @@ export default function AccommodationProfilePage() {
               </CardContent>
             </Card>
 
-            <div className="hidden md:block"> {/* Hide host info here on mobile */}
+            <div className="hidden md:block">
               <HostInfo />
             </div>
 
@@ -236,7 +256,6 @@ export default function AccommodationProfilePage() {
         
         <Separator className="my-6" />
 
-        {/* Reviews Section */}
         <CardContent>
           <h3 className="text-2xl font-semibold mb-4">Guest Reviews ({mockAccommodation.reviewsCount})</h3>
           <div className="space-y-6">
@@ -297,5 +316,3 @@ function HostInfo() {
     </Card>
   );
 }
-
-    

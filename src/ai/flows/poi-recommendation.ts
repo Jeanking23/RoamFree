@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -16,6 +17,7 @@ const RecommendPoiInputSchema = z.object({
     .string()
     .describe('Description of the selected accommodation.'),
   userReviews: z.string().describe('User reviews and ratings for the accommodation.'),
+  userInterests: z.string().optional().describe('Optional: User interests like "history, nature, local cuisine" to refine POI suggestions.'),
 });
 export type RecommendPoiInput = z.infer<typeof RecommendPoiInputSchema>;
 
@@ -23,7 +25,7 @@ const RecommendPoiOutputSchema = z.object({
   poiRecommendations: z
     .string()
     .describe(
-      'A list of recommended points of interest near the accommodation, considering user reviews and ratings.'
+      'A list of recommended points of interest near the accommodation, considering user reviews, ratings, and optionally user interests.'
     ),
 });
 export type RecommendPoiOutput = z.infer<typeof RecommendPoiOutputSchema>;
@@ -37,6 +39,9 @@ const prompt = ai.definePrompt({
   input: {schema: RecommendPoiInputSchema},
   output: {schema: RecommendPoiOutputSchema},
   prompt: `You are a travel expert. Based on the description of the accommodation and user reviews, suggest points of interest near the lodging.
+{{#if userInterests}}
+Also consider the user's stated interests: {{{userInterests}}}.
+{{/if}}
 
 Accommodation Description: {{{accommodationDescription}}}
 User Reviews and Ratings: {{{userReviews}}}

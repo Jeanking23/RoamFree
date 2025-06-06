@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { ClipboardList, Home, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Calculator, Search } from 'lucide-react';
+import { ClipboardList, Home, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Calculator, Search, Smile, FileText, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from '@/hooks/use-toast';
+import Image from 'next/image';
 
 const mortgageSchema = z.object({
   loanAmount: z.coerce.number().positive("Loan amount must be positive."),
@@ -29,6 +30,7 @@ const propertySearchSchema = z.object({
   propertyType: z.enum(["ANY", "HOUSE", "LAND", "APARTMENT"]).default("ANY").optional(),
   minSize: z.coerce.number().optional(), // sqft or acres
   zoning: z.string().optional(),
+  amenities: z.string().optional(), // Added amenities filter
 });
 
 type PropertySearchFormValues = z.infer<typeof propertySearchSchema>;
@@ -82,7 +84,7 @@ export default function BuyPropertyPage() {
     toast({ title: "Virtual Walkthrough (Demo)", description: `Starting virtual walkthrough for ${propertyName}. This is a placeholder.`});
   };
    const handleContactAgent = (propertyName: string) => {
-    toast({ title: "Contacting Agent (Demo)", description: `Connecting you with an agent for ${propertyName}.` });
+    toast({ title: "Contacting Agent (Demo)", description: `Connecting you with an agent for ${propertyName}. Chat, Call or Schedule Appointment options would appear here.` });
   };
 
 
@@ -106,7 +108,7 @@ export default function BuyPropertyPage() {
             </CardHeader>
             <CardContent>
               <Form {...propertySearchForm}>
-                <form onSubmit={propertySearchForm.handleSubmit(onPropertySearchSubmit)} className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+                <form onSubmit={propertySearchForm.handleSubmit(onPropertySearchSubmit)} className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                   <FormField
                     control={propertySearchForm.control}
                     name="location"
@@ -175,6 +177,16 @@ export default function BuyPropertyPage() {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={propertySearchForm.control}
+                    name="amenities"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-1"><Smile className="h-4 w-4 text-primary" />Amenities (Keywords)</FormLabel>
+                        <FormControl><Input placeholder="e.g., Pool, Garage" {...field} /></FormControl>
+                      </FormItem>
+                    )}
+                  />
                   <Button type="submit" className="md:col-span-2 lg:col-span-1 bg-accent hover:bg-accent/90 text-accent-foreground self-end">
                     <Search className="mr-2 h-4 w-4" /> Search Properties
                   </Button>
@@ -188,7 +200,7 @@ export default function BuyPropertyPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map(prop => (
               <Card key={prop.id} className="overflow-hidden">
-                <img src={prop.image} alt={prop.name} data-ai-hint={prop.dataAiHint} className="w-full h-48 object-cover"/>
+                <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-48 object-cover" data-ai-hint={prop.dataAiHint}/>
                 <CardHeader>
                   <CardTitle>{prop.name}</CardTitle>
                   <CardDescription className="text-primary font-semibold text-lg">${prop.price.toLocaleString()}</CardDescription>
@@ -271,10 +283,17 @@ export default function BuyPropertyPage() {
               )}
             </CardContent>
           </Card>
+
+          <div className="mt-8 p-4 border rounded-md bg-muted/30">
+            <h4 className="font-semibold text-foreground mb-2">Coming Soon:</h4>
+            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+              <li><FileText className="inline h-4 w-4 mr-1 text-primary"/>Secure Document Upload & E-signature for contracts.</li>
+              <li><Star className="inline h-4 w-4 mr-1 text-primary"/>Verified Agent Rating & Review System.</li>
+            </ul>
+          </div>
+
         </CardContent>
       </Card>
     </div>
   );
 }
-
-    
