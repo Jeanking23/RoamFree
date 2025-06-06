@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from 'react';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge'; // Added import
 
 const carListings = [
   {
@@ -56,7 +57,7 @@ const carListings = [
     features: ["High Roof", "Ample Cargo Space", "Comfortable for Groups"],
     rating: 4.9,
     reviews: 70,
-    insuranceIncluded: false, 
+    insuranceIncluded: false,
     ecoFriendly: false,
   }
 ];
@@ -147,7 +148,7 @@ export default function CarRentPage() {
                     <Car className="h-4 w-4 mr-2 text-primary" /> {car.transmission}
                   </div>
                   <ul className="space-y-1 text-sm">
-                    {car.features.slice(0,2).map(feature => ( 
+                    {car.features.slice(0,2).map(feature => (
                        <li key={feature} className="flex items-center">
                          <CheckCircle className="h-4 w-4 mr-2 text-green-500 flex-shrink-0" /> {feature}
                        </li>
