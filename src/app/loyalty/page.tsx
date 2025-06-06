@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Award, Gift, Users, Copy, CheckCircle, DollarSign, ShoppingBag } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label'; // Added import
 import { toast } from '@/hooks/use-toast';
 
 // Helper CarFront icon if not available globally
