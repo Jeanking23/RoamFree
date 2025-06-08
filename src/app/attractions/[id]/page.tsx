@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Star, MapPin, Ticket, MessageSquare, Share2, Heart, AlertTriangle, Clock, Users, ExternalLink, Camera } from 'lucide-react';
+import { CalendarDays, Star, MapPin, Ticket, MessageSquare, Share2, Heart, AlertTriangle, Clock, Users, ExternalLink, Camera, Users2, Wifi, Moon, Sun } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
@@ -34,7 +34,9 @@ const mockAttractionDetails = {
     { id: "r1", user: "Chris P.", rating: 5, comment: "Incredible collection and beautifully curated. Spent the whole afternoon here!", date: "2024-04-10" },
     { id: "r2", user: "Jordan B.", rating: 4, comment: "Great museum, very informative. Some sections were a bit crowded.", date: "2024-03-22" },
   ],
-  website: "https://examplemuseum.com" // Placeholder
+  website: "https://examplemuseum.com", // Placeholder
+  expectedCrowdLevel: "Moderate", // New field
+  contactInfo: "info@examplemuseum.com / +1-555-ART-MUSEUM" // New field
 };
 
 export default function AttractionProfilePage() {
@@ -49,15 +51,13 @@ export default function AttractionProfilePage() {
     // This is just to simulate fetching data based on ID, or if ID doesn't match mock
     if (params.id !== mockAttractionDetails.id) {
         // console.warn("Displaying mock data for 'City Museum of Art' as ID doesn't match or is generic.");
-        // Potentially, you could fetch data here based on params.id
-        // or redirect if the ID is invalid / not found.
     }
     setCurrentImage(mockAttractionDetails.photos[0]);
   }, [params.id]);
 
 
   const handleBookTickets = () => {
-    toast({ title: "Book Tickets (Demo)", description: `Proceeding to ticket booking for ${mockAttractionDetails.name}.` });
+    toast({ title: "Book Tickets (Demo)", description: `Proceeding to ticket booking for ${mockAttractionDetails.name}. QR code ticketing would be simulated here.` });
   };
   
   const handleShare = () => {
@@ -78,12 +78,19 @@ export default function AttractionProfilePage() {
     toast({ title: isFavorited ? "Removed from Wishlist" : "Added to Wishlist" });
   };
    const handleArView = () => {
-    toast({ title: "Augmented Reality View", description: "AR landmark identification feature is under development. (Placeholder)" });
+    toast({ title: "Augmented Reality View", description: "AR landmark identification feature is under development. (Placeholder for historical facts, directions)" });
   };
 
 
-  if (!mockAttractionDetails) { // Or a check against a fetched object
-    return <div>Loading attraction details...</div>; // Or a 404 component
+  if (!mockAttractionDetails) { 
+    return <div>Loading attraction details...</div>; 
+  }
+
+  const getCrowdLevelIcon = (level: string) => {
+    if (level === "Low") return <Users className="inline h-4 w-4 mr-1 text-green-500"/>;
+    if (level === "Moderate") return <Users className="inline h-4 w-4 mr-1 text-yellow-500"/>;
+    if (level === "High") return <Users2 className="inline h-4 w-4 mr-1 text-red-500"/>;
+    return <Users className="inline h-4 w-4 mr-1 text-muted-foreground"/>;
   }
 
   return (
@@ -143,6 +150,8 @@ export default function AttractionProfilePage() {
               <h3 className="text-xl font-semibold mb-2">Details</h3>
               <p className="text-sm text-muted-foreground"><strong><Clock className="inline h-4 w-4 mr-1"/>Opening Hours:</strong> {mockAttractionDetails.openingHours}</p>
               <p className="text-sm text-muted-foreground"><strong><Ticket className="inline h-4 w-4 mr-1"/>Ticket Price:</strong> {mockAttractionDetails.ticketPrice}</p>
+              <p className="text-sm text-muted-foreground"><strong>{getCrowdLevelIcon(mockAttractionDetails.expectedCrowdLevel)}Expected Crowd:</strong> {mockAttractionDetails.expectedCrowdLevel}</p>
+              <p className="text-sm text-muted-foreground"><strong><MessageSquare className="inline h-4 w-4 mr-1"/>Contact:</strong> {mockAttractionDetails.contactInfo}</p>
               {mockAttractionDetails.website && 
                 <p className="text-sm text-muted-foreground"><strong><ExternalLink className="inline h-4 w-4 mr-1"/>Website:</strong> <a href={mockAttractionDetails.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{mockAttractionDetails.website}</a></p>
               }
@@ -154,6 +163,15 @@ export default function AttractionProfilePage() {
                   <Badge key={amenity} variant="secondary">{amenity}</Badge>
                 ))}
               </div>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-3">Visitor Photo Gallery (Demo)</h3>
+              <div className="grid grid-cols-3 gap-2">
+                 {mockAttractionDetails.photos.slice(1,4).map((photo, i) => (
+                    <Image key={`gallery-${i}`} src={photo.src} alt={photo.alt} width={150} height={100} className="rounded-md object-cover" data-ai-hint={photo.dataAiHint}/>
+                 ))}
+              </div>
+               <p className="text-xs text-muted-foreground mt-1">Curated photos from visitors.</p>
             </div>
           </div>
 
@@ -170,7 +188,7 @@ export default function AttractionProfilePage() {
                 <Button variant="outline" className="w-full">
                   <MapPin className="mr-2 h-4 w-4" /> Get Directions (Demo)
                 </Button>
-                 <p className="text-xs text-muted-foreground text-center">Ticket booking is a demo feature.</p>
+                 <p className="text-xs text-muted-foreground text-center">Ticket booking is a demo feature. QR codes for entry coming soon.</p>
               </CardContent>
             </Card>
           </div>
@@ -199,9 +217,22 @@ export default function AttractionProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">{review.comment}</p>
+                   <Button variant="link" size="sm" className="px-0 h-auto text-xs">Translate (Demo)</Button>
                 </CardContent>
               </Card>
             ))}
+             <Card className="bg-muted/30">
+                <CardHeader className="pb-2">
+                     <p className="font-semibold">Top Tips from Travelers (Demo)</p>
+                </CardHeader>
+                <CardContent>
+                    <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                        <li>"Go early to avoid crowds, especially on weekends."</li>
+                        <li>"The audio guide is worth it for a richer experience."</li>
+                        <li>"Check out the special exhibit on the second floor!"</li>
+                    </ul>
+                </CardContent>
+            </Card>
             <Button variant="outline">Show all {mockAttractionDetails.reviewsCount} reviews</Button>
           </div>
         </CardContent>

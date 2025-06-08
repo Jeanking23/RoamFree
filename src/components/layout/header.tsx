@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import {
   BedDouble,
-  Car,
+  Car, // Changed from Plane to Car
   KeyRound,
   Landmark,
   Home,
@@ -21,8 +21,7 @@ import {
   ShieldAlert,
   Users2, 
   Truck, 
-  Plane,
-  CarFront as CarIcon
+  CarFront as CarSaleIcon // Renamed for clarity if Car is used for transport
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -36,10 +35,10 @@ import { toast } from '@/hooks/use-toast';
 
 const mainNavItems = [
   { href: '/#stays', label: 'Stays', icon: BedDouble },
-  { href: '/transport', label: 'Transport', icon: Plane },
+  { href: '/transport', label: 'Transport', icon: Car }, // Icon updated here
   { href: '/courier-delivery', label: 'Courier', icon: Truck },
   { href: '/car-rent', label: 'Car Rent', icon: KeyRound },
-  { href: '/cars-for-sale', label: 'Cars for Sale', icon: CarIcon },
+  { href: '/cars-for-sale', label: 'Cars for Sale', icon: CarSaleIcon },
   { href: '/attractions', label: 'Attractions', icon: Landmark },
   { href: '/rent-home', label: 'Rent Home', icon: Home },
   { href: '/buy-property', label: 'Buy Land/House', icon: ClipboardList },
@@ -89,14 +88,11 @@ export default function Header() {
 
   const isLinkActive = (itemHref: string) => {
     if (!hasMounted) { 
-      // During server render and initial client render before mount,
-      // hash-based links won't be considered active based on hash.
       if (itemHref.startsWith('/#')) {
-        return pathname === '/'; // Only check pathname for hash links initially
+        return pathname === '/'; 
       }
       return pathname === itemHref || pathname.startsWith(itemHref + '/');
     }
-    // After mount, use currentHash
     if (itemHref.startsWith('/#')) {
       return pathname === '/' && currentHash === itemHref.substring(1);
     }
@@ -310,4 +306,3 @@ export default function Header() {
     </header>
   );
 }
-
