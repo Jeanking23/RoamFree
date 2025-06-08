@@ -35,9 +35,9 @@ import {
   Accessibility,
   Baby,
   Dog,
-  Truck, // For Intercity
-  Ship, // For Intercity
-  Train, // For Intercity
+  Truck, 
+  Ship, 
+  Train, 
 } from 'lucide-react';
 import Link from 'next/link';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -135,7 +135,7 @@ export default function TransportPage() {
       title: "Price Estimated!",
       description: `Your ride from ${data.pickupLocation} to ${data.dropoffLocation} is estimated at $${randomPrice}. Total time: ${randomTime + waitTime} mins. ${data.scheduleRide ? 'Your ride is scheduled. Reminders will be sent (Demo).' : ''}`,
     });
-    setShowRatingForm(true); // Show rating form after "ride"
+    setShowRatingForm(true); 
   }
   
   function onIntercitySubmit(data: IntercityTransportFormValues) {
@@ -207,14 +207,14 @@ export default function TransportPage() {
                   <Form {...rideForm}>
                     <form onSubmit={rideForm.handleSubmit(onRideSubmit)} className="space-y-6">
                       <div className="relative space-y-4">
-                        <FormField control={rideForm.control} name="pickupLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><CircleDot className="h-5 w-5 text-primary" /> Pickup Location</FormLabel><div className="flex items-center gap-2"><FormControl><Input placeholder="Enter pickup location" {...field} /></FormControl><Button type="button" variant="outline" size="icon" onClick={handleGeolocate} disabled={isLocating} aria-label="Use current location">{isLocating ? <Clock className="h-5 w-5 animate-spin" /> : <LocateFixed className="h-5 w-5" />}</Button></div><FormMessage /></FormItem>)} />
+                        <FormField control={rideForm.control} name="pickupLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><CircleDot className="h-5 w-5 text-primary" /> Pickup Location</FormLabel><div className="flex items-center gap-2"><FormControl><Input placeholder="Enter pickup location" {...field} value={field.value || ''} /></FormControl><Button type="button" variant="outline" size="icon" onClick={handleGeolocate} disabled={isLocating} aria-label="Use current location">{isLocating ? <Clock className="h-5 w-5 animate-spin" /> : <LocateFixed className="h-5 w-5" />}</Button></div><FormMessage /></FormItem>)} />
                         <div className="absolute left-[9px] top-[calc(2.5rem+10px)] h-[calc(100%-5rem-20px)] w-0.5 bg-gray-300 -translate-y-1/2 z-0"></div>
-                        <FormField control={rideForm.control} name="dropoffLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><SquareDot className="h-5 w-5 text-primary" /> Dropoff Location</FormLabel><FormControl><Input placeholder="Enter dropoff location" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={rideForm.control} name="dropoffLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><SquareDot className="h-5 w-5 text-primary" /> Dropoff Location</FormLabel><FormControl><Input placeholder="Enter dropoff location" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField control={rideForm.control} name="pickupDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Pickup Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={(date) => { field.onChange(date); if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) { const currentTime = format(new Date(), "HH:mm"); if (!getValues("pickupTime") || getValues("pickupTime")! < currentTime) { setValue("pickupTime", currentTime, {shouldValidate: true}); } } }} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-                        <FormField control={rideForm.control} name="pickupTime" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</FormLabel><FormControl><Input type="time" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={rideForm.control} name="pickupTime" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</FormLabel><FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
                       </div>
                       <FormField control={rideForm.control} name="scheduleRide" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Schedule this ride in advance</FormLabel></FormItem>)} />
                       
@@ -276,12 +276,12 @@ export default function TransportPage() {
                     <Form {...intercityForm}>
                         <form onSubmit={intercityForm.handleSubmit(onIntercitySubmit)} className="space-y-4">
                             <div className="grid md:grid-cols-2 gap-4">
-                                <FormField control={intercityForm.control} name="originCity" render={({ field }) => (<FormItem><FormLabel>Origin City/Airport</FormLabel><FormControl><Input placeholder="e.g., New York" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField control={intercityForm.control} name="destinationCity" render={({ field }) => (<FormItem><FormLabel>Destination City/Airport</FormLabel><FormControl><Input placeholder="e.g., Boston" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={intercityForm.control} name="originCity" render={({ field }) => (<FormItem><FormLabel>Origin City/Airport</FormLabel><FormControl><Input placeholder="e.g., New York" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={intercityForm.control} name="destinationCity" render={({ field }) => (<FormItem><FormLabel>Destination City/Airport</FormLabel><FormControl><Input placeholder="e.g., Boston" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
                             </div>
                              <FormField control={intercityForm.control} name="departureDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Departure Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
                             <div className="grid md:grid-cols-2 gap-4">
-                                <FormField control={intercityForm.control} name="passengers" render={({ field }) => (<FormItem><FormLabel>Passengers</FormLabel><FormControl><Input type="number" min="1" placeholder="1" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={intercityForm.control} name="passengers" render={({ field }) => (<FormItem><FormLabel>Passengers</FormLabel><FormControl><Input type="number" min="1" placeholder="1" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                                 <FormField control={intercityForm.control} name="serviceType" render={({ field }) => ( <FormItem><FormLabel>Service Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select service" /></SelectTrigger></FormControl><SelectContent><SelectItem value="SHUTTLE">Shared Shuttle</SelectItem><SelectItem value="PRIVATE_CAR">Private Car (Chauffeur)</SelectItem><SelectItem value="LUXURY_VAN">Luxury Van</SelectItem><SelectItem value="TRAIN">Train Booking (Demo)</SelectItem><SelectItem value="BUS">Bus Booking (Demo)</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
                             </div>
                             <Button type="submit" className="w-full">Search Intercity Transport (Demo)</Button>
