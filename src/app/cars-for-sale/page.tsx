@@ -151,7 +151,7 @@ export default function CarsForSalePage() {
            <div className="mt-8 text-center">
             <Button variant="outline" asChild>
                 <Link href="/dashboard"><Users className="mr-2 h-4 w-4"/> List Your Car for Sale (Demo)</Link>
-            </Link>
+            </Button>
            </div>
         </CardContent>
       </Card>
