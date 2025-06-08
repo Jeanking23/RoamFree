@@ -77,7 +77,7 @@ function AiTripPlannerSection() {
                 <FormItem>
                   <FormLabel className="flex items-center gap-1"><MapPinIcon className="h-4 w-4 text-primary" />Destination</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Rome, Italy" {...field} />
+                    <Input placeholder="e.g., Rome, Italy" {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -90,7 +90,7 @@ function AiTripPlannerSection() {
                 <FormItem>
                   <FormLabel>Duration (days)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="e.g., 7" {...field} />
+                    <Input type="number" placeholder="e.g., 7" {...field} value={field.value || 1} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -107,6 +107,7 @@ function AiTripPlannerSection() {
                       placeholder="e.g., Interested in ancient history, art museums, authentic local food, and some relaxation. Not a fan of crowded tourist traps."
                       rows={4}
                       {...field}
+                      value={field.value || ''}
                     />
                   </FormControl>
                   <FormMessage />

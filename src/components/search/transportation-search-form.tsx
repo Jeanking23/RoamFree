@@ -19,8 +19,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, MapPin, Clock, Car, CarFront, Search, Plane } from "lucide-react"; // Added Plane
-import { toast } from "@/hooks/use-toast"; // Added toast
+import { CalendarIcon, MapPin, Clock, Car, CarFront, Search, Plane } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const rideBookingSchema = z.object({
   pickupLocation: z.string().min(1, "Pickup location is required"),
@@ -36,7 +36,7 @@ const rentalCarSchema = z.object({
   pickupTime: z.string().min(1, "Pickup time is required (e.g., HH:MM)"),
   dropoffDate: z.date({ required_error: "Dropoff date is required." }),
   dropoffTime: z.string().min(1, "Dropoff time is required (e.g., HH:MM)"),
-}).refine(data => !data.dropoffDate || !data.pickupDate || data.dropoffDate >= data.pickupDate, { // Adjusted refine
+}).refine(data => !data.dropoffDate || !data.pickupDate || data.dropoffDate >= data.pickupDate, {
   message: "Dropoff date must be on or after pickup date.",
   path: ["dropoffDate"],
 });
@@ -78,7 +78,7 @@ function RideBookingForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Pickup Location</FormLabel>
-                <FormControl><Input placeholder="Enter pickup address" {...field} /></FormControl>
+                <FormControl><Input placeholder="Enter pickup address" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -89,7 +89,7 @@ function RideBookingForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Dropoff Location</FormLabel>
-                <FormControl><Input placeholder="Enter dropoff address" {...field} /></FormControl>
+                <FormControl><Input placeholder="Enter dropoff address" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -124,7 +124,7 @@ function RideBookingForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</FormLabel>
-                <FormControl><Input type="time" {...field} /></FormControl>
+                <FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -158,7 +158,7 @@ function RentalCarForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Pickup Location</FormLabel>
-                <FormControl><Input placeholder="Enter pickup city or airport" {...field} /></FormControl>
+                <FormControl><Input placeholder="Enter pickup city or airport" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -169,7 +169,7 @@ function RentalCarForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Dropoff Location (Optional)</FormLabel>
-                <FormControl><Input placeholder="Leave blank if same as pickup" {...field} /></FormControl>
+                <FormControl><Input placeholder="Leave blank if same as pickup" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -204,7 +204,7 @@ function RentalCarForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</FormLabel>
-                <FormControl><Input type="time" {...field} /></FormControl>
+                <FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -239,7 +239,7 @@ function RentalCarForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Dropoff Time</FormLabel>
-                <FormControl><Input type="time" {...field} /></FormControl>
+                <FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -273,7 +273,7 @@ function FlightSearchForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform -rotate-45" />Origin</FormLabel>
-                <FormControl><Input placeholder="Enter origin airport/city (e.g., JFK)" {...field} /></FormControl>
+                <FormControl><Input placeholder="Enter origin airport/city (e.g., JFK)" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -284,7 +284,7 @@ function FlightSearchForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform rotate-45" />Destination</FormLabel>
-                <FormControl><Input placeholder="Enter destination airport/city (e.g., LHR)" {...field} /></FormControl>
+                <FormControl><Input placeholder="Enter destination airport/city (e.g., LHR)" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -349,10 +349,10 @@ export default function TransportationSearchForm() {
   return (
     <div className="p-6 bg-card shadow-lg rounded-lg border">
       <Tabs defaultValue="rides">
-        <TabsList className="grid w-full grid-cols-3 mb-6"> {/* Changed to grid-cols-3 */}
+        <TabsList className="grid w-full grid-cols-3 mb-6">
           <TabsTrigger value="rides" className="gap-2"><Car className="h-5 w-5" />Ride Booking</TabsTrigger>
           <TabsTrigger value="cars" className="gap-2"><CarFront className="h-5 w-5" />Rental Cars</TabsTrigger>
-          <TabsTrigger value="flights" className="gap-2"><Plane className="h-5 w-5" />Flights</TabsTrigger> {/* Added Flights Tab */}
+          <TabsTrigger value="flights" className="gap-2"><Plane className="h-5 w-5" />Flights</TabsTrigger>
         </TabsList>
         <TabsContent value="rides">
           <RideBookingForm />
@@ -360,7 +360,7 @@ export default function TransportationSearchForm() {
         <TabsContent value="cars">
           <RentalCarForm />
         </TabsContent>
-        <TabsContent value="flights"> {/* Added Flights Content */}
+        <TabsContent value="flights">
           <FlightSearchForm />
         </TabsContent>
       </Tabs>

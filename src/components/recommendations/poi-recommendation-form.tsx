@@ -51,7 +51,7 @@ export default function POIRecommendationForm() {
     const input: RecommendPoiInput = {
       accommodationDescription: values.accommodationDescription,
       userReviews: values.userReviews,
-      ...(values.userInterests && { userInterests: values.userInterests }), // Conditionally add userInterests
+      ...(values.userInterests && { userInterests: values.userInterests }), 
     };
     
     const result = await getPoiRecommendationsAction(input);
@@ -86,6 +86,7 @@ export default function POIRecommendationForm() {
                     placeholder="e.g., A cozy beachfront villa with stunning ocean views and a private pool."
                     rows={3}
                     {...field}
+                    value={field.value || ''}
                   />
                 </FormControl>
                 <FormDescription>
@@ -106,6 +107,7 @@ export default function POIRecommendationForm() {
                     placeholder="e.g., Loved the location, very close to historical sites. Rating: 4.5/5."
                     rows={3}
                     {...field}
+                    value={field.value || ''}
                   />
                 </FormControl>
                 <FormDescription>
@@ -126,6 +128,7 @@ export default function POIRecommendationForm() {
                     placeholder="e.g., Interested in history, nature, local cuisine, nightlife."
                     rows={2}
                     {...field}
+                    value={field.value || ''}
                   />
                 </FormControl>
                 <FormDescription>
@@ -145,3 +148,4 @@ export default function POIRecommendationForm() {
     </div>
   );
 }
+

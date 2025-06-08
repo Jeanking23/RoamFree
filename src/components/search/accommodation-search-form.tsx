@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,7 +35,7 @@ const accommodationSearchSchema = z.object({
   adults: z.coerce.number().min(1, "At least 1 adult is required").max(10, "Max 10 adults"),
   children: z.coerce.number().min(0, "Children cannot be negative").max(10, "Max 10 children"),
   rooms: z.coerce.number().min(1, "At least 1 room is required").max(5, "Max 5 rooms"),
-  propertyType: z.enum(["ANY", "HOTEL", "RENTAL"]).default("ANY"), // Removed "LAND"
+  propertyType: z.enum(["ANY", "HOTEL", "RENTAL"]).default("ANY"),
   mood: z.enum(["ANY", "PEACEFUL", "ROMANTIC", "ADVENTUROUS"]).default("ANY").optional(),
   wheelchairAccessible: z.boolean().default(false).optional(),
   ecoFriendly: z.boolean().default(false).optional(),
@@ -81,7 +82,7 @@ export default function AccommodationSearchForm() {
             <FormItem className="lg:col-span-1 xl:col-span-1">
               <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Destination</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Paris, France" {...field} />
+                <Input placeholder="e.g., Paris, France" {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -159,7 +160,7 @@ export default function AccommodationSearchForm() {
                         <FormItem>
                           <FormLabel>Adults</FormLabel>
                           <FormControl>
-                            <Input type="number" min="1" max="10" {...adultField} onChange={e => adultField.onChange(parseInt(e.target.value,10) || 1)}/>
+                            <Input type="number" min="1" max="10" {...adultField} value={adultField.value || 1} onChange={e => adultField.onChange(parseInt(e.target.value,10) || 1)}/>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -172,7 +173,7 @@ export default function AccommodationSearchForm() {
                         <FormItem>
                           <FormLabel>Children</FormLabel>
                           <FormControl>
-                            <Input type="number" min="0" max="10" {...childrenField} onChange={e => childrenField.onChange(parseInt(e.target.value,10) || 0)}/>
+                            <Input type="number" min="0" max="10" {...childrenField} value={childrenField.value || 0} onChange={e => childrenField.onChange(parseInt(e.target.value,10) || 0)}/>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -185,7 +186,7 @@ export default function AccommodationSearchForm() {
                         <FormItem>
                           <FormLabel>Rooms</FormLabel>
                           <FormControl>
-                            <Input type="number" min="1" max="5" {...roomField} onChange={e => roomField.onChange(parseInt(e.target.value,10) || 1)}/>
+                            <Input type="number" min="1" max="5" {...roomField} value={roomField.value || 1} onChange={e => roomField.onChange(parseInt(e.target.value,10) || 1)}/>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
