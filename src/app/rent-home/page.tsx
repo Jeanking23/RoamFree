@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { ClipboardList, Home as HomeIcon, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Search, Bed, Bath, Smile } from 'lucide-react';
+import { ClipboardList, HomeIcon, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Search, Bed, Bath, Smile, TvIcon, FileText, CheckCircle, School, Building, Leaf, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Separator } from '@/components/ui/separator';
 
 const rentalSearchSchema = z.object({
   location: z.string().optional(),
@@ -22,15 +23,15 @@ const rentalSearchSchema = z.object({
   maxPrice: z.coerce.number().optional(),
   propertyType: z.enum(["ANY", "APARTMENT", "HOUSE", "TOWNHOUSE", "CONDO"]).default("ANY").optional(),
   bedrooms: z.coerce.number().optional(),
-  amenities: z.string().optional(), // Could be a multi-select or tags in a real app
+  amenities: z.string().optional(), 
 });
 
 type RentalSearchFormValues = z.infer<typeof rentalSearchSchema>;
 
 const mockRentals = [
-  { id: "rent1", name: "Chic Downtown Loft", price: 2200, location: "City Center", type: "Apartment", bedrooms: 1, amenities: "Gym, Pool, In-unit Laundry", image: "https://placehold.co/600x400.png?text=Downtown+Loft", dataAiHint: "loft apartment" },
-  { id: "rent2", name: "Suburban Family House", price: 3500, location: "Green Meadows", type: "House", bedrooms: 3, amenities: "Yard, Garage, Pet-friendly", image: "https://placehold.co/600x400.png?text=Suburban+House", dataAiHint: "family house suburban" },
-  { id: "rent3", name: "Modern Townhouse", price: 2800, location: "North District", type: "Townhouse", bedrooms: 2, amenities: "Rooftop Deck, Smart Home", image: "https://placehold.co/600x400.png?text=Modern+Townhouse", dataAiHint: "modern townhouse" },
+  { id: "rent1", name: "Chic Downtown Loft", price: 2200, location: "City Center", type: "Apartment", bedrooms: 1, amenities: "Gym, Pool, In-unit Laundry", image: "https://placehold.co/600x400.png?text=Downtown+Loft", dataAiHint: "loft apartment", virtualTourLink: "#", floorPlanLink: "#", walkabilityScore: 95, nearbySchools: "City High, Downtown Elementary", utilitiesIncluded: "Water, Trash", ecoFriendly: true },
+  { id: "rent2", name: "Suburban Family House", price: 3500, location: "Green Meadows", type: "House", bedrooms: 3, amenities: "Yard, Garage, Pet-friendly", image: "https://placehold.co/600x400.png?text=Suburban+House", dataAiHint: "family house suburban", virtualTourLink: "#", floorPlanLink: "#", walkabilityScore: 70, nearbySchools: "Greenwood High, Meadowbrook Elementary", utilitiesIncluded: "None", ecoFriendly: false },
+  { id: "rent3", name: "Modern Townhouse", price: 2800, location: "North District", type: "Townhouse", bedrooms: 2, amenities: "Rooftop Deck, Smart Home", image: "https://placehold.co/600x400.png?text=Modern+Townhouse", dataAiHint: "modern townhouse", virtualTourLink: "#", floorPlanLink: "#", walkabilityScore: 85, nearbySchools: "Northwood Academy", utilitiesIncluded: "Internet", ecoFriendly: true },
 ];
 
 export default function RentHomePage() {
@@ -38,13 +39,12 @@ export default function RentHomePage() {
 
   const rentalSearchForm = useForm<RentalSearchFormValues>({
     resolver: zodResolver(rentalSearchSchema),
-    defaultValues: { propertyType: "ANY" },
+    defaultValues: { propertyType: "ANY", location: "", minPrice: undefined, maxPrice: undefined, bedrooms: undefined, amenities: "" },
   });
 
   function onRentalSearchSubmit(data: RentalSearchFormValues) {
     console.log("Rental Search Filters:", data);
     toast({ title: "Search Submitted", description: "Filtering rentals (simulation)." });
-    // In a real app, you would filter the rentals array or fetch from an API
   }
 
   const handleScheduleTour = (propertyName: string) => {
@@ -55,6 +55,12 @@ export default function RentHomePage() {
   };
    const handleContactAgent = (propertyName: string) => {
     toast({ title: "Contacting Agent (Demo)", description: `Connecting you with an agent for ${propertyName}.` });
+  };
+  const handleViewFloorPlan = (propertyName: string) => {
+    toast({ title: "View Floor Plan (Demo)", description: `Displaying 3D floor plan for ${propertyName}.` });
+  };
+  const handleLeaseManagement = (propertyName: string) => {
+    toast({ title: "Lease Management (Demo)", description: `Accessing lease documents and payment options for ${propertyName}. Digital signing and rent reminders would be here.` });
   };
 
 
@@ -71,7 +77,6 @@ export default function RentHomePage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          {/* Search and Filter Section */}
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Search className="h-6 w-6" /> Search Rentals</CardTitle>
@@ -138,10 +143,11 @@ export default function RentHomePage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-1"><Bed className="h-4 w-4 text-primary" />Bedrooms</FormLabel>
-                        <Select onValueChange={(val) => field.onChange(Number(val))} defaultValue={field.value?.toString()}>
+                        <Select onValueChange={(val) => field.onChange(val ? Number(val) : undefined)} value={field.value?.toString() ?? ""}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Any" /></SelectTrigger></FormControl>
                             <SelectContent>
-                                <SelectItem value="0">Studio / Any</SelectItem>
+                                <SelectItem value="">Any</SelectItem>
+                                <SelectItem value="0">Studio</SelectItem>
                                 <SelectItem value="1">1+</SelectItem>
                                 <SelectItem value="2">2+</SelectItem>
                                 <SelectItem value="3">3+</SelectItem>
@@ -163,7 +169,7 @@ export default function RentHomePage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="md:col-span-2 lg:col-span-1 bg-accent hover:bg-accent/90 text-accent-foreground self-end">
+                  <Button type="submit" className="md:col-span-full lg:col-span-1 bg-accent hover:bg-accent/90 text-accent-foreground self-end">
                     <Search className="mr-2 h-4 w-4" /> Search Rentals
                   </Button>
                 </form>
@@ -171,31 +177,45 @@ export default function RentHomePage() {
             </CardContent>
           </Card>
 
-          {/* Rental Listings Placeholder */}
           <h3 className="text-2xl font-semibold text-foreground mb-4 mt-8">Available Rentals</h3>
           {rentals.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {rentals.map(prop => (
-                <Card key={prop.id} className="overflow-hidden">
+                <Card key={prop.id} className="overflow-hidden flex flex-col">
                   <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-48 object-cover" data-ai-hint={prop.dataAiHint}/>
                   <CardHeader>
                     <CardTitle>{prop.name}</CardTitle>
                     <CardDescription className="text-primary font-semibold text-lg">${prop.price.toLocaleString()}/month</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-2">
+                  <CardContent className="space-y-2 flex-grow">
                     <p className="text-sm text-muted-foreground"><MapPin className="inline h-4 w-4 mr-1"/>{prop.location}</p>
                     <p className="text-sm text-muted-foreground"><ClipboardList className="inline h-4 w-4 mr-1"/>Type: {prop.type}</p>
                     <p className="text-sm text-muted-foreground"><Bed className="inline h-4 w-4 mr-1"/>Bedrooms: {prop.bedrooms}</p>
                     <p className="text-sm text-muted-foreground"><Smile className="inline h-4 w-4 mr-1"/>Amenities: {prop.amenities}</p>
+                    {prop.ecoFriendly && <p className="text-sm text-green-600 flex items-center"><Leaf className="inline h-4 w-4 mr-1"/>Eco-Friendly Property</p>}
+                    <Separator className="my-2"/>
+                    <h4 className="text-xs font-semibold text-muted-foreground">Neighborhood (Demo):</h4>
+                    <p className="text-xs text-muted-foreground"><CheckCircle className="inline h-3 w-3 mr-1 text-green-500"/>Walkability: {prop.walkabilityScore}/100</p>
+                    <p className="text-xs text-muted-foreground"><School className="inline h-3 w-3 mr-1 text-blue-500"/>Schools: {prop.nearbySchools}</p>
+                     <h4 className="text-xs font-semibold text-muted-foreground mt-1">Utilities (Demo):</h4>
+                    <p className="text-xs text-muted-foreground">Included: {prop.utilitiesIncluded}</p>
+                    <p className="text-xs text-muted-foreground">Optional Add-ons: Cleaning, Maintenance (Demo)</p>
                   </CardContent>
-                  <CardFooter className="flex flex-col sm:flex-row gap-2">
-                    <Button variant="outline" size="sm" onClick={() => handleScheduleTour(prop.name)} className="w-full sm:w-auto">
-                      <CalendarDays className="mr-2 h-4 w-4" /> Schedule Tour
+                  <CardFooter className="flex flex-col gap-2 pt-4 border-t">
+                    <div className="grid grid-cols-2 gap-2 w-full">
+                        <Button variant="outline" size="sm" onClick={() => handleVirtualWalkthrough(prop.name)}><TvIcon className="mr-2 h-4 w-4"/>Virtual Tour</Button>
+                        <Button variant="outline" size="sm" onClick={() => handleViewFloorPlan(prop.name)}><Layers className="mr-2 h-4 w-4"/>3D Floorplan</Button>
+                    </div>
+                    <Button variant="default" size="sm" className="w-full" onClick={() => handleScheduleTour(prop.name)}>
+                      <CalendarDays className="mr-2 h-4 w-4" /> Schedule In-Person Tour
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleVirtualWalkthrough(prop.name)} className="w-full sm:w-auto">Virtual Walkthrough</Button>
-                    <Button variant="secondary" size="sm" onClick={() => handleContactAgent(prop.name)} className="w-full sm:w-auto">
-                      <Phone className="mr-2 h-4 w-4" /> Contact Agent
+                     <Button variant="secondary" size="sm" className="w-full" onClick={() => handleLeaseManagement(prop.name)}>
+                      <FileText className="mr-2 h-4 w-4" /> Lease & Payments (Demo)
                     </Button>
+                    <Button variant="link" size="sm" onClick={() => handleContactAgent(prop.name)}>
+                      <Phone className="mr-2 h-4 w-4" /> Contact Agent/Owner
+                    </Button>
+                    <p className="text-xs text-muted-foreground text-center mt-1">Secure Escrow Payment & Digital Lease Signing (Demo)</p>
                   </CardFooter>
                 </Card>
               ))}
@@ -208,11 +228,15 @@ export default function RentHomePage() {
           )}
           
           <div className="mt-8 p-4 border rounded-md bg-muted/30">
-            <h4 className="font-semibold text-foreground mb-2">Coming Soon:</h4>
+            <h4 className="font-semibold text-foreground mb-2">Tenant & Landlord Features (Demo):</h4>
             <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-              <li>Secure Document Upload & E-signature for lease agreements.</li>
-              <li>Verified Agent Rating & Review System for transparency.</li>
+              <li><ShieldCheck className="inline h-4 w-4 mr-1 text-primary"/>Secure Document Upload & E-signature for lease agreements.</li>
+              <li><CalendarDays className="inline h-4 w-4 mr-1 text-primary"/>Real-time availability calendar with sync options (Airbnb, Booking.com).</li>
+              <li><DollarSign className="inline h-4 w-4 mr-1 text-primary"/>In-app rent payment with due date reminders & recurring billing.</li>
+              <li><Users className="inline h-4 w-4 mr-1 text-primary"/>Optional Tenant Background Checks (ID, income, rental history) for hosts.</li>
+              <li><Building className="inline h-4 w-4 mr-1 text-primary"/>Detailed neighborhood insights: crime rates, schools, transport, walkability.</li>
             </ul>
+             <Button variant="link" asChild className="mt-2 px-0"><Link href="/list-property">List Your Rental Property (Demo)</Link></Button>
           </div>
 
         </CardContent>
@@ -220,3 +244,4 @@ export default function RentHomePage() {
     </div>
   );
 }
+

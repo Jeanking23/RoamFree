@@ -19,9 +19,10 @@ import {
   Award,
   MessageSquare,
   ShieldAlert,
-  Users2, // For community forum
-  Truck, // For Courier & Delivery
-  Plane // For Transport page icon (already there but confirming)
+  Users2, 
+  Truck, 
+  Plane,
+  CarFront as CarIcon // Renamed to avoid conflict if another CarFront is defined locally
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -38,6 +39,7 @@ const mainNavItems = [
   { href: '/transport', label: 'Transport', icon: Plane },
   { href: '/courier-delivery', label: 'Courier', icon: Truck },
   { href: '/car-rent', label: 'Car Rent', icon: KeyRound },
+  { href: '/cars-for-sale', label: 'Cars for Sale', icon: CarIcon },
   { href: '/attractions', label: 'Attractions', icon: Landmark },
   { href: '/rent-home', label: 'Rent Home', icon: Home },
   { href: '/buy-property', label: 'Buy Land/House', icon: ClipboardList },
@@ -60,7 +62,11 @@ export default function Header() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setCurrentHash(window.location.hash);
-      const handleHashChange = () => setCurrentHash(window.location.hash);
+      const handleHashChange = () => {
+        if (typeof window !== 'undefined') {
+            setCurrentHash(window.location.hash);
+        }
+      };
       window.addEventListener('hashchange', handleHashChange);
       return () => window.removeEventListener('hashchange', handleHashChange);
     }
@@ -83,7 +89,7 @@ export default function Header() {
     if (itemHref.startsWith('/#')) {
       return pathname === '/' && currentHash === itemHref.substring(1);
     }
-    return pathname === itemHref || pathname.startsWith(itemHref + '/'); // For dynamic routes like /attractions/[id]
+    return pathname === itemHref || pathname.startsWith(itemHref + '/'); 
   };
 
 

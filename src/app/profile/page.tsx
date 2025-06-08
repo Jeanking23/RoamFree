@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building, CreditCard, Video, Bell, Car, Receipt, ThumbsUp, Star } from 'lucide-react'; // Added Car, Receipt, ThumbsUp
+import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building, CreditCard, Video, Bell, Car, Receipt, ThumbsUp, Star, FileUp } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,15 +18,18 @@ const mockUser = {
   name: "Alex Johnson",
   email: "alex.johnson@example.com",
   joinDate: "2023-01-15",
-  isVerified: false, 
+  isIdVerified: false, 
+  isVideoIdVerified: false, // New
   mfaEnabled: false,
   preferences: {
     travelStyle: "Adventure, Cultural",
     dietaryNeeds: "Vegetarian",
     interests: "Hiking, Photography, Local Markets",
     pricingAlerts: true,
+    receivePushNotifications: true, // New
   },
   walletBalance: 75.50, 
+  driverLicenseUploaded: false, // New
 };
 
 const mockBookingHistory = [
@@ -34,6 +37,7 @@ const mockBookingHistory = [
   { id: "cr456", type: "Car Rental", name: "Toyota Camry, LAX", date: "2024-04-05 - 2024-04-08", price: 250, status: "Upcoming" },
   { id: "at789", type: "Attraction", name: "Eiffel Tower Summit", date: "2023-11-20", price: 50, status: "Completed" },
   { id: "ride001", type: "Ride", name: "Airport Transfer JFK", date: "2024-05-01", price: 65, status: "Completed" },
+  { id: "courier001", type: "Courier", name: "Document Delivery", date: "2024-05-10", price: 15, status: "Delivered" }, // New
 ];
 
 const mockSavedListings = [
@@ -49,11 +53,11 @@ const mockSavedDrivers = [
 export default function ProfilePage() {
 
   const handleIdVerification = () => {
-    toast({ title: "ID Verification (Demo)", description: "Starting ID verification process. This would typically involve uploading documents or a video." });
+    toast({ title: "ID Verification (Demo)", description: "Starting ID verification process. This would typically involve uploading documents." });
   };
   
   const handleVideoIdVerification = () => {
-    toast({ title: "Video ID Verification (Demo)", description: "Starting video-based ID verification. You might be asked to record a short video." });
+    toast({ title: "Video ID Verification (Demo)", description: "Starting video-based ID verification. You might be asked to record a short video and show your ID." });
   };
 
   const handleMfaSetup = () => {
@@ -65,7 +69,11 @@ export default function ProfilePage() {
   };
 
   const handleTopUpWallet = () => {
-    toast({ title: "Top Up Wallet (Demo)", description: "Proceeding to wallet top-up options." });
+    toast({ title: "Top Up Wallet (Demo)", description: "Proceeding to wallet top-up options (e.g., Credit Card, PayPal). Multi-currency options coming soon." });
+  };
+  
+  const handleUploadLicense = () => {
+    toast({ title: "Upload Driver's License (Demo)", description: "Opening file upload for driver's license. This is for car rental verification."});
   };
 
   return (
@@ -110,6 +118,16 @@ export default function ProfilePage() {
                     <Label htmlFor="joinDate">Joined RoamFree</Label>
                     <Input id="joinDate" defaultValue={new Date(mockUser.joinDate).toLocaleDateString()} readOnly />
                   </div>
+                   <div className="pt-2">
+                    <Label htmlFor="driverLicense">Driver's License (for Car Rentals)</Label>
+                    {mockUser.driverLicenseUploaded ? (
+                        <p className="text-sm text-green-600 flex items-center"><ShieldCheck className="h-4 w-4 mr-1"/>License on File (Demo)</p>
+                    ) : (
+                        <Button variant="outline" size="sm" onClick={handleUploadLicense} className="mt-1">
+                            <FileUp className="mr-2 h-4 w-4"/> Upload License (Demo)
+                        </Button>
+                    )}
+                  </div>
                 </CardContent>
                 <CardFooter className="border-t px-6 py-4">
                    <Button onClick={() => handleSaveChanges("personal information")}>Save Changes</Button>
@@ -122,7 +140,7 @@ export default function ProfilePage() {
                     <Card>
                         <CardHeader>
                         <CardTitle>My Booking History</CardTitle>
-                        <CardDescription>Review your past and upcoming bookings for stays, cars, attractions, and rides.</CardDescription>
+                        <CardDescription>Review your past and upcoming bookings for stays, cars, attractions, rides, and courier services.</CardDescription>
                         </CardHeader>
                         <CardContent>
                         {mockBookingHistory.length > 0 ? (
@@ -137,13 +155,13 @@ export default function ProfilePage() {
                                     </div>
                                     <div className="text-right">
                                     <p className="font-semibold text-lg">${booking.price}</p>
-                                    <span className={`text-xs px-2 py-0.5 rounded-full ${booking.status === "Completed" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
+                                    <span className={`text-xs px-2 py-0.5 rounded-full ${booking.status === "Completed" || booking.status === "Delivered" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
                                         {booking.status}
                                     </span>
                                     </div>
                                 </div>
                                 <Button variant="outline" size="sm" className="mt-3 mr-2">View Details (Demo)</Button>
-                                {booking.type === "Ride" && <Button variant="link" size="sm" className="mt-3 px-0">View Receipt (Demo) <Receipt className="ml-1 h-4 w-4"/></Button>}
+                                {(booking.type === "Ride" || booking.type === "Courier") && <Button variant="link" size="sm" className="mt-3 px-0">View Receipt (Demo) <Receipt className="ml-1 h-4 w-4"/></Button>}
                                 </li>
                             ))}
                             </ul>
@@ -185,8 +203,8 @@ export default function ProfilePage() {
             <TabsContent value="preferences" className="p-4 md:p-0">
               <Card>
                 <CardHeader>
-                  <CardTitle>Travel Preferences</CardTitle>
-                  <CardDescription>Help us tailor recommendations for you.</CardDescription>
+                  <CardTitle>Travel & Notification Preferences</CardTitle>
+                  <CardDescription>Help us tailor recommendations and alerts for you.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -204,6 +222,10 @@ export default function ProfilePage() {
                   <div className="flex items-center space-x-2 pt-2">
                     <Switch id="pricing-alerts" defaultChecked={mockUser.preferences.pricingAlerts} />
                     <Label htmlFor="pricing-alerts">Enable AI Predictive Pricing Alerts (Demo)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch id="push-notifications" defaultChecked={mockUser.preferences.receivePushNotifications} />
+                    <Label htmlFor="push-notifications">Receive Push Notifications (Trip reminders, price drops, etc. - Demo)</Label>
                   </div>
                   <div className="pt-2">
                     <p className="text-sm text-muted-foreground">More preference options (e.g., preferred airline, hotel chains) coming soon!</p>
@@ -226,21 +248,27 @@ export default function ProfilePage() {
                   <div className="flex items-center justify-between p-4 border rounded-md">
                     <div>
                       <h4 className="font-medium">Standard ID Verification</h4>
-                      <p className={`text-sm ${mockUser.isVerified ? "text-green-600" : "text-orange-600"}`}>
-                        Status: {mockUser.isVerified ? "Verified" : "Not Verified"}
+                      <p className={`text-sm ${mockUser.isIdVerified ? "text-green-600" : "text-orange-600"}`}>
+                        Status: {mockUser.isIdVerified ? "Verified" : "Not Verified"}
                       </p>
-                       {!mockUser.isVerified && <p className="text-xs text-muted-foreground">Verification is required for listing properties or making certain bookings.</p>}
+                       {!mockUser.isIdVerified && <p className="text-xs text-muted-foreground">Verification is required for listing properties or making certain bookings.</p>}
                     </div>
-                    {!mockUser.isVerified && <Button onClick={handleIdVerification}>Verify ID (Demo)</Button>}
-                    {mockUser.isVerified && <ShieldCheck className="h-6 w-6 text-green-600" />}
+                    {!mockUser.isIdVerified && <Button onClick={handleIdVerification}>Verify ID (Demo)</Button>}
+                    {mockUser.isIdVerified && <ShieldCheck className="h-6 w-6 text-green-600" />}
                   </div>
                   
                   <div className="flex items-center justify-between p-4 border rounded-md">
                     <div>
                       <h4 className="font-medium">Video ID Verification</h4>
-                      <p className="text-sm text-muted-foreground">Enhance trust with video-based verification (Demo).</p>
+                       <p className={`text-sm ${mockUser.isVideoIdVerified ? "text-green-600" : "text-muted-foreground"}`}>
+                        Status: {mockUser.isVideoIdVerified ? "Video Verified" : "Not Verified"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Enhance trust with video-based verification (Demo).</p>
                     </div>
-                    <Button variant="outline" onClick={handleVideoIdVerification}><Video className="mr-2 h-4 w-4"/>Start Video Verification (Demo)</Button>
+                    {!mockUser.isVideoIdVerified && 
+                        <Button variant="outline" onClick={handleVideoIdVerification}><Video className="mr-2 h-4 w-4"/>Start Video Verification (Demo)</Button>
+                    }
+                    {mockUser.isVideoIdVerified && <ShieldCheck className="h-6 w-6 text-green-600" />}
                   </div>
 
                   <div className="flex items-center justify-between p-4 border rounded-md">
@@ -271,7 +299,7 @@ export default function ProfilePage() {
               <Card>
                 <CardHeader>
                   <CardTitle>My RoamFree Wallet</CardTitle>
-                  <CardDescription>Manage your funds for seamless payments across the platform. Buy Now, Pay Later options available (Demo).</CardDescription>
+                  <CardDescription>Manage your funds for seamless payments across the platform. Buy Now, Pay Later options (e.g. Klarna, Afterpay) available for select services (Demo).</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="p-4 border rounded-md bg-muted/50">
@@ -282,12 +310,13 @@ export default function ProfilePage() {
                     <CreditCard className="mr-2 h-4 w-4"/> Top Up Wallet (Demo)
                   </Button>
                   <div>
-                    <h4 className="font-medium mt-4">Wallet Features (Coming Soon / Demo)</h4>
+                    <h4 className="font-medium mt-4">Wallet Features (Demo / Coming Soon)</h4>
                     <ul className="list-disc list-inside text-sm text-muted-foreground mt-2 space-y-1">
                       <li>View transaction history</li>
                       <li>Store funds in multiple currencies (e.g., USD, EUR, GBP)</li>
                       <li>Withdraw funds to your bank account</li>
-                      <li>Pay using Klarna, Afterpay, or other Buy Now, Pay Later services.</li>
+                      <li>Pay using Klarna, Afterpay, or other Buy Now, Pay Later services for eligible bookings.</li>
+                      <li>Secure Payment & Escrow for high-value transactions (e.g., property, car sales).</li>
                     </ul>
                   </div>
                 </CardContent>

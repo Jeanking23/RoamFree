@@ -6,14 +6,14 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Users, Star, MapPin, CreditCard, MessageSquare, ShieldCheck, Camera, Share2, Heart, AlertTriangle, Car, Clock, CheckCircle, Ticket, Landmark as LandmarkIcon, CloudSun, Calendar, Info, Plane, Percent, TvIcon, Contact, Waves } from 'lucide-react';
+import { CalendarDays, Users, Star, MapPin, CreditCard, MessageSquare, ShieldCheck, Camera, Share2, Heart, AlertTriangle, Car, Clock, CheckCircle, Ticket, Landmark as LandmarkIcon, CloudSun, Calendar, Info, Plane, Percent, TvIcon, Contact, Waves, Layers, HomeIcon, School, Building as BuildingIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Input } from '@/components/ui/input'; // Added Input import
+import { Input } from '@/components/ui/input'; 
 
 // Mock data - in a real app, you'd fetch this based on params.id
 const mockAccommodation = {
@@ -38,9 +38,17 @@ const mockAccommodation = {
     { id: "r1", user: "Alice Martin", rating: 5, comment: "Absolutely phenomenal stay! The villa exceeded all expectations. Views were incredible and the host was very responsive.", date: "2024-03-15" },
     { id: "r2", user: "Bob Williams", rating: 4, comment: "Great location and beautiful property. Pool was amazing. Minor issue with WiFi initially but was resolved quickly.", date: "2024-02-20" },
   ],
-  availability: "Check availability calendar (placeholder)", // Placeholder
+  availability: "Check availability calendar (placeholder)", 
   policies: { checkIn: "After 3:00 PM", checkOut: "Before 11:00 AM", cancellation: "Flexible - Free cancellation up to 5 days before check-in." },
-  ecoFriendly: true, // Demo
+  ecoFriendly: true,
+  virtualTourLink: "#", // New
+  floorPlanLink: "#", // New
+  neighborhoodInsights: { // New
+    walkabilityScore: 90,
+    crimeRate: "Low (Demo Data)",
+    nearbySchools: "Malibu High, Point Dume Elementary (Demo Data)",
+    publicTransport: "Bus stop 2 blocks away (Demo Data)"
+  }
 };
 
 const mockNearbyAttractions = [
@@ -51,7 +59,7 @@ const mockNearbyAttractions = [
 
 export default function AccommodationProfilePage() {
   const params = useParams();
-  const router = useRouter();
+  // const router = useRouter(); // Keep if needed for programmatic navigation
   const [isFavorited, setIsFavorited] = useState(false);
   const [currentImage, setCurrentImage] = useState(mockAccommodation.photos[0]);
   const [checkInDate, setCheckInDate] = useState<Date | undefined>();
@@ -66,7 +74,7 @@ export default function AccommodationProfilePage() {
 
 
   const handleBookNow = () => {
-    toast({ title: "Booking Initiated (Demo)", description: `Proceeding to payment for ${mockAccommodation.name}. This is a placeholder.` });
+    toast({ title: "Booking Initiated (Demo)", description: `Proceeding to payment for ${mockAccommodation.name}. This is a placeholder. Secure Escrow & Buy Now, Pay Later options available.` });
   };
 
   const handleContactHost = () => {
@@ -82,7 +90,7 @@ export default function AccommodationProfilePage() {
       }).then(() => toast({ title: "Shared successfully!"}))
         .catch(error => console.error('Error sharing:', error));
     } else {
-      toast({ title: "Share", description: "Web Share API not supported. You can copy the URL.", variant: "default"});
+      toast({ title: "Share", description: "Web Share API not supported. You can copy the URL."});
     }
   };
 
@@ -101,7 +109,7 @@ export default function AccommodationProfilePage() {
     toast({ title: "Drone View (Demo)", description: "Displaying top-down drone footage of the property area. (Placeholder)" });
   };
   const handleFloorPlan = () => {
-    toast({ title: "Interactive Floor Plan (Demo)", description: "Showing clickable floor plan. (Placeholder)" });
+    toast({ title: "Interactive Floor Plan (Demo)", description: `Showing clickable 3D floor plan for ${mockAccommodation.name}. (Room dimensions available)` });
   };
 
   const handleSuggestRides = () => {
@@ -162,7 +170,7 @@ export default function AccommodationProfilePage() {
              <Button variant="outline" onClick={handleArView}><Camera className="mr-2 h-4 w-4" /> Try AR View (Demo)</Button>
              <Button variant="outline" onClick={handle360Tour}><TvIcon className="mr-2 h-4 w-4" /> 360° Video Tour (Demo)</Button>
              <Button variant="outline" onClick={handleDroneView}><Plane className="mr-2 h-4 w-4" /> Drone View (Demo)</Button>
-             <Button variant="outline" onClick={handleFloorPlan}><Contact className="mr-2 h-4 w-4" /> Interactive Floor Plan (Demo)</Button>
+             <Button variant="outline" onClick={() => toast({ title: "Floor Plan (Demo)", description: `Viewing interactive 3D floor plan for ${mockAccommodation.name}.` })}><Layers className="mr-2 h-4 w-4" /> Interactive Floor Plan (Demo)</Button>
            </div>
         </CardContent>
         
@@ -194,10 +202,22 @@ export default function AccommodationProfilePage() {
                 <CardTitle className="flex items-center gap-2"><CloudSun className="h-5 w-5"/> Smart Trip Info (Demo)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
-                <p className="flex items-center gap-1"><CloudSun className="h-4 w-4 text-blue-500"/> Weather: Sunny, 24°C. Perfect for the beach!</p>
-                <p className="flex items-center gap-1"><Calendar className="h-4 w-4 text-purple-500"/> Local Event: Malibu Arts Festival (This Weekend)</p>
-                <p className="flex items-center gap-1"><Info className="h-4 w-4 text-orange-500"/> Cultural Tip: Tipping at restaurants is customary (15-20%).</p>
+                <p className="flex items-center gap-1"><CloudSun className="h-4 w-4 text-blue-500"/> Weather: Sunny, 24°C. Perfect for the beach! (Dynamic weather integration demo)</p>
+                <p className="flex items-center gap-1"><Calendar className="h-4 w-4 text-purple-500"/> Local Event: Malibu Arts Festival (This Weekend) (Local event discovery demo)</p>
+                <p className="flex items-center gap-1"><Info className="h-4 w-4 text-orange-500"/> Cultural Tip: Tipping at restaurants is customary (15-20%). (Travel advisory demo)</p>
               </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/> Neighborhood Insights (Demo)</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                    <p><strong>Walkability Score:</strong> {mockAccommodation.neighborhoodInsights.walkabilityScore}/100</p>
+                    <p><strong>Crime Rate:</strong> {mockAccommodation.neighborhoodInsights.crimeRate}</p>
+                    <p className="flex items-center gap-1"><School className="h-4 w-4"/><strong>Nearby Schools:</strong> {mockAccommodation.neighborhoodInsights.nearbySchools}</p>
+                    <p className="flex items-center gap-1"><BuildingIcon className="h-4 w-4"/><strong>Public Transport:</strong> {mockAccommodation.neighborhoodInsights.publicTransport}</p>
+                </CardContent>
             </Card>
             
             <div className="md:hidden"> 
@@ -233,17 +253,17 @@ export default function AccommodationProfilePage() {
             <Card className="shadow-md border sticky top-24">
               <CardHeader>
                 <CardTitle className="text-2xl">${mockAccommodation.pricePerNight} <span className="text-base font-normal text-muted-foreground">/ night</span></CardTitle>
-                <CardDescription>{mockAccommodation.availability}</CardDescription>
+                <CardDescription>{mockAccommodation.availability} (Calendar sync with Airbnb/Booking.com - Demo)</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label htmlFor="checkin" className="block text-sm font-medium text-muted-foreground">Check-in</label>
-                    <Input type="date" id="checkin" onChange={(e) => setCheckInDate(new Date(e.target.value))} />
+                    <Input type="date" id="checkin" onChange={(e) => setCheckInDate(e.target.value ? new Date(e.target.value) : undefined)} />
                   </div>
                   <div>
                     <label htmlFor="checkout" className="block text-sm font-medium text-muted-foreground">Check-out</label>
-                    <Input type="date" id="checkout" onChange={(e) => setCheckOutDate(new Date(e.target.value))} />
+                    <Input type="date" id="checkout" onChange={(e) => setCheckOutDate(e.target.value ? new Date(e.target.value) : undefined)} />
                   </div>
                 </div>
                 <div>
@@ -254,7 +274,7 @@ export default function AccommodationProfilePage() {
                   <CreditCard className="mr-2 h-5 w-5" /> Book Now
                 </Button>
                  <p className="text-xs text-muted-foreground text-center">You won't be charged yet (This is a demo)</p>
-                 <p className="text-xs text-muted-foreground text-center">Split Payment Available (Demo)</p>
+                 <p className="text-xs text-muted-foreground text-center">Split Payment & Secure Escrow Available (Demo)</p>
                  <p className="text-xs text-muted-foreground text-center">Pay with Klarna/Afterpay (Demo)</p>
               </CardContent>
             </Card>
