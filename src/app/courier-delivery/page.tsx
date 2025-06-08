@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Truck, MapPin, User, Package, CalendarDays, Clock, CheckCircle, ShieldCheck, Receipt, Star, UploadCloud, MessageSquare, Gps, Edit3, Languages, Phone, Mail, Briefcase, ShoppingBag, KeyRound, Info, Send, ListFilter } from "lucide-react";
+import { Truck, MapPin, User, Package, CalendarDays, Clock, CheckCircle, ShieldCheck, Receipt, Star, UploadCloud, MessageSquare, Navigation, Edit3, Languages, Phone, Mail, Briefcase, ShoppingBag, KeyRound, Info, Send, ListFilter } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
@@ -211,7 +211,7 @@ export default function CourierDeliveryPage() {
                     </CardContent>
                   </Card>
                   <Button type="submit" disabled={isBooking || currentPackageStatusIndex !== -1} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                    <Send className="mr-2 h-4 w-4" /> {isBooking ? "Processing..." : "Request Courier &amp; Get Estimate"}
+                    <Send className="mr-2 h-4 w-4" /> {isBooking ? "Processing..." : "Request Courier & Get Estimate"}
                   </Button>
                 </form>
               </Form>
@@ -235,7 +235,7 @@ export default function CourierDeliveryPage() {
               {currentPackageStatusIndex !== -1 && bookingResult?.trackingId && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Gps className="h-5 w-5 text-primary"/>Live Package Tracking (Demo)</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><Navigation className="h-5 w-5 text-primary"/>Live Package Tracking (Demo)</CardTitle>
                     <CardDescription>Tracking ID: {bookingResult.trackingId}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
