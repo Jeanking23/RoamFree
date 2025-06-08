@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building, CarFront, LandPlot, ListPlus, BarChart3, MessageSquare, DollarSign, Eye, Edit3, Trash2, CalendarCheck2, Settings, AlertTriangle, ShieldCheck, Users, FileText, Wrench } from 'lucide-react'; // Added Wrench
+import { Building, CarFront, LandPlot, ListPlus, BarChart3, MessageSquare, DollarSign, Eye, Edit3, Trash2, CalendarCheck2, Settings, AlertTriangle, ShieldCheck, Users, FileText, Wrench, LayoutDashboard } from 'lucide-react'; // Added Wrench & LayoutDashboard
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Progress } from "@/components/ui/progress";
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                         <Link href="/list-property"><ListPlus className="mr-2 h-4 w-4" /> Add Property/Rental</Link>
                     </Button>
                     <Button asChild size="sm" variant="outline" onClick={() => toast({title: "List Car for Sale (Demo)", description: "Navigating to car listing form."})}>
-                        <Link href="#"><CarFront className="mr-2 h-4 w-4" /> List Car for Sale</Link>
+                        <Link href="/cars-for-sale/new"><CarFront className="mr-2 h-4 w-4" /> List Car for Sale</Link> {/* Assuming a /new route for creating */}
                     </Button>
                  </div>
               </div>
