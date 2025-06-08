@@ -103,8 +103,8 @@ export default function TransportPage() {
     defaultValues: {
       pickupLocation: "", 
       dropoffLocation: "",
-      pickupDate: undefined, // Initialize as undefined, set in useEffect
-      pickupTime: "",        // Initialize as empty, set in useEffect
+      pickupDate: undefined, 
+      pickupTime: "",        
       scheduleRide: false, 
       wheelchairAccessible: false, 
       babySeat: false, 
@@ -119,21 +119,24 @@ export default function TransportPage() {
         destinationCity: "", 
         passengers: 1, 
         serviceType: "SHUTTLE", 
-        departureDate: undefined // Initialize as undefined, set in useEffect
+        departureDate: undefined 
     }
   });
 
-  // Effect for rideForm to set initial date/time client-side
   useEffect(() => {
-    const now = new Date();
-    rideForm.setValue("pickupDate", now, { shouldValidate: true });
-    rideForm.setValue("pickupTime", format(now, "HH:mm"), { shouldValidate: true });
-  }, [rideForm.setValue]);
+    if (!rideForm.getValues("pickupDate")) {
+        rideForm.setValue("pickupDate", new Date(), { shouldValidate: true });
+    }
+    if (!rideForm.getValues("pickupTime")) {
+        rideForm.setValue("pickupTime", format(new Date(), "HH:mm"), { shouldValidate: true });
+    }
+  }, []);
 
-  // Effect for intercityForm to set initial date client-side
   useEffect(() => {
-    intercityForm.setValue("departureDate", new Date(), { shouldValidate: true });
-  }, [intercityForm.setValue]);
+    if (!intercityForm.getValues("departureDate")) {
+        intercityForm.setValue("departureDate", new Date(), { shouldValidate: true });
+    }
+  }, []);
 
 
   async function onRideSubmit(data: TransportFormValues) {
@@ -303,7 +306,13 @@ export default function TransportPage() {
                     </Form>
                 </CardContent>
               </Card>
-
+                <Card>
+                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><Users className="h-5 w-5 text-primary"/>Carpool &amp; Ride Sharing</CardTitle></CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">Feature coming soon! Find travelers with similar routes to share rides and split fares.</p>
+                        <Button variant="outline" className="w-full mt-2" disabled>Explore Carpool Options (Demo)</Button>
+                    </CardContent>
+              </Card>
 
             </div>
 
@@ -329,13 +338,6 @@ export default function TransportPage() {
                     <p className="flex items-center gap-2"><MessageCircle className="h-4 w-4 text-primary"/> In-app Driver Communication (Demo)</p>
                     <p className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-primary"/> Secure In-app Payments (Demo)</p>
                     <p className="flex items-center gap-2"><Users2 className="h-4 w-4 text-primary"/> Baggage Assistance Option (Demo)</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader><CardTitle className="text-xl flex items-center gap-2"><Users className="h-5 w-5 text-primary"/>Carpool &amp; Ride Sharing</CardTitle></CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground">Feature coming soon! Find travelers with similar routes to share rides and split fares.</p>
-                    <Button variant="outline" className="w-full mt-2" disabled>Explore Carpool Options (Demo)</Button>
                 </CardContent>
               </Card>
             </div>
