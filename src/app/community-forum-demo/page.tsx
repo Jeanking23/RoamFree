@@ -1,4 +1,3 @@
-
 // src/app/community-forum-demo/page.tsx
 'use client';
 
@@ -7,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MessageSquare, Users2, Search, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react'; // Import useState
 
 const mockThreads = [
   { id: "t1", title: "Best hidden gems in Kyoto?", author: "TravelerGal", replies: 15, lastReply: "2 hours ago", category: "Asia Travel" },
@@ -16,6 +16,15 @@ const mockThreads = [
 ];
 
 export default function CommunityForumDemoPage() {
+  const [searchTerm, setSearchTerm] = useState(''); // Add state for search term
+
+  // Filter threads based on searchTerm (simple example)
+  const filteredThreads = mockThreads.filter(thread =>
+    thread.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    thread.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    thread.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
@@ -31,7 +40,12 @@ export default function CommunityForumDemoPage() {
         <CardContent className="p-6">
           <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-center">
             <div className="relative w-full sm:max-w-md">
-              <Input placeholder="Search forum..." className="pr-10" />
+              <Input
+                placeholder="Search forum..."
+                className="pr-10"
+                value={searchTerm} // Control the input value
+                onChange={(e) => setSearchTerm(e.target.value)} // Handle changes
+              />
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             </div>
             <Button className="w-full sm:w-auto">
@@ -40,7 +54,7 @@ export default function CommunityForumDemoPage() {
           </div>
 
           <div className="space-y-4">
-            {mockThreads.map(thread => (
+            {filteredThreads.length > 0 ? filteredThreads.map(thread => (
               <Card key={thread.id} className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-xl hover:text-primary">
@@ -55,14 +69,17 @@ export default function CommunityForumDemoPage() {
                   <span>Last reply: {thread.lastReply}</span>
                 </CardContent>
               </Card>
-            ))}
+            )) : (
+              <p className="text-muted-foreground text-center py-4">No threads match your search.</p>
+            )}
           </div>
-          <div className="mt-8 text-center">
-            <Button variant="outline">Load More Threads (Demo)</Button>
-          </div>
+          {filteredThreads.length > 0 && (
+            <div className="mt-8 text-center">
+              <Button variant="outline">Load More Threads (Demo)</Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
   );
 }
-    
