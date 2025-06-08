@@ -14,7 +14,8 @@ import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from '@/hooks/use-toast';
 import Image from 'next/image';
-import { Separator } from '@/components/ui/separator'; // Added import
+import { Separator } from '@/components/ui/separator'; 
+import Link from 'next/link'; // Added import
 
 const mortgageSchema = z.object({
   loanAmount: z.coerce.number().positive("Loan amount must be positive."),
