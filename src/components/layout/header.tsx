@@ -22,7 +22,7 @@ import {
   Users2, 
   Truck, 
   Plane,
-  CarFront as CarIcon // Renamed to avoid conflict if another CarFront is defined locally
+  CarFront as CarIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -58,8 +58,10 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const [currentHash, setCurrentHash] = useState('');
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    setHasMounted(true);
     if (typeof window !== 'undefined') {
       setCurrentHash(window.location.hash);
       const handleHashChange = () => {
@@ -86,6 +88,15 @@ export default function Header() {
   };
 
   const isLinkActive = (itemHref: string) => {
+    if (!hasMounted) { 
+      // During server render and initial client render before mount,
+      // hash-based links won't be considered active based on hash.
+      if (itemHref.startsWith('/#')) {
+        return pathname === '/'; // Only check pathname for hash links initially
+      }
+      return pathname === itemHref || pathname.startsWith(itemHref + '/');
+    }
+    // After mount, use currentHash
     if (itemHref.startsWith('/#')) {
       return pathname === '/' && currentHash === itemHref.substring(1);
     }
@@ -299,4 +310,4 @@ export default function Header() {
     </header>
   );
 }
-    
+
