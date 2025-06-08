@@ -18,8 +18,10 @@ import {
   Heart,
   Award,
   MessageSquare,
-  ShieldAlert, 
-  Users2 // For community forum
+  ShieldAlert,
+  Users2, // For community forum
+  Truck, // For Courier & Delivery
+  Plane // For Transport page icon (already there but confirming)
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -33,7 +35,8 @@ import { toast } from '@/hooks/use-toast';
 
 const mainNavItems = [
   { href: '/#stays', label: 'Stays', icon: BedDouble },
-  { href: '/transport', label: 'Transport', icon: Car },
+  { href: '/transport', label: 'Transport', icon: Plane },
+  { href: '/courier-delivery', label: 'Courier', icon: Truck },
   { href: '/car-rent', label: 'Car Rent', icon: KeyRound },
   { href: '/attractions', label: 'Attractions', icon: Landmark },
   { href: '/rent-home', label: 'Rent Home', icon: Home },
@@ -61,12 +64,12 @@ export default function Header() {
       window.addEventListener('hashchange', handleHashChange);
       return () => window.removeEventListener('hashchange', handleHashChange);
     }
-  }, []); // Run once on mount
+  }, []);
 
   useEffect(() => {
     setIsPopoverOpen(false);
     setIsMobileMenuOpen(false);
-  }, [pathname, currentHash]); // Close menus on path or hash change
+  }, [pathname, currentHash]);
 
   const handleSosClick = () => {
     toast({
@@ -80,7 +83,7 @@ export default function Header() {
     if (itemHref.startsWith('/#')) {
       return pathname === '/' && currentHash === itemHref.substring(1);
     }
-    return pathname === itemHref;
+    return pathname === itemHref || pathname.startsWith(itemHref + '/'); // For dynamic routes like /attractions/[id]
   };
 
 
@@ -108,7 +111,7 @@ export default function Header() {
                 <div className="space-y-2">
                   <h4 className="font-medium leading-none">Language & Region</h4>
                   <p className="text-sm text-muted-foreground">
-                    Choose your preferred language. Region & Currency selection coming soon.
+                    Choose your preferred language. Region &amp; Currency selection coming soon.
                   </p>
                 </div>
                 <Separator />
