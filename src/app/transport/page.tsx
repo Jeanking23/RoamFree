@@ -101,25 +101,39 @@ export default function TransportPage() {
   const rideForm = useForm<TransportFormValues>({
     resolver: zodResolver(transportSchema),
     defaultValues: {
-      pickupLocation: "", dropoffLocation: "",
-      pickupDate: new Date(), pickupTime: format(new Date(), "HH:mm"),
-      scheduleRide: false, wheelchairAccessible: false, babySeat: false, petFriendly: false,
+      pickupLocation: "", 
+      dropoffLocation: "",
+      pickupDate: undefined, // Initialize as undefined, set in useEffect
+      pickupTime: "",        // Initialize as empty, set in useEffect
+      scheduleRide: false, 
+      wheelchairAccessible: false, 
+      babySeat: false, 
+      petFriendly: false,
     },
   });
   
   const intercityForm = useForm<IntercityTransportFormValues>({
     resolver: zodResolver(intercityTransportSchema),
     defaultValues: {
-        originCity: "", destinationCity: "", passengers: 1, serviceType: "SHUTTLE", departureDate: new Date()
+        originCity: "", 
+        destinationCity: "", 
+        passengers: 1, 
+        serviceType: "SHUTTLE", 
+        departureDate: undefined // Initialize as undefined, set in useEffect
     }
   });
 
-  const { setValue, getValues } = rideForm;
-
+  // Effect for rideForm to set initial date/time client-side
   useEffect(() => {
-    setValue("pickupDate", new Date(), { shouldValidate: true });
-    setValue("pickupTime", format(new Date(), "HH:mm"), { shouldValidate: true });
-  }, [setValue]);
+    const now = new Date();
+    rideForm.setValue("pickupDate", now, { shouldValidate: true });
+    rideForm.setValue("pickupTime", format(now, "HH:mm"), { shouldValidate: true });
+  }, [rideForm.setValue]);
+
+  // Effect for intercityForm to set initial date client-side
+  useEffect(() => {
+    intercityForm.setValue("departureDate", new Date(), { shouldValidate: true });
+  }, [intercityForm.setValue]);
 
 
   async function onRideSubmit(data: TransportFormValues) {
@@ -144,7 +158,7 @@ export default function TransportPage() {
   }
 
   const handleSuggestionClick = (name: string) => {
-    setValue("dropoffLocation", name, { shouldValidate: true });
+    rideForm.setValue("dropoffLocation", name, { shouldValidate: true });
   };
 
   const handleGeolocate = () => {
@@ -157,7 +171,7 @@ export default function TransportPage() {
       (position) => {
         const { latitude, longitude } = position.coords;
         const demoAddress = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)} (Demo Address)`;
-        setValue("pickupLocation", demoAddress, { shouldValidate: true });
+        rideForm.setValue("pickupLocation", demoAddress, { shouldValidate: true });
         toast({ title: "Location Found!", description: "Pickup location set to your current position (simulated address)." });
         setIsLocating(false);
       },
@@ -213,7 +227,7 @@ export default function TransportPage() {
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField control={rideForm.control} name="pickupDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Pickup Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={(date) => { field.onChange(date); if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) { const currentTime = format(new Date(), "HH:mm"); if (!getValues("pickupTime") || getValues("pickupTime")! < currentTime) { setValue("pickupTime", currentTime, {shouldValidate: true}); } } }} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                        <FormField control={rideForm.control} name="pickupDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Pickup Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={(date) => { field.onChange(date); if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) { const currentTime = format(new Date(), "HH:mm"); if (!rideForm.getValues("pickupTime") || rideForm.getValues("pickupTime")! < currentTime) { rideForm.setValue("pickupTime", currentTime, {shouldValidate: true}); } } }} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
                         <FormField control={rideForm.control} name="pickupTime" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</FormLabel><FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
                       </div>
                       <FormField control={rideForm.control} name="scheduleRide" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Schedule this ride in advance</FormLabel></FormItem>)} />
