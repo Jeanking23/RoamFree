@@ -143,10 +143,13 @@ export default function RentHomePage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-1"><Bed className="h-4 w-4 text-primary" />Bedrooms</FormLabel>
-                        <Select onValueChange={(val) => field.onChange(val ? Number(val) : undefined)} value={field.value?.toString() ?? ""}>
+                        <Select
+                          onValueChange={(value) => field.onChange(value === "ALL" ? undefined : Number(value))}
+                          value={field.value === undefined ? "ALL" : field.value.toString()}
+                        >
                             <FormControl><SelectTrigger><SelectValue placeholder="Any" /></SelectTrigger></FormControl>
                             <SelectContent>
-                                <SelectItem value="">Any</SelectItem>
+                                <SelectItem value="ALL">Any</SelectItem>
                                 <SelectItem value="0">Studio</SelectItem>
                                 <SelectItem value="1">1+</SelectItem>
                                 <SelectItem value="2">2+</SelectItem>
