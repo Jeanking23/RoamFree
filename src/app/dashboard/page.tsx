@@ -13,6 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator'; 
+import { useState } from 'react';
 
 // Mock data - replace with actual data fetching
 const mockListings = [
@@ -31,6 +32,7 @@ const mockAnalytics = {
 };
 
 export default function DashboardPage() {
+  const [blackoutDates, setBlackoutDates] = useState('');
 
   const handleDeleteListing = (listingId: string, listingName: string) => {
     toast({
@@ -226,7 +228,13 @@ export default function DashboardPage() {
                                 </div>
                                 <div>
                                     <Label htmlFor="blackout-dates">Blackout Dates (e.g., MM/DD/YYYY, MM/DD/YYYY)</Label>
-                                    <Input id="blackout-dates" placeholder="Enter dates separated by commas" className="mt-1"/>
+                                    <Input 
+                                      id="blackout-dates" 
+                                      placeholder="Enter dates separated by commas" 
+                                      className="mt-1"
+                                      value={blackoutDates}
+                                      onChange={(e) => setBlackoutDates(e.target.value)}
+                                    />
                                 </div>
                             </div>
                             <Button className="mt-3" variant="outline" onClick={() => handleToolClick("Availability Settings")}>Update Availability Settings</Button>
