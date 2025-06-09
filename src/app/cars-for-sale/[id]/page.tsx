@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Gauge, DollarSign, MapPin, Info, ShieldCheck, MessageCircle, CarFront, FileText, UserCheck, Eye, Share2, Heart, AlertTriangle, Settings, CheckCircle, TvIcon } from 'lucide-react';
+import { CalendarDays, Gauge, DollarSign, MapPin, Info, ShieldCheck, MessageSquare, CarFront, FileText, UserCheck, Eye, Share2, Heart, AlertTriangle, Settings, CheckCircle, TvIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
@@ -58,9 +58,7 @@ export default function CarSaleProfilePage() {
   const handleRequestTestDrive = () => {
     toast({ title: "Test Drive Requested (Demo)", description: `Requesting a test drive for ${mockCarForSaleDetails.name}. Seller will be notified.` });
   };
-  const handleChatWithSeller = () => {
-    toast({ title: "Chat with Seller (Demo)", description: `Opening secure chat with ${mockCarForSaleDetails.seller.name}.`});
-  };
+
   const handleShare = () => {
      if (navigator.share) {
       navigator.share({
