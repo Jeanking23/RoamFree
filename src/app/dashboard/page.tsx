@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building, CarFront, LandPlot, ListPlus, BarChart3, MessageSquare, DollarSign, Eye, Edit3, Trash2, CalendarCheck2, Settings, AlertTriangle, ShieldCheck, Users, FileText, Wrench, LayoutDashboard } from 'lucide-react'; // Added Wrench & LayoutDashboard
+import { Building, CarFront, LandPlot, ListPlus, BarChart3, MessageSquare, DollarSign, Eye, Edit3, Trash2, CalendarCheck2, Settings, AlertTriangle, ShieldCheck, Users, FileText, Wrench, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Progress } from "@/components/ui/progress";
@@ -12,7 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator'; // Added Separator
+import { Separator } from '@/components/ui/separator'; 
 
 // Mock data - replace with actual data fetching
 const mockListings = [
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                         <Link href="/list-property"><ListPlus className="mr-2 h-4 w-4" /> Add Property/Rental</Link>
                     </Button>
                     <Button asChild size="sm" variant="outline" onClick={() => toast({title: "List Car for Sale (Demo)", description: "Navigating to car listing form."})}>
-                        <Link href="/cars-for-sale/new"><CarFront className="mr-2 h-4 w-4" /> List Car for Sale</Link> {/* Assuming a /new route for creating */}
+                        <Link href="/cars-for-sale/new"><CarFront className="mr-2 h-4 w-4" /> List Car for Sale</Link>
                     </Button>
                  </div>
               </div>
@@ -163,9 +163,11 @@ export default function DashboardPage() {
               ) : (
                 <div className="text-center py-12 bg-muted/30 rounded-md">
                   <p className="text-xl font-semibold">You haven't listed anything yet.</p>
-                  <Button asChild className="mt-4">
-                    <Link href="/list-property">Create Your First Listing</Link>
-                  </Button>
+                  <Link href="/list-property" passHref legacyBehavior>
+                    <Button asChild className="mt-4">
+                      <a>Create Your First Listing</a>
+                    </Button>
+                  </Link>
                 </div>
               )}
             </TabsContent>
@@ -178,7 +180,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent className="text-center py-12 bg-muted/30 rounded-md">
                   <CalendarCheck2 className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-                  <p className="text-xl font-semibold">Booking & Offer Management Coming Soon</p>
+                  <p className="text-xl font-semibold">Booking &amp; Offer Management Coming Soon</p>
                   <p className="text-muted-foreground">You'll be able to see guest/buyer details, manage check-ins, handle modifications, and accept/reject offers here. Digital lease signing and payment reminders for rentals will also be available.</p>
                 </CardContent>
               </Card>
@@ -187,7 +189,7 @@ export default function DashboardPage() {
             <TabsContent value="messages" className="p-4 md:p-0">
               <Card>
                 <CardHeader>
-                  <CardTitle>Guest, Renter & Buyer Messages</CardTitle>
+                  <CardTitle>Guest, Renter &amp; Buyer Messages</CardTitle>
                   <CardDescription>Communicate with your clients directly.</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center py-12 bg-muted/30 rounded-md">
@@ -201,7 +203,7 @@ export default function DashboardPage() {
             <TabsContent value="tools" className="p-4 md:p-0">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Host & Seller Tools</CardTitle>
+                        <CardTitle>Host &amp; Seller Tools</CardTitle>
                         <CardDescription>Access tools to optimize your listings and manage operations.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
@@ -230,7 +232,7 @@ export default function DashboardPage() {
                             <Button className="mt-3" variant="outline" onClick={() => handleToolClick("Availability Settings")}>Update Availability Settings</Button>
                         </Card>
                         <Card className="p-4">
-                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><AlertTriangle className="h-5 w-5"/>Damage & Dispute Resolution (Demo)</CardTitle>
+                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><AlertTriangle className="h-5 w-5"/>Damage &amp; Dispute Resolution (Demo)</CardTitle>
                             <p className="text-sm text-muted-foreground mb-3">Submit photo/video-based damage claims for rentals and access mediation services.</p>
                             <Button variant="secondary" onClick={() => handleToolClick("Dispute System")}><Wrench className="mr-2 h-4 w-4"/>Open Dispute System</Button>
                         </Card>
@@ -254,4 +256,6 @@ export default function DashboardPage() {
     </div>
   );
 }
+    
+
     
