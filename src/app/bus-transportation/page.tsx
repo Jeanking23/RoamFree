@@ -19,7 +19,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info } from 'lucide-react';
+import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "@/hooks/use-toast";
@@ -69,6 +69,7 @@ const mockBusRoutes: BusRoute[] = [
     id: "route001",
     operator: "ComfortLines Express",
     operatorLogo: "https://placehold.co/100x50.png?text=ComfortLines",
+    dataAiHint: "bus company logo",
     operatorRating: 4.5,
     departureTime: "08:00 AM",
     arrivalTime: "02:00 PM",
@@ -86,6 +87,7 @@ const mockBusRoutes: BusRoute[] = [
     id: "route002",
     operator: "Speedy Ways",
     operatorLogo: "https://placehold.co/100x50.png?text=SpeedyWays",
+    dataAiHint: "bus company logo",
     operatorRating: 4.2,
     departureTime: "10:30 PM",
     arrivalTime: "05:30 AM",
@@ -103,6 +105,7 @@ const mockBusRoutes: BusRoute[] = [
     id: "route003",
     operator: "Budget Bus Co.",
     operatorLogo: "https://placehold.co/100x50.png?text=BudgetBus",
+    dataAiHint: "bus company logo",
     operatorRating: 3.8,
     departureTime: "02:00 PM",
     arrivalTime: "09:00 PM",
@@ -120,6 +123,7 @@ const mockBusRoutes: BusRoute[] = [
     id: "route004",
     operator: "Prestige Travel",
     operatorLogo: "https://placehold.co/100x50.png?text=Prestige",
+    dataAiHint: "bus company logo",
     operatorRating: 4.8,
     departureTime: "11:00 AM",
     arrivalTime: "05:30 PM",
@@ -165,17 +169,14 @@ export default function BusTransportationPage() {
     setSearchResults([]);
     console.log("Bus Search Submitted:", data);
     
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Mock filtering logic
     const filteredResults = mockBusRoutes.filter(route => {
       let matches = true;
       if (data.hasAC && !route.amenities.ac) matches = false;
       if (data.hasWifi && !route.amenities.wifi) matches = false;
       if (data.hasUsb && !route.amenities.usb) matches = false;
-      if (data.tripType !== "ANY" && route.tripType !== data.tripType) matches = false;
-      // Add more filtering for origin/destination/date if mock data was more extensive
+      if (data.tripType !== "ANY" && route.tripType.toUpperCase() !== data.tripType) matches = false;
       return matches;
     });
 
@@ -193,7 +194,6 @@ export default function BusTransportationPage() {
         title: "View Seats (Demo)",
         description: `Loading seat map for route ${routeId}. This will show an interactive 3D seat selection UI.`
     });
-    // Navigate to seat selection page or show modal in real app
   }
 
   return (
@@ -331,9 +331,9 @@ export default function BusTransportationPage() {
             <Card key={route.id} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
               <div className="grid md:grid-cols-12 gap-4 p-4">
                 <div className="md:col-span-2 flex flex-col items-center justify-center">
-                   {route.operatorLogo && <Image src={route.operatorLogo} alt={`${route.operator} logo`} width={100} height={50} className="object-contain mb-1" data-ai-hint="bus company logo" />}
+                   {route.operatorLogo && <Image src={route.operatorLogo} alt={`${route.operator} logo`} width={100} height={50} className="object-contain mb-1" data-ai-hint={route.dataAiHint || "bus company logo"} />}
                   <p className="text-sm font-medium text-center">{route.operator}</p>
-                  {route.operatorRating && <p className="text-xs text-muted-foreground">Rating: {route.operatorRating}/5</p>}
+                  {route.operatorRating && <p className="text-xs text-muted-foreground">Rating: {route.operatorRating}/5 (Demo)</p>}
                 </div>
                 <div className="md:col-span-7 space-y-2">
                   <div className="flex flex-col sm:flex-row justify-between items-baseline">
@@ -393,12 +393,14 @@ export default function BusTransportationPage() {
             <p><Info className="inline h-4 w-4 mr-1 text-primary"/>Bus Operator Profiles with reviews, ratings, and punctuality scores.</p>
             <p><Clock className="inline h-4 w-4 mr-1 text-primary"/>Live Bus Tracking during trip with ETA and delay notifications.</p>
             <p><Users className="inline h-4 w-4 mr-1 text-primary"/>Save Passenger Profiles for faster bookings & Group Booking options.</p>
-            <p><BaggageClaim className="inline h-4 w-4 mr-1 text-primary"/>Add-ons: Snacks, extra luggage, travel insurance.</p>
-            <p><AlertCircle className="inline h-4 w-4 mr-1 text-primary"/>Safety & Accessibility Filters: Female-only seating, wheelchair accessible buses.</p>
-            <p className="text-xs">Some features like fare breakdown (taxes, fees), reserve now/pay later, and bus chat will be integrated into the booking flow.</p>
+            <p><BaggageClaim className="inline h-4 w-4 mr-1 text-primary"/>Add-ons: Snacks, extra luggage, travel insurance, carbon offset.</p>
+            <p><ShieldCheck className="inline h-4 w-4 mr-1 text-primary"/>Safety & Accessibility Filters: Female-only seating, wheelchair accessible buses.</p>
+            <p><MessageSquare className="inline h-4 w-4 mr-1 text-primary"/>Bus Chat & Operator Announcements.</p>
+            <p className="text-xs">Fare breakdown (taxes, fees) and payment options (Reserve now/pay later) will be integrated into the booking flow.</p>
         </CardContent>
       </Card>
 
     </div>
   );
 }
+
