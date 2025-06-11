@@ -2,6 +2,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+// import { toast } from '@/hooks/use-toast'; // Assuming toast is available globally or not strictly needed for this context logic
 
 export interface Language {
   code: string;
@@ -188,7 +189,7 @@ const translationsData: Record<string, Record<string, string>> = {
     'transport.destinationSetAsDropoff': 'défini comme lieu de dépose pour la réservation de trajet.',
     'transport.otherTransportOptionsTitle': 'Autres Options de Transport',
     'transport.rentACarLink': 'Louer une Voiture',
-    'transport.busTicketsLegacyLink': 'Billets de Bus (Ancien)',
+    // 'transport.busTicketsLegacyLink': 'Billets de Bus (Ancien)', // Link removed in a previous step
     'transport.flightSearchLink': 'Recherche & Réservation de Vols',
     'transport.platformFeaturesTitle': 'Fonctionnalités de la Plateforme',
     'transport.featureDriverVerification': 'Vérification Chauffeur/Opérateur & Notes (Démo)',
@@ -226,7 +227,6 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // This effect runs only on the client, after the initial render.
     const storedLangCode = localStorage.getItem('roamfree-lang');
     const storedRegionCode = localStorage.getItem('roamfree-region');
     const storedCurrencyCode = localStorage.getItem('roamfree-currency');
@@ -253,19 +253,19 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
     }
     setSelectedCurrencyState(finalCurrency);
 
-    setIsHydrated(true); // Signal that localStorage values have been loaded and applied
+    setIsHydrated(true);
   }, []);
 
   const setLanguage = useCallback((language: Language, silent = false) => {
     setSelectedLanguageState(language);
     if (isHydrated) localStorage.setItem('roamfree-lang', language.code);
-    // if (!silent && typeof window !== 'undefined') toast({ title: "Language Changed (Demo)", description: `Language set to ${language.name}.` });
+    // if (!silent && typeof window !== 'undefined' && (window as any).toast) (window as any).toast({ title: "Language Changed (Demo)", description: `Language set to ${language.name}.` });
   }, [isHydrated]);
 
   const setCurrency = useCallback((currency: Currency, silent = false) => {
     setSelectedCurrencyState(currency);
     if (isHydrated) localStorage.setItem('roamfree-currency', currency.code);
-    // if (!silent && typeof window !== 'undefined') toast({ title: "Currency Changed (Demo)", description: `Currency set to ${currency.name} (${currency.symbol}).` });
+    // if (!silent && typeof window !== 'undefined' && (window as any).toast) (window as any).toast({ title: "Currency Changed (Demo)", description: `Currency set to ${currency.name} (${currency.symbol}).` });
   }, [isHydrated]);
 
   const setRegion = useCallback((region: Region, silent = false) => {
@@ -280,7 +280,7 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
     setSelectedCurrencyState(newCurrency);
     if (isHydrated) localStorage.setItem('roamfree-currency', newCurrency.code);
     
-    // if (!silent && typeof window !== 'undefined') toast({ title: "Region Changed (Demo)", description: `Region set to ${region.name}. Language: ${newLang.name}, Currency: ${newCurrency.name}.` });
+    // if (!silent && typeof window !== 'undefined' && (window as any).toast) (window as any).toast({ title: "Region Changed (Demo)", description: `Region set to ${region.name}. Language: ${newLang.name}, Currency: ${newCurrency.name}.` });
   }, [isHydrated, selectedLanguage, selectedCurrency]);
 
 
@@ -316,3 +316,4 @@ export const useLocalization = () => {
   }
   return context;
 };
+    
