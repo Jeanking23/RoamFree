@@ -19,14 +19,15 @@ import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog"; // Added Dialog components
-import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon, Filter } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
 
 const busSearchSchema = z.object({
   originCity: z.string().min(2, "Origin city is required."),
@@ -64,8 +65,8 @@ interface BusRoute {
   departureStation: string;
   arrivalStation: string;
   stops?: number;
-  totalSeats?: number; // For seat map demo
-  seatsLayout?: { rows: number, cols: number, aisleAfter: number }; // For seat map demo
+  totalSeats?: number; 
+  seatsLayout?: { rows: number, cols: number, aisleAfter: number }; 
 }
 
 const mockBusRoutes: BusRoute[] = [
@@ -107,7 +108,7 @@ const mockBusRoutes: BusRoute[] = [
     arrivalStation: "South Station, Yaoundé",
     stops: 0,
     totalSeats: 30,
-    seatsLayout: { rows: 8, cols: 4, aisleAfter: 2 }, // Smaller bus
+    seatsLayout: { rows: 8, cols: 4, aisleAfter: 2 },
   },
   {
     id: "route003",
@@ -147,16 +148,15 @@ const mockBusRoutes: BusRoute[] = [
     arrivalStation: "Capital Square, Yaoundé",
     stops: 0,
     totalSeats: 20,
-    seatsLayout: { rows: 5, cols: 4, aisleAfter: 2 }, // VIP bus
+    seatsLayout: { rows: 5, cols: 4, aisleAfter: 2 }, 
   },
 ];
 
-// Helper function to generate seat labels (e.g., 1A, 1B)
 const getSeatLabel = (rowIndex: number, colIndex: number, layout: {cols: number, aisleAfter: number}) => {
   const row = rowIndex + 1;
-  let letter = String.fromCharCode(65 + colIndex); // A, B, C, D
+  let letter = String.fromCharCode(65 + colIndex); 
   if (colIndex >= layout.aisleAfter) {
-      letter = String.fromCharCode(65 + colIndex); // If aisle is after B, C starts after aisle
+      letter = String.fromCharCode(65 + colIndex); 
   }
   return `${row}${letter}`;
 };
@@ -217,17 +217,39 @@ export default function BusTransportationPage() {
 
   const handleViewSeats = (route: BusRoute) => {
     setSelectedRouteForSeats(route);
-    setCurrentSelectedSeats([]); // Reset selected seats for new route
+    setCurrentSelectedSeats([]); 
     setIsSeatSelectionDialogOpen(true);
   }
 
   const toggleSeatSelection = (seatId: string) => {
-    setCurrentSelectedSeats(prev => 
-      prev.includes(seatId) ? prev.filter(s => s !== seatId) : [...prev, seatId]
-    );
-  }
+    const passengerCount = form.getValues("passengers") || 1;
+    setCurrentSelectedSeats(prev => {
+      if (prev.includes(seatId)) {
+        return prev.filter(s => s !== seatId); // Deselect
+      } else {
+        if (prev.length < passengerCount) {
+          return [...prev, seatId]; // Select if limit not reached
+        }
+        toast({
+          title: "Seat Limit Reached",
+          description: `You can only select up to ${passengerCount} seat(s). Please deselect a seat if you want to choose a different one.`,
+          variant: "default",
+        });
+        return prev; // Limit reached, do not add new seat
+      }
+    });
+  };
 
   const handleConfirmSeats = () => {
+    const passengerCount = form.getValues("passengers") || 1;
+    if (currentSelectedSeats.length === 0) {
+        toast({ title: "No Seats Selected", description: "Please select your seat(s).", variant: "destructive" });
+        return;
+    }
+    if (currentSelectedSeats.length !== passengerCount) {
+        toast({ title: "Seat Count Mismatch", description: `Please select exactly ${passengerCount} seat(s) for ${passengerCount} passenger(s).`, variant: "destructive" });
+        return;
+    }
     toast({
         title: "Seats Confirmed (Demo)",
         description: `Selected seats: ${currentSelectedSeats.join(', ')}. Proceeding to booking for route ${selectedRouteForSeats?.id}.`
@@ -257,7 +279,7 @@ export default function BusTransportationPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center gap-1"><MapPin className="h-4 w-4 text-primary" />Origin City</FormLabel>
-                      <FormControl><Input placeholder="e.g., Douala" {...field} /></FormControl>
+                      <FormControl><Input placeholder="e.g., Douala" {...field} value={field.value || ''} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -268,7 +290,7 @@ export default function BusTransportationPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center gap-1"><MapPin className="h-4 w-4 text-primary" />Destination City</FormLabel>
-                      <FormControl><Input placeholder="e.g., Yaoundé" {...field} /></FormControl>
+                      <FormControl><Input placeholder="e.g., Yaoundé" {...field} value={field.value || ''} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -306,7 +328,7 @@ export default function BusTransportationPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center gap-1"><Users className="h-4 w-4 text-primary" />Passengers</FormLabel>
-                      <FormControl><Input type="number" min="1" max="20" placeholder="1" {...field} /></FormControl>
+                      <FormControl><Input type="number" min="1" max="20" placeholder="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))} value={field.value || 1} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -438,7 +460,8 @@ export default function BusTransportationPage() {
             <DialogHeader>
               <DialogTitle>Select Your Seats for {selectedRouteForSeats.operator}</DialogTitle>
               <DialogDescription>
-                Bus Type: {selectedRouteForSeats.busType}. Click on available seats to select.
+                Bus Type: {selectedRouteForSeats.busType}. 
+                Please select {form.getValues("passengers") || 1} seat(s).
               </DialogDescription>
             </DialogHeader>
             <div className="py-4">
@@ -447,6 +470,7 @@ export default function BusTransportationPage() {
                 <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-blue-500" /> Selected</span>
                 <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-red-500 opacity-50" /> Taken</span>
               </div>
+              <div className="w-16 h-8 bg-gray-300 rounded-t-md mx-auto mb-2 flex items-center justify-center text-xs">Front</div>
               <div className="bg-muted/30 p-2 sm:p-4 rounded-md flex justify-center">
                 <div className="grid gap-1 sm:gap-1.5" style={{ gridTemplateColumns: `repeat(${selectedRouteForSeats.seatsLayout?.cols || 4}, minmax(0, 1fr))` }}>
                   {Array.from({ length: selectedRouteForSeats.totalSeats || 40 }).map((_, index) => {
@@ -455,21 +479,20 @@ export default function BusTransportationPage() {
                     const colIndex = index % layout.cols;
                     const seatId = getSeatLabel(rowIndex, colIndex, layout);
                     
-                    // Simulate some taken seats (e.g., every 5th seat, and specific ones)
-                    const isTaken = index % 5 === 0 || ["2A", "3C"].includes(seatId);
+                    const isTaken = index % 5 === 0 || ["2A", "3C"].includes(seatId); // Simulate some taken seats
                     const isSelected = currentSelectedSeats.includes(seatId);
 
                     let seatVariant: "default" | "destructive" | "secondary" | "outline" = "outline";
                     let seatDisabled = false;
-                    let seatColorClass = "text-green-600 hover:bg-green-100";
+                    let seatColorClass = "border-green-500 text-green-600 hover:bg-green-100 focus-visible:ring-green-400";
 
                     if (isTaken) {
                       seatVariant = "secondary";
                       seatDisabled = true;
-                      seatColorClass = "text-red-500 opacity-50 cursor-not-allowed";
+                      seatColorClass = "border-destructive/30 text-destructive/50 opacity-60 cursor-not-allowed bg-destructive/10";
                     } else if (isSelected) {
-                      seatVariant = "default"; // Or some other variant to indicate selection
-                      seatColorClass = "bg-primary text-primary-foreground hover:bg-primary/90";
+                      seatVariant = "default";
+                      seatColorClass = "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary";
                     }
 
                     return (
@@ -477,7 +500,11 @@ export default function BusTransportationPage() {
                         key={seatId}
                         variant={seatVariant}
                         size="icon"
-                        className={cn("h-8 w-8 sm:h-10 sm:w-10 transition-all duration-150", seatColorClass, colIndex === layout.aisleAfter -1 ? "mr-2 sm:mr-4" : "")}
+                        className={cn(
+                            "h-8 w-8 sm:h-10 sm:w-10 transition-all duration-150", 
+                            seatColorClass, 
+                            colIndex === layout.aisleAfter -1 ? "mr-3 sm:mr-6" : "" // Aisle spacing
+                        )}
                         onClick={() => !isTaken && toggleSeatSelection(seatId)}
                         disabled={seatDisabled}
                         aria-label={`Seat ${seatId}${isTaken ? ' (Taken)' : isSelected ? ' (Selected)' : ' (Available)'}`}
@@ -489,8 +516,15 @@ export default function BusTransportationPage() {
                   })}
                 </div>
               </div>
-               <p className="text-xs text-muted-foreground text-center mt-2">Driver</p>
-               <div className="w-16 h-8 bg-gray-300 rounded-t-md mx-auto mb-2 flex items-center justify-center text-xs">Front</div>
+               <div className="mt-6">
+                <Label className="text-sm font-medium flex items-center gap-1 mb-2"><Filter className="h-4 w-4"/>Seat Preference Filters (Demo)</Label>
+                <div className="flex flex-wrap gap-3">
+                    <div className="flex items-center space-x-2"><Checkbox id="filter-window" disabled /><Label htmlFor="filter-window" className="text-xs text-muted-foreground">Window</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox id="filter-aisle" disabled /><Label htmlFor="filter-aisle" className="text-xs text-muted-foreground">Aisle</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox id="filter-front" disabled /><Label htmlFor="filter-front" className="text-xs text-muted-foreground">Front Row</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox id="filter-exit" disabled /><Label htmlFor="filter-exit" className="text-xs text-muted-foreground">Exit Row</Label></div>
+                </div>
+               </div>
             </div>
             <DialogFooter className="sm:justify-between items-center">
                 <p className="text-sm text-muted-foreground">Selected: {currentSelectedSeats.length} seat(s) - {currentSelectedSeats.join(', ')}</p>
@@ -498,7 +532,7 @@ export default function BusTransportationPage() {
                   <DialogClose asChild>
                     <Button type="button" variant="outline">Cancel</Button>
                   </DialogClose>
-                  <Button type="button" onClick={handleConfirmSeats} disabled={currentSelectedSeats.length === 0}>
+                  <Button type="button" onClick={handleConfirmSeats} disabled={currentSelectedSeats.length === 0 || currentSelectedSeats.length !== (form.getValues("passengers") || 1)}>
                     Confirm Seats &amp; Proceed (Demo)
                   </Button>
                 </div>
@@ -513,16 +547,16 @@ export default function BusTransportationPage() {
           <CardTitle className="text-xl">More Bus Travel Features (Coming Soon / Demo)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground">
-            <p><Armchair className="inline h-4 w-4 mr-1 text-primary"/>Interactive 3D Seat Selection with real-time availability.</p>
-            <p><Zap className="inline h-4 w-4 mr-1 text-primary"/>E-Ticket & QR Code Boarding Pass generation (email & in-app).</p>
-            <p><MapPin className="inline h-4 w-4 mr-1 text-primary"/>Station Information (amenities, gates) & Live GPS Navigation to station.</p>
-            <p><Info className="inline h-4 w-4 mr-1 text-primary"/>Bus Operator Profiles with reviews, ratings, and punctuality scores.</p>
+            <p><Armchair className="inline h-4 w-4 mr-1 text-primary"/>Interactive 3D Seat Selection with real-time availability & hover details.</p>
+            <p><Zap className="inline h-4 w-4 mr-1 text-primary"/>E-Ticket & QR Code Boarding Pass generation (email & in-app, offline access, departure countdown).</p>
+            <p><MapPin className="inline h-4 w-4 mr-1 text-primary"/>Station Information (amenities, gates, parking) & Live GPS Navigation to station.</p>
+            <p><Info className="inline h-4 w-4 mr-1 text-primary"/>Bus Operator Profiles with reviews, ratings, punctuality scores, and verified badges.</p>
             <p><Clock className="inline h-4 w-4 mr-1 text-primary"/>Live Bus Tracking during trip with ETA and delay notifications.</p>
-            <p><Users className="inline h-4 w-4 mr-1 text-primary"/>Save Passenger Profiles for faster bookings & Group Booking options.</p>
-            <p><BaggageClaim className="inline h-4 w-4 mr-1 text-primary"/>Add-ons: Snacks, extra luggage, travel insurance, carbon offset.</p>
-            <p><ShieldCheck className="inline h-4 w-4 mr-1 text-primary"/>Safety & Accessibility Filters: Female-only seating, wheelchair accessible buses.</p>
-            <p><MessageSquare className="inline h-4 w-4 mr-1 text-primary"/>Bus Chat & Operator Announcements.</p>
-            <p className="text-xs">Fare breakdown (taxes, fees) and payment options (Reserve now/pay later) will be integrated into the booking flow.</p>
+            <p><Users className="inline h-4 w-4 mr-1 text-primary"/>Save Passenger Profiles for faster bookings (name, ID/passport, preferences). Upload ID/Passport docs.</p>
+            <p><BaggageClaim className="inline h-4 w-4 mr-1 text-primary"/>Add-ons: Snacks, extra luggage, travel insurance, WiFi voucher, pillow/blanket, carbon offset.</p>
+            <p><ShieldCheck className="inline h-4 w-4 mr-1 text-primary"/>Safety & Accessibility Filters: Female-only seating, wheelchair accessible, child-friendly seats.</p>
+            <p><MessageSquare className="inline h-4 w-4 mr-1 text-primary"/>Bus Chat (passengers) & Operator Announcements.</p>
+            <p className="text-xs">Fare breakdown (taxes, fees) and advanced payment options (Reserve now/pay later, group bookings) will be integrated into the booking flow.</p>
         </CardContent>
       </Card>
 
