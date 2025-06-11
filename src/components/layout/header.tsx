@@ -48,10 +48,20 @@ const mainNavItems = [
 
 const languages = [
   { code: 'en', name: 'English (US)', flag: '🇺🇸' },
-  { code: 'fr', name: 'Français (FR)', flag: '🇫🇷' },
-  { code: 'es', name: 'Español (ES)', flag: '🇪🇸' },
-  { code: 'de', name: 'Deutsch (DE)', flag: '🇩🇪' },
+  { code: 'gb', name: 'English (UK)', flag: '🇬🇧' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+  { code: 'pt', name: 'Português', flag: '🇵🇹' },
+  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+  { code: 'ja', name: '日本語', flag: '🇯🇵' },
+  { code: 'ko', name: '한국어', flag: '🇰🇷' },
   { code: 'zh', name: '中文 (简体)', flag: '🇨🇳' }, // Simplified Chinese
+  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+  // Add more common languages as needed
 ];
 
 const regions = [
@@ -59,9 +69,12 @@ const regions = [
     { code: 'NG', name: 'Nigeria', flag: '🇳🇬', defaultLang: 'en', defaultCurrency: 'NGN' },
     { code: 'CI', name: "Côte d'Ivoire", flag: '🇨🇮', defaultLang: 'fr', defaultCurrency: 'XAF' },
     { code: 'US', name: 'United States', flag: '🇺🇸', defaultLang: 'en', defaultCurrency: 'USD' },
-    { code: 'GB', name: 'United Kingdom', flag: '🇬🇧', defaultLang: 'en', defaultCurrency: 'GBP' },
+    { code: 'GB', name: 'United Kingdom', flag: '🇬🇧', defaultLang: 'gb', defaultCurrency: 'GBP' },
     { code: 'DE', name: 'Germany', flag: '🇩🇪', defaultLang: 'de', defaultCurrency: 'EUR' },
+    { code: 'FR', name: 'France', flag: '🇫🇷', defaultLang: 'fr', defaultCurrency: 'EUR' },
     { code: 'CN', name: 'China', flag: '🇨🇳', defaultLang: 'zh', defaultCurrency: 'CNY' },
+    { code: 'JP', name: 'Japan', flag: '🇯🇵', defaultLang: 'ja', defaultCurrency: 'JPY' },
+    { code: 'AE', name: 'United Arab Emirates', flag: '🇦🇪', defaultLang: 'ar', defaultCurrency: 'AED'},
 ];
 
 const currencies = [
@@ -71,11 +84,14 @@ const currencies = [
     { code: 'XAF', name: 'CFA Franc BEAC', symbol: 'FCFA' },
     { code: 'NGN', name: 'Nigerian Naira', symbol: '₦' },
     { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
+    { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
+    { code: 'AED', name: 'UAE Dirham', symbol: 'د.إ' },
+    // Add more common currencies as needed
 ];
 
 
 export default function Header() {
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
+  const [selectedLanguage, setSelectedLanguage] = useState(languages.find(l => l.code === 'en') || languages[0]);
   const [selectedRegion, setSelectedRegion] = useState(regions.find(r => r.code === 'US') || regions[0]);
   const [selectedCurrency, setSelectedCurrency] = useState(currencies.find(c => c.code === 'USD') || currencies[0]);
 
@@ -95,16 +111,8 @@ export default function Header() {
         }
       };
       window.addEventListener('hashchange', handleHashChange);
-      // Geolocation and initial settings demo (would be more complex in real app)
-      // For demo, let's assume a user from Cameroon if no preference is stored
-      // This is a very simplified auto-detection logic for demo purposes
-      // In a real app, you'd use Geolocation API and store user preferences
-      // const initialRegion = regions.find(r => r.code === 'CM') || regions[0];
-      // handleRegionChange(initialRegion, true); // true to suppress toast on initial load
-
       return () => window.removeEventListener('hashchange', handleHashChange);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -145,6 +153,7 @@ export default function Header() {
     setSelectedRegion(region);
     const newLang = languages.find(l => l.code === region.defaultLang) || selectedLanguage;
     const newCurrency = currencies.find(c => c.code === region.defaultCurrency) || selectedCurrency;
+    
     setSelectedLanguage(newLang);
     setSelectedCurrency(newCurrency);
 
@@ -376,13 +385,13 @@ export default function Header() {
             </li>
           ))}
            <Separator orientation="vertical" className="h-6 mx-2" />
-            <Link href="/profile" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/profile' ? 'bg-primary/10 border border-primary text-primary' : 'text-muted-foreground hover:bg-muted/50 hover:text-primary'}`}>
+            <Link href="/profile" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/profile' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
                 <UserCircle className="h-5 w-5" /> Profile
             </Link>
-             <Link href="/wishlist" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/wishlist' ? 'bg-primary/10 border border-primary text-primary' : 'text-muted-foreground hover:bg-muted/50 hover:text-primary'}`}>
+             <Link href="/wishlist" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/wishlist' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground hover:bg-muted/50 hover:text-primary'}`}>
                 <Heart className="h-5 w-5" /> Wishlist
             </Link>
-             <Link href="/loyalty" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/loyalty' ? 'bg-primary/10 border border-primary text-primary' : 'text-muted-foreground hover:bg-muted/50 hover:text-primary'}`}>
+             <Link href="/loyalty" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/loyalty' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground hover:bg-muted/50 hover:text-primary'}`}>
                 <Award className="h-5 w-5" /> Loyalty
             </Link>
         </ul>
