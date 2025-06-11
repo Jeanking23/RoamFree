@@ -196,6 +196,7 @@ const translationsData: Record<string, Record<string, string>> = {
     'transport.featureSecurePayments': 'Paiements Sécurisés via l\'App (Démo)',
     'transport.featureBaggageAssistance': 'Option Assistance Bagages (Démo pour trajets)',
     'header.ownerDashboard': 'Tableau de Bord Propriétaire',
+    // ... add more French translations for transport page
   },
   // Add other languages and their translations here
 };
@@ -209,7 +210,7 @@ interface LocalizationContextType {
   setRegion: (region: Region, silent?: boolean) => void;
   setCurrency: (currency: Currency, silent?: boolean) => void;
   getTranslatedText: (key: string, fallback: string) => string;
-  isHydrated: boolean; // Flag to indicate if values are from localStorage
+  isHydrated: boolean; 
 }
 
 const defaultLanguage = languages.find(l => l.code === 'en') || languages[0];
@@ -225,7 +226,6 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // Load from localStorage
     const storedLangCode = localStorage.getItem('roamfree-lang');
     const storedRegionCode = localStorage.getItem('roamfree-region');
     const storedCurrencyCode = localStorage.getItem('roamfree-currency');
@@ -252,19 +252,19 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
     }
     setSelectedCurrencyState(initialCurrency);
 
-    setIsHydrated(true); // Signal that hydration from localStorage is complete
+    setIsHydrated(true);
   }, []);
 
   const setLanguage = useCallback((language: Language, silent = false) => {
     setSelectedLanguageState(language);
     if (isHydrated) localStorage.setItem('roamfree-lang', language.code);
-    // if (!silent && typeof window !== 'undefined' && (window as any).toast) (window as any).toast({ title: "Language Changed (Demo)", description: `Language set to ${language.name}.` });
+    // Toast notifications for language/currency changes are handled in Header.tsx
+    // to avoid direct toast calls from context if it's not desired everywhere.
   }, [isHydrated]);
 
   const setCurrency = useCallback((currency: Currency, silent = false) => {
     setSelectedCurrencyState(currency);
     if (isHydrated) localStorage.setItem('roamfree-currency', currency.code);
-    // if (!silent && typeof window !== 'undefined' && (window as any).toast) (window as any).toast({ title: "Currency Changed (Demo)", description: `Currency set to ${currency.name} (${currency.symbol}).` });
   }, [isHydrated]);
 
   const setRegion = useCallback((region: Region, silent = false) => {
@@ -278,8 +278,6 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
     const newCurrency = currencies.find(c => c.code === region.defaultCurrency) || selectedCurrency;
     setSelectedCurrencyState(newCurrency);
     if (isHydrated) localStorage.setItem('roamfree-currency', newCurrency.code);
-    
-    // if (!silent && typeof window !== 'undefined' && (window as any).toast) (window as any).toast({ title: "Region Changed (Demo)", description: `Region set to ${region.name}. Language: ${newLang.name}, Currency: ${newCurrency.name}.` });
   }, [isHydrated, selectedLanguage, selectedCurrency]);
 
 
@@ -289,8 +287,7 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
     }
     return fallback;
   }, [selectedLanguage.code]);
-
-  // Construct context value. Ensure all values are stable or memoized if derived.
+  
   const contextValue: LocalizationContextType = {
     selectedLanguage,
     selectedRegion,
@@ -316,3 +313,4 @@ export const useLocalization = () => {
   }
   return context;
 };
+
