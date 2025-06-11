@@ -19,7 +19,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages } from 'lucide-react';
+import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "@/hooks/use-toast";
@@ -44,6 +44,7 @@ interface BusRoute {
   id: string;
   operator: string;
   operatorLogo?: string;
+  dataAiHint?: string;
   operatorRating?: number;
   departureTime: string;
   arrivalTime: string;
@@ -94,7 +95,7 @@ const mockBusRoutes: BusRoute[] = [
     duration: "7h 00m",
     price: 22,
     busType: "Standard AC Sleeper",
-    amenities: { ac: true, wifi: false, usb: true, toilet: true },
+    amenities: { ac: true, wifi: false, usb: true, toilet: true, tv: false },
     availableSeats: 20,
     tripType: "Overnight",
     departureStation: "North Terminal, Douala",
@@ -112,7 +113,7 @@ const mockBusRoutes: BusRoute[] = [
     duration: "7h 00m",
     price: 18,
     busType: "Non-AC Standard",
-    amenities: { ac: false, wifi: false, usb: false },
+    amenities: { ac: false, wifi: false, usb: false, tv: false, toilet: false },
     availableSeats: 45,
     tripType: "Day",
     departureStation: "City Center Hub, Douala",
@@ -130,7 +131,7 @@ const mockBusRoutes: BusRoute[] = [
     duration: "6h 30m",
     price: 30,
     busType: "VIP Executive Coach",
-    amenities: { ac: true, wifi: true, usb: true, tv: true, toilet: true },
+    amenities: { ac: true, wifi: true, usb: true, tv: true, toilet: false },
     availableSeats: 15,
     tripType: "Day",
     departureStation: "Airport Shuttle Stop, Douala",
@@ -177,6 +178,8 @@ export default function BusTransportationPage() {
       if (data.hasWifi && !route.amenities.wifi) matches = false;
       if (data.hasUsb && !route.amenities.usb) matches = false;
       if (data.tripType !== "ANY" && route.tripType.toUpperCase() !== data.tripType) matches = false;
+      // Add filtering for origin/destination cities if needed for demo
+      // For now, it just returns based on amenities and trip type
       return matches;
     });
 
@@ -329,33 +332,45 @@ export default function BusTransportationPage() {
           <h2 className="text-2xl font-semibold text-foreground">Available Routes ({searchResults.length})</h2>
           {searchResults.map((route) => (
             <Card key={route.id} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-              <div className="grid md:grid-cols-12 gap-4 p-4">
-                <div className="md:col-span-2 flex flex-col items-center justify-center">
+              <div className="grid md:grid-cols-12 gap-4 p-4 items-stretch">
+                <div className="md:col-span-2 flex flex-col items-center justify-center text-center">
                    {route.operatorLogo && <Image src={route.operatorLogo} alt={`${route.operator} logo`} width={100} height={50} className="object-contain mb-1" data-ai-hint={route.dataAiHint || "bus company logo"} />}
-                  <p className="text-sm font-medium text-center">{route.operator}</p>
-                  {route.operatorRating && <p className="text-xs text-muted-foreground">Rating: {route.operatorRating}/5 (Demo)</p>}
+                  <p className="text-sm font-medium">{route.operator}</p>
+                  {route.operatorRating && (
+                    <div className="flex items-center text-xs text-muted-foreground">
+                        <StarIcon className="h-3 w-3 mr-0.5 text-yellow-400 fill-yellow-400" /> {route.operatorRating}/5 (Demo)
+                    </div>
+                  )}
                 </div>
-                <div className="md:col-span-7 space-y-2">
-                  <div className="flex flex-col sm:flex-row justify-between items-baseline">
-                    <div className="font-semibold text-lg">{route.departureTime} <MapPin className="inline h-4 w-4 text-muted-foreground"/> <span className="text-sm text-muted-foreground">{route.departureStation}</span></div>
-                    <div className="text-sm text-muted-foreground hidden sm:block">➔</div>
-                    <div className="font-semibold text-lg">{route.arrivalTime} <MapPin className="inline h-4 w-4 text-muted-foreground"/> <span className="text-sm text-muted-foreground">{route.arrivalStation}</span></div>
+                <div className="md:col-span-7 space-y-1">
+                  <div className="flex flex-col sm:flex-row justify-between items-baseline gap-1">
+                    <div className="font-semibold text-lg flex items-center">
+                        {route.departureTime}
+                        <MapPin className="inline h-4 w-4 text-muted-foreground mx-1"/> 
+                        <span className="text-sm text-muted-foreground font-normal">{route.departureStation}</span>
+                    </div>
+                    <div className="text-sm text-muted-foreground hidden sm:block self-center">➔</div>
+                    <div className="font-semibold text-lg flex items-center">
+                        {route.arrivalTime}
+                        <MapPin className="inline h-4 w-4 text-muted-foreground mx-1"/> 
+                        <span className="text-sm text-muted-foreground font-normal">{route.arrivalStation}</span>
+                    </div>
                   </div>
                   <div className="flex justify-between text-sm text-muted-foreground">
                     <span>Duration: {route.duration}</span>
                     <span>{route.stops !== undefined ? (route.stops > 0 ? `${route.stops} Stop(s)` : "Direct") : ""}</span>
                   </div>
                   <p className="text-sm"><Info className="inline h-4 w-4 mr-1 text-primary"/>Bus Type: {route.busType}</p>
-                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
-                    {route.amenities.ac && <span className="flex items-center"><Snowflake className="h-3 w-3 mr-1 text-blue-500"/>AC</span>}
-                    {route.amenities.wifi && <span className="flex items-center"><Wifi className="h-3 w-3 mr-1 text-sky-500"/>WiFi</span>}
-                    {route.amenities.usb && <span className="flex items-center"><Power className="h-3 w-3 mr-1 text-yellow-500"/>USB</span>}
-                    {route.amenities.tv && <span className="flex items-center"><Tv className="h-3 w-3 mr-1 text-gray-500"/>TV</span>}
-                    {route.amenities.toilet && <span className="flex items-center"><Wind className="h-3 w-3 mr-1 text-teal-500"/>Toilet</span>}
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs pt-1">
+                    {route.amenities.ac && <span className="flex items-center"><Snowflake className="h-3.5 w-3.5 mr-1 text-blue-500"/>AC</span>}
+                    {route.amenities.wifi && <span className="flex items-center"><Wifi className="h-3.5 w-3.5 mr-1 text-sky-500"/>WiFi</span>}
+                    {route.amenities.usb && <span className="flex items-center"><Power className="h-3.5 w-3.5 mr-1 text-yellow-500"/>USB</span>}
+                    {route.amenities.tv && <span className="flex items-center"><Tv className="h-3.5 w-3.5 mr-1 text-gray-500"/>TV</span>}
+                    {route.amenities.toilet && <span className="flex items-center"><Wind className="h-3.5 w-3.5 mr-1 text-teal-500"/>Toilet</span>}
                   </div>
-                   <p className="text-xs text-muted-foreground">{route.tripType} Trip | {route.availableSeats} seats available</p>
+                   <p className="text-xs text-muted-foreground pt-1">{route.tripType} Trip | {route.availableSeats} seats available</p>
                 </div>
-                <div className="md:col-span-3 flex flex-col items-center md:items-end justify-center space-y-2">
+                <div className="md:col-span-3 flex flex-col items-center md:items-end justify-center space-y-2 pt-2 md:pt-0">
                   <p className="text-2xl font-bold text-primary">${route.price.toFixed(2)}</p>
                   <Button className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => handleViewSeats(route.id)}>
                     <Armchair className="mr-2 h-4 w-4"/>View Seats &amp; Book
