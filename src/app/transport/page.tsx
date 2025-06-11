@@ -55,7 +55,7 @@ import {
   FileText as FileTextIcon,
   QrCode,
   UserCog,
-  DollarSign // Added DollarSign here
+  DollarSign
 } from 'lucide-react';
 import Link from 'next/link';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -81,6 +81,7 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLocalization } from '@/contexts/LocalizationContext';
 
 
 const rideBookingSchema = z.object({
@@ -133,7 +134,11 @@ const intercityBusSearchSchema = z.object({
     originCity: z.string().min(2, "Origin city is required."),
     destinationCity: z.string().min(2, "Destination city is required."),
     departureDate: z.date({ required_error: "Departure date is required." }),
+    returnDate: z.date().optional(),
     passengers: z.coerce.number().min(1, "At least one passenger required.").max(50, "Max 50 passengers for group booking demo."),
+}).refine(data => !data.returnDate || data.returnDate >= data.departureDate, {
+  message: "Return date must be on or after departure date.",
+  path: ["returnDate"],
 });
 type IntercityBusSearchFormValues = z.infer<typeof intercityBusSearchSchema>;
 
@@ -171,6 +176,7 @@ const destinationSuggestions = [
 
 function RideBookingForm() {
   const { toast } = useToast();
+  const { selectedCurrency, getTranslatedText } = useLocalization();
   const [rideOptions, setRideOptions] = useState<RideOption[]>([]);
   const [isLocating, setIsLocating] = useState(false);
   const [isFetchingRides, setIsFetchingRides] = useState(false);
@@ -180,7 +186,6 @@ function RideBookingForm() {
     defaultValues: {
       pickupLocation: "", 
       dropoffLocation: "",
-      // pickupDate and pickupTime will be set in useEffect to avoid hydration mismatch
       scheduleRide: false, 
       wheelchairAccessible: false, 
       babySeat: false, 
@@ -196,7 +201,6 @@ function RideBookingForm() {
   });
 
   useEffect(() => {
-    // Initialize date/time fields client-side to prevent hydration errors
     if (!rideForm.getValues("pickupDate")) {
       rideForm.setValue("pickupDate", new Date(), { shouldValidate: true });
     }
@@ -248,11 +252,10 @@ function RideBookingForm() {
         if (!data.filterComfort && option.vehicleType === 'Comfort') return false;
         if (!data.filterSuv && (option.vehicleType === 'SUV/XL' || option.vehicleType === 'Pickup')) return false;
         if (!data.filterPremium && option.vehicleType === 'Premium') return false;
-        // More specific feature filtering
-        if (data.wheelchairAccessible && !option.features?.includes('Wheelchair Accessible Option')) return false; // Check for specific string
-        if (data.petFriendly && !option.features?.includes('Pet-friendly')) return false; // Check for specific string
+        if (data.wheelchairAccessible && !option.features?.includes('Wheelchair Accessible Option')) return false; 
+        if (data.petFriendly && !option.features?.includes('Pet-friendly')) return false; 
         if (data.filterWifi && !option.features?.includes('Wi-Fi')) return false;
-        if (data.filterAC && !option.features?.includes('AC')) return false; // Ensure AC check is consistent
+        if (data.filterAC && !option.features?.includes('AC')) return false;
         if (data.filterQuietRide && !option.features?.includes('Quiet Ride Option')) return false;
         return true;
     });
@@ -292,7 +295,7 @@ function RideBookingForm() {
   const handleChooseRide = (ride: RideOption) => {
     toast({
         title: `Ride Selected: ${ride.vehicleType}`,
-        description: `Fare: $${ride.estimatedFare.toFixed(2)}. Driver details and real-time tracking would appear now. Price lock for 3 mins (Demo).`,
+        description: `Fare: ${selectedCurrency.symbol}${ride.estimatedFare.toFixed(2)} (${selectedCurrency.code}). Driver details and real-time tracking would appear now. Price lock for 3 mins (Demo).`,
         duration: 7000,
     });
   }
@@ -300,64 +303,64 @@ function RideBookingForm() {
   return (
      <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Request or Schedule a Ride</CardTitle>
-          <CardDescription>Auto-fill destination from accommodation/calendar (Demo feature). Trip reminders for scheduled rides (Demo).</CardDescription>
+          <CardTitle className="text-2xl">{getTranslatedText('transport.requestRideTitle', 'Request or Schedule a Ride')}</CardTitle>
+          <CardDescription>{getTranslatedText('transport.requestRideDescription', 'Auto-fill destination from accommodation/calendar (Demo feature). Trip reminders for scheduled rides (Demo).')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...rideForm}>
             <form onSubmit={rideForm.handleSubmit(onRideSubmit)} className="space-y-6">
               <div className="relative space-y-4">
-                <FormField control={rideForm.control} name="pickupLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><CircleDot className="h-5 w-5 text-primary" /> Pickup Location</FormLabel><div className="flex items-center gap-2"><FormControl><Input placeholder="Enter pickup location" {...field} value={field.value || ''} /></FormControl><Button type="button" variant="outline" size="icon" onClick={handleGeolocate} disabled={isLocating} aria-label="Use current location">{isLocating ? <Clock className="h-5 w-5 animate-spin" /> : <LocateFixed className="h-5 w-5" />}</Button></div><FormMessage /></FormItem>)} />
+                <FormField control={rideForm.control} name="pickupLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><CircleDot className="h-5 w-5 text-primary" /> {getTranslatedText('transport.pickupLocation', 'Pickup Location')}</FormLabel><div className="flex items-center gap-2"><FormControl><Input placeholder={getTranslatedText('transport.pickupPlaceholder', "Enter pickup location")} {...field} value={field.value || ''} /></FormControl><TooltipProvider><Tooltip><TooltipTrigger asChild><Button type="button" variant="outline" size="icon" onClick={handleGeolocate} disabled={isLocating} aria-label={getTranslatedText('transport.useCurrentLocation', "Use current location")}><IconCARGps className="h-5 w-5 animate-spin" IconLACLocateFixed className="h-5 w-5" /></Button></TooltipTrigger><TooltipContent><p>{getTranslatedText('transport.useCurrentLocation', 'Use my current location')}</p></TooltipContent></Tooltip></TooltipProvider></div><FormMessage /></FormItem>)} />
                 <div className="absolute left-[9px] top-[calc(2.5rem+10px)] h-[calc(100%-5rem-20px)] w-0.5 bg-gray-300 -translate-y-1/2 z-0"></div>
-                <FormField control={rideForm.control} name="dropoffLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><SquareDot className="h-5 w-5 text-primary" /> Dropoff Location</FormLabel><FormControl><Input placeholder="Enter dropoff location" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
+                <FormField control={rideForm.control} name="dropoffLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><SquareDot className="h-5 w-5 text-primary" /> {getTranslatedText('transport.dropoffLocation', 'Dropoff Location')}</FormLabel><FormControl><Input placeholder={getTranslatedText('transport.dropoffPlaceholder', "Enter dropoff location")} {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
               </div>
                 <div className="text-xs text-muted-foreground flex items-center gap-2">
-                    <Button variant="link" size="sm" className="p-0 h-auto" disabled><PlusCircle className="h-3 w-3 mr-1"/>Add multiple stops (Coming Soon)</Button>
+                    <Button variant="link" size="sm" className="p-0 h-auto" disabled><PlusCircle className="h-3 w-3 mr-1"/>{getTranslatedText('transport.addStops', 'Add multiple stops')} ({getTranslatedText('transport.comingSoon', 'Coming Soon')})</Button>
                     <Separator orientation="vertical" className="h-3"/>
-                    <Button variant="link" size="sm" className="p-0 h-auto" disabled><RefreshCcw className="h-3 w-3 mr-1"/>Schedule return trip (Coming Soon)</Button>
+                    <Button variant="link" size="sm" className="p-0 h-auto" disabled><RefreshCcw className="h-3 w-3 mr-1"/>{getTranslatedText('transport.scheduleReturn', 'Schedule return trip')} ({getTranslatedText('transport.comingSoon', 'Coming Soon')})</Button>
                 </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField control={rideForm.control} name="pickupDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Pickup Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={(date) => { field.onChange(date); if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) { const currentTime = format(new Date(), "HH:mm"); if (!rideForm.getValues("pickupTime") || rideForm.getValues("pickupTime")! < currentTime) { rideForm.setValue("pickupTime", currentTime, {shouldValidate: true}); } } }} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-                <FormField control={rideForm.control} name="pickupTime" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</FormLabel><FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
+                <FormField control={rideForm.control} name="pickupDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />{getTranslatedText('transport.pickupDate', 'Pickup Date')}</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>{getTranslatedText('transport.pickDate', 'Pick a date')}</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={(date) => { field.onChange(date); if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) { const currentTime = format(new Date(), "HH:mm"); if (!rideForm.getValues("pickupTime") || rideForm.getValues("pickupTime")! < currentTime) { rideForm.setValue("pickupTime", currentTime, {shouldValidate: true}); } } }} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                <FormField control={rideForm.control} name="pickupTime" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />{getTranslatedText('transport.pickupTime', 'Pickup Time')}</FormLabel><FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
               </div>
-              <FormField control={rideForm.control} name="scheduleRide" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm"><FormControl><Checkbox checked={field.value || false} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Schedule this ride in advance</FormLabel></FormItem>)} />
+              <FormField control={rideForm.control} name="scheduleRide" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm"><FormControl><Checkbox checked={field.value || false} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">{getTranslatedText('transport.scheduleAdvance', 'Schedule this ride in advance')}</FormLabel></FormItem>)} />
               
               <Card className="border-dashed">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-lg flex items-center gap-2"><Filter className="h-5 w-5"/>Filters &amp; Preferences (Demo)</CardTitle>
+                    <CardTitle className="text-lg flex items-center gap-2"><Filter className="h-5 w-5"/>{getTranslatedText('transport.filtersPreferences', 'Filters & Preferences')} ({getTranslatedText('transport.demo', 'Demo')})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                     <div>
-                        <FormLabel className="text-xs font-medium">Ride Types</FormLabel>
+                        <FormLabel className="text-xs font-medium">{getTranslatedText('transport.rideTypes', 'Ride Types')}</FormLabel>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-1">
-                            <FormField control={rideForm.control} name="filterEconomy" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">Economy</FormLabel></FormItem>)} />
-                            <FormField control={rideForm.control} name="filterComfort" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">Comfort</FormLabel></FormItem>)} />
-                            <FormField control={rideForm.control} name="filterSuv" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">SUV/XL</FormLabel></FormItem>)} />
-                            <FormField control={rideForm.control} name="filterPremium" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">Premium</FormLabel></FormItem>)} />
+                            <FormField control={rideForm.control} name="filterEconomy" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">{getTranslatedText('transport.economy', 'Economy')}</FormLabel></FormItem>)} />
+                            <FormField control={rideForm.control} name="filterComfort" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">{getTranslatedText('transport.comfort', 'Comfort')}</FormLabel></FormItem>)} />
+                            <FormField control={rideForm.control} name="filterSuv" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">{getTranslatedText('transport.suvXl', 'SUV/XL')}</FormLabel></FormItem>)} />
+                            <FormField control={rideForm.control} name="filterPremium" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">{getTranslatedText('transport.premium', 'Premium')}</FormLabel></FormItem>)} />
                         </div>
                     </div>
                       <div>
-                        <FormLabel className="text-xs font-medium">Accessibility &amp; Needs</FormLabel>
+                        <FormLabel className="text-xs font-medium">{getTranslatedText('transport.accessibilityNeeds', 'Accessibility & Needs')}</FormLabel>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
-                            <FormField control={rideForm.control} name="wheelchairAccessible" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Accessibility className="h-4 w-4"/>Wheelchair</FormLabel></FormItem>)} />
-                            <FormField control={rideForm.control} name="babySeat" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Baby className="h-4 w-4"/>Baby Seat</FormLabel></FormItem>)} />
-                            <FormField control={rideForm.control} name="petFriendly" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Dog className="h-4 w-4"/>Pet Friendly</FormLabel></FormItem>)} />
+                            <FormField control={rideForm.control} name="wheelchairAccessible" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Accessibility className="h-4 w-4"/>{getTranslatedText('transport.wheelchair', 'Wheelchair')}</FormLabel></FormItem>)} />
+                            <FormField control={rideForm.control} name="babySeat" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Baby className="h-4 w-4"/>{getTranslatedText('transport.babySeat', 'Baby Seat')}</FormLabel></FormItem>)} />
+                            <FormField control={rideForm.control} name="petFriendly" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Dog className="h-4 w-4"/>{getTranslatedText('transport.petFriendly', 'Pet Friendly')}</FormLabel></FormItem>)} />
                         </div>
                     </div>
                       <div>
-                        <FormLabel className="text-xs font-medium">Ride Preferences</FormLabel>
+                        <FormLabel className="text-xs font-medium">{getTranslatedText('transport.ridePreferences', 'Ride Preferences')}</FormLabel>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
-                            <FormField control={rideForm.control} name="filterQuietRide" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><VolumeX className="h-4 w-4"/>Quiet Ride</FormLabel></FormItem>)} />
-                            <FormField control={rideForm.control} name="filterWifi" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Wifi className="h-4 w-4"/>Wi-Fi</FormLabel></FormItem>)} />
-                            <FormField control={rideForm.control} name="filterAC" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Snowflake className="h-4 w-4"/>AC</FormLabel></FormItem>)} />
+                            <FormField control={rideForm.control} name="filterQuietRide" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><VolumeX className="h-4 w-4"/>{getTranslatedText('transport.quietRide', 'Quiet Ride')}</FormLabel></FormItem>)} />
+                            <FormField control={rideForm.control} name="filterWifi" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Wifi className="h-4 w-4"/>{getTranslatedText('transport.wifi', 'Wi-Fi')}</FormLabel></FormItem>)} />
+                            <FormField control={rideForm.control} name="filterAC" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Snowflake className="h-4 w-4"/>{getTranslatedText('transport.ac', 'AC')}</FormLabel></FormItem>)} />
                         </div>
                     </div>
                 </CardContent>
               </Card>
 
               <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isFetchingRides}>
-                <Search className="mr-2 h-5 w-5" /> {isFetchingRides ? "Fetching Rides..." : "See Prices"}
+                <Search className="mr-2 h-5 w-5" /> {isFetchingRides ? getTranslatedText('transport.fetchingRides', "Fetching Rides...") : getTranslatedText('transport.seePrices', "See Prices")}
               </Button>
             </form>
           </Form>
@@ -365,13 +368,13 @@ function RideBookingForm() {
           {isFetchingRides && (
             <div className="text-center py-6">
                 <Car className="h-10 w-10 text-primary animate-bounce mx-auto mb-2"/>
-                <p className="text-muted-foreground">Finding best rides for you...</p>
+                <p className="text-muted-foreground">{getTranslatedText('transport.findingBestRides', 'Finding best rides for you...')}</p>
             </div>
           )}
 
           {!isFetchingRides && rideOptions.length > 0 && (
             <div className="mt-8 space-y-4">
-                <h3 className="text-xl font-semibold">Available Ride Options ({rideOptions.length})</h3>
+                <h3 className="text-xl font-semibold">{getTranslatedText('transport.availableRideOptions', 'Available Ride Options')} ({rideOptions.length})</h3>
                 {rideOptions.map((option) => (
                     <Card key={option.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
                         <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-4 p-3">
@@ -397,9 +400,9 @@ function RideBookingForm() {
                                 {option.userPreferenceMatch && <p className="text-xs text-green-600 mt-1">{option.userPreferenceMatch}</p>}
                             </div>
                             <div className="sm:col-span-3 text-left sm:text-right">
-                                <p className="text-lg font-bold text-primary">${option.estimatedFare.toFixed(2)}</p>
-                                {option.fareBreakdown && <p className="text-xs text-muted-foreground cursor-pointer hover:underline" onClick={() => toast({title: "Fare Breakdown (Demo)", description: option.fareBreakdown})}>Fare Details</p> }
-                                <Button size="sm" className="mt-2 w-full sm:w-auto" onClick={() => handleChooseRide(option)}>Choose</Button>
+                                <p className="text-lg font-bold text-primary">{selectedCurrency.symbol}{option.estimatedFare.toFixed(2)} <span className="text-xs text-muted-foreground">({selectedCurrency.code})</span></p>
+                                {option.fareBreakdown && <p className="text-xs text-muted-foreground cursor-pointer hover:underline" onClick={() => toast({title: getTranslatedText('transport.fareBreakdownTitle', "Fare Breakdown (Demo)"), description: option.fareBreakdown})}>{getTranslatedText('transport.fareDetails', 'Fare Details')}</p> }
+                                <Button size="sm" className="mt-2 w-full sm:w-auto" onClick={() => handleChooseRide(option)}>{getTranslatedText('transport.choose', 'Choose')}</Button>
                             </div>
                         </div>
                     </Card>
@@ -410,8 +413,8 @@ function RideBookingForm() {
               <Card className="mt-8 text-center py-8 bg-muted/30">
                 <CardContent>
                     <Car className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
-                    <p className="text-md font-semibold">No rides match your current filters.</p>
-                    <p className="text-sm text-muted-foreground mt-1">Try adjusting your preferences or location.</p>
+                    <p className="text-md font-semibold">{getTranslatedText('transport.noRidesMatch', 'No rides match your current filters.')}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{getTranslatedText('transport.tryAdjustingFilters', 'Try adjusting your preferences or location.')}</p>
                 </CardContent>
             </Card>
           )}
@@ -422,11 +425,10 @@ function RideBookingForm() {
 
 function RentalCarForm() {
   const { toast } = useToast();
+  const { getTranslatedText } = useLocalization();
   const form = useForm<RentalCarFormValues>({
     resolver: zodResolver(rentalCarSchema),
-    defaultValues: { pickupLocation: "", 
-    // pickupTime, dropoffTime, pickupDate, dropoffDate will be set in useEffect
-  },
+    defaultValues: { pickupLocation: "" },
   });
 
   useEffect(() => {
@@ -449,7 +451,7 @@ function RentalCarForm() {
 
   function onSubmit(values: RentalCarFormValues) {
     console.log("Rental Car:", values);
-    toast({title: "Car Rental Search (Demo)", description: "Searching for available rental cars..."});
+    toast({title: getTranslatedText('transport.carRentalSearchTitle', "Car Rental Search (Demo)"), description: getTranslatedText('transport.searchingCars', "Searching for available rental cars...")});
   }
   return (
      <Form {...form}>
@@ -460,8 +462,8 @@ function RentalCarForm() {
             name="pickupLocation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Pickup Location</FormLabel>
-                <FormControl><Input placeholder="Enter pickup city or airport" {...field} value={field.value || ''} /></FormControl>
+                <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />{getTranslatedText('transport.pickupLocation', 'Pickup Location')}</FormLabel>
+                <FormControl><Input placeholder={getTranslatedText('transport.pickupCityAirport', "Enter pickup city or airport")} {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -471,8 +473,8 @@ function RentalCarForm() {
             name="dropoffLocation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Dropoff Location (Optional)</FormLabel>
-                <FormControl><Input placeholder="Leave blank if same as pickup" {...field} value={field.value || ''} /></FormControl>
+                <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />{getTranslatedText('transport.dropoffLocationOptional', 'Dropoff Location (Optional)')}</FormLabel>
+                <FormControl><Input placeholder={getTranslatedText('transport.dropoffSameAsPickup', "Leave blank if same as pickup")} {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -484,12 +486,12 @@ function RentalCarForm() {
             name="pickupDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Pickup Date</FormLabel>
+                <FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />{getTranslatedText('transport.pickupDate', 'Pickup Date')}</FormLabel>
                  <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>
-                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                        {field.value ? format(field.value, "PPP") : <span>{getTranslatedText('transport.pickDate', 'Pick a date')}</span>}
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
@@ -506,7 +508,7 @@ function RentalCarForm() {
             name="pickupTime"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</FormLabel>
+                <FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />{getTranslatedText('transport.pickupTime', 'Pickup Time')}</FormLabel>
                 <FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -519,12 +521,12 @@ function RentalCarForm() {
             name="dropoffDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Dropoff Date</FormLabel>
+                <FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />{getTranslatedText('transport.dropoffDate', 'Dropoff Date')}</FormLabel>
                  <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>
-                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                        {field.value ? format(field.value, "PPP") : <span>{getTranslatedText('transport.pickDate', 'Pick a date')}</span>}
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
@@ -541,7 +543,7 @@ function RentalCarForm() {
             name="dropoffTime"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Dropoff Time</FormLabel>
+                <FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />{getTranslatedText('transport.dropoffTime', 'Dropoff Time')}</FormLabel>
                 <FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -549,7 +551,7 @@ function RentalCarForm() {
           />
         </div>
         <Button type="submit" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-           <Search className="mr-2 h-4 w-4" /> Search Cars
+           <Search className="mr-2 h-4 w-4" /> {getTranslatedText('transport.searchCars', 'Search Cars')}
         </Button>
       </form>
     </Form>
@@ -558,6 +560,7 @@ function RentalCarForm() {
 
 function FlightSearchForm() {
   const { toast } = useToast();
+  const { getTranslatedText } = useLocalization();
   const form = useForm<FlightSearchFormValues>({
     resolver: zodResolver(flightSearchSchema),
     defaultValues: { origin: "", destination: ""},
@@ -572,7 +575,7 @@ function FlightSearchForm() {
 
   function onSubmit(values: FlightSearchFormValues) {
     console.log("Flight Search:", values);
-    toast({title: "Flight Search (Demo)", description: "Searching for available flights..."});
+    toast({title: getTranslatedText('transport.flightSearchTitle', "Flight Search (Demo)"), description: getTranslatedText('transport.searchingFlights', "Searching for available flights...")});
   }
   return (
      <Form {...form}>
@@ -583,8 +586,8 @@ function FlightSearchForm() {
             name="origin"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform -rotate-45" />Origin</FormLabel>
-                <FormControl><Input placeholder="Enter origin airport/city (e.g., JFK)" {...field} value={field.value || ''} /></FormControl>
+                <FormLabel className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform -rotate-45" />{getTranslatedText('transport.origin', 'Origin')}</FormLabel>
+                <FormControl><Input placeholder={getTranslatedText('transport.originPlaceholder', "Enter origin airport/city (e.g., JFK)")} {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -594,8 +597,8 @@ function FlightSearchForm() {
             name="destination"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform rotate-45" />Destination</FormLabel>
-                <FormControl><Input placeholder="Enter destination airport/city (e.g., LHR)" {...field} value={field.value || ''} /></FormControl>
+                <FormLabel className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform rotate-45" />{getTranslatedText('transport.destination', 'Destination')}</FormLabel>
+                <FormControl><Input placeholder={getTranslatedText('transport.destinationPlaceholder', "Enter destination airport/city (e.g., LHR)")} {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -607,12 +610,12 @@ function FlightSearchForm() {
             name="departureDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Departure Date</FormLabel>
+                <FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />{getTranslatedText('transport.departureDate', 'Departure Date')}</FormLabel>
                  <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>
-                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                        {field.value ? format(field.value, "PPP") : <span>{getTranslatedText('transport.pickDate', 'Pick a date')}</span>}
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
@@ -629,12 +632,12 @@ function FlightSearchForm() {
             name="returnDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Return Date (Optional)</FormLabel>
+                <FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />{getTranslatedText('transport.returnDateOptional', 'Return Date (Optional)')}</FormLabel>
                  <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>
-                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                        {field.value ? format(field.value, "PPP") : <span>{getTranslatedText('transport.pickDate', 'Pick a date')}</span>}
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
@@ -648,7 +651,7 @@ function FlightSearchForm() {
           />
         </div>
         <Button type="submit" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-           <Search className="mr-2 h-4 w-4" /> Search Flights
+           <Search className="mr-2 h-4 w-4" /> {getTranslatedText('transport.searchFlights', 'Search Flights')}
         </Button>
       </form>
     </Form>
@@ -657,6 +660,7 @@ function FlightSearchForm() {
 
 function IntercityBusSearchForm() {
   const { toast } = useToast();
+  const { selectedCurrency, getTranslatedText } = useLocalization();
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<IntercityBusRoute[]>([]);
 
@@ -665,7 +669,6 @@ function IntercityBusSearchForm() {
     defaultValues: {
       originCity: "",
       destinationCity: "",
-      // departureDate will be set in useEffect
       passengers: 1,
     },
   });
@@ -680,6 +683,7 @@ function IntercityBusSearchForm() {
     setIsSearching(true);
     setSearchResults([]);
     console.log("Intercity Bus Search Submitted:", data);
+    const tripTypeMessage = data.returnDate ? getTranslatedText('transport.roundTrip', "round trip") : getTranslatedText('transport.oneWay', "one-way");
 
     await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -690,59 +694,62 @@ function IntercityBusSearchForm() {
     ];
     setSearchResults(mockResults);
     setIsSearching(false);
-    toast({ title: "Intercity Bus Routes Found!", description: `Showing ${mockResults.length} options for your trip.` });
+    toast({ title: getTranslatedText('transport.intercityBusRoutesFound', "Intercity Bus Routes Found!"), description: `Showing ${mockResults.length} options for your ${tripTypeMessage} trip.` });
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">Search Intercity Bus Tickets</CardTitle>
-        <CardDescription>Find bus routes between cities, with various operators and options.</CardDescription>
+        <CardTitle className="text-2xl">{getTranslatedText('transport.searchIntercityBusTitle', 'Search Intercity Bus Tickets')}</CardTitle>
+        <CardDescription>{getTranslatedText('transport.searchIntercityBusDescription', 'Find bus routes between cities, with various operators and options.')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField control={form.control} name="originCity" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary"/>Origin City</FormLabel><FormControl><Input placeholder="e.g., Douala" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem> )} />
-              <FormField control={form.control} name="destinationCity" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary"/>Destination City</FormLabel><FormControl><Input placeholder="e.g., Yaoundé" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem> )} />
+              <FormField control={form.control} name="originCity" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary"/>{getTranslatedText('transport.originCity', 'Origin City')}</FormLabel><FormControl><Input placeholder={getTranslatedText('transport.originCityPlaceholder', 'e.g., Douala')} {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem> )} />
+              <FormField control={form.control} name="destinationCity" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary"/>{getTranslatedText('transport.destinationCity', 'Destination City')}</FormLabel><FormControl><Input placeholder={getTranslatedText('transport.destinationCityPlaceholder', 'e.g., Yaoundé')} {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem> )} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField control={form.control} name="departureDate" render={({ field }) => ( <FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary"/>Departure Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem> )} />
-              <FormField control={form.control} name="passengers" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><UsersIcon className="h-4 w-4 text-primary"/>Passengers</FormLabel><FormControl><Input type="number" min="1" placeholder="1" {...field} value={field.value ?? 1} /></FormControl><FormMessage /></FormItem> )} />
+              <FormField control={form.control} name="departureDate" render={({ field }) => ( <FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary"/>{getTranslatedText('transport.departureDate', 'Departure Date')}</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>{getTranslatedText('transport.pickDate', 'Pick a date')}</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem> )} />
+              <FormField control={form.control} name="returnDate" render={({ field }) => ( <FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary"/>{getTranslatedText('transport.returnDateOptional', 'Return Date (Optional)')}</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>{getTranslatedText('transport.pickDate', 'Pick a date')}</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < (form.getValues("departureDate") || new Date(new Date().setHours(0,0,0,0)))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem> )} />
+            </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField control={form.control} name="passengers" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><UsersIcon className="h-4 w-4 text-primary"/>{getTranslatedText('transport.passengers', 'Passengers')}</FormLabel><FormControl><Input type="number" min="1" placeholder="1" {...field} value={field.value ?? 1} /></FormControl><FormMessage /></FormItem> )} />
             </div>
             
             <Card className="border-dashed mt-4">
-                <CardHeader className="pb-2"><CardTitle className="text-lg flex items-center gap-2"><ListFilter className="h-5 w-5"/>Filters (Coming Soon)</CardTitle></CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-lg flex items-center gap-2"><ListFilter className="h-5 w-5"/>{getTranslatedText('transport.filters', 'Filters')} ({getTranslatedText('transport.comingSoon', 'Coming Soon')})</CardTitle></CardHeader>
                 <CardContent className="text-sm text-muted-foreground space-y-1">
-                    <p>Bus Features: AC, Wi-Fi, USB, Recliner, Restroom</p>
-                    <p>Trip Type: Day / Night</p>
-                    <p>Operator Rating</p>
-                    <p>Fare Type: Pay Now / Reserve Now, Pay Later</p>
+                    <p>{getTranslatedText('transport.busFeatures', 'Bus Features: AC, Wi-Fi, USB, Recliner, Restroom')}</p>
+                    <p>{getTranslatedText('transport.tripType', 'Trip Type: Day / Night')}</p>
+                    <p>{getTranslatedText('transport.operatorRating', 'Operator Rating')}</p>
+                    <p>{getTranslatedText('transport.fareType', 'Fare Type: Pay Now / Reserve Now, Pay Later')}</p>
                 </CardContent>
             </Card>
 
             <Button type="submit" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isSearching}>
-              <Search className="mr-2 h-4 w-4" /> {isSearching ? "Searching Buses..." : "Search Intercity Buses"}
+              <Search className="mr-2 h-4 w-4" /> {isSearching ? getTranslatedText('transport.searchingBuses', 'Searching Buses...') : getTranslatedText('transport.searchIntercityBuses', 'Search Intercity Buses')}
             </Button>
           </form>
         </Form>
 
-        {isSearching && ( <div className="text-center py-6"><Bus className="h-10 w-10 text-primary animate-pulse mx-auto mb-2"/><p className="text-muted-foreground">Finding intercity bus routes...</p></div> )}
+        {isSearching && ( <div className="text-center py-6"><Bus className="h-10 w-10 text-primary animate-pulse mx-auto mb-2"/><p className="text-muted-foreground">{getTranslatedText('transport.findingIntercityBusRoutes', 'Finding intercity bus routes...')}</p></div> )}
 
         {!isSearching && searchResults.length > 0 && (
           <div className="mt-8 space-y-4">
-            <h3 className="text-xl font-semibold">Available Intercity Routes ({searchResults.length})</h3>
+            <h3 className="text-xl font-semibold">{getTranslatedText('transport.availableIntercityRoutes', 'Available Intercity Routes')} ({searchResults.length})</h3>
             {searchResults.map((route) => (
               <Card key={route.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
                 <CardContent className="p-4 grid sm:grid-cols-3 gap-4 items-center">
                   <div className="sm:col-span-2">
                     <CardTitle className="text-lg">{route.operator} - {route.busType}</CardTitle>
-                    <p className="text-sm text-muted-foreground">Departs: {route.departureTime} &bull; Arrives: {route.arrivalTime} ({route.duration})</p>
-                    <p className="text-sm text-muted-foreground">{route.availableSeats} seats available</p>
+                    <p className="text-sm text-muted-foreground">{getTranslatedText('transport.departs', 'Departs')}: {route.departureTime} &bull; {getTranslatedText('transport.arrives', 'Arrives')}: {route.arrivalTime} ({route.duration})</p>
+                    <p className="text-sm text-muted-foreground">{route.availableSeats} {getTranslatedText('transport.seatsAvailable', 'seats available')}</p>
                   </div>
                   <div className="sm:text-right">
-                    <p className="text-xl font-bold text-primary">${route.price.toFixed(2)}</p>
-                    <Button size="sm" className="mt-1 w-full sm:w-auto" onClick={() => toast({ title: "View Details (Demo)", description: `Selected ${route.operator}. Seat selection & booking next.` })}>View Details & Book</Button>
+                    <p className="text-xl font-bold text-primary">{selectedCurrency.symbol}{route.price.toFixed(2)} <span className="text-xs text-muted-foreground">({selectedCurrency.code})</span></p>
+                    <Button size="sm" className="mt-1 w-full sm:w-auto" onClick={() => toast({ title: getTranslatedText('transport.viewDetailsTitle', "View Details (Demo)"), description: `${getTranslatedText('transport.selectedOperator', 'Selected')} ${route.operator}. ${getTranslatedText('transport.seatSelectionNext', 'Seat selection & booking next.')}` })}>{getTranslatedText('transport.viewDetailsBook', 'View Details & Book')}</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -750,24 +757,24 @@ function IntercityBusSearchForm() {
           </div>
         )}
         {!isSearching && form.formState.isSubmitted && searchResults.length === 0 && (
-          <Card className="mt-8 text-center py-8 bg-muted/30"><CardContent><Bus className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" /><p className="text-md font-semibold">No intercity bus routes found.</p><p className="text-sm text-muted-foreground mt-1">Try different cities or dates.</p></CardContent></Card>
+          <Card className="mt-8 text-center py-8 bg-muted/30"><CardContent><Bus className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" /><p className="text-md font-semibold">{getTranslatedText('transport.noIntercityBusRoutesFound', 'No intercity bus routes found.')}</p><p className="text-sm text-muted-foreground mt-1">{getTranslatedText('transport.tryDifferentCitiesDates', 'Try different cities or dates.')}</p></CardContent></Card>
         )}
         
         <Card className="mt-10">
-            <CardHeader><CardTitle className="text-xl flex items-center gap-2"><Settings className="h-5 w-5"/>Intercity Bus Features (Coming Soon / Demo)</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-xl flex items-center gap-2"><Settings className="h-5 w-5"/>{getTranslatedText('transport.intercityBusFeaturesTitle', 'Intercity Bus Features')} ({getTranslatedText('transport.comingSoonDemo', 'Coming Soon / Demo')})</CardTitle></CardHeader>
             <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p className="flex items-center gap-1"><DollarSign className="h-4 w-4"/>Fare Breakdown (base, taxes, add-ons)</p>
-                <p className="flex items-center gap-1"><Clock className="h-4 w-4"/>Reserve Now, Pay Later (1-hour hold)</p>
-                <p className="flex items-center gap-1"><Users2 className="h-4 w-4"/>Group Booking (multiple passengers, saved profiles, ID upload)</p>
-                <p className="flex items-center gap-1"><Armchair className="h-4 w-4"/>Interactive 3D Seat Selection (real-time availability, filters)</p>
-                <p className="flex items-center gap-1"><QrCode className="h-4 w-4"/>E-Ticket & QR Boarding Pass (offline access, countdown)</p>
-                <p className="flex items-center gap-1"><MapPin className="h-4 w-4"/>Station Info & Live Navigation to terminal</p>
-                <p className="flex items-center gap-1"><BadgeCheck className="h-4 w-4"/>Bus Operator Profiles (ratings, reviews, photos, policies)</p>
-                <p className="flex items-center gap-1"><Navigation className="h-4 w-4"/>Live Bus Tracking (GPS, ETA, delay notifications)</p>
-                <p className="flex items-center gap-1"><UserCog className="h-4 w-4"/>Passenger Info Management (saved profiles, doc upload)</p>
-                <p className="flex items-center gap-1"><ShoppingBag className="h-4 w-4"/>Add-ons: Snacks, Insurance, WiFi, Luggage, Carbon Offset</p>
-                <p className="flex items-center gap-1"><MessageCircle className="h-4 w-4"/>Bus Chat & Operator Announcements</p>
-                <p className="flex items-center gap-1"><ShieldCheck className="h-4 w-4"/>Safety Filters: Female-only seating, Wheelchair accessible, Child-friendly</p>
+                <p className="flex items-center gap-1"><DollarSign className="h-4 w-4"/>{getTranslatedText('transport.featureFareBreakdown', 'Fare Breakdown (base, taxes, add-ons)')}</p>
+                <p className="flex items-center gap-1"><Clock className="h-4 w-4"/>{getTranslatedText('transport.featureReservePayLater', 'Reserve Now, Pay Later (1-hour hold)')}</p>
+                <p className="flex items-center gap-1"><Users2 className="h-4 w-4"/>{getTranslatedText('transport.featureGroupBooking', 'Group Booking (multiple passengers, saved profiles, ID upload)')}</p>
+                <p className="flex items-center gap-1"><Armchair className="h-4 w-4"/>{getTranslatedText('transport.feature3DSeatSelection', 'Interactive 3D Seat Selection (real-time availability, filters)')}</p>
+                <p className="flex items-center gap-1"><QrCode className="h-4 w-4"/>{getTranslatedText('transport.featureETicketQR', 'E-Ticket & QR Boarding Pass (offline access, countdown)')}</p>
+                <p className="flex items-center gap-1"><MapPin className="h-4 w-4"/>{getTranslatedText('transport.featureStationInfoNav', 'Station Info & Live Navigation to terminal')}</p>
+                <p className="flex items-center gap-1"><BadgeCheck className="h-4 w-4"/>{getTranslatedText('transport.featureOperatorProfiles', 'Bus Operator Profiles (ratings, reviews, photos, policies)')}</p>
+                <p className="flex items-center gap-1"><Navigation className="h-4 w-4"/>{getTranslatedText('transport.featureLiveBusTracking', 'Live Bus Tracking (GPS, ETA, delay notifications)')}</p>
+                <p className="flex items-center gap-1"><UserCog className="h-4 w-4"/>{getTranslatedText('transport.featurePassengerInfoManagement', 'Passenger Info Management (saved profiles, doc upload)')}</p>
+                <p className="flex items-center gap-1"><ShoppingBag className="h-4 w-4"/>{getTranslatedText('transport.featureAddons', 'Add-ons: Snacks, Insurance, WiFi, Luggage, Carbon Offset')}</p>
+                <p className="flex items-center gap-1"><MessageCircle className="h-4 w-4"/>{getTranslatedText('transport.featureBusChatAnnouncements', 'Bus Chat & Operator Announcements')}</p>
+                <p className="flex items-center gap-1"><ShieldCheck className="h-4 w-4"/>{getTranslatedText('transport.featureSafetyFilters', 'Safety Filters: Female-only seating, Wheelchair accessible, Child-friendly')}</p>
             </CardContent>
         </Card>
 
@@ -778,13 +785,14 @@ function IntercityBusSearchForm() {
 
 
 function TransportationSearchForm() {
+  const { getTranslatedText } = useLocalization();
   return (
     <Tabs defaultValue="rides" className="w-full">
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-6 h-auto">
-          <TabsTrigger value="rides" className="py-2.5 gap-2"><Car className="h-5 w-5" />Ride Booking</TabsTrigger>
-          <TabsTrigger value="intercity-bus" className="py-2.5 gap-2"><Bus className="h-5 w-5" />Intercity Bus</TabsTrigger>
-          <TabsTrigger value="cars" className="py-2.5 gap-2"><CarFront className="h-5 w-5" />Rental Cars</TabsTrigger>
-          <TabsTrigger value="flights" className="py-2.5 gap-2"><Plane className="h-5 w-5" />Flights</TabsTrigger>
+          <TabsTrigger value="rides" className="py-2.5 gap-2"><Car className="h-5 w-5" />{getTranslatedText('transport.tabRideBooking', 'Ride Booking')}</TabsTrigger>
+          <TabsTrigger value="intercity-bus" className="py-2.5 gap-2"><Bus className="h-5 w-5" />{getTranslatedText('transport.tabIntercityBus', 'Intercity Bus')}</TabsTrigger>
+          <TabsTrigger value="cars" className="py-2.5 gap-2"><CarFront className="h-5 w-5" />{getTranslatedText('transport.tabRentalCars', 'Rental Cars')}</TabsTrigger>
+          <TabsTrigger value="flights" className="py-2.5 gap-2"><Plane className="h-5 w-5" />{getTranslatedText('transport.tabFlights', 'Flights')}</TabsTrigger>
         </TabsList>
         <TabsContent value="rides">
           <RideBookingForm />
@@ -804,13 +812,14 @@ function TransportationSearchForm() {
 
 export default function TransportPage() {
   const { toast } = useToast();
+  const { getTranslatedText } = useLocalization();
   
   const handleShareTrip = () => {
-    toast({ title: "Share My Trip (Demo)", description: "Trip details shared with emergency contacts (simulation)." });
+    toast({ title: getTranslatedText('transport.shareTripTitle', "Share My Trip (Demo)"), description: getTranslatedText('transport.shareTripDescription', "Trip details shared with emergency contacts (simulation).") });
   };
 
   const handleNavigationAssistant = () => {
-    toast({ title: "Navigation Assistant (Demo)", description: "Starting GPS voice navigation to destination (simulation)." });
+    toast({ title: getTranslatedText('transport.navAssistantTitle', "Navigation Assistant (Demo)"), description: getTranslatedText('transport.navAssistantDescription', "Starting GPS voice navigation to destination (simulation).") });
   };
 
   return (
@@ -819,10 +828,10 @@ export default function TransportPage() {
         <CardHeader className="bg-primary/10">
           <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
             <Plane className="h-8 w-8" /> {/* Using Plane as a general transport icon */}
-            Plan Your Journey
+            {getTranslatedText('transport.pageTitle', 'Plan Your Journey')}
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Request a ride, book intercity bus tickets, find rental cars, or explore various transport options.
+            {getTranslatedText('transport.pageDescription', 'Request a ride, book intercity bus tickets, find rental cars, or explore various transport options.')}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
@@ -831,25 +840,25 @@ export default function TransportPage() {
               <TransportationSearchForm />
               
               <Card>
-                <CardHeader><CardTitle className="text-xl flex items-center gap-2"><MapIcon className="h-5 w-5 text-primary"/>Real-Time Interactive Map</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-xl flex items-center gap-2"><MapIcon className="h-5 w-5 text-primary"/>{getTranslatedText('transport.realTimeMapTitle', 'Real-Time Interactive Map')}</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
-                    <p className="text-sm text-muted-foreground">View live vehicle locations, estimated arrival times, and route previews. (Full real-time map functionality requires backend services and mapping APIs like Google Maps or Mapbox.)</p>
+                    <p className="text-sm text-muted-foreground">{getTranslatedText('transport.realTimeMapDescription', 'View live vehicle locations, estimated arrival times, and route previews. (Full real-time map functionality requires backend services and mapping APIs like Google Maps or Mapbox.)')}</p>
                     <div className="aspect-video bg-muted rounded-md flex items-center justify-center overflow-hidden border">
                         <Image src="https://placehold.co/800x450.png?text=Live+Map+View+Placeholder" alt="Real-time map placeholder" width={800} height={450} className="object-cover w-full h-full" data-ai-hint="city map vehicles" />
                     </div>
                       <div className="flex flex-wrap gap-2 mt-2">
-                        <Button variant="outline" size="sm" onClick={handleShareTrip}><Share2 className="mr-2 h-4 w-4"/> Share My Trip (Demo)</Button>
-                        <Button variant="outline" size="sm" onClick={handleNavigationAssistant}><Navigation className="mr-2 h-4 w-4"/> Navigation Assistant (Demo)</Button>
+                        <Button variant="outline" size="sm" onClick={handleShareTrip}><Share2 className="mr-2 h-4 w-4"/> {getTranslatedText('transport.shareMyTrip', 'Share My Trip')} ({getTranslatedText('transport.demo', 'Demo')})</Button>
+                        <Button variant="outline" size="sm" onClick={handleNavigationAssistant}><Navigation className="mr-2 h-4 w-4"/> {getTranslatedText('transport.navigationAssistant', 'Navigation Assistant')} ({getTranslatedText('transport.demo', 'Demo')})</Button>
                     </div>
                 </CardContent>
-                  <CardFooter><p className="text-xs text-muted-foreground">Interactive map simulation.</p></CardFooter>
+                  <CardFooter><p className="text-xs text-muted-foreground">{getTranslatedText('transport.interactiveMapSimulation', 'Interactive map simulation.')}</p></CardFooter>
               </Card>
               
                 <Card>
-                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><UsersIcon className="h-5 w-5 text-primary"/>Carpool &amp; Ride Sharing</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><UsersIcon className="h-5 w-5 text-primary"/>{getTranslatedText('transport.carpoolTitle', 'Carpool & Ride Sharing')}</CardTitle></CardHeader>
                     <CardContent>
-                        <p className="text-sm text-muted-foreground">Feature coming soon! Find travelers with similar routes to share rides and split fares.</p>
-                        <Button variant="outline" className="w-full mt-2" disabled>Explore Carpool Options (Demo)</Button>
+                        <p className="text-sm text-muted-foreground">{getTranslatedText('transport.carpoolDescription', 'Feature coming soon! Find travelers with similar routes to share rides and split fares.')}</p>
+                        <Button variant="outline" className="w-full mt-2" disabled>{getTranslatedText('transport.exploreCarpool', 'Explore Carpool Options')} ({getTranslatedText('transport.demo', 'Demo')})</Button>
                     </CardContent>
               </Card>
 
@@ -857,27 +866,27 @@ export default function TransportPage() {
 
             <div className="lg:col-span-1 space-y-6">
               <Card>
-                <CardHeader><CardTitle className="text-xl">Destination Suggestions</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-xl">{getTranslatedText('transport.destinationSuggestionsTitle', 'Destination Suggestions')}</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
-                  {destinationSuggestions.map((suggestion) => (<Button key={suggestion.id} variant="ghost" className="flex flex-col items-start space-x-0 p-3 w-full h-auto text-left hover:bg-muted/80" onClick={() => { const rideForm = (document.querySelector('input[name="pickupLocation"]') as HTMLInputElement | null)?.form; if(rideForm) { const dropoffInput = rideForm.elements.namedItem('dropoffLocation') as HTMLInputElement | null; if(dropoffInput) dropoffInput.value = suggestion.name; } toast({title: "Destination Set", description: `${suggestion.name} set as dropoff for ride booking.`}) } }><p className="font-medium text-foreground group-hover:text-primary">{suggestion.name}</p><p className="text-sm text-muted-foreground">{suggestion.address}</p></Button>))}
+                  {destinationSuggestions.map((suggestion) => (<Button key={suggestion.id} variant="ghost" className="flex flex-col items-start space-x-0 p-3 w-full h-auto text-left hover:bg-muted/80" onClick={() => { const rideFormEl = document.querySelector('input[name="pickupLocation"]')?.closest('form'); if(rideFormEl) { const dropoffInput = rideFormEl.elements.namedItem('dropoffLocation') as HTMLInputElement | null; if(dropoffInput) dropoffInput.value = suggestion.name; } toast({title: getTranslatedText('transport.destinationSet', "Destination Set"), description: `${suggestion.name} ${getTranslatedText('transport.destinationSetAsDropoff', 'set as dropoff for ride booking.')}`}) } }><p className="font-medium text-foreground group-hover:text-primary">{suggestion.name}</p><p className="text-sm text-muted-foreground">{suggestion.address}</p></Button>))}
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader><CardTitle className="text-xl">Other Transport Options</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-xl">{getTranslatedText('transport.otherTransportOptionsTitle', 'Other Transport Options')}</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start" asChild><Link href="/car-rent">Rent a Car</Link></Button>
-                    <Button variant="outline" className="w-full justify-start" asChild><Link href="/bus-transportation">Bus Tickets (Legacy)</Link></Button> {/* Renamed to avoid confusion with new tab */}
-                    <Button variant="outline" className="w-full justify-start" disabled>Flight Search &amp; Booking (Coming Soon)</Button>
+                    <Button variant="outline" className="w-full justify-start" asChild><Link href="/car-rent">{getTranslatedText('transport.rentACarLink', 'Rent a Car')}</Link></Button>
+                    {/* Link to /bus-transportation (legacy) removed previously, functionality now in "Intercity Bus" tab */}
+                    <Button variant="outline" className="w-full justify-start" disabled>{getTranslatedText('transport.flightSearchLink', 'Flight Search & Booking')} ({getTranslatedText('transport.comingSoon', 'Coming Soon')})</Button>
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader><CardTitle className="text-xl">Platform Features</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-xl">{getTranslatedText('transport.platformFeaturesTitle', 'Platform Features')}</CardTitle></CardHeader>
                 <CardContent className="space-y-2 text-sm text-muted-foreground">
-                    <p className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary"/> Driver/Operator Verification &amp; Ratings (Demo)</p>
-                    <p className="flex items-center gap-2"><Compass className="h-4 w-4 text-primary"/> Real-time GPS Tracking (Demo)</p>
-                    <p className="flex items-center gap-2"><MessageCircle className="h-4 w-4 text-primary"/> In-app Driver/Operator Communication (Demo)</p>
-                    <p className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-primary"/> Secure In-app Payments (Demo)</p>
-                    <p className="flex items-center gap-2"><Users2 className="h-4 w-4 text-primary"/> Baggage Assistance Option (Demo for rides)</p>
+                    <p className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary"/> {getTranslatedText('transport.featureDriverVerification', 'Driver/Operator Verification & Ratings (Demo)')}</p>
+                    <p className="flex items-center gap-2"><Compass className="h-4 w-4 text-primary"/> {getTranslatedText('transport.featureGpsTracking', 'Real-time GPS Tracking (Demo)')}</p>
+                    <p className="flex items-center gap-2"><MessageCircle className="h-4 w-4 text-primary"/> {getTranslatedText('transport.featureInAppCommunication', 'In-app Driver/Operator Communication (Demo)')}</p>
+                    <p className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-primary"/> {getTranslatedText('transport.featureSecurePayments', 'Secure In-app Payments (Demo)')}</p>
+                    <p className="flex items-center gap-2"><Users2 className="h-4 w-4 text-primary"/> {getTranslatedText('transport.featureBaggageAssistance', 'Baggage Assistance Option (Demo for rides)')}</p>
                 </CardContent>
               </Card>
             </div>
