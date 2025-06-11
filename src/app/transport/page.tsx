@@ -48,7 +48,7 @@ import {
   CarFront,
   Bus,
   Armchair,
-  Ticket as TicketIcon, // Renamed to avoid conflict
+  Ticket as TicketIcon,
   ListFilter,
   ShoppingBag,
   BadgeCheck,
@@ -144,8 +144,8 @@ interface RideOption {
   dataAiHint: string;
   estimatedFare: number;
   eta: string; 
-  fareBreakdown?: string; 
-  features?: string[]; 
+  fareBreakdown: string; 
+  features: string[]; 
   userPreferenceMatch?: string;
 }
 
@@ -158,8 +158,6 @@ interface IntercityBusRoute {
   duration: string;
   price: number;
   availableSeats: number;
-  // routeMapImage?: string; // Placeholder for route map image
-  // dataAiHintRouteMap?: string;
 }
 
 
@@ -181,8 +179,8 @@ function RideBookingForm() {
     defaultValues: {
       pickupLocation: "", 
       dropoffLocation: "",
-      pickupDate: new Date(), 
-      pickupTime: format(new Date(), "HH:mm"),        
+      // pickupDate: new Date(), // Will be set in useEffect
+      // pickupTime: format(new Date(), "HH:mm"), // Will be set in useEffect      
       scheduleRide: false, 
       wheelchairAccessible: false, 
       babySeat: false, 
@@ -196,6 +194,15 @@ function RideBookingForm() {
       filterAC: false,
     },
   });
+
+  useEffect(() => {
+    if (!rideForm.getValues("pickupDate")) {
+      rideForm.setValue("pickupDate", new Date(), { shouldValidate: true });
+    }
+    if (!rideForm.getValues("pickupTime")) {
+      rideForm.setValue("pickupTime", format(new Date(), "HH:mm"), { shouldValidate: true });
+    }
+  }, [rideForm]);
 
   async function onRideSubmit(data: RideBookingFormValues) {
     setIsFetchingRides(true);
@@ -417,6 +424,18 @@ function RentalCarForm() {
     defaultValues: { pickupLocation: "", pickupTime: "10:00", dropoffTime: "10:00" },
   });
 
+  useEffect(() => {
+    if (!form.getValues("pickupDate")) {
+      form.setValue("pickupDate", new Date(), { shouldValidate: true });
+    }
+    if (!form.getValues("dropoffDate")) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      form.setValue("dropoffDate", tomorrow, { shouldValidate: true });
+    }
+  }, [form]);
+
+
   function onSubmit(values: RentalCarFormValues) {
     console.log("Rental Car:", values);
     toast({title: "Car Rental Search (Demo)", description: "Searching for available rental cars..."});
@@ -533,6 +552,13 @@ function FlightSearchForm() {
     defaultValues: { origin: "", destination: ""},
   });
 
+   useEffect(() => {
+    if (!form.getValues("departureDate")) {
+      form.setValue("departureDate", new Date(), { shouldValidate: true });
+    }
+  }, [form]);
+
+
   function onSubmit(values: FlightSearchFormValues) {
     console.log("Flight Search:", values);
     toast({title: "Flight Search (Demo)", description: "Searching for available flights..."});
@@ -628,10 +654,16 @@ function IntercityBusSearchForm() {
     defaultValues: {
       originCity: "",
       destinationCity: "",
-      departureDate: new Date(),
+      // departureDate: new Date(), // Will be set in useEffect
       passengers: 1,
     },
   });
+
+  useEffect(() => {
+    if (!form.getValues("departureDate")) {
+      form.setValue("departureDate", new Date(), { shouldValidate: true });
+    }
+  }, [form]);
 
   async function onSubmit(data: IntercityBusSearchFormValues) {
     setIsSearching(true);
@@ -660,12 +692,12 @@ function IntercityBusSearchForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField control={form.control} name="originCity" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary"/>Origin City</FormLabel><FormControl><Input placeholder="e.g., Douala" {...field} /></FormControl><FormMessage /></FormItem> )} />
-              <FormField control={form.control} name="destinationCity" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary"/>Destination City</FormLabel><FormControl><Input placeholder="e.g., Yaoundé" {...field} /></FormControl><FormMessage /></FormItem> )} />
+              <FormField control={form.control} name="originCity" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary"/>Origin City</FormLabel><FormControl><Input placeholder="e.g., Douala" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem> )} />
+              <FormField control={form.control} name="destinationCity" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary"/>Destination City</FormLabel><FormControl><Input placeholder="e.g., Yaoundé" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem> )} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField control={form.control} name="departureDate" render={({ field }) => ( <FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary"/>Departure Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem> )} />
-              <FormField control={form.control} name="passengers" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><UsersIcon className="h-4 w-4 text-primary"/>Passengers</FormLabel><FormControl><Input type="number" min="1" placeholder="1" {...field} /></FormControl><FormMessage /></FormItem> )} />
+              <FormField control={form.control} name="passengers" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><UsersIcon className="h-4 w-4 text-primary"/>Passengers</FormLabel><FormControl><Input type="number" min="1" placeholder="1" {...field} value={field.value ?? 1} /></FormControl><FormMessage /></FormItem> )} />
             </div>
             
             <Card className="border-dashed mt-4">
