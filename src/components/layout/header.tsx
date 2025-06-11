@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import {
   BedDouble,
-  Car, // Changed from Plane to Car
+  Car,
   KeyRound,
   Landmark,
   Home,
@@ -19,9 +19,11 @@ import {
   Award,
   MessageSquare,
   ShieldAlert,
-  Users2, 
-  Truck, 
-  CarFront as CarSaleIcon // Renamed for clarity if Car is used for transport
+  Users2,
+  Truck,
+  CarFront as CarSaleIcon,
+  DollarSign, // For currency
+  MapPin as RegionPinIcon // For region
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -35,7 +37,7 @@ import { toast } from '@/hooks/use-toast';
 
 const mainNavItems = [
   { href: '/#stays', label: 'Stays', icon: BedDouble },
-  { href: '/transport', label: 'Transport', icon: Car }, // Icon updated here
+  { href: '/transport', label: 'Transport', icon: Car },
   { href: '/courier-delivery', label: 'Courier', icon: Truck },
   { href: '/car-rent', label: 'Car Rent', icon: KeyRound },
   { href: '/cars-for-sale', label: 'Cars for Sale', icon: CarSaleIcon },
@@ -46,13 +48,37 @@ const mainNavItems = [
 
 const languages = [
   { code: 'en', name: 'English (US)', flag: '🇺🇸' },
-  { code: 'es', name: 'Español (ES)', flag: '🇪🇸' },
   { code: 'fr', name: 'Français (FR)', flag: '🇫🇷' },
+  { code: 'es', name: 'Español (ES)', flag: '🇪🇸' },
   { code: 'de', name: 'Deutsch (DE)', flag: '🇩🇪' },
+  { code: 'zh', name: '中文 (简体)', flag: '🇨🇳' }, // Simplified Chinese
 ];
+
+const regions = [
+    { code: 'CM', name: 'Cameroon', flag: '🇨🇲', defaultLang: 'fr', defaultCurrency: 'XAF' },
+    { code: 'NG', name: 'Nigeria', flag: '🇳🇬', defaultLang: 'en', defaultCurrency: 'NGN' },
+    { code: 'CI', name: "Côte d'Ivoire", flag: '🇨🇮', defaultLang: 'fr', defaultCurrency: 'XAF' },
+    { code: 'US', name: 'United States', flag: '🇺🇸', defaultLang: 'en', defaultCurrency: 'USD' },
+    { code: 'GB', name: 'United Kingdom', flag: '🇬🇧', defaultLang: 'en', defaultCurrency: 'GBP' },
+    { code: 'DE', name: 'Germany', flag: '🇩🇪', defaultLang: 'de', defaultCurrency: 'EUR' },
+    { code: 'CN', name: 'China', flag: '🇨🇳', defaultLang: 'zh', defaultCurrency: 'CNY' },
+];
+
+const currencies = [
+    { code: 'USD', name: 'US Dollar', symbol: '$' },
+    { code: 'EUR', name: 'Euro', symbol: '€' },
+    { code: 'GBP', name: 'British Pound', symbol: '£' },
+    { code: 'XAF', name: 'CFA Franc BEAC', symbol: 'FCFA' },
+    { code: 'NGN', name: 'Nigerian Naira', symbol: '₦' },
+    { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
+];
+
 
 export default function Header() {
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
+  const [selectedRegion, setSelectedRegion] = useState(regions.find(r => r.code === 'US') || regions[0]);
+  const [selectedCurrency, setSelectedCurrency] = useState(currencies.find(c => c.code === 'USD') || currencies[0]);
+
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -69,8 +95,16 @@ export default function Header() {
         }
       };
       window.addEventListener('hashchange', handleHashChange);
+      // Geolocation and initial settings demo (would be more complex in real app)
+      // For demo, let's assume a user from Cameroon if no preference is stored
+      // This is a very simplified auto-detection logic for demo purposes
+      // In a real app, you'd use Geolocation API and store user preferences
+      // const initialRegion = regions.find(r => r.code === 'CM') || regions[0];
+      // handleRegionChange(initialRegion, true); // true to suppress toast on initial load
+
       return () => window.removeEventListener('hashchange', handleHashChange);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -87,16 +121,45 @@ export default function Header() {
   };
 
   const isLinkActive = (itemHref: string) => {
-    if (!hasMounted) { 
+    if (!hasMounted) {
       if (itemHref.startsWith('/#')) {
-        return pathname === '/'; 
+        return pathname === '/';
       }
       return pathname === itemHref || pathname.startsWith(itemHref + '/');
     }
     if (itemHref.startsWith('/#')) {
       return pathname === '/' && currentHash === itemHref.substring(1);
     }
-    return pathname === itemHref || pathname.startsWith(itemHref + '/'); 
+    return pathname === itemHref || pathname.startsWith(itemHref + '/');
+  };
+
+  const handleLanguageChange = (lang: typeof languages[0], silent = false) => {
+    setSelectedLanguage(lang);
+    if (!silent) {
+      toast({ title: "Language Changed (Demo)", description: `Language set to ${lang.name}. App content would update.` });
+    }
+    setIsPopoverOpen(false);
+  };
+
+  const handleRegionChange = (region: typeof regions[0], silent = false) => {
+    setSelectedRegion(region);
+    const newLang = languages.find(l => l.code === region.defaultLang) || selectedLanguage;
+    const newCurrency = currencies.find(c => c.code === region.defaultCurrency) || selectedCurrency;
+    setSelectedLanguage(newLang);
+    setSelectedCurrency(newCurrency);
+
+    if (!silent) {
+        toast({ title: "Region Changed (Demo)", description: `Region set to ${region.name}. Language set to ${newLang.name}, Currency to ${newCurrency.name} (${newCurrency.symbol}).` });
+    }
+    setIsPopoverOpen(false);
+  };
+
+  const handleCurrencyChange = (currency: typeof currencies[0], silent = false) => {
+    setSelectedCurrency(currency);
+     if (!silent) {
+        toast({ title: "Currency Changed (Demo)", description: `Currency set to ${currency.name} (${currency.symbol}). Prices would update.` });
+    }
+    setIsPopoverOpen(false);
   };
 
 
@@ -111,51 +174,72 @@ export default function Header() {
           <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
             <ShieldAlert className="h-6 w-6" />
           </Button>
-          <span className="text-sm font-medium text-foreground">USD</span>
-          
+         
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" aria-label="Select language">
-                <Globe className="h-6 w-6" />
+              <Button variant="ghost" className="text-foreground hover:bg-muted px-2 h-9" aria-label="Select language, region or currency">
+                <span className="mr-1.5 text-lg">{selectedLanguage.flag}</span>
+                <span className="text-sm font-medium mr-1.5">{selectedLanguage.code.toUpperCase()}</span>
+                <Globe className="h-5 w-5 mr-1.5" />
+                <span className="text-sm font-medium">{selectedCurrency.symbol}</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 z-50">
+            <PopoverContent className="w-80 z-50" sideOffset={10}>
               <div className="grid gap-4">
                 <div className="space-y-2">
-                  <h4 className="font-medium leading-none">Language & Region</h4>
+                  <h4 className="font-medium leading-none">Language, Region & Currency</h4>
                   <p className="text-sm text-muted-foreground">
-                    Choose your preferred language. Region &amp; Currency selection coming soon.
+                    Customize your experience.
                   </p>
                 </div>
                 <Separator />
                 <div>
-                  <Label htmlFor="language-select" className="font-medium">Language</Label>
-                  <div className="mt-2 space-y-1">
+                  <Label htmlFor="language-select" className="font-medium mb-1.5 block">Language</Label>
+                  <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
                     {languages.map((lang) => (
                       <Button
                         key={lang.code}
                         variant={selectedLanguage.code === lang.code ? "secondary" : "ghost"}
-                        className="w-full justify-start"
-                        onClick={() => {
-                          setSelectedLanguage(lang);
-                          setIsPopoverOpen(false);
-                          toast({ title: "Language Changed (Demo)", description: `Language set to ${lang.name}` });
-                        }}
+                        className="w-full justify-start h-8 text-sm"
+                        onClick={() => handleLanguageChange(lang)}
                       >
-                        <span className="mr-2">{lang.flag}</span> {lang.name}
+                        <span className="mr-2 text-base">{lang.flag}</span> {lang.name}
                       </Button>
                     ))}
                   </div>
                 </div>
                 <Separator />
                  <div>
-                  <Label className="font-medium">Region</Label>
-                   <p className="text-sm text-muted-foreground mt-1">Global (Automatic Currency Conversion Demo)</p>
+                  <Label htmlFor="region-select" className="font-medium mb-1.5 block">Region/Country</Label>
+                   <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
+                    {regions.map((region) => (
+                      <Button
+                        key={region.code}
+                        variant={selectedRegion.code === region.code ? "secondary" : "ghost"}
+                        className="w-full justify-start h-8 text-sm"
+                        onClick={() => handleRegionChange(region)}
+                      >
+                        <span className="mr-2 text-base">{region.flag}</span> {region.name}
+                      </Button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">Changing region may update language & currency.</p>
                 </div>
                 <Separator />
                 <div>
-                  <Label className="font-medium">Currency</Label>
-                  <p className="text-sm text-muted-foreground mt-1">Currently USD. More options coming soon.</p>
+                  <Label htmlFor="currency-select" className="font-medium mb-1.5 block">Currency</Label>
+                  <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
+                    {currencies.map((curr) => (
+                      <Button
+                        key={curr.code}
+                        variant={selectedCurrency.code === curr.code ? "secondary" : "ghost"}
+                        className="w-full justify-start h-8 text-sm"
+                        onClick={() => handleCurrencyChange(curr)}
+                      >
+                        <span className="font-semibold mr-2 w-6 text-center">{curr.symbol}</span> {curr.name} ({curr.code})
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </PopoverContent>
@@ -249,7 +333,7 @@ export default function Header() {
                   </Link>
                   <Button variant="ghost" onClick={() => { setIsMobileMenuOpen(false); setIsPopoverOpen(true);}} className="w-full justify-start flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 text-foreground">
                      <Globe className="h-5 w-5" />
-                    <span className="text-base font-medium">{selectedLanguage.flag} {selectedLanguage.code.toUpperCase()} / USD</span>
+                    <span className="text-base font-medium">{selectedLanguage.flag} {selectedLanguage.code.toUpperCase()} / {selectedCurrency.symbol}</span>
                   </Button>
 
                   <div className="pt-4 space-y-2 border-t mt-4">
