@@ -38,6 +38,8 @@ import {
   Truck, 
   Ship, 
   Train, 
+  PlusCircle,
+  RefreshCcw
 } from 'lucide-react';
 import Link from 'next/link';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -85,6 +87,17 @@ const intercityTransportSchema = z.object({
 });
 type IntercityTransportFormValues = z.infer<typeof intercityTransportSchema>;
 
+interface RideOption {
+  id: string;
+  vehicleType: string;
+  vehicleImage: string;
+  dataAiHint: string;
+  estimatedFare: number;
+  eta: string; // e.g., "3 min"
+  fareBreakdown?: string; // e.g., "Base: $2, Dist: $1.5, Time: $1, Fee: $0.5"
+  features?: string[]; // e.g., ["Wi-Fi", "AC", "Pet-friendly"]
+  userPreferenceMatch?: string; // e.g., "Matches your quiet ride preference"
+}
 
 const destinationSuggestions = [
   { id: 1, name: 'Philadelphia International Airport (PHL)', address: '8000 Essington Ave, Philadelphia, PA' },
@@ -94,17 +107,18 @@ const destinationSuggestions = [
 
 export default function TransportPage() {
   const { toast } = useToast();
-  const [priceResult, setPriceResult] = useState<{ price: string, time: string } | null>(null);
+  const [rideOptions, setRideOptions] = useState<RideOption[]>([]);
   const [isLocating, setIsLocating] = useState(false);
-  const [showRatingForm, setShowRatingForm] = useState(false);
+  const [isFetchingRides, setIsFetchingRides] = useState(false);
+  // const [showRatingForm, setShowRatingForm] = useState(false); // Decouple for now
 
   const rideForm = useForm<TransportFormValues>({
     resolver: zodResolver(transportSchema),
     defaultValues: {
       pickupLocation: "", 
       dropoffLocation: "",
-      pickupDate: undefined, 
-      pickupTime: "",        
+      pickupDate: new Date(), 
+      pickupTime: format(new Date(), "HH:mm"),        
       scheduleRide: false, 
       wheelchairAccessible: false, 
       babySeat: false, 
@@ -119,45 +133,36 @@ export default function TransportPage() {
         destinationCity: "", 
         passengers: 1, 
         serviceType: "SHUTTLE", 
-        departureDate: undefined 
+        departureDate: new Date() 
     }
   });
 
-  useEffect(() => {
-    if (!rideForm.getValues("pickupDate")) {
-        rideForm.setValue("pickupDate", new Date(), { shouldValidate: true });
-    }
-    if (!rideForm.getValues("pickupTime")) {
-        rideForm.setValue("pickupTime", format(new Date(), "HH:mm"), { shouldValidate: true });
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!intercityForm.getValues("departureDate")) {
-        intercityForm.setValue("departureDate", new Date(), { shouldValidate: true });
-    }
-  }, []);
-
-
   async function onRideSubmit(data: TransportFormValues) {
+    setIsFetchingRides(true);
+    setRideOptions([]);
     console.log("Transport Request Submitted:", data);
-    setPriceResult(null);
-    setShowRatingForm(false);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const randomPrice = (Math.random() * 50 + 10).toFixed(2);
-    const randomTime = Math.floor(Math.random() * 30 + 10); // Mins
-    const waitTime = Math.floor(Math.random() * 10 + 5);
-    setPriceResult({ price: randomPrice, time: `${randomTime + waitTime} mins (Wait: ${waitTime} mins, Ride: ${randomTime} mins)` });
+    
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+
+    const mockOptions: RideOption[] = [
+      { id: 'eco1', vehicleType: 'Economy', vehicleImage: 'https://placehold.co/120x80.png?text=Economy+Car', dataAiHint: 'sedan compact', estimatedFare: 4.50, eta: '3 min', fareBreakdown: 'Base: $2, Dist: $1.5, Time: $1', features: ['AC', 'Radio'] },
+      { id: 'comf1', vehicleType: 'Comfort', vehicleImage: 'https://placehold.co/120x80.png?text=Comfort+Car', dataAiHint: 'sedan comfort', estimatedFare: 6.75, eta: '5 min', fareBreakdown: 'Base: $3, Dist: $2, Time: $1.75', features: ['AC', 'Wi-Fi', 'Quiet Ride Option'] },
+      { id: 'suv1', vehicleType: 'SUV/XL', vehicleImage: 'https://placehold.co/120x80.png?text=SUV', dataAiHint: 'suv vehicle black', estimatedFare: 9.00, eta: '7 min', fareBreakdown: 'Base: $4, Dist: $3, Time: $2', features: ['AC', 'Extra Space', 'Luggage Rack'] },
+      { id: 'pick1', vehicleType: 'Pickup', vehicleImage: 'https://placehold.co/120x80.png?text=Pickup+Truck', dataAiHint: 'pickup truck red', estimatedFare: 12.00, eta: '10 min', fareBreakdown: 'Base: $5, Dist: $4, Time: $3', features: ['AC', 'Cargo Space', 'Towing Capable'] },
+    ];
+    setRideOptions(mockOptions);
+    setIsFetchingRides(false);
+
     toast({
-      title: "Price Estimated!",
-      description: `Your ride from ${data.pickupLocation} to ${data.dropoffLocation} is estimated at $${randomPrice}. Total time: ${randomTime + waitTime} mins. ${data.scheduleRide ? 'Your ride is scheduled. Reminders will be sent (Demo).' : ''}`,
+      title: "Ride Options Found!",
+      description: `Showing available rides from ${data.pickupLocation} to ${data.dropoffLocation}.`,
     });
-    setShowRatingForm(true); 
+    // setShowRatingForm(true); // Will be triggered after a ride is selected and completed
   }
   
   function onIntercitySubmit(data: IntercityTransportFormValues) {
     console.log("Intercity Transport Request:", data);
-    toast({ title: "Intercity Search (Demo)", description: `Searching for ${data.serviceType} from ${data.originCity} to ${data.destinationCity}.`});
+    toast({ title: "Intercity Search (Demo)", description: `Searching for ${data.serviceType} from ${data.originCity} to ${data.destinationCity}. Results will appear below.`});
   }
 
   const handleSuggestionClick = (name: string) => {
@@ -195,10 +200,20 @@ export default function TransportPage() {
     toast({ title: "Navigation Assistant (Demo)", description: "Starting GPS voice navigation to destination (simulation)." });
   };
   
-  const handleDriverRating = (isThumbsUp: boolean) => {
-    toast({ title: "Feedback Submitted (Demo)", description: `Driver rated ${isThumbsUp ? 'positively' : 'negatively'}. Thank you!`});
-    setShowRatingForm(false);
+  const handleChooseRide = (ride: RideOption) => {
+    toast({
+        title: `Ride Selected: ${ride.vehicleType}`,
+        description: `Fare: $${ride.estimatedFare.toFixed(2)}. Driver details and real-time tracking would appear now. Price lock for 3 mins (Demo).`,
+        duration: 7000,
+    });
+    // Here you would typically proceed to a booking confirmation step
+    // setShowRatingForm(false); // Reset rating form if it was shown
   }
+
+  // const handleDriverRating = (isThumbsUp: boolean) => {
+  //   toast({ title: "Feedback Submitted (Demo)", description: `Driver rated ${isThumbsUp ? 'positively' : 'negatively'}. Thank you!`});
+  //   setShowRatingForm(false);
+  // }
 
   return (
     <div className="space-y-8">
@@ -228,6 +243,11 @@ export default function TransportPage() {
                         <div className="absolute left-[9px] top-[calc(2.5rem+10px)] h-[calc(100%-5rem-20px)] w-0.5 bg-gray-300 -translate-y-1/2 z-0"></div>
                         <FormField control={rideForm.control} name="dropoffLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><SquareDot className="h-5 w-5 text-primary" /> Dropoff Location</FormLabel><FormControl><Input placeholder="Enter dropoff location" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
                       </div>
+                       <div className="text-xs text-muted-foreground flex items-center gap-2">
+                            <Button variant="link" size="sm" className="p-0 h-auto" disabled><PlusCircle className="h-3 w-3 mr-1"/>Add multiple stops (Coming Soon)</Button>
+                            <Separator orientation="vertical" className="h-3"/>
+                            <Button variant="link" size="sm" className="p-0 h-auto" disabled><RefreshCcw className="h-3 w-3 mr-1"/>Schedule return trip (Coming Soon)</Button>
+                        </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField control={rideForm.control} name="pickupDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Pickup Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={(date) => { field.onChange(date); if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) { const currentTime = format(new Date(), "HH:mm"); if (!rideForm.getValues("pickupTime") || rideForm.getValues("pickupTime")! < currentTime) { rideForm.setValue("pickupTime", currentTime, {shouldValidate: true}); } } }} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
@@ -244,30 +264,39 @@ export default function TransportPage() {
                         </div>
                       </div>
 
-                      <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"> See Prices </Button>
+                      <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isFetchingRides}>
+                        {isFetchingRides ? "Fetching Rides..." : "See Prices"}
+                      </Button>
                     </form>
                   </Form>
-                  {priceResult && (
-                    <Card className="mt-6 p-4 bg-green-50 border-green-200">
-                      <CardHeader className="p-0 pb-2"><CardTitle className="text-lg text-green-700">Ride Estimation (Demo)</CardTitle></CardHeader>
-                      <CardContent className="p-0 space-y-1">
-                        <p className="text-green-600"><strong>Estimated Price:</strong> ${priceResult.price}</p>
-                        <p className="text-green-600"><strong>Estimated Total Time:</strong> {priceResult.time}</p>
-                        <p className="text-xs text-muted-foreground">Real-time alerts for traffic, route changes, or delays (Coming Soon).</p>
-                      </CardContent>
-                    </Card>
+
+                  {rideOptions.length > 0 && (
+                    <div className="mt-8 space-y-4">
+                        <h3 className="text-xl font-semibold">Available Ride Options</h3>
+                        {rideOptions.map((option) => (
+                            <Card key={option.id} className="overflow-hidden shadow-md">
+                                <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4 p-4">
+                                    <div className="relative w-full h-24 md:h-full rounded-md overflow-hidden">
+                                        <Image src={option.vehicleImage} alt={option.vehicleType} layout="fill" objectFit="cover" data-ai-hint={option.dataAiHint} />
+                                    </div>
+                                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                        <div>
+                                            <CardTitle className="text-lg">{option.vehicleType}</CardTitle>
+                                            <CardDescription className="text-sm">ETA: {option.eta}</CardDescription>
+                                            {option.features && <p className="text-xs text-muted-foreground mt-1">{option.features.join(', ')} (Demo)</p>}
+                                        </div>
+                                        <div className="text-left sm:text-right mt-2 sm:mt-0">
+                                            <p className="text-xl font-bold text-primary">${option.estimatedFare.toFixed(2)}</p>
+                                            <p className="text-xs text-muted-foreground cursor-pointer hover:underline">Fare Details (Demo)</p>
+                                            <Button size="sm" className="mt-2 w-full sm:w-auto" onClick={() => handleChooseRide(option)}>Choose</Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        ))}
+                         <p className="text-xs text-muted-foreground text-center">Filters for vehicle type, accessibility, etc. (Coming Soon)</p>
+                    </div>
                   )}
-                   {showRatingForm && (
-                    <Card className="mt-6">
-                        <CardHeader><CardTitle className="text-lg">Rate Your Driver (Demo)</CardTitle></CardHeader>
-                        <CardContent className="flex items-center gap-4">
-                            <Button variant="outline" onClick={() => handleDriverRating(true)}><ThumbsUp className="mr-2 h-4 w-4 text-green-500"/>Good</Button>
-                            <Button variant="outline" onClick={() => handleDriverRating(false)}><ThumbsDown className="mr-2 h-4 w-4 text-red-500"/>Bad</Button>
-                            <Textarea placeholder="Optional comments..."/>
-                        </CardContent>
-                        <CardFooter><p className="text-xs text-muted-foreground">Drivers can also rate passengers (Demo).</p></CardFooter>
-                    </Card>
-                    )}
                 </CardContent>
               </Card>
               
@@ -298,7 +327,7 @@ export default function TransportPage() {
                             </div>
                              <FormField control={intercityForm.control} name="departureDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Departure Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
                             <div className="grid md:grid-cols-2 gap-4">
-                                <FormField control={intercityForm.control} name="passengers" render={({ field }) => (<FormItem><FormLabel>Passengers</FormLabel><FormControl><Input type="number" min="1" placeholder="1" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={intercityForm.control} name="passengers" render={({ field }) => (<FormItem><FormLabel>Passengers</FormLabel><FormControl><Input type="number" min="1" placeholder="1" {...field} value={field.value ?? 1} onChange={e => field.onChange(parseInt(e.target.value, 10))} /></FormControl><FormMessage /></FormItem>)} />
                                 <FormField control={intercityForm.control} name="serviceType" render={({ field }) => ( <FormItem><FormLabel>Service Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select service" /></SelectTrigger></FormControl><SelectContent><SelectItem value="SHUTTLE">Shared Shuttle</SelectItem><SelectItem value="PRIVATE_CAR">Private Car (Chauffeur)</SelectItem><SelectItem value="LUXURY_VAN">Luxury Van</SelectItem><SelectItem value="TRAIN">Train Booking (Demo)</SelectItem><SelectItem value="BUS">Bus Booking (Demo)</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
                             </div>
                             <Button type="submit" className="w-full">Search Intercity Transport (Demo)</Button>
@@ -327,6 +356,7 @@ export default function TransportPage() {
                 <CardHeader><CardTitle className="text-xl">Other Transport Options</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
                     <Button variant="outline" className="w-full justify-start" asChild><Link href="/car-rent">Rent a Car</Link></Button>
+                    <Button variant="outline" className="w-full justify-start" asChild><Link href="/bus-transportation">Bus Tickets</Link></Button>
                     <Button variant="outline" className="w-full justify-start" disabled>Flight Search &amp; Booking (Coming Soon)</Button>
                 </CardContent>
               </Card>
