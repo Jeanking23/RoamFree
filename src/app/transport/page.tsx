@@ -82,6 +82,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLocalization } from '@/contexts/LocalizationContext';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 const rideBookingSchema = z.object({
@@ -136,7 +137,7 @@ const intercityBusSearchSchema = z.object({
     departureDate: z.date({ required_error: "Departure date is required." }),
     returnDate: z.date().optional(),
     passengers: z.coerce.number().min(1, "At least one passenger required.").max(50, "Max 50 passengers for group booking demo."),
-}).refine(data => !data.returnDate || data.returnDate >= data.departureDate, {
+}).refine(data => !data.returnDate || !data.returnDate || data.returnDate >= data.departureDate, {
   message: "Return date must be on or after departure date.",
   path: ["returnDate"],
 });
@@ -310,7 +311,7 @@ function RideBookingForm() {
           <Form {...rideForm}>
             <form onSubmit={rideForm.handleSubmit(onRideSubmit)} className="space-y-6">
               <div className="relative space-y-4">
-                <FormField control={rideForm.control} name="pickupLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><CircleDot className="h-5 w-5 text-primary" /> {getTranslatedText('transport.pickupLocation', 'Pickup Location')}</FormLabel><div className="flex items-center gap-2"><FormControl><Input placeholder={getTranslatedText('transport.pickupPlaceholder', "Enter pickup location")} {...field} value={field.value || ''} /></FormControl><TooltipProvider><Tooltip><TooltipTrigger asChild><Button type="button" variant="outline" size="icon" onClick={handleGeolocate} disabled={isLocating} aria-label={getTranslatedText('transport.useCurrentLocation', "Use current location")}><IconCARGps className="h-5 w-5 animate-spin" IconLACLocateFixed className="h-5 w-5" /></Button></TooltipTrigger><TooltipContent><p>{getTranslatedText('transport.useCurrentLocation', 'Use my current location')}</p></TooltipContent></Tooltip></TooltipProvider></div><FormMessage /></FormItem>)} />
+                <FormField control={rideForm.control} name="pickupLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><CircleDot className="h-5 w-5 text-primary" /> {getTranslatedText('transport.pickupLocation', 'Pickup Location')}</FormLabel><div className="flex items-center gap-2"><FormControl><Input placeholder={getTranslatedText('transport.pickupPlaceholder', "Enter pickup location")} {...field} value={field.value || ''} /></FormControl><TooltipProvider><Tooltip><TooltipTrigger asChild><Button type="button" variant="outline" size="icon" onClick={handleGeolocate} disabled={isLocating} aria-label={getTranslatedText('transport.useCurrentLocation', "Use current location")}><LocateFixed className={`h-5 w-5 ${isLocating ? 'animate-spin' : ''}`} /></Button></TooltipTrigger><TooltipContent><p>{getTranslatedText('transport.useCurrentLocation', 'Use my current location')}</p></TooltipContent></Tooltip></TooltipProvider></div><FormMessage /></FormItem>)} />
                 <div className="absolute left-[9px] top-[calc(2.5rem+10px)] h-[calc(100%-5rem-20px)] w-0.5 bg-gray-300 -translate-y-1/2 z-0"></div>
                 <FormField control={rideForm.control} name="dropoffLocation" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-2"><SquareDot className="h-5 w-5 text-primary" /> {getTranslatedText('transport.dropoffLocation', 'Dropoff Location')}</FormLabel><FormControl><Input placeholder={getTranslatedText('transport.dropoffPlaceholder', "Enter dropoff location")} {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
               </div>
@@ -875,7 +876,6 @@ export default function TransportPage() {
                 <CardHeader><CardTitle className="text-xl">{getTranslatedText('transport.otherTransportOptionsTitle', 'Other Transport Options')}</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
                     <Button variant="outline" className="w-full justify-start" asChild><Link href="/car-rent">{getTranslatedText('transport.rentACarLink', 'Rent a Car')}</Link></Button>
-                    {/* Link to /bus-transportation (legacy) removed previously, functionality now in "Intercity Bus" tab */}
                     <Button variant="outline" className="w-full justify-start" disabled>{getTranslatedText('transport.flightSearchLink', 'Flight Search & Booking')} ({getTranslatedText('transport.comingSoon', 'Coming Soon')})</Button>
                 </CardContent>
               </Card>
@@ -897,3 +897,4 @@ export default function TransportPage() {
   );
 }
     
+
