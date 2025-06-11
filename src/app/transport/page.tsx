@@ -54,7 +54,8 @@ import {
   BadgeCheck,
   FileText as FileTextIcon,
   QrCode,
-  UserCog
+  UserCog,
+  DollarSign // Added DollarSign here
 } from 'lucide-react';
 import Link from 'next/link';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -179,8 +180,7 @@ function RideBookingForm() {
     defaultValues: {
       pickupLocation: "", 
       dropoffLocation: "",
-      // pickupDate: new Date(), // Will be set in useEffect
-      // pickupTime: format(new Date(), "HH:mm"), // Will be set in useEffect      
+      // pickupDate and pickupTime will be set in useEffect to avoid hydration mismatch
       scheduleRide: false, 
       wheelchairAccessible: false, 
       babySeat: false, 
@@ -196,6 +196,7 @@ function RideBookingForm() {
   });
 
   useEffect(() => {
+    // Initialize date/time fields client-side to prevent hydration errors
     if (!rideForm.getValues("pickupDate")) {
       rideForm.setValue("pickupDate", new Date(), { shouldValidate: true });
     }
@@ -247,10 +248,12 @@ function RideBookingForm() {
         if (!data.filterComfort && option.vehicleType === 'Comfort') return false;
         if (!data.filterSuv && (option.vehicleType === 'SUV/XL' || option.vehicleType === 'Pickup')) return false;
         if (!data.filterPremium && option.vehicleType === 'Premium') return false;
-        if (data.wheelchairAccessible && !option.features?.includes('Wheelchair Accessible Option')) return false;
-        if (data.petFriendly && !option.features?.includes('Pet-friendly')) return false;
+        // More specific feature filtering
+        if (data.wheelchairAccessible && !option.features?.includes('Wheelchair Accessible Option')) return false; // Check for specific string
+        if (data.petFriendly && !option.features?.includes('Pet-friendly')) return false; // Check for specific string
         if (data.filterWifi && !option.features?.includes('Wi-Fi')) return false;
-        if (data.filterAC && !option.features?.includes('AC')) return false;
+        if (data.filterAC && !option.features?.includes('AC')) return false; // Ensure AC check is consistent
+        if (data.filterQuietRide && !option.features?.includes('Quiet Ride Option')) return false;
         return true;
     });
 
@@ -421,7 +424,9 @@ function RentalCarForm() {
   const { toast } = useToast();
   const form = useForm<RentalCarFormValues>({
     resolver: zodResolver(rentalCarSchema),
-    defaultValues: { pickupLocation: "", pickupTime: "10:00", dropoffTime: "10:00" },
+    defaultValues: { pickupLocation: "", 
+    // pickupTime, dropoffTime, pickupDate, dropoffDate will be set in useEffect
+  },
   });
 
   useEffect(() => {
@@ -432,6 +437,12 @@ function RentalCarForm() {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       form.setValue("dropoffDate", tomorrow, { shouldValidate: true });
+    }
+    if (!form.getValues("pickupTime")) {
+        form.setValue("pickupTime", "10:00", { shouldValidate: true });
+    }
+    if (!form.getValues("dropoffTime")) {
+        form.setValue("dropoffTime", "10:00", { shouldValidate: true });
     }
   }, [form]);
 
@@ -654,7 +665,7 @@ function IntercityBusSearchForm() {
     defaultValues: {
       originCity: "",
       destinationCity: "",
-      // departureDate: new Date(), // Will be set in useEffect
+      // departureDate will be set in useEffect
       passengers: 1,
     },
   });
