@@ -19,6 +19,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog"; // Added Dialog components
 import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -63,6 +64,8 @@ interface BusRoute {
   departureStation: string;
   arrivalStation: string;
   stops?: number;
+  totalSeats?: number; // For seat map demo
+  seatsLayout?: { rows: number, cols: number, aisleAfter: number }; // For seat map demo
 }
 
 const mockBusRoutes: BusRoute[] = [
@@ -83,6 +86,8 @@ const mockBusRoutes: BusRoute[] = [
     departureStation: "Central Bus Terminal, Douala",
     arrivalStation: "Main Station, Yaoundé",
     stops: 1,
+    totalSeats: 40,
+    seatsLayout: { rows: 10, cols: 4, aisleAfter: 2 },
   },
   {
     id: "route002",
@@ -101,6 +106,8 @@ const mockBusRoutes: BusRoute[] = [
     departureStation: "North Terminal, Douala",
     arrivalStation: "South Station, Yaoundé",
     stops: 0,
+    totalSeats: 30,
+    seatsLayout: { rows: 8, cols: 4, aisleAfter: 2 }, // Smaller bus
   },
   {
     id: "route003",
@@ -119,6 +126,8 @@ const mockBusRoutes: BusRoute[] = [
     departureStation: "City Center Hub, Douala",
     arrivalStation: "West End Terminal, Yaoundé",
     stops: 2,
+    totalSeats: 50,
+    seatsLayout: { rows: 13, cols: 4, aisleAfter: 2 },
   },
    {
     id: "route004",
@@ -137,13 +146,29 @@ const mockBusRoutes: BusRoute[] = [
     departureStation: "Airport Shuttle Stop, Douala",
     arrivalStation: "Capital Square, Yaoundé",
     stops: 0,
+    totalSeats: 20,
+    seatsLayout: { rows: 5, cols: 4, aisleAfter: 2 }, // VIP bus
   },
 ];
+
+// Helper function to generate seat labels (e.g., 1A, 1B)
+const getSeatLabel = (rowIndex: number, colIndex: number, layout: {cols: number, aisleAfter: number}) => {
+  const row = rowIndex + 1;
+  let letter = String.fromCharCode(65 + colIndex); // A, B, C, D
+  if (colIndex >= layout.aisleAfter) {
+      letter = String.fromCharCode(65 + colIndex); // If aisle is after B, C starts after aisle
+  }
+  return `${row}${letter}`;
+};
 
 
 export default function BusTransportationPage() {
   const [searchResults, setSearchResults] = useState<BusRoute[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedRouteForSeats, setSelectedRouteForSeats] = useState<BusRoute | null>(null);
+  const [isSeatSelectionDialogOpen, setIsSeatSelectionDialogOpen] = useState(false);
+  const [currentSelectedSeats, setCurrentSelectedSeats] = useState<string[]>([]);
+
 
   const form = useForm<BusSearchFormValues>({
     resolver: zodResolver(busSearchSchema),
@@ -178,8 +203,6 @@ export default function BusTransportationPage() {
       if (data.hasWifi && !route.amenities.wifi) matches = false;
       if (data.hasUsb && !route.amenities.usb) matches = false;
       if (data.tripType !== "ANY" && route.tripType.toUpperCase() !== data.tripType) matches = false;
-      // Add filtering for origin/destination cities if needed for demo
-      // For now, it just returns based on amenities and trip type
       return matches;
     });
 
@@ -192,11 +215,24 @@ export default function BusTransportationPage() {
     }
   }
 
-  const handleViewSeats = (routeId: string) => {
+  const handleViewSeats = (route: BusRoute) => {
+    setSelectedRouteForSeats(route);
+    setCurrentSelectedSeats([]); // Reset selected seats for new route
+    setIsSeatSelectionDialogOpen(true);
+  }
+
+  const toggleSeatSelection = (seatId: string) => {
+    setCurrentSelectedSeats(prev => 
+      prev.includes(seatId) ? prev.filter(s => s !== seatId) : [...prev, seatId]
+    );
+  }
+
+  const handleConfirmSeats = () => {
     toast({
-        title: "View Seats (Demo)",
-        description: `Loading seat map for route ${routeId}. This will show an interactive 3D seat selection UI.`
+        title: "Seats Confirmed (Demo)",
+        description: `Selected seats: ${currentSelectedSeats.join(', ')}. Proceeding to booking for route ${selectedRouteForSeats?.id}.`
     });
+    setIsSeatSelectionDialogOpen(false);
   }
 
   return (
@@ -372,7 +408,7 @@ export default function BusTransportationPage() {
                 </div>
                 <div className="md:col-span-3 flex flex-col items-center md:items-end justify-center space-y-2 pt-2 md:pt-0">
                   <p className="text-2xl font-bold text-primary">${route.price.toFixed(2)}</p>
-                  <Button className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => handleViewSeats(route.id)}>
+                  <Button className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => handleViewSeats(route)}>
                     <Armchair className="mr-2 h-4 w-4"/>View Seats &amp; Book
                   </Button>
                   <p className="text-xs text-muted-foreground">Price per passenger</p>
@@ -394,6 +430,81 @@ export default function BusTransportationPage() {
                 <p className="text-muted-foreground mt-2">Try adjusting your search filters or dates.</p>
             </CardContent>
         </Card>
+      )}
+
+      {selectedRouteForSeats && (
+        <Dialog open={isSeatSelectionDialogOpen} onOpenChange={setIsSeatSelectionDialogOpen}>
+          <DialogContent className="sm:max-w-2xl md:max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>Select Your Seats for {selectedRouteForSeats.operator}</DialogTitle>
+              <DialogDescription>
+                Bus Type: {selectedRouteForSeats.busType}. Click on available seats to select.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="mb-4 flex justify-center items-center gap-4 text-sm">
+                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-green-500" /> Available</span>
+                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-blue-500" /> Selected</span>
+                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-red-500 opacity-50" /> Taken</span>
+              </div>
+              <div className="bg-muted/30 p-2 sm:p-4 rounded-md flex justify-center">
+                <div className="grid gap-1 sm:gap-1.5" style={{ gridTemplateColumns: `repeat(${selectedRouteForSeats.seatsLayout?.cols || 4}, minmax(0, 1fr))` }}>
+                  {Array.from({ length: selectedRouteForSeats.totalSeats || 40 }).map((_, index) => {
+                    const layout = selectedRouteForSeats.seatsLayout || { rows: 10, cols: 4, aisleAfter: 2 };
+                    const rowIndex = Math.floor(index / layout.cols);
+                    const colIndex = index % layout.cols;
+                    const seatId = getSeatLabel(rowIndex, colIndex, layout);
+                    
+                    // Simulate some taken seats (e.g., every 5th seat, and specific ones)
+                    const isTaken = index % 5 === 0 || ["2A", "3C"].includes(seatId);
+                    const isSelected = currentSelectedSeats.includes(seatId);
+
+                    let seatVariant: "default" | "destructive" | "secondary" | "outline" = "outline";
+                    let seatDisabled = false;
+                    let seatColorClass = "text-green-600 hover:bg-green-100";
+
+                    if (isTaken) {
+                      seatVariant = "secondary";
+                      seatDisabled = true;
+                      seatColorClass = "text-red-500 opacity-50 cursor-not-allowed";
+                    } else if (isSelected) {
+                      seatVariant = "default"; // Or some other variant to indicate selection
+                      seatColorClass = "bg-primary text-primary-foreground hover:bg-primary/90";
+                    }
+
+                    return (
+                      <Button
+                        key={seatId}
+                        variant={seatVariant}
+                        size="icon"
+                        className={cn("h-8 w-8 sm:h-10 sm:w-10 transition-all duration-150", seatColorClass, colIndex === layout.aisleAfter -1 ? "mr-2 sm:mr-4" : "")}
+                        onClick={() => !isTaken && toggleSeatSelection(seatId)}
+                        disabled={seatDisabled}
+                        aria-label={`Seat ${seatId}${isTaken ? ' (Taken)' : isSelected ? ' (Selected)' : ' (Available)'}`}
+                      >
+                        <Armchair className="h-4 w-4 sm:h-5 sm:w-5" />
+                        <span className="sr-only">{seatId}</span>
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+               <p className="text-xs text-muted-foreground text-center mt-2">Driver</p>
+               <div className="w-16 h-8 bg-gray-300 rounded-t-md mx-auto mb-2 flex items-center justify-center text-xs">Front</div>
+            </div>
+            <DialogFooter className="sm:justify-between items-center">
+                <p className="text-sm text-muted-foreground">Selected: {currentSelectedSeats.length} seat(s) - {currentSelectedSeats.join(', ')}</p>
+                <div className="flex gap-2">
+                  <DialogClose asChild>
+                    <Button type="button" variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button type="button" onClick={handleConfirmSeats} disabled={currentSelectedSeats.length === 0}>
+                    Confirm Seats &amp; Proceed (Demo)
+                  </Button>
+                </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
 
 
