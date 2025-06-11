@@ -210,52 +210,79 @@ interface LocalizationContextType {
   setRegion: (region: Region, silent?: boolean) => void;
   setCurrency: (currency: Currency, silent?: boolean) => void;
   getTranslatedText: (key: string, fallback: string) => string;
+  isHydrated: boolean; // Flag to indicate if values are from localStorage
 }
+
+const defaultLanguage = languages.find(l => l.code === 'en') || languages[0];
+const defaultRegion = regions.find(r => r.code === 'US') || regions[0];
+const defaultCurrency = currencies.find(c => c.code === 'USD') || currencies[0];
 
 const LocalizationContext = createContext<LocalizationContextType | undefined>(undefined);
 
 export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
-  const [selectedLanguage, setSelectedLanguageState] = useState<Language>(languages.find(l => l.code === 'en') || languages[0]);
-  const [selectedRegion, setSelectedRegionState] = useState<Region>(regions.find(r => r.code === 'US') || regions[0]);
-  const [selectedCurrency, setSelectedCurrencyState] = useState<Currency>(currencies.find(c => c.code === 'USD') || currencies[0]);
-  const [hasMounted, setHasMounted] = useState(false);
+  const [selectedLanguage, setSelectedLanguageState] = useState<Language>(defaultLanguage);
+  const [selectedRegion, setSelectedRegionState] = useState<Region>(defaultRegion);
+  const [selectedCurrency, setSelectedCurrencyState] = useState<Currency>(defaultCurrency);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    setHasMounted(true);
-    const storedLangCode = typeof window !== "undefined" ? localStorage.getItem('roamfree-lang') : null;
-    const storedRegionCode = typeof window !== "undefined" ? localStorage.getItem('roamfree-region') : null;
-    const storedCurrencyCode = typeof window !== "undefined" ? localStorage.getItem('roamfree-currency') : null;
+    // This effect runs only on the client, after the initial render.
+    const storedLangCode = localStorage.getItem('roamfree-lang');
+    const storedRegionCode = localStorage.getItem('roamfree-region');
+    const storedCurrencyCode = localStorage.getItem('roamfree-currency');
 
-    const initialRegion = regions.find(r => r.code === storedRegionCode) || regions.find(r => r.code === 'US') || regions[0];
-    setSelectedRegionState(initialRegion);
+    let finalRegion = defaultRegion;
+    if (storedRegionCode) {
+      finalRegion = regions.find(r => r.code === storedRegionCode) || defaultRegion;
+    }
+    setSelectedRegionState(finalRegion);
 
-    const initialLang = languages.find(l => l.code === storedLangCode) || languages.find(l => l.code === initialRegion.defaultLang) || languages[0];
-    setSelectedLanguageState(initialLang);
+    let finalLang = defaultLanguage;
+    if (storedLangCode) {
+      finalLang = languages.find(l => l.code === storedLangCode) || languages.find(l => l.code === finalRegion.defaultLang) || defaultLanguage;
+    } else {
+      finalLang = languages.find(l => l.code === finalRegion.defaultLang) || defaultLanguage;
+    }
+    setSelectedLanguageState(finalLang);
     
-    const initialCurrency = currencies.find(c => c.code === storedCurrencyCode) || currencies.find(c => c.code === initialRegion.defaultCurrency) || currencies[0];
-    setSelectedCurrencyState(initialCurrency);
+    let finalCurrency = defaultCurrency;
+    if (storedCurrencyCode) {
+      finalCurrency = currencies.find(c => c.code === storedCurrencyCode) || currencies.find(c => c.code === finalRegion.defaultCurrency) || defaultCurrency;
+    } else {
+      finalCurrency = currencies.find(c => c.code === finalRegion.defaultCurrency) || defaultCurrency;
+    }
+    setSelectedCurrencyState(finalCurrency);
+
+    setIsHydrated(true); // Signal that localStorage values have been loaded and applied
   }, []);
 
   const setLanguage = useCallback((language: Language, silent = false) => {
     setSelectedLanguageState(language);
-    if (hasMounted && typeof window !== "undefined") localStorage.setItem('roamfree-lang', language.code);
-  }, [hasMounted]);
+    if (isHydrated) localStorage.setItem('roamfree-lang', language.code);
+    // if (!silent && typeof window !== 'undefined') toast({ title: "Language Changed (Demo)", description: `Language set to ${language.name}.` });
+  }, [isHydrated]);
 
   const setCurrency = useCallback((currency: Currency, silent = false) => {
     setSelectedCurrencyState(currency);
-    if (hasMounted && typeof window !== "undefined") localStorage.setItem('roamfree-currency', currency.code);
-  }, [hasMounted]);
+    if (isHydrated) localStorage.setItem('roamfree-currency', currency.code);
+    // if (!silent && typeof window !== 'undefined') toast({ title: "Currency Changed (Demo)", description: `Currency set to ${currency.name} (${currency.symbol}).` });
+  }, [isHydrated]);
 
   const setRegion = useCallback((region: Region, silent = false) => {
     setSelectedRegionState(region);
-    if (hasMounted && typeof window !== "undefined") localStorage.setItem('roamfree-region', region.code);
+    if (isHydrated) localStorage.setItem('roamfree-region', region.code);
 
     const newLang = languages.find(l => l.code === region.defaultLang) || selectedLanguage;
-    setLanguage(newLang, true); // silent update
+    setSelectedLanguageState(newLang); 
+    if (isHydrated) localStorage.setItem('roamfree-lang', newLang.code); 
     
     const newCurrency = currencies.find(c => c.code === region.defaultCurrency) || selectedCurrency;
-    setCurrency(newCurrency, true); // silent update
-  }, [hasMounted, selectedLanguage, selectedCurrency, setLanguage, setCurrency]);
+    setSelectedCurrencyState(newCurrency);
+    if (isHydrated) localStorage.setItem('roamfree-currency', newCurrency.code);
+    
+    // if (!silent && typeof window !== 'undefined') toast({ title: "Region Changed (Demo)", description: `Region set to ${region.name}. Language: ${newLang.name}, Currency: ${newCurrency.name}.` });
+  }, [isHydrated, selectedLanguage, selectedCurrency]);
+
 
   const getTranslatedText = useCallback((key: string, fallback: string): string => {
     if (translationsData[selectedLanguage.code] && translationsData[selectedLanguage.code][key]) {
@@ -264,8 +291,7 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
     return fallback;
   }, [selectedLanguage.code]);
 
-
-  const contextValue = {
+  const contextValue: LocalizationContextType = {
     selectedLanguage,
     selectedRegion,
     selectedCurrency,
@@ -273,13 +299,9 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
     setRegion,
     setCurrency,
     getTranslatedText,
+    isHydrated,
   };
   
-  // Important: Prevent rendering children until hasMounted is true to avoid hydration mismatches with localStorage
-  if (!hasMounted) {
-    return null; 
-  }
-
   return (
     <LocalizationContext.Provider value={contextValue}>
       {children}
@@ -294,5 +316,3 @@ export const useLocalization = () => {
   }
   return context;
 };
-
-    
