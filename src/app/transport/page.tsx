@@ -137,7 +137,7 @@ const intercityBusSearchSchema = z.object({
     departureDate: z.date({ required_error: "Departure date is required." }),
     returnDate: z.date().optional(),
     passengers: z.coerce.number().min(1, "At least one passenger required.").max(50, "Max 50 passengers for group booking demo."),
-}).refine(data => !data.returnDate || !data.returnDate || data.returnDate >= data.departureDate, {
+}).refine(data => !data.returnDate || data.returnDate >= data.departureDate, {
   message: "Return date must be on or after departure date.",
   path: ["returnDate"],
 });
@@ -773,7 +773,7 @@ function IntercityBusSearchForm() {
                 <p className="flex items-center gap-1"><BadgeCheck className="h-4 w-4"/>{getTranslatedText('transport.featureOperatorProfiles', 'Bus Operator Profiles (ratings, reviews, photos, policies)')}</p>
                 <p className="flex items-center gap-1"><Navigation className="h-4 w-4"/>{getTranslatedText('transport.featureLiveBusTracking', 'Live Bus Tracking (GPS, ETA, delay notifications)')}</p>
                 <p className="flex items-center gap-1"><UserCog className="h-4 w-4"/>{getTranslatedText('transport.featurePassengerInfoManagement', 'Passenger Info Management (saved profiles, doc upload)')}</p>
-                <p className="flex items-center gap-1"><ShoppingBag className="h-4 w-4"/>{getTranslatedText('transport.featureAddons', 'Add-ons: Snacks, Insurance, WiFi, Luggage, Carbon Offset')}</p>
+                <p className="flex items-center gap-1"><ShoppingBag className="h-4 w-4"/>{getTranslatedText('transport.featureAddons', 'Add-ons: Snacks, Insurance, Wi-Fi, Luggage, Carbon Offset')}</p>
                 <p className="flex items-center gap-1"><MessageCircle className="h-4 w-4"/>{getTranslatedText('transport.featureBusChatAnnouncements', 'Bus Chat & Operator Announcements')}</p>
                 <p className="flex items-center gap-1"><ShieldCheck className="h-4 w-4"/>{getTranslatedText('transport.featureSafetyFilters', 'Safety Filters: Female-only seating, Wheelchair accessible, Child-friendly')}</p>
             </CardContent>
@@ -876,6 +876,7 @@ export default function TransportPage() {
                 <CardHeader><CardTitle className="text-xl">{getTranslatedText('transport.otherTransportOptionsTitle', 'Other Transport Options')}</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
                     <Button variant="outline" className="w-full justify-start" asChild><Link href="/car-rent">{getTranslatedText('transport.rentACarLink', 'Rent a Car')}</Link></Button>
+                    
                     <Button variant="outline" className="w-full justify-start" disabled>{getTranslatedText('transport.flightSearchLink', 'Flight Search & Booking')} ({getTranslatedText('transport.comingSoon', 'Coming Soon')})</Button>
                 </CardContent>
               </Card>
@@ -896,5 +897,3 @@ export default function TransportPage() {
     </div>
   );
 }
-    
-

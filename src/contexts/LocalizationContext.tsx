@@ -2,7 +2,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-// import { toast } from '@/hooks/use-toast'; // Assuming toast is available globally or not strictly needed for this context logic
 
 export interface Language {
   code: string;
@@ -189,7 +188,6 @@ const translationsData: Record<string, Record<string, string>> = {
     'transport.destinationSetAsDropoff': 'défini comme lieu de dépose pour la réservation de trajet.',
     'transport.otherTransportOptionsTitle': 'Autres Options de Transport',
     'transport.rentACarLink': 'Louer une Voiture',
-    // 'transport.busTicketsLegacyLink': 'Billets de Bus (Ancien)', // Link removed in a previous step
     'transport.flightSearchLink': 'Recherche & Réservation de Vols',
     'transport.platformFeaturesTitle': 'Fonctionnalités de la Plateforme',
     'transport.featureDriverVerification': 'Vérification Chauffeur/Opérateur & Notes (Démo)',
@@ -227,33 +225,34 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    // Load from localStorage
     const storedLangCode = localStorage.getItem('roamfree-lang');
     const storedRegionCode = localStorage.getItem('roamfree-region');
     const storedCurrencyCode = localStorage.getItem('roamfree-currency');
 
-    let finalRegion = defaultRegion;
+    let initialRegion = defaultRegion;
     if (storedRegionCode) {
-      finalRegion = regions.find(r => r.code === storedRegionCode) || defaultRegion;
+      initialRegion = regions.find(r => r.code === storedRegionCode) || defaultRegion;
     }
-    setSelectedRegionState(finalRegion);
+    setSelectedRegionState(initialRegion);
 
-    let finalLang = defaultLanguage;
+    let initialLang = defaultLanguage;
     if (storedLangCode) {
-      finalLang = languages.find(l => l.code === storedLangCode) || languages.find(l => l.code === finalRegion.defaultLang) || defaultLanguage;
+      initialLang = languages.find(l => l.code === storedLangCode) || languages.find(l => l.code === initialRegion.defaultLang) || defaultLanguage;
     } else {
-      finalLang = languages.find(l => l.code === finalRegion.defaultLang) || defaultLanguage;
+      initialLang = languages.find(l => l.code === initialRegion.defaultLang) || defaultLanguage;
     }
-    setSelectedLanguageState(finalLang);
+    setSelectedLanguageState(initialLang);
     
-    let finalCurrency = defaultCurrency;
+    let initialCurrency = defaultCurrency;
     if (storedCurrencyCode) {
-      finalCurrency = currencies.find(c => c.code === storedCurrencyCode) || currencies.find(c => c.code === finalRegion.defaultCurrency) || defaultCurrency;
+      initialCurrency = currencies.find(c => c.code === storedCurrencyCode) || currencies.find(c => c.code === initialRegion.defaultCurrency) || defaultCurrency;
     } else {
-      finalCurrency = currencies.find(c => c.code === finalRegion.defaultCurrency) || defaultCurrency;
+      initialCurrency = currencies.find(c => c.code === initialRegion.defaultCurrency) || defaultCurrency;
     }
-    setSelectedCurrencyState(finalCurrency);
+    setSelectedCurrencyState(initialCurrency);
 
-    setIsHydrated(true);
+    setIsHydrated(true); // Signal that hydration from localStorage is complete
   }, []);
 
   const setLanguage = useCallback((language: Language, silent = false) => {
@@ -291,6 +290,7 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
     return fallback;
   }, [selectedLanguage.code]);
 
+  // Construct context value. Ensure all values are stable or memoized if derived.
   const contextValue: LocalizationContextType = {
     selectedLanguage,
     selectedRegion,
@@ -316,4 +316,3 @@ export const useLocalization = () => {
   }
   return context;
 };
-    
