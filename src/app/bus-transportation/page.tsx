@@ -20,7 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon, Filter } from 'lucide-react';
+import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon, Filter, CircleDollarSign, TicketIcon } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "@/hooks/use-toast";
@@ -252,7 +252,7 @@ export default function BusTransportationPage() {
     }
     toast({
         title: "Seats Confirmed (Demo)",
-        description: `Selected seats: ${currentSelectedSeats.join(', ')}. Proceeding to booking for route ${selectedRouteForSeats?.id}.`
+        description: `Selected seats: ${currentSelectedSeats.join(', ')}. Proceeding to booking for route ${selectedRouteForSeats?.id}. Group booking for ${passengerCount} passengers: names & IDs input would follow. Fare breakdown with add-ons next.`
     });
     setIsSeatSelectionDialogOpen(false);
   }
@@ -462,11 +462,14 @@ export default function BusTransportationPage() {
               <DialogDescription>
                 Bus Type: {selectedRouteForSeats.busType}. 
                 Please select {form.getValues("passengers") || 1} seat(s).
+                Seat availability updates in real-time (Demo).
+                Hover over a seat for details (e.g., recliner, extra legroom - Demo Feature).
               </DialogDescription>
             </DialogHeader>
             <div className="py-4">
-              <div className="mb-4 flex justify-center items-center gap-4 text-sm">
+              <div className="mb-4 flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-sm">
                 <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-green-500" /> Available</span>
+                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-yellow-400" /> Reserved (Demo)</span>
                 <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-blue-500" /> Selected</span>
                 <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-red-500 opacity-50" /> Taken</span>
               </div>
@@ -481,6 +484,9 @@ export default function BusTransportationPage() {
                     
                     const isTaken = index % 5 === 0 || ["2A", "3C"].includes(seatId); // Simulate some taken seats
                     const isSelected = currentSelectedSeats.includes(seatId);
+                    // Placeholder for reserved seats, can be made dynamic later
+                    const isReserved = ["1D"].includes(seatId) && !isSelected && !isTaken;
+
 
                     let seatVariant: "default" | "destructive" | "secondary" | "outline" = "outline";
                     let seatDisabled = false;
@@ -490,6 +496,10 @@ export default function BusTransportationPage() {
                       seatVariant = "secondary";
                       seatDisabled = true;
                       seatColorClass = "border-destructive/30 text-destructive/50 opacity-60 cursor-not-allowed bg-destructive/10";
+                    } else if (isReserved) {
+                      seatVariant = "secondary";
+                      seatDisabled = true; // For demo, reserved seats are also not selectable by user for now
+                      seatColorClass = "border-yellow-500/50 text-yellow-600/70 opacity-70 cursor-not-allowed bg-yellow-400/20";
                     } else if (isSelected) {
                       seatVariant = "default";
                       seatColorClass = "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary";
@@ -505,9 +515,9 @@ export default function BusTransportationPage() {
                             seatColorClass, 
                             colIndex === layout.aisleAfter -1 ? "mr-3 sm:mr-6" : "" // Aisle spacing
                         )}
-                        onClick={() => !isTaken && toggleSeatSelection(seatId)}
+                        onClick={() => !isTaken && !isReserved && toggleSeatSelection(seatId)}
                         disabled={seatDisabled}
-                        aria-label={`Seat ${seatId}${isTaken ? ' (Taken)' : isSelected ? ' (Selected)' : ' (Available)'}`}
+                        aria-label={`Seat ${seatId}${isTaken ? ' (Taken)' : isReserved ? ' (Reserved)' : isSelected ? ' (Selected)' : ' (Available)'}`}
                       >
                         <Armchair className="h-4 w-4 sm:h-5 sm:w-5" />
                         <span className="sr-only">{seatId}</span>
@@ -548,12 +558,13 @@ export default function BusTransportationPage() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground">
             <p><Armchair className="inline h-4 w-4 mr-1 text-primary"/>Interactive 3D Seat Selection with real-time availability & hover details.</p>
-            <p><Zap className="inline h-4 w-4 mr-1 text-primary"/>E-Ticket & QR Code Boarding Pass generation (email & in-app, offline access, departure countdown).</p>
+            <p><TicketIcon className="inline h-4 w-4 mr-1 text-primary"/>E-Ticket & QR Code Boarding Pass generation (email & in-app, offline access, departure countdown).</p>
             <p><MapPin className="inline h-4 w-4 mr-1 text-primary"/>Station Information (amenities, gates, parking) & Live GPS Navigation to station.</p>
             <p><Info className="inline h-4 w-4 mr-1 text-primary"/>Bus Operator Profiles with reviews, ratings, punctuality scores, and verified badges.</p>
             <p><Clock className="inline h-4 w-4 mr-1 text-primary"/>Live Bus Tracking during trip with ETA and delay notifications.</p>
             <p><Users className="inline h-4 w-4 mr-1 text-primary"/>Save Passenger Profiles for faster bookings (name, ID/passport, preferences). Upload ID/Passport docs.</p>
-            <p><BaggageClaim className="inline h-4 w-4 mr-1 text-primary"/>Add-ons: Snacks, extra luggage, travel insurance, WiFi voucher, pillow/blanket, carbon offset.</p>
+            <p><BaggageClaim className="inline h-4 w-4 mr-1 text-primary"/>Add-ons: Snacks, extra luggage, travel insurance, WiFi voucher, pillow/blanket.</p>
+            <p><CircleDollarSign className="inline h-4 w-4 mr-1 text-primary"/>Carbon offset donations.</p>
             <p><ShieldCheck className="inline h-4 w-4 mr-1 text-primary"/>Safety & Accessibility Filters: Female-only seating, wheelchair accessible, child-friendly seats.</p>
             <p><MessageSquare className="inline h-4 w-4 mr-1 text-primary"/>Bus Chat (passengers) & Operator Announcements.</p>
             <p className="text-xs">Fare breakdown (taxes, fees) and advanced payment options (Reserve now/pay later, group bookings) will be integrated into the booking flow.</p>
