@@ -27,7 +27,7 @@ import {
   Building,
   Phone,
   Car,
-  Users,
+  Users as UsersIcon, // Renamed to avoid conflict with Users component
   Share2,
   Navigation,
   ThumbsUp,
@@ -39,7 +39,11 @@ import {
   Ship, 
   Train, 
   PlusCircle,
-  RefreshCcw
+  RefreshCcw,
+  Wifi,
+  Snowflake,
+  VolumeX,
+  Filter
 } from 'lucide-react';
 import Link from 'next/link';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -70,10 +74,17 @@ const transportSchema = z.object({
   dropoffLocation: z.string().min(3, "Dropoff location must be at least 3 characters."),
   pickupDate: z.date({ required_error: "Pickup date is required." }),
   pickupTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)."),
-  scheduleRide: z.boolean().default(false),
-  wheelchairAccessible: z.boolean().default(false),
-  babySeat: z.boolean().default(false),
-  petFriendly: z.boolean().default(false),
+  scheduleRide: z.boolean().default(false).optional(),
+  wheelchairAccessible: z.boolean().default(false).optional(),
+  babySeat: z.boolean().default(false).optional(),
+  petFriendly: z.boolean().default(false).optional(),
+  filterEconomy: z.boolean().default(true).optional(),
+  filterComfort: z.boolean().default(true).optional(),
+  filterSuv: z.boolean().default(true).optional(),
+  filterPremium: z.boolean().default(false).optional(),
+  filterQuietRide: z.boolean().default(false).optional(),
+  filterWifi: z.boolean().default(false).optional(),
+  filterAC: z.boolean().default(false).optional(),
 });
 
 type TransportFormValues = z.infer<typeof transportSchema>;
@@ -93,10 +104,10 @@ interface RideOption {
   vehicleImage: string;
   dataAiHint: string;
   estimatedFare: number;
-  eta: string; // e.g., "3 min"
-  fareBreakdown?: string; // e.g., "Base: $2, Dist: $1.5, Time: $1, Fee: $0.5"
-  features?: string[]; // e.g., ["Wi-Fi", "AC", "Pet-friendly"]
-  userPreferenceMatch?: string; // e.g., "Matches your quiet ride preference"
+  eta: string; 
+  fareBreakdown?: string; 
+  features?: string[]; 
+  userPreferenceMatch?: string;
 }
 
 const destinationSuggestions = [
@@ -110,7 +121,6 @@ export default function TransportPage() {
   const [rideOptions, setRideOptions] = useState<RideOption[]>([]);
   const [isLocating, setIsLocating] = useState(false);
   const [isFetchingRides, setIsFetchingRides] = useState(false);
-  // const [showRatingForm, setShowRatingForm] = useState(false); // Decouple for now
 
   const rideForm = useForm<TransportFormValues>({
     resolver: zodResolver(transportSchema),
@@ -123,6 +133,13 @@ export default function TransportPage() {
       wheelchairAccessible: false, 
       babySeat: false, 
       petFriendly: false,
+      filterEconomy: true,
+      filterComfort: true,
+      filterSuv: true,
+      filterPremium: false,
+      filterQuietRide: false,
+      filterWifi: false,
+      filterAC: false,
     },
   });
   
@@ -142,22 +159,61 @@ export default function TransportPage() {
     setRideOptions([]);
     console.log("Transport Request Submitted:", data);
     
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500)); 
 
     const mockOptions: RideOption[] = [
-      { id: 'eco1', vehicleType: 'Economy', vehicleImage: 'https://placehold.co/120x80.png?text=Economy+Car', dataAiHint: 'sedan compact', estimatedFare: 4.50, eta: '3 min', fareBreakdown: 'Base: $2, Dist: $1.5, Time: $1', features: ['AC', 'Radio'] },
-      { id: 'comf1', vehicleType: 'Comfort', vehicleImage: 'https://placehold.co/120x80.png?text=Comfort+Car', dataAiHint: 'sedan comfort', estimatedFare: 6.75, eta: '5 min', fareBreakdown: 'Base: $3, Dist: $2, Time: $1.75', features: ['AC', 'Wi-Fi', 'Quiet Ride Option'] },
-      { id: 'suv1', vehicleType: 'SUV/XL', vehicleImage: 'https://placehold.co/120x80.png?text=SUV', dataAiHint: 'suv vehicle black', estimatedFare: 9.00, eta: '7 min', fareBreakdown: 'Base: $4, Dist: $3, Time: $2', features: ['AC', 'Extra Space', 'Luggage Rack'] },
-      { id: 'pick1', vehicleType: 'Pickup', vehicleImage: 'https://placehold.co/120x80.png?text=Pickup+Truck', dataAiHint: 'pickup truck red', estimatedFare: 12.00, eta: '10 min', fareBreakdown: 'Base: $5, Dist: $4, Time: $3', features: ['AC', 'Cargo Space', 'Towing Capable'] },
+      { 
+        id: 'eco1', vehicleType: 'Economy', vehicleImage: 'https://placehold.co/120x80.png?text=Economy+Car', dataAiHint: 'sedan compact', estimatedFare: 4.50, eta: '3 min', 
+        fareBreakdown: 'Base: $2, Dist: $1.5, Time: $1, Fee: $0.5 (Demo)', 
+        features: ['AC', 'Radio', 'Max 3 Passengers'],
+        userPreferenceMatch: data.filterQuietRide ? 'Matches your quiet ride preference (Demo)' : undefined
+      },
+      { 
+        id: 'comf1', vehicleType: 'Comfort', vehicleImage: 'https://placehold.co/120x80.png?text=Comfort+Car', dataAiHint: 'sedan comfort', estimatedFare: 6.75, eta: '5 min',
+        fareBreakdown: 'Base: $3, Dist: $2, Time: $1.75, Fee: $0.5 (Demo)', 
+        features: ['AC', 'Wi-Fi', 'Quiet Ride Option', 'Phone Charger'],
+      },
+      { 
+        id: 'suv1', vehicleType: 'SUV/XL', vehicleImage: 'https://placehold.co/120x80.png?text=SUV', dataAiHint: 'suv vehicle black', estimatedFare: 9.00, eta: '7 min',
+        fareBreakdown: 'Base: $4, Dist: $3, Time: $2, Fee: $1 (Demo)', 
+        features: ['AC', 'Extra Space', 'Luggage Rack', 'Pet-friendly'],
+        userPreferenceMatch: data.petFriendly ? 'Matches your pet-friendly preference (Demo)' : undefined
+      },
+      { 
+        id: 'pick1', vehicleType: 'Pickup', vehicleImage: 'https://placehold.co/120x80.png?text=Pickup+Truck', dataAiHint: 'pickup truck red', estimatedFare: 12.00, eta: '10 min',
+        fareBreakdown: 'Base: $5, Dist: $4, Time: $3, Fee: $1 (Demo)',
+        features: ['AC', 'Cargo Space', 'Towing Capable', 'Wheelchair Accessible Option'],
+        userPreferenceMatch: data.wheelchairAccessible ? 'Matches your accessibility preference (Demo)' : undefined
+      },
+      { 
+        id: 'prem1', vehicleType: 'Premium', vehicleImage: 'https://placehold.co/120x80.png?text=Premium+Car', dataAiHint: 'luxury car black', estimatedFare: 15.00, eta: '6 min',
+        fareBreakdown: 'Base: $6, Dist: $5, Time: $3, Fee: $1 (Demo)',
+        features: ['AC', 'Wi-Fi', 'Leather Seats', 'Bottled Water', 'Premium Sound'],
+      },
     ];
-    setRideOptions(mockOptions);
+    
+    // Basic filtering based on form values (for demo purposes)
+    const filteredOptions = mockOptions.filter(option => {
+        if (!data.filterEconomy && option.vehicleType === 'Economy') return false;
+        if (!data.filterComfort && option.vehicleType === 'Comfort') return false;
+        if (!data.filterSuv && (option.vehicleType === 'SUV/XL' || option.vehicleType === 'Pickup')) return false;
+        if (!data.filterPremium && option.vehicleType === 'Premium') return false;
+        if (data.wheelchairAccessible && !option.features?.includes('Wheelchair Accessible Option')) return false;
+        if (data.petFriendly && !option.features?.includes('Pet-friendly')) return false;
+        if (data.filterWifi && !option.features?.includes('Wi-Fi')) return false;
+        if (data.filterAC && !option.features?.includes('AC')) return false;
+        // Baby seat and Quiet ride features can be added to mock data / filtering
+        return true;
+    });
+
+
+    setRideOptions(filteredOptions);
     setIsFetchingRides(false);
 
     toast({
-      title: "Ride Options Found!",
-      description: `Showing available rides from ${data.pickupLocation} to ${data.dropoffLocation}.`,
+      title: filteredOptions.length > 0 ? "Ride Options Found!" : "No Rides Found",
+      description: filteredOptions.length > 0 ? `Showing available rides from ${data.pickupLocation} to ${data.dropoffLocation}.` : "Try adjusting your filters or try again later.",
     });
-    // setShowRatingForm(true); // Will be triggered after a ride is selected and completed
   }
   
   function onIntercitySubmit(data: IntercityTransportFormValues) {
@@ -206,14 +262,7 @@ export default function TransportPage() {
         description: `Fare: $${ride.estimatedFare.toFixed(2)}. Driver details and real-time tracking would appear now. Price lock for 3 mins (Demo).`,
         duration: 7000,
     });
-    // Here you would typically proceed to a booking confirmation step
-    // setShowRatingForm(false); // Reset rating form if it was shown
   }
-
-  // const handleDriverRating = (isThumbsUp: boolean) => {
-  //   toast({ title: "Feedback Submitted (Demo)", description: `Driver rated ${isThumbsUp ? 'positively' : 'negatively'}. Thank you!`});
-  //   setShowRatingForm(false);
-  // }
 
   return (
     <div className="space-y-8">
@@ -253,49 +302,100 @@ export default function TransportPage() {
                         <FormField control={rideForm.control} name="pickupDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Pickup Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={(date) => { field.onChange(date); if (date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) { const currentTime = format(new Date(), "HH:mm"); if (!rideForm.getValues("pickupTime") || rideForm.getValues("pickupTime")! < currentTime) { rideForm.setValue("pickupTime", currentTime, {shouldValidate: true}); } } }} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
                         <FormField control={rideForm.control} name="pickupTime" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</FormLabel><FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
                       </div>
-                      <FormField control={rideForm.control} name="scheduleRide" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Schedule this ride in advance</FormLabel></FormItem>)} />
+                      <FormField control={rideForm.control} name="scheduleRide" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm"><FormControl><Checkbox checked={field.value || false} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Schedule this ride in advance</FormLabel></FormItem>)} />
                       
-                      <div>
-                        <FormLabel className="text-sm font-medium">Safety &amp; Accessibility Options (Demo)</FormLabel>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
-                           <FormField control={rideForm.control} name="wheelchairAccessible" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Accessibility className="h-4 w-4"/>Wheelchair</FormLabel></FormItem>)} />
-                           <FormField control={rideForm.control} name="babySeat" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Baby className="h-4 w-4"/>Baby Seat</FormLabel></FormItem>)} />
-                           <FormField control={rideForm.control} name="petFriendly" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Dog className="h-4 w-4"/>Pet Friendly</FormLabel></FormItem>)} />
-                        </div>
-                      </div>
+                      <Card className="border-dashed">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-lg flex items-center gap-2"><Filter className="h-5 w-5"/>Filters &amp; Preferences (Demo)</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <div>
+                                <FormLabel className="text-xs font-medium">Ride Types</FormLabel>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-1">
+                                    <FormField control={rideForm.control} name="filterEconomy" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">Economy</FormLabel></FormItem>)} />
+                                    <FormField control={rideForm.control} name="filterComfort" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">Comfort</FormLabel></FormItem>)} />
+                                    <FormField control={rideForm.control} name="filterSuv" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">SUV/XL</FormLabel></FormItem>)} />
+                                    <FormField control={rideForm.control} name="filterPremium" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal">Premium</FormLabel></FormItem>)} />
+                                </div>
+                            </div>
+                             <div>
+                                <FormLabel className="text-xs font-medium">Accessibility &amp; Needs</FormLabel>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
+                                   <FormField control={rideForm.control} name="wheelchairAccessible" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Accessibility className="h-4 w-4"/>Wheelchair</FormLabel></FormItem>)} />
+                                   <FormField control={rideForm.control} name="babySeat" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Baby className="h-4 w-4"/>Baby Seat</FormLabel></FormItem>)} />
+                                   <FormField control={rideForm.control} name="petFriendly" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Dog className="h-4 w-4"/>Pet Friendly</FormLabel></FormItem>)} />
+                                </div>
+                            </div>
+                             <div>
+                                <FormLabel className="text-xs font-medium">Ride Preferences</FormLabel>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
+                                   <FormField control={rideForm.control} name="filterQuietRide" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><VolumeX className="h-4 w-4"/>Quiet Ride</FormLabel></FormItem>)} />
+                                   <FormField control={rideForm.control} name="filterWifi" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Wifi className="h-4 w-4"/>Wi-Fi</FormLabel></FormItem>)} />
+                                   <FormField control={rideForm.control} name="filterAC" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-md"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs font-normal flex items-center gap-1"><Snowflake className="h-4 w-4"/>AC</FormLabel></FormItem>)} />
+                                </div>
+                            </div>
+                        </CardContent>
+                      </Card>
+
 
                       <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isFetchingRides}>
-                        {isFetchingRides ? "Fetching Rides..." : "See Prices"}
+                        <Search className="mr-2 h-5 w-5" /> {isFetchingRides ? "Fetching Rides..." : "See Prices"}
                       </Button>
                     </form>
                   </Form>
 
-                  {rideOptions.length > 0 && (
+                  {isFetchingRides && (
+                    <div className="text-center py-6">
+                        <Car className="h-10 w-10 text-primary animate-bounce mx-auto mb-2"/>
+                        <p className="text-muted-foreground">Finding best rides for you...</p>
+                    </div>
+                  )}
+
+                  {!isFetchingRides && rideOptions.length > 0 && (
                     <div className="mt-8 space-y-4">
-                        <h3 className="text-xl font-semibold">Available Ride Options</h3>
+                        <h3 className="text-xl font-semibold">Available Ride Options ({rideOptions.length})</h3>
                         {rideOptions.map((option) => (
-                            <Card key={option.id} className="overflow-hidden shadow-md">
-                                <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4 p-4">
-                                    <div className="relative w-full h-24 md:h-full rounded-md overflow-hidden">
+                            <Card key={option.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+                                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-4 p-3">
+                                    <div className="sm:col-span-3 relative w-full h-24 sm:h-full rounded-md overflow-hidden">
                                         <Image src={option.vehicleImage} alt={option.vehicleType} layout="fill" objectFit="cover" data-ai-hint={option.dataAiHint} />
                                     </div>
-                                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                                        <div>
-                                            <CardTitle className="text-lg">{option.vehicleType}</CardTitle>
-                                            <CardDescription className="text-sm">ETA: {option.eta}</CardDescription>
-                                            {option.features && <p className="text-xs text-muted-foreground mt-1">{option.features.join(', ')} (Demo)</p>}
-                                        </div>
-                                        <div className="text-left sm:text-right mt-2 sm:mt-0">
-                                            <p className="text-xl font-bold text-primary">${option.estimatedFare.toFixed(2)}</p>
-                                            <p className="text-xs text-muted-foreground cursor-pointer hover:underline">Fare Details (Demo)</p>
-                                            <Button size="sm" className="mt-2 w-full sm:w-auto" onClick={() => handleChooseRide(option)}>Choose</Button>
-                                        </div>
+                                    <div className="sm:col-span-6">
+                                        <CardTitle className="text-md font-semibold">{option.vehicleType}</CardTitle>
+                                        <CardDescription className="text-xs">ETA: {option.eta}</CardDescription>
+                                        {option.features && option.features.length > 0 && (
+                                            <div className="flex flex-wrap gap-x-2 gap-y-1 mt-1 text-xs text-muted-foreground">
+                                                {option.features.map(feat => {
+                                                    let Icon = Settings; // Default
+                                                    if (feat.toLowerCase().includes('ac')) Icon = Snowflake;
+                                                    else if (feat.toLowerCase().includes('wi-fi')) Icon = Wifi;
+                                                    else if (feat.toLowerCase().includes('pet-friendly')) Icon = Dog;
+                                                    else if (feat.toLowerCase().includes('wheelchair')) Icon = Accessibility;
+                                                    else if (feat.toLowerCase().includes('quiet')) Icon = VolumeX;
+                                                    return <span key={feat} className="flex items-center gap-1"><Icon className="h-3.5 w-3.5"/>{feat}</span>
+                                                })}
+                                            </div>
+                                        )}
+                                        {option.userPreferenceMatch && <p className="text-xs text-green-600 mt-1">{option.userPreferenceMatch}</p>}
+                                    </div>
+                                    <div className="sm:col-span-3 text-left sm:text-right">
+                                        <p className="text-lg font-bold text-primary">${option.estimatedFare.toFixed(2)}</p>
+                                        {option.fareBreakdown && <p className="text-xs text-muted-foreground cursor-pointer hover:underline" onClick={() => toast({title: "Fare Breakdown (Demo)", description: option.fareBreakdown})}>Fare Details</p> }
+                                        <Button size="sm" className="mt-2 w-full sm:w-auto" onClick={() => handleChooseRide(option)}>Choose</Button>
                                     </div>
                                 </div>
                             </Card>
                         ))}
-                         <p className="text-xs text-muted-foreground text-center">Filters for vehicle type, accessibility, etc. (Coming Soon)</p>
                     </div>
+                  )}
+                   {!isFetchingRides && rideForm.formState.isSubmitted && rideOptions.length === 0 && (
+                     <Card className="mt-8 text-center py-8 bg-muted/30">
+                        <CardContent>
+                            <Car className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                            <p className="text-md font-semibold">No rides match your current filters.</p>
+                            <p className="text-sm text-muted-foreground mt-1">Try adjusting your preferences or location.</p>
+                        </CardContent>
+                    </Card>
                   )}
                 </CardContent>
               </Card>
@@ -336,7 +436,7 @@ export default function TransportPage() {
                 </CardContent>
               </Card>
                 <Card>
-                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><Users className="h-5 w-5 text-primary"/>Carpool &amp; Ride Sharing</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><UsersIcon className="h-5 w-5 text-primary"/>Carpool &amp; Ride Sharing</CardTitle></CardHeader>
                     <CardContent>
                         <p className="text-sm text-muted-foreground">Feature coming soon! Find travelers with similar routes to share rides and split fares.</p>
                         <Button variant="outline" className="w-full mt-2" disabled>Explore Carpool Options (Demo)</Button>
