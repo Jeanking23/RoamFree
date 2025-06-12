@@ -195,9 +195,10 @@ const translationsData: Record<string, Record<string, string>> = {
     'transport.featureInAppCommunication': 'Communication Chauffeur/Opérateur via l\'App (Démo)',
     'transport.featureSecurePayments': 'Paiements Sécurisés via l\'App (Démo)',
     'transport.featureBaggageAssistance': 'Option Assistance Bagages (Démo pour trajets)',
-    'header.ownerDashboard': 'Tableau de Bord Propriétaire'
+    'header.ownerDashboard': 'Tableau de Bord Propriétaire' // Assuming 'fr' is the only/last entry for now
   }
-  // Add other languages here, e.g., es: { 'key': 'valor' }
+  // Add other languages here as: en: { ... }, es: { ... }, etc.
+  // If 'fr' is not the last, add a comma: 'header.ownerDashboard': '...', },
 };
 
 
@@ -225,7 +226,6 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // This effect runs only on the client after hydration
     const storedLangCode = localStorage.getItem('roamfree-lang');
     const storedRegionCode = localStorage.getItem('roamfree-region');
     const storedCurrencyCode = localStorage.getItem('roamfree-currency');
@@ -252,7 +252,7 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
     }
     setSelectedCurrencyState(initialCurrency);
 
-    setIsHydrated(true); // Signal that hydration is complete and localStorage values are loaded
+    setIsHydrated(true);
   }, []);
 
   const setLanguage = useCallback((language: Language, silent = false) => {
@@ -267,8 +267,8 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
 
   const setRegion = useCallback((region: Region, silent = false) => {
     setSelectedRegionState(region);
-    const newLang = languages.find(l => l.code === region.defaultLang) || selectedLanguage; // Use current if default not found
-    const newCurrency = currencies.find(c => c.code === region.defaultCurrency) || selectedCurrency; // Use current if default not found
+    const newLang = languages.find(l => l.code === region.defaultLang) || selectedLanguage;
+    const newCurrency = currencies.find(c => c.code === region.defaultCurrency) || selectedCurrency;
     
     setSelectedLanguageState(newLang); 
     setSelectedCurrencyState(newCurrency);
@@ -313,4 +313,3 @@ export const useLocalization = () => {
   }
   return context;
 };
-
