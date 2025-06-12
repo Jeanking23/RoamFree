@@ -196,10 +196,8 @@ const translationsData: Record<string, Record<string, string>> = {
     'transport.featureSecurePayments': 'Paiements Sécurisés via l\'App (Démo)',
     'transport.featureBaggageAssistance': 'Option Assistance Bagages (Démo pour trajets)',
     'header.ownerDashboard': 'Tableau de Bord Propriétaire',
-    // ... add more French translations for transport page
   },
-  // Add other languages and their translations here
-};
+];
 
 
 interface LocalizationContextType {
@@ -258,8 +256,6 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
   const setLanguage = useCallback((language: Language, silent = false) => {
     setSelectedLanguageState(language);
     if (isHydrated) localStorage.setItem('roamfree-lang', language.code);
-    // Toast notifications for language/currency changes are handled in Header.tsx
-    // to avoid direct toast calls from context if it's not desired everywhere.
   }, [isHydrated]);
 
   const setCurrency = useCallback((currency: Currency, silent = false) => {
@@ -269,15 +265,17 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
 
   const setRegion = useCallback((region: Region, silent = false) => {
     setSelectedRegionState(region);
-    if (isHydrated) localStorage.setItem('roamfree-region', region.code);
-
     const newLang = languages.find(l => l.code === region.defaultLang) || selectedLanguage;
-    setSelectedLanguageState(newLang); 
-    if (isHydrated) localStorage.setItem('roamfree-lang', newLang.code); 
-    
     const newCurrency = currencies.find(c => c.code === region.defaultCurrency) || selectedCurrency;
+    
+    setSelectedLanguageState(newLang); 
     setSelectedCurrencyState(newCurrency);
-    if (isHydrated) localStorage.setItem('roamfree-currency', newCurrency.code);
+
+    if (isHydrated) {
+      localStorage.setItem('roamfree-region', region.code);
+      localStorage.setItem('roamfree-lang', newLang.code); 
+      localStorage.setItem('roamfree-currency', newCurrency.code);
+    }
   }, [isHydrated, selectedLanguage, selectedCurrency]);
 
 
@@ -313,4 +311,3 @@ export const useLocalization = () => {
   }
   return context;
 };
-
