@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils"
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {
-    const { value, ...restProps } = props;
     const inputType = type === undefined ? "text" : type; // Explicitly default to "text"
     return (
       <input
@@ -14,8 +13,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
           className
         )}
         ref={ref}
-        value={typeof value === 'undefined' ? '' : value} // Ensure value is never undefined
-        {...restProps}
+        {...props} // Spread all props directly. Native input will correctly use 'value' or 'defaultValue'.
       />
     )
   }
