@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { BedDouble, MapPin, Star, Lightbulb, Hotel, Building2, Home, Bed, Search, History, TrendingUp, Sparkles, Waves, MountainSnow, Users, Percent, Clock, Bell, MessageSquare, UserCircle, LayoutDashboard, Heart, Award, Building as BuildingIcon, KeyRound, Landmark as LandmarkIcon, ClipboardList, Truck, CarFront as CarSaleIcon, Plane, TvIcon, Layers, School, Leaf, CheckCircle, CalendarDays } from 'lucide-react';
+import { BedDouble, MapPin, Star, Lightbulb, Hotel, Building2, Home, Bed, Search, History, TrendingUp, Sparkles, Waves, MountainSnow, Users, Percent, Clock, Bell, MessageSquare, UserCircle, LayoutDashboard, Heart, Award, Building as BuildingIcon, KeyRound, Landmark as LandmarkIcon, ClipboardList, Truck, CarFront as CarSaleIcon, Plane, TvIcon, Layers, School, Leaf, CheckCircle, CalendarDays, DollarSign } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
@@ -377,3 +377,4 @@ export default function HomePage() {
     </div>
   );
 }
+
