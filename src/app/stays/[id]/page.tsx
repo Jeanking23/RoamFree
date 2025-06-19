@@ -14,7 +14,8 @@ import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { allMockStays, type MockStay } from '@/lib/mock-data';
+import { allMockStays, type MockStay, type Host, type StayPhoto } from '@/lib/mock-data';
+import { addDays, differenceInDays } from 'date-fns';
 
 // Mock data for nearby attractions (can be dynamic based on currentStay.location in a real app)
 const mockNearbyAttractions = [
@@ -28,9 +29,12 @@ export default function AccommodationProfilePage() {
   const router = useRouter();
   const [currentStay, setCurrentStay] = useState<MockStay | null | undefined>(undefined); // undefined for loading, null for not found
   const [isFavorited, setIsFavorited] = useState(false);
-  const [currentImage, setCurrentImage] = useState<MockStay['photos'][0] | null>(null);
-  const [checkInDate, setCheckInDate] = useState<Date | undefined>();
-  const [checkOutDate, setCheckOutDate] = useState<Date | undefined>();
+  const [currentImage, setCurrentImage] = useState<StayPhoto | null>(null);
+  
+  const [checkInDate, setCheckInDate] = useState<Date | undefined>(new Date());
+  const [checkOutDate, setCheckOutDate] = useState<Date | undefined>(addDays(new Date(), 7));
+  const [numberOfGuests, setNumberOfGuests] = useState<number>(2);
+  const [totalPrice, setTotalPrice] = useState<number | null>(null);
 
   useEffect(() => {
     if (params.id) {
@@ -49,10 +53,33 @@ export default function AccommodationProfilePage() {
     }
   }, [params.id]);
 
+  useEffect(() => {
+    if (currentStay && checkInDate && checkOutDate && checkOutDate > checkInDate) {
+      const nights = differenceInDays(checkOutDate, checkInDate);
+      if (nights > 0) {
+        setTotalPrice(nights * currentStay.pricePerNight);
+      } else {
+        setTotalPrice(null);
+      }
+    } else {
+      setTotalPrice(null);
+    }
+  }, [currentStay, checkInDate, checkOutDate]);
+
 
   const handleBookNow = () => {
     if (!currentStay) return;
-    toast({ title: "Booking Initiated (Demo)", description: `Proceeding to payment for ${currentStay.name}. This is a placeholder. Secure Escrow & Buy Now, Pay Later options available.` });
+    let bookingDetails = `for ${currentStay.name}`;
+    if (checkInDate && checkOutDate) {
+      bookingDetails += ` from ${checkInDate.toLocaleDateString()} to ${checkOutDate.toLocaleDateString()}`;
+    }
+    if (numberOfGuests > 0) {
+      bookingDetails += ` for ${numberOfGuests} guest(s)`;
+    }
+    if (totalPrice !== null) {
+      bookingDetails += `. Total: $${totalPrice.toFixed(2)}`;
+    }
+    toast({ title: "Booking Initiated (Demo)", description: `Proceeding to payment ${bookingDetails}. Secure Escrow & Buy Now, Pay Later options available.` });
   };
 
   const handleContactHost = () => {
@@ -82,16 +109,25 @@ export default function AccommodationProfilePage() {
   const handleArView = () => {
     toast({ title: "Augmented Reality View (Demo)", description: "AR property walkthrough feature using your phone's camera is under development." });
   };
+  
   const handle360Tour = () => {
     if (!currentStay) return;
-    toast({ title: "360° Video Tour (Demo)", description: `Starting immersive 360° video tour for ${currentStay.name}. (Placeholder: ${currentStay.virtualTourLink || '#'})` });
+    const description = currentStay.virtualTourLink 
+      ? `Starting immersive 360° video tour for ${currentStay.name} via ${currentStay.virtualTourLink}.`
+      : `Starting immersive 360° video tour for ${currentStay.name}. (Placeholder: No specific link for this stay)`;
+    toast({ title: "360° Video Tour (Demo)", description });
   };
+
   const handleDroneView = () => {
     toast({ title: "Drone View (Demo)", description: "Displaying top-down drone footage of the property area. (Placeholder)" });
   };
+
   const handleFloorPlan = () => {
     if (!currentStay) return;
-    toast({ title: "Interactive Floor Plan (Demo)", description: `Showing clickable 3D floor plan for ${currentStay.name}. (Placeholder: ${currentStay.floorPlanLink || '#'}) (Room dimensions available)` });
+     const description = currentStay.floorPlanLink
+      ? `Showing clickable 3D floor plan for ${currentStay.name} via ${currentStay.floorPlanLink}. (Room dimensions available)`
+      : `Showing clickable 3D floor plan for ${currentStay.name}. (Placeholder: No specific link for this stay)`;
+    toast({ title: "Interactive Floor Plan (Demo)", description });
   };
 
   const handleSuggestRides = () => {
@@ -130,7 +166,7 @@ export default function AccommodationProfilePage() {
                 <span className="flex items-center"><MapPin className="h-5 w-5 mr-1" /> {currentStay.location}</span>
                 <Separator orientation="vertical" className="h-5 hidden sm:block" />
                 <span className="flex items-center"><Star className="h-5 w-5 text-yellow-400 mr-1" /> {currentStay.rating} ({currentStay.reviewsCount || 0} reviews)</span>
-                 {currentStay.isEcoFriendly && <><Separator orientation="vertical" className="h-5 hidden sm:block" /><Badge variant="secondary" className="bg-green-100 text-green-700 border-green-300"><CheckCircle className="mr-1 h-3 w-3"/>Eco-Friendly</Badge></>}
+                 {currentStay.isEcoFriendly && <><Separator orientation="vertical" className="h-5 hidden sm:block" /><Badge variant="secondary" className="bg-green-100 text-green-700 border-green-300"><Leaf className="mr-1 h-3 w-3"/>Eco-Friendly</Badge></>}
               </div>
             </div>
             <div className="flex items-center gap-2 mt-2 md:mt-0 self-start">
@@ -162,9 +198,9 @@ export default function AccommodationProfilePage() {
           </div>
            <div className="flex flex-wrap gap-2 justify-center mt-4">
              <Button variant="outline" onClick={handleArView}><Camera className="mr-2 h-4 w-4" /> Try AR View (Demo)</Button>
-             <Button variant="outline" onClick={handle360Tour} disabled={!currentStay.virtualTourLink}><TvIcon className="mr-2 h-4 w-4" /> 360° Video Tour (Demo)</Button>
+             <Button variant="outline" onClick={handle360Tour} disabled={!currentStay.virtualTourLink}><TvIcon className="mr-2 h-4 w-4" /> 360° Video Tour</Button>
              <Button variant="outline" onClick={handleDroneView}><Plane className="mr-2 h-4 w-4" /> Drone View (Demo)</Button>
-             <Button variant="outline" onClick={handleFloorPlan} disabled={!currentStay.floorPlanLink}><Layers className="mr-2 h-4 w-4" /> Interactive Floor Plan (Demo)</Button>
+             <Button variant="outline" onClick={handleFloorPlan} disabled={!currentStay.floorPlanLink}><Layers className="mr-2 h-4 w-4" /> Interactive Floor Plan</Button>
            </div>
         </CardContent>
         
@@ -259,18 +295,47 @@ export default function AccommodationProfilePage() {
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label htmlFor="checkin" className="block text-sm font-medium text-muted-foreground">Check-in</label>
-                    <Input type="date" id="checkin" onChange={(e) => setCheckInDate(e.target.value ? new Date(e.target.value) : undefined)} />
+                    <Input 
+                        type="date" 
+                        id="checkin" 
+                        value={checkInDate ? checkInDate.toISOString().split('T')[0] : ''}
+                        onChange={(e) => setCheckInDate(e.target.value ? new Date(e.target.value) : undefined)} 
+                        min={new Date().toISOString().split('T')[0]}
+                    />
                   </div>
                   <div>
                     <label htmlFor="checkout" className="block text-sm font-medium text-muted-foreground">Check-out</label>
-                    <Input type="date" id="checkout" onChange={(e) => setCheckOutDate(e.target.value ? new Date(e.target.value) : undefined)} />
+                    <Input 
+                        type="date" 
+                        id="checkout" 
+                        value={checkOutDate ? checkOutDate.toISOString().split('T')[0] : ''}
+                        onChange={(e) => setCheckOutDate(e.target.value ? new Date(e.target.value) : undefined)}
+                        min={checkInDate ? addDays(checkInDate, 1).toISOString().split('T')[0] : addDays(new Date(), 1).toISOString().split('T')[0]}
+                    />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="guests" className="block text-sm font-medium text-muted-foreground">Guests</label>
-                  <Input type="number" id="guests" defaultValue="2" min="1" max={currentStay.maxGuests || 10} />
+                  <Input 
+                    type="number" 
+                    id="guests" 
+                    value={numberOfGuests} 
+                    onChange={(e) => setNumberOfGuests(parseInt(e.target.value, 10) || 1)}
+                    min="1" 
+                    max={currentStay.maxGuests || 10} 
+                  />
                 </div>
-                <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg py-3" onClick={handleBookNow}>
+                {totalPrice !== null && (
+                  <div className="pt-2">
+                    <p className="text-lg font-semibold">Total Price: <span className="text-primary">${totalPrice.toFixed(2)}</span></p>
+                    <p className="text-xs text-muted-foreground">For {differenceInDays(checkOutDate || new Date(), checkInDate || new Date())} night(s)</p>
+                  </div>
+                )}
+                <Button 
+                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg py-3" 
+                  onClick={handleBookNow}
+                  disabled={!checkInDate || !checkOutDate || (checkOutDate <= checkInDate)}
+                >
                   <CreditCard className="mr-2 h-5 w-5" /> Book Now
                 </Button>
                  <p className="text-xs text-muted-foreground text-center">You won't be charged yet (This is a demo)</p>
@@ -364,4 +429,3 @@ function HostInfo({ host, onContact }: HostInfoProps) {
   );
 }
     
-
