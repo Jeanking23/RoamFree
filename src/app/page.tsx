@@ -12,42 +12,42 @@ import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { allMockStays, type MockStay } from '@/lib/mock-data';
-import type { AccommodationSearchFormValues } from '@/components/search/accommodation-search-form'; // Assuming type export
+import type { AccommodationSearchFormValues } from '@/components/search/accommodation-search-form';
+import { useRouter } from 'next/navigation'; // Added for navigation
 
-// Mock data for other sections (as before)
 const propertyTypes = [
-  { name: "Hotels", icon: Hotel, image: "https://placehold.co/300x200.png?text=Hotels", dataAiHint: "modern hotel", link: "/stays?type=Hotel" },
-  { name: "Apartments", icon: Building2, image: "https://placehold.co/300x200.png?text=Apartments", dataAiHint: "apartment building", link: "/stays?type=Apartment" },
-  { name: "Resorts", icon: Waves, image: "https://placehold.co/300x200.png?text=Resorts", dataAiHint: "beach resort", link: "/stays?type=Resort" },
-  { name: "Villas", icon: HomeIconType, image: "https://placehold.co/300x200.png?text=Villas", dataAiHint: "luxury villa", link: "/stays?type=Villa" },
-  { name: "Guest Houses", icon: Bed, image: "https://placehold.co/300x200.png?text=Guest+Houses", dataAiHint: "guest house", link: "/stays?type=GuestHouse" },
+  { name: "Hotels", icon: Hotel, image: "https://placehold.co/300x200.png?text=Hotels", dataAiHint: "modern hotel", filterType: "Hotel" },
+  { name: "Apartments", icon: Building2, image: "https://placehold.co/300x200.png?text=Apartments", dataAiHint: "apartment building", filterType: "Rental" }, // Assuming apartments are rentals
+  { name: "Resorts", icon: Waves, image: "https://placehold.co/300x200.png?text=Resorts", dataAiHint: "beach resort", filterType: "Hotel" }, // Assuming resorts are hotels
+  { name: "Villas", icon: HomeIconType, image: "https://placehold.co/300x200.png?text=Villas", dataAiHint: "luxury villa", filterType: "Rental" },
+  { name: "Guest Houses", icon: Bed, image: "https://placehold.co/300x200.png?text=Guest+Houses", dataAiHint: "guest house", filterType: "Rental" },
 ];
 
 const mockRecentSearches = [
-  { id: "rs1", query: "Hotels in Paris, France", link: "/stays?destination=Paris&type=Hotel" },
-  { id: "rs2", query: "Villas in Bali, Aug 10 - Aug 17", link: "/stays?destination=Bali&type=Villa&dates=..." },
-  { id: "rs3", query: "Apartments near Eiffel Tower", link: "/stays?destination=Eiffel+Tower&type=Apartment" },
+  { id: "rs1", query: "Hotels in Paris, France", destination: "Paris, France", type: "Hotel" },
+  { id: "rs2", query: "Villas in Bali", destination: "Bali, Indonesia", type: "Rental" }, // Example type match
+  { id: "rs3", query: "Apartments near Eiffel Tower", destination: "Paris, France", type: "Rental" }, // Example type match
 ];
 
 const mockTrendingDestinations = [
-  { id: "td1", name: "Top Hotels in Atlanta", image: "https://placehold.co/400x300.png?text=Atlanta+Hotels", dataAiHint: "atlanta skyline", price: 120, rating: 4.5, link: "/stays?destination=Atlanta&type=Hotel" },
-  { id: "td2", name: "Apartments in Douala", image: "https://placehold.co/400x300.png?text=Douala+Apts", dataAiHint: "douala city", price: 80, rating: 4.2, link: "/stays?destination=Douala&type=Apartment" },
-  { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://placehold.co/400x300.png?text=Abidjan+Resorts", dataAiHint: "abidjan beach", price: 150, rating: 4.6, link: "/stays?destination=Abidjan&type=Resort" },
-  { id: "td4", name: "Luxury Stays in Dubai", image: "https://placehold.co/400x300.png?text=Dubai+Luxury", dataAiHint: "dubai hotel", price: 300, rating: 4.9, link: "/stays?destination=Dubai" },
+  { id: "td1", name: "Top Hotels in Atlanta", image: "https://placehold.co/400x300.png?text=Atlanta+Hotels", dataAiHint: "atlanta skyline", price: 120, rating: 4.5, destination: "Atlanta", type: "Hotel" },
+  { id: "td2", name: "Apartments in Douala", image: "https://placehold.co/400x300.png?text=Douala+Apts", dataAiHint: "douala city", price: 80, rating: 4.2, destination: "Douala", type: "Rental" }, // Assuming apartments are rentals
+  { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://placehold.co/400x300.png?text=Abidjan+Resorts", dataAiHint: "abidjan beach", price: 150, rating: 4.6, destination: "Abidjan", type: "Hotel" }, // Assuming resorts are hotels
+  { id: "td4", name: "Luxury Stays in Dubai", image: "https://placehold.co/400x300.png?text=Dubai+Luxury", dataAiHint: "dubai hotel", price: 300, rating: 4.9, destination: "Dubai", type: "ANY" },
 ];
 
 const mockVibes = [
-  { name: "Adventure", icon: MountainSnow, link: "/ai-trip-planner?vibe=Adventure" },
-  { name: "Relaxation", icon: Waves, link: "/ai-trip-planner?vibe=Relaxation" },
-  { name: "Romantic", icon: Heart, link: "/ai-trip-planner?vibe=Romantic" },
-  { name: "Family-Friendly", icon: Users, link: "/ai-trip-planner?vibe=Family" },
-  { name: "Budget-Friendly", icon: DollarSign, link: "/ai-trip-planner?vibe=Budget" },
+  { name: "Adventure", icon: MountainSnow, mood: "Adventurous" },
+  { name: "Relaxation", icon: Waves, mood: "Peaceful" },
+  { name: "Romantic", icon: Heart, mood: "Romantic" },
+  { name: "Family-Friendly", icon: Users, mood: "ANY" }, // No specific mood filter for Family, can adjust if needed
+  { name: "Budget-Friendly", icon: DollarSign, mood: "ANY" }, // No specific mood filter for Budget, can adjust
 ];
 
 const mockNearbyGems = [
-  { id: "ng1", title: "Beautiful lake house nearby", image: "https://placehold.co/400x300.png?text=Lake+House", dataAiHint: "lake house", distance: "25km", link: "/stays/nearby-lake-house" },
-  { id: "ng2", title: "Popular resort 50km away", image: "https://placehold.co/400x300.png?text=Nearby+Resort", dataAiHint: "resort pool", distance: "50km", link: "/stays/nearby-resort" },
-  { id: "ng3", title: "Affordable guest house in your city", image: "https://placehold.co/400x300.png?text=City+Guesthouse", dataAiHint: "city guesthouse", distance: "5km", link: "/stays/city-guesthouse" },
+  { id: "ng1", title: "Sunny Beachfront Villa (Nearby Gem)", image: "https://placehold.co/400x300.png?text=Beach+Villa+Gem", dataAiHint: "beach villa", distance: "25km", linkStayId: "stay1" },
+  { id: "ng2", title: "Cozy Mountain Cabin (Nearby Gem)", image: "https://placehold.co/400x300.png?text=Cabin+Gem", dataAiHint: "mountain cabin", distance: "50km", linkStayId: "stay2" },
+  { id: "ng3", title: "Urban Chic Hotel (Nearby Gem)", image: "https://placehold.co/400x300.png?text=Hotel+Gem", dataAiHint: "city hotel", distance: "5km", linkStayId: "stay3" },
 ];
 
 const mockDeals = [
@@ -58,9 +58,12 @@ const mockDeals = [
 
 
 export default function HomePage() {
+  const router = useRouter();
   const [userLocation, setUserLocation] = useState<string | null>(null);
-  const [displayedStays, setDisplayedStays] = useState<MockStay[]>(allMockStays.slice(0,3)); // Show first 3 by default
+  const [displayedStays, setDisplayedStays] = useState<MockStay[]>(allMockStays.slice(0, 6)); // Show first 6 by default
   const [noResults, setNoResults] = useState(false);
+  const [activeFiltersSummary, setActiveFiltersSummary] = useState<string>("Featured Stays");
+
 
   useEffect(() => {
     setUserLocation("Cameroon"); 
@@ -73,9 +76,20 @@ export default function HomePage() {
     });
   };
 
-  const handleAccommodationSearch = useCallback((filters: AccommodationSearchFormValues) => {
+  const handleAccommodationSearch = useCallback((filters: Partial<AccommodationSearchFormValues>) => {
     console.log("Searching with filters:", filters);
     setNoResults(false);
+    let currentSummary = "Search Results";
+
+    if (filters.propertyType && filters.propertyType !== "ANY" && Object.keys(filters).length === 1) {
+        currentSummary = `${filters.propertyType}s`;
+    } else if (filters.mood && filters.mood !== "ANY" && Object.keys(filters).length === 1) {
+        currentSummary = `Stays with a ${filters.mood} Vibe`;
+    } else if (filters.destination && Object.keys(filters).length <= 2) { // destination and maybe type
+        currentSummary = `Stays in ${filters.destination}`;
+        if(filters.propertyType && filters.propertyType !== "ANY") currentSummary += ` (${filters.propertyType}s)`;
+    }
+
 
     let results = allMockStays.filter(stay => {
       let matches = true;
@@ -84,12 +98,8 @@ export default function HomePage() {
         matches = matches && stay.location.toLowerCase().includes(filters.destination.toLowerCase());
       }
 
-      // Basic date range check: just ensure dates are present if filtering is intended.
-      // Real availability is too complex for this mock.
-      // if (filters.dateRange?.from && filters.dateRange?.to) { /* basic check */ }
-
       const totalGuests = (filters.adults || 0) + (filters.children || 0);
-      if (stay.maxGuests && totalGuests > stay.maxGuests) {
+      if (filters.adults && stay.maxGuests && totalGuests > stay.maxGuests) {
         matches = false;
       }
       
@@ -114,10 +124,35 @@ export default function HomePage() {
 
     if (results.length === 0) {
       setNoResults(true);
+      currentSummary = "No Stays Found";
     }
     setDisplayedStays(results);
-    toast({title: "Search Complete", description: `${results.length} stays found.`});
+    setActiveFiltersSummary(currentSummary);
+    if (!Object.keys(filters).length) { // If called with empty filters, it's like "View All"
+        setActiveFiltersSummary("All Stays");
+    }
+    
+    // Scroll to the stays section after search
+    const staysSection = document.getElementById('stays-section');
+    if (staysSection) {
+        staysSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    if(Object.keys(filters).length > 0 || results.length === 0) { // Only toast if actual filtering happened or no results
+        toast({title: "Search Complete", description: `${results.length} stays found for "${currentSummary}".`});
+    }
+
   }, []);
+  
+  const resetAndShowAllStays = () => {
+    setDisplayedStays(allMockStays);
+    setNoResults(false);
+    setActiveFiltersSummary("All Stays");
+    const staysSection = document.getElementById('stays-section');
+    if (staysSection) {
+        staysSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
 
   return (
@@ -136,27 +171,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container mx-auto px-4">
+      <section id="stays-section" className="container mx-auto px-4">
         <div className="flex flex-col sm:flex-row items-center justify-between mb-8">
           <h2 className="text-3xl font-headline font-semibold text-foreground flex items-center mb-4 sm:mb-0">
             <BedDouble className="mr-3 h-8 w-8 text-primary" />
-            {noResults ? "Search Results" : "Featured Stays"}
+            {activeFiltersSummary}
           </h2>
-          {!noResults && (
-             <Button variant="link" asChild className="text-primary hover:text-primary/80" onClick={() => {setDisplayedStays(allMockStays); setNoResults(false);}}>
-                <Link href="#stays-section">View All Stays &rarr;</Link>
+           <Button variant="link" asChild className="text-primary hover:text-primary/80" onClick={resetAndShowAllStays}>
+              <Link href="#stays-section">View All Stays &rarr;</Link>
             </Button>
-          )}
         </div>
-        {noResults && displayedStays.length === 0 ? (
+        {noResults ? (
           <div className="text-center py-12 bg-muted/30 rounded-md">
             <Search className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
             <p className="text-xl font-semibold">No Stays Found</p>
             <p className="text-muted-foreground">Try adjusting your search filters or view all stays.</p>
-            <Button onClick={() => {setDisplayedStays(allMockStays.slice(0,3)); setNoResults(false);}} className="mt-4">Clear Search & View Featured</Button>
+            <Button onClick={resetAndShowAllStays} className="mt-4">Clear Search & View All</Button>
           </div>
         ) : (
-          <div id="stays-section" className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {displayedStays.map((stay) => (
               <Card key={stay.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col group rounded-xl border">
                 <Link href={`/stays/${stay.id}`} className="block">
@@ -205,7 +238,6 @@ export default function HomePage() {
         )}
       </section>
       
-      {/* Other sections as defined previously */}
       <section className="container mx-auto px-4 py-12 bg-primary/5 rounded-lg text-center">
         <Lightbulb className="h-12 w-12 text-primary mx-auto mb-4" />
         <h2 className="text-3xl font-headline font-semibold text-primary mb-3">Plan smarter with AI</h2>
@@ -221,20 +253,18 @@ export default function HomePage() {
         <h2 className="text-3xl font-headline font-semibold text-foreground mb-8 text-center">Browse by Property Type</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {propertyTypes.map((type) => (
-            <Link key={type.name} href={type.link} passHref legacyBehavior>
-              <a className="block group">
-                <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="relative h-32 sm:h-40">
-                    <Image src={type.image} alt={type.name} layout="fill" objectFit="cover" data-ai-hint={type.dataAiHint} />
-                  </div>
-                  <CardHeader className="p-3 text-center">
-                    <CardTitle className="text-base sm:text-lg font-medium group-hover:text-primary flex items-center justify-center gap-2">
-                      <type.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary" /> {type.name}
-                    </CardTitle>
-                  </CardHeader>
-                </Card>
-              </a>
-            </Link>
+            <button key={type.name} onClick={() => handleAccommodationSearch({ propertyType: type.filterType as AccommodationSearchFormValues['propertyType'] })} className="block group text-left">
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow w-full h-full flex flex-col">
+                <div className="relative h-32 sm:h-40">
+                  <Image src={type.image} alt={type.name} layout="fill" objectFit="cover" data-ai-hint={type.dataAiHint} />
+                </div>
+                <CardHeader className="p-3 text-center flex-grow flex flex-col justify-center">
+                  <CardTitle className="text-base sm:text-lg font-medium group-hover:text-primary flex items-center justify-center gap-2">
+                    <type.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary" /> {type.name}
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+            </button>
           ))}
         </div>
       </section>
@@ -246,8 +276,8 @@ export default function HomePage() {
         {mockRecentSearches.length > 0 ? (
           <div className="flex flex-wrap gap-3">
             {mockRecentSearches.map((search) => (
-              <Button key={search.id} variant="outline" asChild>
-                <Link href={search.link}>{search.query}</Link>
+              <Button key={search.id} variant="outline" onClick={() => handleAccommodationSearch({ destination: search.destination, propertyType: search.type as AccommodationSearchFormValues['propertyType'] })}>
+                {search.query}
               </Button>
             ))}
           </div>
@@ -263,19 +293,17 @@ export default function HomePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {mockTrendingDestinations.map((dest) => (
             <Card key={dest.id} className="overflow-hidden group hover:shadow-lg">
-              <Link href={dest.link} passHref legacyBehavior>
-                <a className="block">
-                  <div className="relative h-48">
-                    <Image src={dest.image} alt={dest.name} layout="fill" objectFit="cover" data-ai-hint={dest.dataAiHint} className="group-hover:scale-105 transition-transform"/>
-                  </div>
-                  <CardHeader className="p-4">
-                    <CardTitle className="text-lg font-medium group-hover:text-primary">{dest.name}</CardTitle>
-                    <CardDescription className="text-sm">
-                      Starts at ${dest.price}/night &bull; Rating: {dest.rating} <Star className="inline h-4 w-4 text-yellow-400 fill-yellow-400" />
-                    </CardDescription>
-                  </CardHeader>
-                </a>
-              </Link>
+              <button onClick={() => handleAccommodationSearch({ destination: dest.destination, propertyType: dest.type as AccommodationSearchFormValues['propertyType'] })} className="block w-full text-left">
+                <div className="relative h-48">
+                  <Image src={dest.image} alt={dest.name} layout="fill" objectFit="cover" data-ai-hint={dest.dataAiHint} className="group-hover:scale-105 transition-transform"/>
+                </div>
+                <CardHeader className="p-4">
+                  <CardTitle className="text-lg font-medium group-hover:text-primary">{dest.name}</CardTitle>
+                  <CardDescription className="text-sm">
+                    Starts at ${dest.price}/night &bull; Rating: {dest.rating} <Star className="inline h-4 w-4 text-yellow-400 fill-yellow-400" />
+                  </CardDescription>
+                </CardHeader>
+              </button>
             </Card>
           ))}
         </div>
@@ -288,10 +316,8 @@ export default function HomePage() {
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           {mockVibes.map((vibe) => (
-            <Button key={vibe.name} variant="secondary" size="lg" className="text-base" asChild>
-              <Link href={vibe.link}>
-                <vibe.icon className="mr-2 h-5 w-5" /> {vibe.name}
-              </Link>
+            <Button key={vibe.name} variant="secondary" size="lg" className="text-base" onClick={() => handleAccommodationSearch({ mood: vibe.mood as AccommodationSearchFormValues['mood'] })}>
+              <vibe.icon className="mr-2 h-5 w-5" /> {vibe.name}
             </Button>
           ))}
         </div>
@@ -303,7 +329,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {mockNearbyGems.map((gem) => (
             <Card key={gem.id} className="overflow-hidden group hover:shadow-lg">
-               <Link href={gem.link} passHref legacyBehavior>
+               <Link href={`/stays/${gem.linkStayId}`} passHref legacyBehavior>
                 <a className="block">
                   <div className="relative h-40">
                     <Image src={gem.image} alt={gem.title} layout="fill" objectFit="cover" data-ai-hint={gem.dataAiHint} className="group-hover:scale-105 transition-transform"/>
@@ -364,4 +390,3 @@ export default function HomePage() {
     </div>
   );
 }
-
