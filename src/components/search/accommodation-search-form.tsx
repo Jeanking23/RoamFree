@@ -22,7 +22,7 @@ import { format, addDays } from "date-fns";
 import { CalendarIcon, MapPin, Users, Search, ChevronsUpDown, Building2, Smile, Accessibility, Leaf } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const accommodationSearchSchema = z.object({
   destination: z.string().optional(),
@@ -50,13 +50,14 @@ interface AccommodationSearchFormProps {
 
 
 export default function AccommodationSearchForm({ onSearch }: AccommodationSearchFormProps) {
+  const [hasMounted, setHasMounted] = useState(false);
   const form = useForm<AccommodationSearchFormValues>({
     resolver: zodResolver(accommodationSearchSchema),
     defaultValues: {
       destination: "",
       dateRange: {
-        from: undefined, // Initialize as undefined
-        to: undefined,   // Initialize as undefined
+        from: undefined,
+        to: undefined,
       },
       adults: 2,
       children: 0,
@@ -68,30 +69,23 @@ export default function AccommodationSearchForm({ onSearch }: AccommodationSearc
     },
   });
   
-  // Set default dates on the client side after mount to prevent hydration mismatch
   useEffect(() => {
-    const currentFromDate = form.getValues("dateRange.from");
-    const currentToDate = form.getValues("dateRange.to");
-
-    if (!currentFromDate) {
-        form.setValue("dateRange.from", new Date(), { shouldValidate: true });
-    }
-    if (!currentToDate) {
-        form.setValue("dateRange.to", addDays(new Date(), 7), { shouldValidate: true });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array ensures this runs only once on mount
+    setHasMounted(true);
+    // Set default dates only on the client after mount
+    form.setValue("dateRange.from", new Date(), { shouldValidate: false }); // Avoid immediate validation if not needed
+    form.setValue("dateRange.to", addDays(new Date(), 7), { shouldValidate: false });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.setValue]); // form.setValue is stable, but good to include if used directly
 
 
   function onSubmit(values: AccommodationSearchFormValues) {
     onSearch(values);
   }
 
-  const { watch, setValue } = form;
+  const { watch } = form;
   const adults = watch("adults", 2); 
   const children = watch("children", 0);
   const rooms = watch("rooms", 1);
-  const dateRange = watch("dateRange");
 
 
   return (
@@ -126,7 +120,7 @@ export default function AccommodationSearchForm({ onSearch }: AccommodationSearc
                         !field.value?.from && "text-muted-foreground"
                       )}
                     >
-                      {field.value?.from ? (
+                      {hasMounted && field.value?.from ? (
                         field.value.to ? (
                           <>
                             {format(field.value.from, "LLL dd, y")} - {" "}
