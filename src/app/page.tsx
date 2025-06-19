@@ -6,82 +6,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { BedDouble, MapPin, Star, Lightbulb, Hotel, Building2, Home, Bed, Search, History, TrendingUp, Sparkles, Waves, MountainSnow, Users, Percent, Clock, Bell, MessageSquare, UserCircle, LayoutDashboard, Heart, Award, Building as BuildingIcon, KeyRound, Landmark as LandmarkIcon, ClipboardList, Truck, CarFront as CarSaleIcon, Plane, TvIcon, Layers, School, Leaf, CheckCircle, CalendarDays, DollarSign } from 'lucide-react';
+import { BedDouble, MapPin, Star, Lightbulb, Hotel, Building2, Home as HomeIconType, Bed, Search, History, TrendingUp, Sparkles, Waves, MountainSnow, Users, Percent, Clock, Bell, MessageSquare, UserCircle, LayoutDashboard, Heart, Award, Building as BuildingIconType, KeyRound, Landmark as LandmarkIconType, ClipboardList, Truck, CarFront as CarSaleIconType, Plane, TvIcon, Layers, School, Leaf, CheckCircle, CalendarDays, DollarSign } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { allMockStays, type MockStay } from '@/lib/mock-data';
+import type { AccommodationSearchFormValues } from '@/components/search/accommodation-search-form'; // Assuming type export
 
-// Mock data for featured stays (existing)
-const mockFeaturedStays = [
-  {
-    id: "stay1",
-    name: "Sunny Beachfront Villa",
-    location: "Bali, Indonesia",
-    pricePerNight: 250,
-    image: "https://placehold.co/600x400.png?text=Beach+Villa",
-    dataAiHint: "beach villa",
-    rating: 4.8,
-    category: "Villa",
-  },
-  {
-    id: "stay2",
-    name: "Cozy Mountain Cabin",
-    location: "Aspen, Colorado",
-    pricePerNight: 180,
-    image: "https://placehold.co/600x400.png?text=Mountain+Cabin",
-    dataAiHint: "mountain cabin",
-    rating: 4.9,
-    category: "Cabin",
-  },
-  {
-    id: "stay3",
-    name: "Urban Chic Apartment",
-    location: "Paris, France",
-    pricePerNight: 150,
-    image: "https://placehold.co/600x400.png?text=City+Apartment",
-    dataAiHint: "city apartment",
-    rating: 4.7,
-    category: "Apartment",
-  },
-   {
-    id: "stay4",
-    name: "Riverside Lodge Escape",
-    location: "Scottish Highlands",
-    pricePerNight: 220,
-    image: "https://placehold.co/600x400.png?text=River+Lodge",
-    dataAiHint: "river lodge",
-    rating: 4.6,
-    category: "Lodge",
-  },
-  {
-    id: "stay5",
-    name: "Desert Oasis Retreat",
-    location: "Sedona, Arizona",
-    pricePerNight: 300,
-    image: "https://placehold.co/600x400.png?text=Desert+Home",
-    dataAiHint: "desert home",
-    rating: 4.8,
-    category: "House",
-  },
-  {
-    id: "stay6",
-    name: "Historic City Center Flat",
-    location: "Rome, Italy",
-    pricePerNight: 120,
-    image: "https://placehold.co/600x400.png?text=Historic+Building",
-    dataAiHint: "historic building",
-    rating: 4.5,
-    category: "Flat",
-  },
-];
-
-// Mock data for new sections
+// Mock data for other sections (as before)
 const propertyTypes = [
   { name: "Hotels", icon: Hotel, image: "https://placehold.co/300x200.png?text=Hotels", dataAiHint: "modern hotel", link: "/stays?type=Hotel" },
   { name: "Apartments", icon: Building2, image: "https://placehold.co/300x200.png?text=Apartments", dataAiHint: "apartment building", link: "/stays?type=Apartment" },
   { name: "Resorts", icon: Waves, image: "https://placehold.co/300x200.png?text=Resorts", dataAiHint: "beach resort", link: "/stays?type=Resort" },
-  { name: "Villas", icon: Home, image: "https://placehold.co/300x200.png?text=Villas", dataAiHint: "luxury villa", link: "/stays?type=Villa" },
+  { name: "Villas", icon: HomeIconType, image: "https://placehold.co/300x200.png?text=Villas", dataAiHint: "luxury villa", link: "/stays?type=Villa" },
   { name: "Guest Houses", icon: Bed, image: "https://placehold.co/300x200.png?text=Guest+Houses", dataAiHint: "guest house", link: "/stays?type=GuestHouse" },
 ];
 
@@ -121,11 +59,11 @@ const mockDeals = [
 
 export default function HomePage() {
   const [userLocation, setUserLocation] = useState<string | null>(null);
+  const [displayedStays, setDisplayedStays] = useState<MockStay[]>(allMockStays.slice(0,3)); // Show first 3 by default
+  const [noResults, setNoResults] = useState(false);
 
   useEffect(() => {
-    // Mock user location for "Trending Near You" and "Nearby Gems"
-    // In a real app, you'd use navigator.geolocation or IP-based location
-    setUserLocation("Cameroon"); // Default mock location
+    setUserLocation("Cameroon"); 
   }, []);
 
   const handleEnableNotifications = () => {
@@ -135,9 +73,55 @@ export default function HomePage() {
     });
   };
 
+  const handleAccommodationSearch = useCallback((filters: AccommodationSearchFormValues) => {
+    console.log("Searching with filters:", filters);
+    setNoResults(false);
+
+    let results = allMockStays.filter(stay => {
+      let matches = true;
+
+      if (filters.destination) {
+        matches = matches && stay.location.toLowerCase().includes(filters.destination.toLowerCase());
+      }
+
+      // Basic date range check: just ensure dates are present if filtering is intended.
+      // Real availability is too complex for this mock.
+      // if (filters.dateRange?.from && filters.dateRange?.to) { /* basic check */ }
+
+      const totalGuests = (filters.adults || 0) + (filters.children || 0);
+      if (stay.maxGuests && totalGuests > stay.maxGuests) {
+        matches = false;
+      }
+      
+      if (filters.propertyType && filters.propertyType !== "ANY") {
+         matches = matches && stay.type === filters.propertyType;
+      }
+
+      if (filters.mood && filters.mood !== "ANY" && stay.moods) {
+        matches = matches && stay.moods.includes(filters.mood as "Peaceful" | "Romantic" | "Adventurous");
+      }
+
+      if (filters.wheelchairAccessible && !stay.isWheelchairAccessible) {
+        matches = false;
+      }
+
+      if (filters.ecoFriendly && !stay.isEcoFriendly) {
+        matches = false;
+      }
+      
+      return matches;
+    });
+
+    if (results.length === 0) {
+      setNoResults(true);
+    }
+    setDisplayedStays(results);
+    toast({title: "Search Complete", description: `${results.length} stays found.`});
+  }, []);
+
+
   return (
     <div className="space-y-16">
-      {/* Hero Section with Search (Existing) */}
       <section className="py-12 md:py-20 bg-gradient-to-br from-primary/10 via-background to-background rounded-lg shadow-sm">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-6">
@@ -147,71 +131,81 @@ export default function HomePage() {
             Discover amazing places to stay for your next adventure, from cozy cabins to luxury villas, all around the world.
           </p>
           <div className="max-w-5xl mx-auto bg-card p-6 rounded-xl shadow-xl border">
-            <AccommodationSearchForm />
+            <AccommodationSearchForm onSearch={handleAccommodationSearch} />
           </div>
         </div>
       </section>
 
-      {/* Featured Stays Section (Existing) */}
       <section className="container mx-auto px-4">
         <div className="flex flex-col sm:flex-row items-center justify-between mb-8">
           <h2 className="text-3xl font-headline font-semibold text-foreground flex items-center mb-4 sm:mb-0">
             <BedDouble className="mr-3 h-8 w-8 text-primary" />
-            Featured Stays
+            {noResults ? "Search Results" : "Featured Stays"}
           </h2>
-          <Button variant="link" asChild className="text-primary hover:text-primary/80">
-            <Link href="/stays">View All Stays &rarr;</Link>
-          </Button>
+          {!noResults && (
+             <Button variant="link" asChild className="text-primary hover:text-primary/80" onClick={() => {setDisplayedStays(allMockStays); setNoResults(false);}}>
+                <Link href="#stays-section">View All Stays &rarr;</Link>
+            </Button>
+          )}
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {mockFeaturedStays.map((stay) => (
-            <Card key={stay.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col group rounded-xl border">
-              <Link href={`/stays/${stay.id}`} className="block">
-                <div className="relative w-full h-64 overflow-hidden">
-                  <Image
-                    src={stay.image}
-                    alt={stay.name}
-                    layout="fill"
-                    objectFit="cover"
-                    data-ai-hint={stay.dataAiHint}
-                    className="group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              </Link>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xl font-semibold group-hover:text-primary transition-colors">
-                  <Link href={`/stays/${stay.id}`}>{stay.name}</Link>
-                </CardTitle>
-                <CardDescription className="flex items-center text-sm pt-1">
-                  <MapPin className="h-4 w-4 mr-1.5 text-muted-foreground" /> {stay.location}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <div className="flex justify-between items-center mb-3">
-                  <p className="text-xl font-bold text-primary">
-                    ${stay.pricePerNight}
-                    <span className="text-sm font-normal text-muted-foreground"> / night</span>
-                  </p>
-                  {stay.rating && (
-                    <div className="flex items-center gap-1">
-                      <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                      <span className="font-semibold text-foreground">{stay.rating}</span>
-                    </div>
-                  )}
-                </div>
-                <Badge variant="secondary" className="font-normal">{stay.category}</Badge>
-              </CardContent>
-              <CardFooter className="p-4">
-                <Button asChild className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-3 text-base">
-                  <Link href={`/stays/${stay.id}`}>View Details</Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+        {noResults && displayedStays.length === 0 ? (
+          <div className="text-center py-12 bg-muted/30 rounded-md">
+            <Search className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+            <p className="text-xl font-semibold">No Stays Found</p>
+            <p className="text-muted-foreground">Try adjusting your search filters or view all stays.</p>
+            <Button onClick={() => {setDisplayedStays(allMockStays.slice(0,3)); setNoResults(false);}} className="mt-4">Clear Search & View Featured</Button>
+          </div>
+        ) : (
+          <div id="stays-section" className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayedStays.map((stay) => (
+              <Card key={stay.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col group rounded-xl border">
+                <Link href={`/stays/${stay.id}`} className="block">
+                  <div className="relative w-full h-64 overflow-hidden">
+                    <Image
+                      src={stay.image}
+                      alt={stay.name}
+                      layout="fill"
+                      objectFit="cover"
+                      data-ai-hint={stay.dataAiHint}
+                      className="group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                </Link>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl font-semibold group-hover:text-primary transition-colors">
+                    <Link href={`/stays/${stay.id}`}>{stay.name}</Link>
+                  </CardTitle>
+                  <CardDescription className="flex items-center text-sm pt-1">
+                    <MapPin className="h-4 w-4 mr-1.5 text-muted-foreground" /> {stay.location}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <div className="flex justify-between items-center mb-3">
+                    <p className="text-xl font-bold text-primary">
+                      ${stay.pricePerNight}
+                      <span className="text-sm font-normal text-muted-foreground"> / night</span>
+                    </p>
+                    {stay.rating && (
+                      <div className="flex items-center gap-1">
+                        <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                        <span className="font-semibold text-foreground">{stay.rating}</span>
+                      </div>
+                    )}
+                  </div>
+                  <Badge variant="secondary" className="font-normal">{stay.category}</Badge>
+                </CardContent>
+                <CardFooter className="p-4">
+                  <Button asChild className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-3 text-base">
+                    <Link href={`/stays/${stay.id}`}>View Details</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
       </section>
       
-      {/* 1. AI Trip Planner Offer */}
+      {/* Other sections as defined previously */}
       <section className="container mx-auto px-4 py-12 bg-primary/5 rounded-lg text-center">
         <Lightbulb className="h-12 w-12 text-primary mx-auto mb-4" />
         <h2 className="text-3xl font-headline font-semibold text-primary mb-3">Plan smarter with AI</h2>
@@ -223,7 +217,6 @@ export default function HomePage() {
         </Button>
       </section>
 
-      {/* 2. Browse by Property Type */}
       <section className="container mx-auto px-4">
         <h2 className="text-3xl font-headline font-semibold text-foreground mb-8 text-center">Browse by Property Type</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
@@ -246,7 +239,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. Your Recent Searches */}
       <section className="container mx-auto px-4">
         <h2 className="text-3xl font-headline font-semibold text-foreground mb-6 flex items-center gap-2">
           <History className="h-7 w-7 text-primary" /> Your Recent Searches
@@ -264,7 +256,6 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* 4. Trending Destinations Near You */}
       <section className="container mx-auto px-4">
         <h2 className="text-3xl font-headline font-semibold text-foreground mb-8 flex items-center gap-2">
           <TrendingUp className="h-7 w-7 text-primary" /> Trending Near You {userLocation && `(in ${userLocation})`}
@@ -290,7 +281,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. Quick & Easy Trip Planner (Pick a Vibe) */}
       <section className="container mx-auto px-4 py-12 bg-muted/50 rounded-lg">
         <h2 className="text-3xl font-headline font-semibold text-foreground text-center mb-2">Pick a Vibe & Explore</h2>
         <p className="text-muted-foreground text-center mb-8 max-w-lg mx-auto">
@@ -307,7 +297,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. Explore Destinations Closer to Home (Nearby Gems) */}
       <section className="container mx-auto px-4">
         <h2 className="text-3xl font-headline font-semibold text-foreground mb-2">Nearby Gems</h2>
         <p className="text-muted-foreground mb-8">You don’t have to go far for your next trip.</p>
@@ -330,7 +319,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 7. Travel More, Spend Less */}
       <section className="container mx-auto px-4">
         <h2 className="text-3xl font-headline font-semibold text-foreground mb-2 flex items-center gap-2">
           <Percent className="h-7 w-7 text-primary" /> Save While You Travel
@@ -359,7 +347,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Optional: Push Notification Prompt Placeholder */}
       <section className="container mx-auto px-4 py-8 text-center">
         <Card className="inline-block p-6 shadow-md">
           <CardHeader className="p-0 pb-3">

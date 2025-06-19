@@ -18,39 +18,45 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns"; // Added addDays
 import { CalendarIcon, MapPin, Users, Search, ChevronsUpDown, Building2, Smile, Accessibility, Leaf } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useEffect } from "react"; // Added useEffect
 
 const accommodationSearchSchema = z.object({
-  destination: z.string().min(1, "Destination is required"),
+  destination: z.string().optional(), // Made optional to allow searching without destination
   dateRange: z.object({
-    from: z.date({ required_error: "Check-in date is required." }),
-    to: z.date({ required_error: "Check-out date is required." }),
-  }, { required_error: "Date range is required." }).refine(data => data.from && data.to && data.to > data.from, {
-    message: "Check-out date must be after check-in date.",
+    from: z.date().optional(), // Made optional
+    to: z.date().optional(),   // Made optional
+  }).optional().refine(data => !data || !data.from || !data.to || data.to > data.from, {
+    message: "Check-out date must be after check-in date if both are provided.",
     path: ["to"],
   }),
-  adults: z.coerce.number().min(1, "At least 1 adult is required").max(10, "Max 10 adults"),
-  children: z.coerce.number().min(0, "Children cannot be negative").max(10, "Max 10 children"),
-  rooms: z.coerce.number().min(1, "At least 1 room is required").max(5, "Max 5 rooms"),
-  propertyType: z.enum(["ANY", "HOTEL", "RENTAL"]).default("ANY"),
+  adults: z.coerce.number().min(1, "At least 1 adult is required").max(10, "Max 10 adults").optional(),
+  children: z.coerce.number().min(0, "Children cannot be negative").max(10, "Max 10 children").optional(),
+  rooms: z.coerce.number().min(1, "At least 1 room is required").max(5, "Max 5 rooms").optional(),
+  propertyType: z.enum(["ANY", "HOTEL", "RENTAL"]).default("ANY").optional(),
   mood: z.enum(["ANY", "PEACEFUL", "ROMANTIC", "ADVENTUROUS"]).default("ANY").optional(),
   wheelchairAccessible: z.boolean().default(false).optional(),
   ecoFriendly: z.boolean().default(false).optional(),
 });
 
-type AccommodationSearchFormValues = z.infer<typeof accommodationSearchSchema>;
+export type AccommodationSearchFormValues = z.infer<typeof accommodationSearchSchema>;
 
-export default function AccommodationSearchForm() {
+interface AccommodationSearchFormProps {
+  onSearch: (values: AccommodationSearchFormValues) => void;
+}
+
+
+export default function AccommodationSearchForm({ onSearch }: AccommodationSearchFormProps) {
   const form = useForm<AccommodationSearchFormValues>({
     resolver: zodResolver(accommodationSearchSchema),
     defaultValues: {
       destination: "",
       dateRange: {
-        from: undefined,
-        to: undefined,
+        from: new Date(), // Default to today
+        to: addDays(new Date(), 7), // Default to 7 days from today
       },
       adults: 2,
       children: 0,
@@ -61,20 +67,32 @@ export default function AccommodationSearchForm() {
       ecoFriendly: false,
     },
   });
+  
+  // Initialize default dates if not set
+  useEffect(() => {
+    if (!form.getValues("dateRange.from")) {
+        form.setValue("dateRange.from", new Date());
+    }
+    if (!form.getValues("dateRange.to")) {
+        form.setValue("dateRange.to", addDays(new Date(), 7));
+    }
+  }, [form]);
+
 
   function onSubmit(values: AccommodationSearchFormValues) {
-    console.log("Accommodation Search:", values);
-    // Handle form submission, e.g., API call
+    onSearch(values);
   }
 
-  const { watch } = form;
-  const adults = watch("adults");
-  const children = watch("children");
-  const rooms = watch("rooms");
+  const { watch, setValue } = form;
+  const adults = watch("adults", 2); // Provide default for watch
+  const children = watch("children", 0);
+  const rooms = watch("rooms", 1);
+  const dateRange = watch("dateRange");
+
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-end p-6 bg-card shadow-lg rounded-lg border">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-end p-0 md:p-6 bg-card rounded-lg">
         <FormField
           control={form.control}
           name="destination"
@@ -122,10 +140,10 @@ export default function AccommodationSearchForm() {
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="range"
-                    selected={field.value as DateRange}
-                    onSelect={field.onChange}
+                    selected={field.value as DateRange | undefined} // Cast to DateRange | undefined
+                    onSelect={(range) => field.onChange(range || { from: undefined, to: undefined })}
                     numberOfMonths={2}
-                    disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1))}
+                    disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1))} // Allow today
                     initialFocus
                   />
                 </PopoverContent>
@@ -137,8 +155,8 @@ export default function AccommodationSearchForm() {
         
         <FormField
           control={form.control}
-          name="adults" 
-          render={({ field }) => (
+          name="adults" // This outer FormField is for layout and error message handling for the group
+          render={() => ( // Field prop not directly used here, but needed for FormField structure
             <FormItem className="flex flex-col lg:col-span-1 xl:col-span-1">
               <FormLabel className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests & Rooms</FormLabel>
               <Popover>
@@ -247,7 +265,7 @@ export default function AccommodationSearchForm() {
           )}
         />
 
-        <div className="flex flex-col gap-2 lg:col-span-2 xl:col-span-2">
+        <div className="flex flex-col gap-2 lg:col-span-1 xl:col-span-1 self-end pb-1"> {/* Adjusted for alignment */}
             <FormField
             control={form.control}
             name="wheelchairAccessible"
@@ -259,7 +277,7 @@ export default function AccommodationSearchForm() {
                     onCheckedChange={field.onChange}
                     />
                 </FormControl>
-                <FormLabel className="font-normal flex items-center gap-2"><Accessibility className="h-4 w-4 text-primary"/>Wheelchair Accessible</FormLabel>
+                <FormLabel className="font-normal flex items-center gap-2 text-sm"><Accessibility className="h-4 w-4 text-primary"/>Wheelchair Accessible</FormLabel>
                 </FormItem>
             )}
             />
@@ -274,14 +292,14 @@ export default function AccommodationSearchForm() {
                     onCheckedChange={field.onChange}
                     />
                 </FormControl>
-                <FormLabel className="font-normal flex items-center gap-2"><Leaf className="h-4 w-4 text-primary"/>Eco-Friendly Certified</FormLabel>
+                <FormLabel className="font-normal flex items-center gap-2 text-sm"><Leaf className="h-4 w-4 text-primary"/>Eco-Friendly Certified</FormLabel>
                 </FormItem>
             )}
             />
         </div>
 
 
-        <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground lg:col-span-full xl:col-span-1">
+        <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground md:col-span-2 lg:col-span-1 xl:col-span-1">
           <Search className="mr-2 h-4 w-4" /> Search
         </Button>
       </form>
@@ -289,3 +307,4 @@ export default function AccommodationSearchForm() {
   );
 }
     
+

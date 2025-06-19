@@ -6,86 +6,66 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Users, Star, MapPin, CreditCard, MessageSquare, ShieldCheck, Camera, Share2, Heart, AlertTriangle, Car, Clock, CheckCircle, Ticket, Landmark as LandmarkIcon, CloudSun, Calendar, Info, Plane, Percent, TvIcon, Contact, Waves, Layers, HomeIcon, School, Building as BuildingIcon } from 'lucide-react';
+import { CalendarDays, Users, Star, MapPin, CreditCard, MessageSquare, ShieldCheck, Camera, Share2, Heart, AlertTriangle, Car, Clock, CheckCircle, Landmark as LandmarkIcon, CloudSun, Calendar, Info, Plane, Percent, TvIcon, Contact, Waves, Layers, HomeIcon as HomeIconLucide, School, Building as BuildingIconLucide, Leaf } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Input } from '@/components/ui/input'; 
+import { Input } from '@/components/ui/input';
+import { allMockStays, type MockStay } from '@/lib/mock-data';
 
-// Mock data - in a real app, you'd fetch this based on params.id
-const mockAccommodation = {
-  id: "123",
-  name: "Luxury Beachfront Paradise Villa",
-  location: "Malibu, California",
-  type: "Villa",
-  pricePerNight: 750,
-  rating: 4.9,
-  reviewsCount: 182,
-  description: "Experience ultimate luxury in this stunning beachfront villa. Offering breathtaking ocean views, a private infinity pool, and direct beach access. Perfect for families or romantic getaways. Features 4 bedrooms, 5 bathrooms, a gourmet kitchen, and expansive outdoor living spaces.",
-  amenities: ["Private Pool", "Beachfront", "WiFi", "Air Conditioning", "Full Kitchen", "Free Parking", "Gym Access", "Wheelchair Accessible (Demo)"],
-  photos: [
-    { id: "p1", src: "https://placehold.co/800x600.png?text=Villa+View+1", alt: "Villa ocean view", dataAiHint: "luxury villa ocean" },
-    { id: "p2", src: "https://placehold.co/400x300.png?text=Pool", alt: "Infinity pool", dataAiHint: "infinity pool" },
-    { id: "p3", src: "https://placehold.co/400x300.png?text=Bedroom", alt: "Master bedroom", dataAiHint: "luxury bedroom" },
-    { id: "p4", src: "https://placehold.co/400x300.png?text=Living+Area", alt: "Spacious living area", dataAiHint: "living room modern" },
-    { id: "p5", src: "https://placehold.co/400x300.png?text=Kitchen", alt: "Gourmet kitchen", dataAiHint: "modern kitchen" },
-  ],
-  host: { name: "Katherine Bishop", avatar: "https://placehold.co/100x100.png?text=KB", dataAiHint: "woman portrait" },
-  guestReviews: [
-    { id: "r1", user: "Alice Martin", rating: 5, comment: "Absolutely phenomenal stay! The villa exceeded all expectations. Views were incredible and the host was very responsive.", date: "2024-03-15" },
-    { id: "r2", user: "Bob Williams", rating: 4, comment: "Great location and beautiful property. Pool was amazing. Minor issue with WiFi initially but was resolved quickly.", date: "2024-02-20" },
-  ],
-  availability: "Check availability calendar (placeholder)", 
-  policies: { checkIn: "After 3:00 PM", checkOut: "Before 11:00 AM", cancellation: "Flexible - Free cancellation up to 5 days before check-in." },
-  ecoFriendly: true,
-  virtualTourLink: "#", // New
-  floorPlanLink: "#", // New
-  neighborhoodInsights: { // New
-    walkabilityScore: 90,
-    crimeRate: "Low (Demo Data)",
-    nearbySchools: "Malibu High, Point Dume Elementary (Demo Data)",
-    publicTransport: "Bus stop 2 blocks away (Demo Data)"
-  }
-};
-
+// Mock data for nearby attractions (can be dynamic based on currentStay.location in a real app)
 const mockNearbyAttractions = [
-  { id: "attr1", name: "Malibu Pier", category: "Landmark", image: "https://placehold.co/300x200.png?text=Malibu+Pier", dataAiHint:"pier ocean", distance: "0.5 miles" },
-  { id: "attr2", name: "El Matador State Beach", category: "Nature", image: "https://placehold.co/300x200.png?text=El+Matador+Beach", dataAiHint:"beach cliffs", distance: "3 miles" },
-  { id: "attr3", name: "Nobu Malibu", category: "Dining", image: "https://placehold.co/300x200.png?text=Nobu+Restaurant", dataAiHint:"fancy restaurant", distance: "1 mile" },
+  { id: "attr1", name: "Local Landmark Example", category: "Landmark", image: "https://placehold.co/300x200.png?text=Nearby+Landmark", dataAiHint:"landmark historic", distance: "0.5 miles" },
+  { id: "attr2", name: "Popular Park Example", category: "Nature", image: "https://placehold.co/300x200.png?text=Nearby+Park", dataAiHint:"park nature", distance: "3 miles" },
+  { id: "attr3", name: "Famous Restaurant Example", category: "Dining", image: "https://placehold.co/300x200.png?text=Nearby+Restaurant", dataAiHint:"restaurant food", distance: "1 mile" },
 ];
 
 export default function AccommodationProfilePage() {
   const params = useParams();
-  // const router = useRouter(); // Keep if needed for programmatic navigation
+  const router = useRouter();
+  const [currentStay, setCurrentStay] = useState<MockStay | null | undefined>(undefined); // undefined for loading, null for not found
   const [isFavorited, setIsFavorited] = useState(false);
-  const [currentImage, setCurrentImage] = useState(mockAccommodation.photos[0]);
+  const [currentImage, setCurrentImage] = useState<MockStay['photos'][0] | null>(null);
   const [checkInDate, setCheckInDate] = useState<Date | undefined>();
   const [checkOutDate, setCheckOutDate] = useState<Date | undefined>();
 
   useEffect(() => {
-    if (params.id !== mockAccommodation.id) {
-      // console.warn("Displaying mock data as ID doesn't match. In a real app, fetch or show 404.");
+    if (params.id) {
+      const stayId = Array.isArray(params.id) ? params.id[0] : params.id;
+      const foundStay = allMockStays.find(s => s.id === stayId);
+      if (foundStay) {
+        setCurrentStay(foundStay);
+        if (foundStay.photos && foundStay.photos.length > 0) {
+          setCurrentImage(foundStay.photos[0]);
+        } else {
+           setCurrentImage({id: 'placeholder', src: foundStay.image, alt: foundStay.name, dataAiHint: foundStay.dataAiHint});
+        }
+      } else {
+        setCurrentStay(null); // Not found
+      }
     }
-    setCurrentImage(mockAccommodation.photos[0]);
   }, [params.id]);
 
 
   const handleBookNow = () => {
-    toast({ title: "Booking Initiated (Demo)", description: `Proceeding to payment for ${mockAccommodation.name}. This is a placeholder. Secure Escrow & Buy Now, Pay Later options available.` });
+    if (!currentStay) return;
+    toast({ title: "Booking Initiated (Demo)", description: `Proceeding to payment for ${currentStay.name}. This is a placeholder. Secure Escrow & Buy Now, Pay Later options available.` });
   };
 
   const handleContactHost = () => {
-    toast({ title: "Contact Host (Demo)", description: `Opening chat with ${mockAccommodation.host.name}. This is a placeholder.`});
+    if (!currentStay?.host) return;
+    toast({ title: "Contact Host (Demo)", description: `Opening chat with ${currentStay.host.name}. This is a placeholder.`});
   }
   
   const handleShare = () => {
+    if (!currentStay) return;
     if (navigator.share) {
       navigator.share({
-        title: mockAccommodation.name,
-        text: `Check out this amazing place: ${mockAccommodation.name}`,
+        title: currentStay.name,
+        text: `Check out this amazing place: ${currentStay.name}`,
         url: window.location.href,
       }).then(() => toast({ title: "Shared successfully!"}))
         .catch(error => console.error('Error sharing:', error));
@@ -103,13 +83,15 @@ export default function AccommodationProfilePage() {
     toast({ title: "Augmented Reality View (Demo)", description: "AR property walkthrough feature using your phone's camera is under development." });
   };
   const handle360Tour = () => {
-    toast({ title: "360° Video Tour (Demo)", description: "Starting immersive 360° video tour. (Placeholder)" });
+    if (!currentStay) return;
+    toast({ title: "360° Video Tour (Demo)", description: `Starting immersive 360° video tour for ${currentStay.name}. (Placeholder: ${currentStay.virtualTourLink || '#'})` });
   };
   const handleDroneView = () => {
     toast({ title: "Drone View (Demo)", description: "Displaying top-down drone footage of the property area. (Placeholder)" });
   };
   const handleFloorPlan = () => {
-    toast({ title: "Interactive Floor Plan (Demo)", description: `Showing clickable 3D floor plan for ${mockAccommodation.name}. (Room dimensions available)` });
+    if (!currentStay) return;
+    toast({ title: "Interactive Floor Plan (Demo)", description: `Showing clickable 3D floor plan for ${currentStay.name}. (Placeholder: ${currentStay.floorPlanLink || '#'}) (Room dimensions available)` });
   };
 
   const handleSuggestRides = () => {
@@ -121,9 +103,21 @@ export default function AccommodationProfilePage() {
     });
   };
 
-  if (!mockAccommodation) {
-    return <div>Loading accommodation details...</div>; 
+  if (currentStay === undefined) {
+    return <div className="container mx-auto px-4 py-8 text-center">Loading accommodation details...</div>; 
   }
+  if (currentStay === null) {
+    return (
+        <div className="container mx-auto px-4 py-8 text-center">
+            <h1 className="text-2xl font-semibold mb-4">Accommodation Not Found</h1>
+            <p className="text-muted-foreground mb-4">The stay you are looking for does not exist or may have been removed.</p>
+            <Button onClick={() => router.push('/')}>Go to Homepage</Button>
+        </div>
+    );
+  }
+  
+  const displayPhotos = currentStay.photos && currentStay.photos.length > 0 ? currentStay.photos : [{id: 'main', src: currentStay.image, alt: currentStay.name, dataAiHint: currentStay.dataAiHint}];
+
 
   return (
     <div className="space-y-8">
@@ -131,12 +125,12 @@ export default function AccommodationProfilePage() {
         <CardHeader className="pb-4">
           <div className="flex flex-col md:flex-row justify-between md:items-start gap-2">
             <div>
-              <CardTitle className="text-3xl md:text-4xl font-headline text-primary">{mockAccommodation.name}</CardTitle>
+              <CardTitle className="text-3xl md:text-4xl font-headline text-primary">{currentStay.name}</CardTitle>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground mt-1">
-                <span className="flex items-center"><MapPin className="h-5 w-5 mr-1" /> {mockAccommodation.location}</span>
+                <span className="flex items-center"><MapPin className="h-5 w-5 mr-1" /> {currentStay.location}</span>
                 <Separator orientation="vertical" className="h-5 hidden sm:block" />
-                <span className="flex items-center"><Star className="h-5 w-5 text-yellow-400 mr-1" /> {mockAccommodation.rating} ({mockAccommodation.reviewsCount} reviews)</span>
-                 {mockAccommodation.ecoFriendly && <><Separator orientation="vertical" className="h-5 hidden sm:block" /><Badge variant="secondary" className="bg-green-100 text-green-700 border-green-300"><CheckCircle className="mr-1 h-3 w-3"/>Eco-Friendly</Badge></>}
+                <span className="flex items-center"><Star className="h-5 w-5 text-yellow-400 mr-1" /> {currentStay.rating} ({currentStay.reviewsCount || 0} reviews)</span>
+                 {currentStay.isEcoFriendly && <><Separator orientation="vertical" className="h-5 hidden sm:block" /><Badge variant="secondary" className="bg-green-100 text-green-700 border-green-300"><CheckCircle className="mr-1 h-3 w-3"/>Eco-Friendly</Badge></>}
               </div>
             </div>
             <div className="flex items-center gap-2 mt-2 md:mt-0 self-start">
@@ -151,26 +145,26 @@ export default function AccommodationProfilePage() {
         </CardHeader>
 
         <CardContent className="px-0 md:px-6 pt-0">
-          <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2 md:max-h-[500px] overflow-hidden rounded-md">
-            <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer" onClick={() => setCurrentImage(mockAccommodation.photos[0])}>
-              <Image src={currentImage.src} alt={currentImage.alt} layout="fill" objectFit="cover" className="rounded-l-md" data-ai-hint={currentImage.dataAiHint} />
+           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2 md:max-h-[500px] overflow-hidden rounded-md">
+            <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer" onClick={() => currentImage && setCurrentImage(displayPhotos[0])}>
+              {currentImage && <Image src={currentImage.src} alt={currentImage.alt} layout="fill" objectFit="cover" className="rounded-l-md" data-ai-hint={currentImage.dataAiHint} />}
             </div>
-            {mockAccommodation.photos.slice(1, 5).map((photo, index) => (
+            {displayPhotos.slice(1, 5).map((photo, index) => (
               <div key={photo.id} className={`relative aspect-[4/3] md:aspect-auto cursor-pointer ${index > 1 ? 'hidden md:block' : ''}`} onClick={() => setCurrentImage(photo)}>
                 <Image src={photo.src} alt={photo.alt} layout="fill" objectFit="cover" className={index === 1 ? "md:rounded-tr-md" : index === 3 ? "md:rounded-br-md" : ""} data-ai-hint={photo.dataAiHint} />
               </div>
             ))}
           </div>
           <div className="mt-2 flex gap-2 overflow-x-auto p-2 md:hidden">
-             {mockAccommodation.photos.map(photo => (
-                 <Image key={photo.id} src={photo.src} alt={photo.alt} width={80} height={60} className={`rounded object-cover cursor-pointer ${currentImage.id === photo.id ? 'ring-2 ring-primary' : ''}`} onClick={() => setCurrentImage(photo)} data-ai-hint={photo.dataAiHint}/>
+             {displayPhotos.map(photo => (
+                 <Image key={photo.id} src={photo.src} alt={photo.alt} width={80} height={60} className={`rounded object-cover cursor-pointer ${currentImage?.id === photo.id ? 'ring-2 ring-primary' : ''}`} onClick={() => setCurrentImage(photo)} data-ai-hint={photo.dataAiHint}/>
              ))}
           </div>
            <div className="flex flex-wrap gap-2 justify-center mt-4">
              <Button variant="outline" onClick={handleArView}><Camera className="mr-2 h-4 w-4" /> Try AR View (Demo)</Button>
-             <Button variant="outline" onClick={handle360Tour}><TvIcon className="mr-2 h-4 w-4" /> 360° Video Tour (Demo)</Button>
+             <Button variant="outline" onClick={handle360Tour} disabled={!currentStay.virtualTourLink}><TvIcon className="mr-2 h-4 w-4" /> 360° Video Tour (Demo)</Button>
              <Button variant="outline" onClick={handleDroneView}><Plane className="mr-2 h-4 w-4" /> Drone View (Demo)</Button>
-             <Button variant="outline" onClick={() => toast({ title: "Floor Plan (Demo)", description: `Viewing interactive 3D floor plan for ${mockAccommodation.name}.` })}><Layers className="mr-2 h-4 w-4" /> Interactive Floor Plan (Demo)</Button>
+             <Button variant="outline" onClick={handleFloorPlan} disabled={!currentStay.floorPlanLink}><Layers className="mr-2 h-4 w-4" /> Interactive Floor Plan (Demo)</Button>
            </div>
         </CardContent>
         
@@ -179,23 +173,27 @@ export default function AccommodationProfilePage() {
         <CardContent className="grid md:grid-cols-3 gap-8">
           <div className="md:col-span-2 space-y-6">
             <div>
-              <h3 className="text-2xl font-semibold mb-2">About this {mockAccommodation.type.toLowerCase()}</h3>
-              <p className="text-muted-foreground whitespace-pre-line">{mockAccommodation.description}</p>
+              <h3 className="text-2xl font-semibold mb-2">About this {currentStay.category.toLowerCase()}</h3>
+              <p className="text-muted-foreground whitespace-pre-line">{currentStay.description}</p>
             </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-3">Amenities</h3>
-              <ul className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-muted-foreground">
-                {mockAccommodation.amenities.map(amenity => (
-                  <li key={amenity} className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-green-500" /> {amenity}</li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-3">Policies</h3>
-              <p className="text-sm text-muted-foreground"><strong>Check-in:</strong> {mockAccommodation.policies.checkIn}</p>
-              <p className="text-sm text-muted-foreground"><strong>Check-out:</strong> {mockAccommodation.policies.checkOut}</p>
-              <p className="text-sm text-muted-foreground"><strong>Cancellation:</strong> {mockAccommodation.policies.cancellation}</p>
-            </div>
+             {currentStay.amenities && currentStay.amenities.length > 0 && (
+                <div>
+                <h3 className="text-xl font-semibold mb-3">Amenities</h3>
+                <ul className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-muted-foreground">
+                    {currentStay.amenities.map(amenity => (
+                    <li key={amenity} className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-green-500" /> {amenity}</li>
+                    ))}
+                </ul>
+                </div>
+            )}
+            {currentStay.policies && (
+                <div>
+                <h3 className="text-xl font-semibold mb-3">Policies</h3>
+                <p className="text-sm text-muted-foreground"><strong>Check-in:</strong> {currentStay.policies.checkIn}</p>
+                <p className="text-sm text-muted-foreground"><strong>Check-out:</strong> {currentStay.policies.checkOut}</p>
+                <p className="text-sm text-muted-foreground"><strong>Cancellation:</strong> {currentStay.policies.cancellation}</p>
+                </div>
+            )}
             
             <Card>
               <CardHeader>
@@ -208,25 +206,27 @@ export default function AccommodationProfilePage() {
               </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/> Neighborhood Insights (Demo)</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                    <p><strong>Walkability Score:</strong> {mockAccommodation.neighborhoodInsights.walkabilityScore}/100</p>
-                    <p><strong>Crime Rate:</strong> {mockAccommodation.neighborhoodInsights.crimeRate}</p>
-                    <p className="flex items-center gap-1"><School className="h-4 w-4"/><strong>Nearby Schools:</strong> {mockAccommodation.neighborhoodInsights.nearbySchools}</p>
-                    <p className="flex items-center gap-1"><BuildingIcon className="h-4 w-4"/><strong>Public Transport:</strong> {mockAccommodation.neighborhoodInsights.publicTransport}</p>
-                </CardContent>
-            </Card>
+            {currentStay.neighborhoodInsights && (
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><HomeIconLucide className="h-5 w-5"/> Neighborhood Insights (Demo)</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2 text-sm">
+                        <p><strong>Walkability Score:</strong> {currentStay.neighborhoodInsights.walkabilityScore}/100</p>
+                        <p><strong>Crime Rate:</strong> {currentStay.neighborhoodInsights.crimeRate}</p>
+                        <p className="flex items-center gap-1"><School className="h-4 w-4"/><strong>Nearby Schools:</strong> {currentStay.neighborhoodInsights.nearbySchools}</p>
+                        <p className="flex items-center gap-1"><BuildingIconLucide className="h-4 w-4"/><strong>Public Transport:</strong> {currentStay.neighborhoodInsights.publicTransport}</p>
+                    </CardContent>
+                </Card>
+            )}
             
             <div className="md:hidden"> 
               <Separator className="my-6" />
-              <HostInfo />
+              {currentStay.host && <HostInfo host={currentStay.host} onContact={handleContactHost} />}
               <Separator className="my-6" />
             </div>
             <div>
-              <h3 className="text-2xl font-semibold my-4">Nearby Attractions</h3>
+              <h3 className="text-2xl font-semibold my-4">Nearby Attractions (Demo)</h3>
               <div className="grid sm:grid-cols-2 gap-4">
                 {mockNearbyAttractions.map(attraction => (
                   <Card key={attraction.id} className="overflow-hidden">
@@ -252,8 +252,8 @@ export default function AccommodationProfilePage() {
           <div className="md:col-span-1 space-y-6">
             <Card className="shadow-md border sticky top-24">
               <CardHeader>
-                <CardTitle className="text-2xl">${mockAccommodation.pricePerNight} <span className="text-base font-normal text-muted-foreground">/ night</span></CardTitle>
-                <CardDescription>{mockAccommodation.availability} (Calendar sync with Airbnb/Booking.com - Demo)</CardDescription>
+                <CardTitle className="text-2xl">${currentStay.pricePerNight} <span className="text-base font-normal text-muted-foreground">/ night</span></CardTitle>
+                <CardDescription>{currentStay.availability || "Check dates for availability."} (Calendar sync - Demo)</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-2">
@@ -268,7 +268,7 @@ export default function AccommodationProfilePage() {
                 </div>
                 <div>
                   <label htmlFor="guests" className="block text-sm font-medium text-muted-foreground">Guests</label>
-                  <Input type="number" id="guests" defaultValue="2" min="1" />
+                  <Input type="number" id="guests" defaultValue="2" min="1" max={currentStay.maxGuests || 10} />
                 </div>
                 <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg py-3" onClick={handleBookNow}>
                   <CreditCard className="mr-2 h-5 w-5" /> Book Now
@@ -280,7 +280,7 @@ export default function AccommodationProfilePage() {
             </Card>
 
             <div className="hidden md:block">
-              <HostInfo />
+             {currentStay.host && <HostInfo host={currentStay.host} onContact={handleContactHost} />}
             </div>
 
             <Card className="shadow-md border">
@@ -304,13 +304,13 @@ export default function AccommodationProfilePage() {
         <Separator className="my-6" />
 
         <CardContent>
-          <h3 className="text-2xl font-semibold mb-4">Guest Reviews ({mockAccommodation.reviewsCount})</h3>
+          <h3 className="text-2xl font-semibold mb-4">Guest Reviews ({currentStay.reviewsCount || 0})</h3>
           <div className="space-y-6">
-            {mockAccommodation.guestReviews.map(review => (
+            {currentStay.guestReviews && currentStay.guestReviews.length > 0 ? currentStay.guestReviews.map(review => (
               <Card key={review.id} className="bg-muted/30">
                 <CardHeader className="flex flex-row justify-between items-center pb-2">
                   <div className="flex items-center gap-2">
-                    <Image src={`https://placehold.co/40x40.png?text=${review.user.substring(0,1)}`} alt={review.user} width={40} height={40} className="rounded-full" data-ai-hint="person avatar" />
+                    <Image src={review.avatar || `https://placehold.co/40x40.png?text=${review.user.substring(0,1)}`} alt={review.user} width={40} height={40} className="rounded-full" data-ai-hint={review.dataAiHintAvatar || "person avatar"} />
                     <div>
                       <p className="font-semibold">{review.user}</p>
                       <p className="text-xs text-muted-foreground">{new Date(review.date).toLocaleDateString()}</p>
@@ -324,8 +324,8 @@ export default function AccommodationProfilePage() {
                   <p className="text-muted-foreground">{review.comment}</p>
                 </CardContent>
               </Card>
-            ))}
-            <Button variant="outline">Show all {mockAccommodation.reviewsCount} reviews (Demo)</Button>
+            )) : <p className="text-muted-foreground">No reviews yet for this property.</p>}
+            {currentStay.guestReviews && currentStay.guestReviews.length > 0 && <Button variant="outline">Show all {currentStay.reviewsCount} reviews (Demo)</Button>}
           </div>
         </CardContent>
         <CardFooter className="border-t pt-6 flex flex-col items-start gap-4">
@@ -342,19 +342,20 @@ export default function AccommodationProfilePage() {
 }
 
 
-function HostInfo() {
-  const handleContactHost = () => {
-    toast({ title: "Contact Host (Demo)", description: `Opening chat with ${mockAccommodation.host.name}. This is a placeholder.`});
-  }
+interface HostInfoProps {
+  host: Host;
+  onContact: () => void;
+}
+function HostInfo({ host, onContact }: HostInfoProps) {
   return (
     <Card className="border bg-background shadow-md">
         <CardHeader className="text-center">
-        <Image src={mockAccommodation.host.avatar} alt={mockAccommodation.host.name} width={80} height={80} className="rounded-full mx-auto mb-2" data-ai-hint={mockAccommodation.host.dataAiHint} />
-        <CardTitle className="text-xl">Hosted by {mockAccommodation.host.name}</CardTitle>
+        <Image src={host.avatar} alt={host.name} width={80} height={80} className="rounded-full mx-auto mb-2" data-ai-hint={host.dataAiHint} />
+        <CardTitle className="text-xl">Hosted by {host.name}</CardTitle>
         <CardDescription>Superhost (Placeholder)</CardDescription>
         </CardHeader>
         <CardContent className="text-center">
-        <Button variant="outline" className="w-full" onClick={handleContactHost}>
+        <Button variant="outline" className="w-full" onClick={onContact}>
             <MessageSquare className="mr-2 h-4 w-4" /> Contact Host
         </Button>
         <p className="text-xs text-muted-foreground mt-2">Response rate: 99% (Placeholder)</p>
@@ -363,3 +364,4 @@ function HostInfo() {
   );
 }
     
+
