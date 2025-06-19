@@ -5,7 +5,7 @@ import AccommodationSearchForm from '@/components/search/accommodation-search-fo
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BedDouble, MapPin, Star, Search, Leaf } from 'lucide-react';
+import { BedDouble, MapPin, Star, Search, Leaf, Sparkles, Home as HomeIcon, Building, Waves, MountainSnow, Users, DollarSign, Heart, User, Tag, Zap, Gift, CalendarDays, BarChart3, Eye, TvIcon, Layers, Plane, Contact, ShieldCheck, MessageSquare, Video, CircleDot, SquareDot, LocateFixed, CheckCircle, Landmark } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
@@ -13,25 +13,84 @@ import { toast } from '@/hooks/use-toast';
 import { allMockStays, type MockStay } from '@/lib/mock-data';
 import type { AccommodationSearchFormValues } from '@/components/search/accommodation-search-form';
 import { useRouter } from 'next/navigation';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
+
+const mockPropertyTypes = [
+  { name: "Hotel", icon: Building, image: "https://placehold.co/400x300.png?text=Hotel", dataAiHint: "hotel building", filterType: "Hotel" },
+  { name: "Apartment", icon: HomeIcon, image: "https://placehold.co/400x300.png?text=Apartment", dataAiHint: "apartment building", filterType: "Rental" }, // Assuming "Rental" covers apartments
+  { name: "Resort", icon: Waves, image: "https://placehold.co/400x300.png?text=Resort", dataAiHint: "beach resort", filterType: "Hotel" }, // Assuming resorts are a type of Hotel
+  { name: "Villa", icon: HomeIcon, image: "https://placehold.co/400x300.png?text=Villa", dataAiHint: "luxury villa", filterType: "Rental" },
+  { name: "Guest House", icon: BedDouble, image: "https://placehold.co/400x300.png?text=Guest+House", dataAiHint: "guest house exterior", filterType: "Rental" },
+];
+
+const mockRecentSearches = [
+  { id: "rs1", term: "Bali, Indonesia", link: "#", filter: { destination: "Bali, Indonesia" } },
+  { id: "rs2", term: "Romantic Getaways", link: "#", filter: { mood: "Romantic" } },
+  { id: "rs3", term: "Eco-Friendly Hotels", link: "#", filter: { ecoFriendly: true, propertyType: "Hotel" } },
+];
+
+const mockTrendingDestinations = [
+  { id: "td1", name: "Top Hotels in Paris", image: "https://placehold.co/400x300.png?text=Paris+Hotels", dataAiHint: "paris eiffel tower", price: "120", rating: 4.7, link: "#", filter: { destination: "Paris", propertyType: "Hotel" } },
+  { id: "td2", name: "Apartments in Douala", image: "https://placehold.co/400x300.png?text=Douala+Apartments", dataAiHint: "city douala", price: "80", rating: 4.3, link: "#", filter: { destination: "Douala", propertyType: "Rental" } },
+  { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://placehold.co/400x300.png?text=Abidjan+Resorts", dataAiHint: "beach abidjan", price: "150", rating: 4.5, link: "#", filter: { destination: "Abidjan", propertyType: "Hotel" } }, // Assuming Resort is a type of Hotel
+  { id: "td4", name: "Villas in Aspen", image: "https://placehold.co/400x300.png?text=Aspen+Villas", dataAiHint: "aspen mountains", price: "300", rating: 4.9, link: "#", filter: { destination: "Aspen", propertyType: "Rental" } },
+];
+
+const mockVibes = [
+  { name: "Adventure", icon: MountainSnow, link: "#", filter: { mood: "Adventurous" } },
+  { name: "Relaxation", icon: Waves, link: "#", filter: { mood: "Peaceful" } },
+  { name: "Romantic", icon: Heart, link: "#", filter: { mood: "Romantic" } },
+  { name: "Family-Friendly", icon: Users, link: "#", filter: { propertyType: "Rental" } }, // Example, could be more specific
+  { name: "Budget-Friendly", icon: DollarSign, link: "#", filter: { priceMax: 100 } }, // Example filter
+];
+
+const mockNearbyGems = [
+  { id: "ng1", name: "Lake House Retreat", image: "https://placehold.co/400x300.png?text=Lake+House", dataAiHint: "lake house", distance: "30km", type: "Stay", link: "/stays/stay1" }, // Link to an existing mock stay if possible
+  { id: "ng2", name: "City Park Resort", image: "https://placehold.co/400x300.png?text=City+Resort", dataAiHint: "city resort", distance: "5km", type: "Stay", link: "/stays/stay2" },
+  { id: "ng3", name: "Affordable Guest House", image: "https://placehold.co/400x300.png?text=Affordable+GuestHouse", dataAiHint: "guest house", distance: "in your city", type: "Stay", link: "/stays/stay3" },
+];
+
+const mockDeals = [
+  { id: "deal1", title: "Up to 30% off Resorts", image: "https://placehold.co/400x250.png?text=Resort+Deal", dataAiHint: "resort pool", urgency: 75, urgencyText: "75% Claimed!", link: "#", filter: { propertyType: "Hotel", discount: true } }, // Assuming Resorts are Hotels
+  { id: "deal2", title: "Last-minute Apartment Deals - Save 20%", image: "https://placehold.co/400x250.png?text=Apartment+Deal", dataAiHint: "apartment city", urgency: 3, urgencyText: "Only 3 left!", link: "#", filter: { propertyType: "Rental", discount: true } },
+  { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://placehold.co/400x250.png?text=Villa+Flash+Sale", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", link: "#", filter: { propertyType: "Rental", priceMax: 100, discount: true } },
+];
+
 
 export default function HomePage() {
   const router = useRouter();
   const [displayedStays, setDisplayedStays] = useState<MockStay[]>(allMockStays.slice(0, 6));
   const [noResults, setNoResults] = useState(false);
   const [activeFiltersSummary, setActiveFiltersSummary] = useState<string>("Featured Stays");
+  const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
-  const handleAccommodationSearch = useCallback((filters: Partial<AccommodationSearchFormValues>) => {
+  useEffect(() => {
+    // Simulate a delay before showing the notification prompt
+    const timer = setTimeout(() => {
+      if (!localStorage.getItem('notificationPromptDismissed')) {
+        setShowNotificationPrompt(true);
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+
+  const handleAccommodationSearch = useCallback((filters: Partial<AccommodationSearchFormValues & { discount?: boolean, priceMax?: number }>) => {
     setNoResults(false);
     let currentSummary = "Search Results";
 
     if (filters.propertyType && filters.propertyType !== "ANY" && Object.keys(filters).length === 1) {
-        currentSummary = `${filters.propertyType}s`;
+        currentSummary = `${filters.propertyType.charAt(0).toUpperCase() + filters.propertyType.slice(1).toLowerCase()}s`;
     } else if (filters.mood && filters.mood !== "ANY" && Object.keys(filters).length === 1) {
         currentSummary = `Stays with a ${filters.mood} Vibe`;
-    } else if (filters.destination && Object.keys(filters).length <= 2) { 
+    } else if (filters.destination && Object.keys(filters).length <= (filters.propertyType && filters.propertyType !== "ANY" ? 2 : 1)) {
         currentSummary = `Stays in ${filters.destination}`;
-        if(filters.propertyType && filters.propertyType !== "ANY") currentSummary += ` (${filters.propertyType}s)`;
+        if(filters.propertyType && filters.propertyType !== "ANY") currentSummary += ` (${filters.propertyType.charAt(0).toUpperCase() + filters.propertyType.slice(1).toLowerCase()}s)`;
+    } else if (filters.discount) {
+        currentSummary = "Special Deals";
     }
+
 
     let results = allMockStays.filter(stay => {
       let matches = true;
@@ -42,6 +101,8 @@ export default function HomePage() {
       if (filters.mood && filters.mood !== "ANY" && stay.moods) matches = matches && stay.moods.includes(filters.mood as "Peaceful" | "Romantic" | "Adventurous");
       if (filters.wheelchairAccessible && !stay.isWheelchairAccessible) matches = false;
       if (filters.ecoFriendly && !stay.isEcoFriendly) matches = false;
+      if (filters.priceMax && stay.pricePerNight > filters.priceMax) matches = false;
+      // Add more specific filter logic here as needed
       return matches;
     });
 
@@ -49,7 +110,7 @@ export default function HomePage() {
       setNoResults(true);
       currentSummary = "No Stays Found Matching Your Criteria";
     }
-    setDisplayedStays(results);
+    setDisplayedStays(results.slice(0, 12)); // Show more results if available
     setActiveFiltersSummary(currentSummary);
     
     const staysSection = document.getElementById('stays-section');
@@ -63,27 +124,87 @@ export default function HomePage() {
   const resetAndShowAllStays = () => {
     setDisplayedStays(allMockStays.slice(0, 12)); 
     setNoResults(false);
-    setActiveFiltersSummary("All Stays");
+    setActiveFiltersSummary("All Available Stays");
     const staysSection = document.getElementById('stays-section');
     if (staysSection) staysSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+  
+  const handleNotificationPrompt = (enable: boolean) => {
+    if (enable) {
+      toast({ title: "Notifications Enabled (Demo)", description: "You'll now receive exclusive deals!" });
+    } else {
+      toast({ title: "Notifications Declined (Demo)", description: "You can enable them later in settings." });
+    }
+    localStorage.setItem('notificationPromptDismissed', 'true');
+    setShowNotificationPrompt(false);
+  };
+
 
   return (
-    <div className="space-y-16 md:space-y-20">
-      <section className="py-12 md:py-20 bg-gradient-to-br from-primary/10 via-background to-background rounded-xl shadow-md -mx-4 px-4 md:mx-0 md:px-0">
+    <div className="space-y-12 md:space-y-16">
+      {/* Hero Section */}
+      <section className="py-12 md:py-16 bg-gradient-to-br from-primary/10 via-background to-background rounded-xl shadow-sm -mx-4 px-4 md:mx-0 md:px-0">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4 leading-tight">
             Find Your Perfect Stay
           </h1>
           <p className="text-lg md:text-xl text-foreground/80 mb-8 max-w-2xl mx-auto">
             Discover amazing places to stay for your next adventure, from cozy cabins to luxury villas.
           </p>
-          <div className="max-w-4xl mx-auto bg-card p-4 md:p-6 rounded-xl shadow-xl border">
+          <div className="max-w-4xl mx-auto bg-card p-3 md:p-4 rounded-xl shadow-lg border">
             <AccommodationSearchForm onSearch={handleAccommodationSearch} />
           </div>
         </div>
       </section>
 
+      {/* AI Trip Planner Offer */}
+      <section className="container mx-auto px-4">
+        <Card className="bg-accent/10 border-accent shadow-md hover:shadow-lg transition-shadow rounded-lg">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-2xl font-headline text-accent-foreground flex items-center gap-2">
+              <Sparkles className="h-7 w-7 text-accent" />Plan smarter with AI
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              Unlock promotions, exclusive deals & personalized specials for your next trip with our AI-powered planner.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-sm hover:shadow-md transition-shadow" asChild>
+              <Link href="/ai-trip-planner">Start Planning</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </section>
+
+      {/* Browse by Property Type */}
+      <section className="container mx-auto px-4">
+        <h2 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6 flex items-center">
+          <HomeIcon className="mr-3 h-7 w-7 text-primary" />
+          Browse by Property Type
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+          {mockPropertyTypes.map(prop => (
+            <Card 
+              key={prop.name} 
+              className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer group rounded-lg border hover:border-primary/50"
+              onClick={() => handleAccommodationSearch({ propertyType: prop.filterType as "HOTEL" | "RENTAL" | "ANY" })}
+            >
+              <div className="relative h-32 sm:h-40 w-full overflow-hidden rounded-t-lg">
+                <Image src={prop.image} alt={prop.name} layout="fill" objectFit="cover" data-ai-hint={prop.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              </div>
+              <CardContent className="p-3 text-center bg-card rounded-b-lg">
+                <prop.icon className="h-6 w-6 text-primary mx-auto mb-1.5 group-hover:text-accent transition-colors" />
+                <p className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors">{prop.name}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+      
+      {/* Featured Stays Section - This is where results will be displayed */}
       <section id="stays-section" className="container mx-auto px-4">
         <div className="flex flex-col sm:flex-row items-baseline justify-between mb-8">
           <h2 className="text-2xl md:text-3xl font-headline font-semibold text-foreground flex items-center mb-3 sm:mb-0">
@@ -159,6 +280,149 @@ export default function HomePage() {
           </div>
         )}
       </section>
+
+      {/* Your Recent Searches */}
+      <section className="container mx-auto px-4">
+        <h2 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6 flex items-center">
+          <Search className="mr-3 h-7 w-7 text-primary" />
+          Your Recent Searches
+        </h2>
+        <div className="flex flex-wrap gap-3">
+          {mockRecentSearches.map(search => (
+            <Button 
+              key={search.id} 
+              variant="outline" 
+              className="bg-muted/50 hover:bg-muted border-border hover:border-primary/50 text-foreground hover:text-primary"
+              onClick={() => handleAccommodationSearch(search.filter as any)}
+            >
+              {search.term}
+            </Button>
+          ))}
+        </div>
+      </section>
+
+      {/* Trending Destinations Near You */}
+      <section className="container mx-auto px-4">
+        <h2 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6 flex items-center">
+          <Sparkles className="mr-3 h-7 w-7 text-primary" />
+          Trending Near You (Demo Location)
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {mockTrendingDestinations.map(dest => (
+            <Card key={dest.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer group rounded-lg" onClick={() => handleAccommodationSearch(dest.filter as any)}>
+              <div className="relative h-48 w-full">
+                 <Image src={dest.image} alt={dest.name} layout="fill" objectFit="cover" data-ai-hint={dest.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                 <div className="absolute bottom-0 left-0 p-3 text-white">
+                    <h3 className="font-semibold text-lg">{dest.name}</h3>
+                 </div>
+              </div>
+              <CardContent className="p-3">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Starts from <strong className="text-primary">${dest.price}</strong></span>
+                  <span className="flex items-center gap-1"><Star className="h-4 w-4 text-yellow-400 fill-yellow-400"/> {dest.rating}</span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+      
+      {/* Quick & Easy Trip Planner (Pick a Vibe) */}
+      <section className="container mx-auto px-4 text-center">
+        <h2 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-2">
+          Pick a Vibe & Explore
+        </h2>
+        <p className="text-muted-foreground mb-6">
+          Quick & easy trip planner — Pick a vibe and explore top destinations!
+        </p>
+        <div className="flex flex-wrap justify-center gap-3">
+          {mockVibes.map(vibe => (
+            <Button 
+              key={vibe.name} 
+              variant="outline" 
+              size="lg" 
+              className="bg-card hover:bg-accent/20 hover:border-accent text-foreground hover:text-accent-foreground shadow-sm border-border min-w-[150px] py-6 flex-col items-center h-auto"
+              onClick={() => handleAccommodationSearch(vibe.filter as any)}
+            >
+              <vibe.icon className="h-7 w-7 mb-1.5 text-primary group-hover:text-accent transition-colors" />
+              {vibe.name}
+            </Button>
+          ))}
+        </div>
+      </section>
+
+      {/* Explore Destinations Closer to Home */}
+       <section className="container mx-auto px-4">
+        <h2 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-2 text-center">
+          Nearby Gems
+        </h2>
+        <p className="text-muted-foreground mb-6 text-center">
+          You don’t have to go far for your next trip.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {mockNearbyGems.map(gem => (
+            <Link key={gem.id} href={gem.link} passHref>
+              <Card className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow group rounded-lg cursor-pointer">
+                <div className="relative h-56 w-full">
+                  <Image src={gem.image} alt={gem.name} layout="fill" objectFit="cover" data-ai-hint={gem.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+                <CardContent className="p-4">
+                  <h3 className="font-semibold text-lg text-foreground group-hover:text-primary">{gem.name}</h3>
+                  <p className="text-sm text-muted-foreground">{gem.distance}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Travel More, Spend Less */}
+      <section className="container mx-auto px-4">
+        <h2 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-2 text-center">
+          Save While You Travel
+        </h2>
+        <p className="text-muted-foreground mb-6 text-center">
+          Travel more, spend less — discover discounts based on your preferences.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {mockDeals.map(deal => (
+            <Card key={deal.id} className="overflow-hidden shadow-md hover:shadow-xl transition-shadow group rounded-lg cursor-pointer" onClick={() => handleAccommodationSearch(deal.filter as any)}>
+               <div className="relative h-40 w-full">
+                 <Image src={deal.image} alt={deal.title} layout="fill" objectFit="cover" data-ai-hint={deal.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10"></div>
+                 <div className="absolute bottom-0 left-0 p-4">
+                    <h3 className="font-bold text-xl text-white">{deal.title}</h3>
+                 </div>
+              </div>
+              <CardContent className="p-4">
+                <Progress value={deal.urgency} className="h-2 mb-2 [&>div]:bg-accent" />
+                <p className="text-sm font-medium text-accent-foreground text-center">{deal.urgencyText}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Notification Prompt */}
+      {showNotificationPrompt && (
+        <div className="fixed bottom-5 right-5 z-50">
+          <Card className="w-80 shadow-xl border-primary/50">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2"><Bell className="h-5 w-5 text-primary"/>Enable Notifications?</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm">
+              <p>Get alerts for exclusive stay deals and price drops near you!</p>
+            </CardContent>
+            <CardFooter className="flex justify-end gap-2">
+              <Button variant="ghost" size="sm" onClick={() => handleNotificationPrompt(false)}>Later</Button>
+              <Button size="sm" onClick={() => handleNotificationPrompt(true)} className="bg-primary hover:bg-primary/90">Enable</Button>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
+
     </div>
   );
 }
