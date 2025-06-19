@@ -18,17 +18,17 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { format, addDays } from "date-fns"; // Added addDays
+import { format, addDays } from "date-fns";
 import { CalendarIcon, MapPin, Users, Search, ChevronsUpDown, Building2, Smile, Accessibility, Leaf } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useEffect } from "react"; // Added useEffect
+import { useEffect } from "react";
 
 const accommodationSearchSchema = z.object({
-  destination: z.string().optional(), // Made optional to allow searching without destination
+  destination: z.string().optional(),
   dateRange: z.object({
-    from: z.date().optional(), // Made optional
-    to: z.date().optional(),   // Made optional
+    from: z.date().optional(),
+    to: z.date().optional(),
   }).optional().refine(data => !data || !data.from || !data.to || data.to > data.from, {
     message: "Check-out date must be after check-in date if both are provided.",
     path: ["to"],
@@ -55,8 +55,8 @@ export default function AccommodationSearchForm({ onSearch }: AccommodationSearc
     defaultValues: {
       destination: "",
       dateRange: {
-        from: new Date(), // Default to today
-        to: addDays(new Date(), 7), // Default to 7 days from today
+        from: undefined, // Initialize as undefined
+        to: undefined,   // Initialize as undefined
       },
       adults: 2,
       children: 0,
@@ -68,15 +68,19 @@ export default function AccommodationSearchForm({ onSearch }: AccommodationSearc
     },
   });
   
-  // Initialize default dates if not set
+  // Set default dates on the client side after mount to prevent hydration mismatch
   useEffect(() => {
-    if (!form.getValues("dateRange.from")) {
-        form.setValue("dateRange.from", new Date());
+    const currentFromDate = form.getValues("dateRange.from");
+    const currentToDate = form.getValues("dateRange.to");
+
+    if (!currentFromDate) {
+        form.setValue("dateRange.from", new Date(), { shouldValidate: true });
     }
-    if (!form.getValues("dateRange.to")) {
-        form.setValue("dateRange.to", addDays(new Date(), 7));
+    if (!currentToDate) {
+        form.setValue("dateRange.to", addDays(new Date(), 7), { shouldValidate: true });
     }
-  }, [form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array ensures this runs only once on mount
 
 
   function onSubmit(values: AccommodationSearchFormValues) {
@@ -84,7 +88,7 @@ export default function AccommodationSearchForm({ onSearch }: AccommodationSearc
   }
 
   const { watch, setValue } = form;
-  const adults = watch("adults", 2); // Provide default for watch
+  const adults = watch("adults", 2); 
   const children = watch("children", 0);
   const rooms = watch("rooms", 1);
   const dateRange = watch("dateRange");
@@ -140,10 +144,10 @@ export default function AccommodationSearchForm({ onSearch }: AccommodationSearc
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="range"
-                    selected={field.value as DateRange | undefined} // Cast to DateRange | undefined
+                    selected={field.value as DateRange | undefined} 
                     onSelect={(range) => field.onChange(range || { from: undefined, to: undefined })}
                     numberOfMonths={2}
-                    disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1))} // Allow today
+                    disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1))} 
                     initialFocus
                   />
                 </PopoverContent>
@@ -155,8 +159,8 @@ export default function AccommodationSearchForm({ onSearch }: AccommodationSearc
         
         <FormField
           control={form.control}
-          name="adults" // This outer FormField is for layout and error message handling for the group
-          render={() => ( // Field prop not directly used here, but needed for FormField structure
+          name="adults" 
+          render={() => ( 
             <FormItem className="flex flex-col lg:col-span-1 xl:col-span-1">
               <FormLabel className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests & Rooms</FormLabel>
               <Popover>
@@ -265,7 +269,7 @@ export default function AccommodationSearchForm({ onSearch }: AccommodationSearc
           )}
         />
 
-        <div className="flex flex-col gap-2 lg:col-span-1 xl:col-span-1 self-end pb-1"> {/* Adjusted for alignment */}
+        <div className="flex flex-col gap-2 lg:col-span-1 xl:col-span-1 self-end pb-1"> 
             <FormField
             control={form.control}
             name="wheelchairAccessible"
@@ -307,4 +311,3 @@ export default function AccommodationSearchForm({ onSearch }: AccommodationSearc
   );
 }
     
-
