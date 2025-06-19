@@ -14,7 +14,7 @@ body {
     --card-foreground: 220 10% 25%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 10% 25%;
-    --primary: 217 100% 25%; /* #003580 - Booking.com Blue */
+    --primary: 207 88% 68%; /* #64B5F6 - Tranquil Blue */
     --primary-foreground: 0 0% 100%; /* White text on blue */
     --secondary: 210 25% 90%; /* Slightly darker gray */
     --secondary-foreground: 220 10% 20%; /* Darker text for secondary */
@@ -49,14 +49,14 @@ body {
     --card-foreground: 210 20% 90%;
     --popover: 220 10% 15%;
     --popover-foreground: 210 20% 90%;
-    --primary: 217 100% 25%; /* #003580 - Booking.com Blue */
-    --primary-foreground: 0 0% 100%; /* White text on blue */
+    --primary: 207 88% 68%; /* #64B5F6 - Tranquil Blue */
+    --primary-foreground: 0 0% 10%; /* Dark text on light blue for dark mode */
     --secondary: 220 10% 25%;
     --secondary-foreground: 210 20% 90%;
     --muted: 220 10% 20%;
     --muted-foreground: 210 20% 60%;
     --accent: 123 39% 64%; /* #81C784 */
-    --accent-foreground: 0 0% 100%; /* White text on green */
+    --accent-foreground: 0 0% 10%; /* Dark text on green for dark mode */
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 220 10% 30%;

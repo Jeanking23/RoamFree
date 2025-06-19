@@ -5,7 +5,7 @@ import AccommodationSearchForm from '@/components/search/accommodation-search-fo
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BedDouble, MapPin, Star, Search, Leaf, Sparkles, Home as HomeIcon, Building, Waves, MountainSnow, Users, DollarSign, Heart, User, Tag, Zap, Gift, CalendarDays, BarChart3, Eye, TvIcon, Layers, Plane, Contact, ShieldCheck, MessageSquare, Video, CircleDot, SquareDot, LocateFixed, CheckCircle, Landmark } from 'lucide-react';
+import { BedDouble, MapPin, Star, Search, Leaf, Sparkles, Home as HomeIcon, Building, Waves, MountainSnow, Users, DollarSign, Heart, User, Tag, Zap, Gift, CalendarDays, BarChart3, Eye, TvIcon, Layers, Plane, Contact, ShieldCheck, MessageSquare, Video, CircleDot, SquareDot, LocateFixed, CheckCircle, Landmark, Bell } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
@@ -18,43 +18,43 @@ import { Separator } from '@/components/ui/separator';
 
 const mockPropertyTypes = [
   { name: "Hotel", icon: Building, image: "https://placehold.co/400x300.png?text=Hotel", dataAiHint: "hotel building", filterType: "Hotel" },
-  { name: "Apartment", icon: HomeIcon, image: "https://placehold.co/400x300.png?text=Apartment", dataAiHint: "apartment building", filterType: "Rental" }, // Assuming "Rental" covers apartments
-  { name: "Resort", icon: Waves, image: "https://placehold.co/400x300.png?text=Resort", dataAiHint: "beach resort", filterType: "Hotel" }, // Assuming resorts are a type of Hotel
+  { name: "Apartment", icon: HomeIcon, image: "https://placehold.co/400x300.png?text=Apartment", dataAiHint: "apartment building", filterType: "Rental" },
+  { name: "Resort", icon: Waves, image: "https://placehold.co/400x300.png?text=Resort", dataAiHint: "beach resort", filterType: "Hotel" },
   { name: "Villa", icon: HomeIcon, image: "https://placehold.co/400x300.png?text=Villa", dataAiHint: "luxury villa", filterType: "Rental" },
   { name: "Guest House", icon: BedDouble, image: "https://placehold.co/400x300.png?text=Guest+House", dataAiHint: "guest house exterior", filterType: "Rental" },
 ];
 
 const mockRecentSearches = [
-  { id: "rs1", term: "Bali, Indonesia", link: "#", filter: { destination: "Bali, Indonesia" } },
-  { id: "rs2", term: "Romantic Getaways", link: "#", filter: { mood: "Romantic" } },
-  { id: "rs3", term: "Eco-Friendly Hotels", link: "#", filter: { ecoFriendly: true, propertyType: "Hotel" } },
+  { id: "rs1", term: "Bali, Indonesia", filter: { destination: "Bali, Indonesia" } },
+  { id: "rs2", term: "Romantic Getaways", filter: { mood: "Romantic" } },
+  { id: "rs3", term: "Eco-Friendly Hotels", filter: { ecoFriendly: true, propertyType: "Hotel" } },
 ];
 
 const mockTrendingDestinations = [
-  { id: "td1", name: "Top Hotels in Paris", image: "https://placehold.co/400x300.png?text=Paris+Hotels", dataAiHint: "paris eiffel tower", price: "120", rating: 4.7, link: "#", filter: { destination: "Paris", propertyType: "Hotel" } },
-  { id: "td2", name: "Apartments in Douala", image: "https://placehold.co/400x300.png?text=Douala+Apartments", dataAiHint: "city douala", price: "80", rating: 4.3, link: "#", filter: { destination: "Douala", propertyType: "Rental" } },
-  { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://placehold.co/400x300.png?text=Abidjan+Resorts", dataAiHint: "beach abidjan", price: "150", rating: 4.5, link: "#", filter: { destination: "Abidjan", propertyType: "Hotel" } }, // Assuming Resort is a type of Hotel
-  { id: "td4", name: "Villas in Aspen", image: "https://placehold.co/400x300.png?text=Aspen+Villas", dataAiHint: "aspen mountains", price: "300", rating: 4.9, link: "#", filter: { destination: "Aspen", propertyType: "Rental" } },
+  { id: "td1", name: "Top Hotels in Paris", image: "https://placehold.co/400x300.png?text=Paris+Hotels", dataAiHint: "paris eiffel tower", price: "120", rating: 4.7, filter: { destination: "Paris", propertyType: "Hotel" } },
+  { id: "td2", name: "Apartments in Douala", image: "https://placehold.co/400x300.png?text=Douala+Apartments", dataAiHint: "city douala", price: "80", rating: 4.3, filter: { destination: "Douala", propertyType: "Rental" } },
+  { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://placehold.co/400x300.png?text=Abidjan+Resorts", dataAiHint: "beach abidjan", price: "150", rating: 4.5, filter: { destination: "Abidjan", propertyType: "Hotel" } },
+  { id: "td4", name: "Villas in Aspen", image: "https://placehold.co/400x300.png?text=Aspen+Villas", dataAiHint: "aspen mountains", price: "300", rating: 4.9, filter: { destination: "Aspen", propertyType: "Rental" } },
 ];
 
 const mockVibes = [
-  { name: "Adventure", icon: MountainSnow, link: "#", filter: { mood: "Adventurous" } },
-  { name: "Relaxation", icon: Waves, link: "#", filter: { mood: "Peaceful" } },
-  { name: "Romantic", icon: Heart, link: "#", filter: { mood: "Romantic" } },
-  { name: "Family-Friendly", icon: Users, link: "#", filter: { propertyType: "Rental" } }, // Example, could be more specific
-  { name: "Budget-Friendly", icon: DollarSign, link: "#", filter: { priceMax: 100 } }, // Example filter
+  { name: "Adventure", icon: MountainSnow, filter: { mood: "Adventurous" } },
+  { name: "Relaxation", icon: Waves, filter: { mood: "Peaceful" } },
+  { name: "Romantic", icon: Heart, filter: { mood: "Romantic" } },
+  { name: "Family-Friendly", icon: Users, filter: { propertyType: "Rental" } }, 
+  { name: "Budget-Friendly", icon: DollarSign, filter: { priceMax: 100 } },
 ];
 
 const mockNearbyGems = [
-  { id: "ng1", name: "Lake House Retreat", image: "https://placehold.co/400x300.png?text=Lake+House", dataAiHint: "lake house", distance: "30km", type: "Stay", link: "/stays/stay1" }, // Link to an existing mock stay if possible
-  { id: "ng2", name: "City Park Resort", image: "https://placehold.co/400x300.png?text=City+Resort", dataAiHint: "city resort", distance: "5km", type: "Stay", link: "/stays/stay2" },
-  { id: "ng3", name: "Affordable Guest House", image: "https://placehold.co/400x300.png?text=Affordable+GuestHouse", dataAiHint: "guest house", distance: "in your city", type: "Stay", link: "/stays/stay3" },
+  { id: "ng1", name: "Lake House Retreat", image: "https://placehold.co/400x300.png?text=Lake+House", dataAiHint: "lake house", distance: "30km", type: "Stay", link: "/stays/stay4" }, 
+  { id: "ng2", name: "City Park Resort", image: "https://placehold.co/400x300.png?text=City+Resort", dataAiHint: "city resort", distance: "5km", type: "Stay", link: "/stays/stay5" },
+  { id: "ng3", name: "Affordable Guest House", image: "https://placehold.co/400x300.png?text=Affordable+GuestHouse", dataAiHint: "guest house", distance: "in your city", type: "Stay", link: "/stays/stay6" },
 ];
 
 const mockDeals = [
-  { id: "deal1", title: "Up to 30% off Resorts", image: "https://placehold.co/400x250.png?text=Resort+Deal", dataAiHint: "resort pool", urgency: 75, urgencyText: "75% Claimed!", link: "#", filter: { propertyType: "Hotel", discount: true } }, // Assuming Resorts are Hotels
-  { id: "deal2", title: "Last-minute Apartment Deals - Save 20%", image: "https://placehold.co/400x250.png?text=Apartment+Deal", dataAiHint: "apartment city", urgency: 3, urgencyText: "Only 3 left!", link: "#", filter: { propertyType: "Rental", discount: true } },
-  { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://placehold.co/400x250.png?text=Villa+Flash+Sale", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", link: "#", filter: { propertyType: "Rental", priceMax: 100, discount: true } },
+  { id: "deal1", title: "Up to 30% off Resorts", image: "https://placehold.co/400x250.png?text=Resort+Deal", dataAiHint: "resort pool", urgency: 75, urgencyText: "75% Claimed!", filter: { propertyType: "Hotel", discount: true } },
+  { id: "deal2", title: "Last-minute Apartment Deals - Save 20%", image: "https://placehold.co/400x250.png?text=Apartment+Deal", dataAiHint: "apartment city", urgency: 3, urgencyText: "Only 3 left!", filter: { propertyType: "Rental", discount: true } },
+  { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://placehold.co/400x250.png?text=Villa+Flash+Sale", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", filter: { propertyType: "Rental", priceMax: 100, discount: true } },
 ];
 
 
@@ -66,9 +66,8 @@ export default function HomePage() {
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
   useEffect(() => {
-    // Simulate a delay before showing the notification prompt
     const timer = setTimeout(() => {
-      if (!localStorage.getItem('notificationPromptDismissed')) {
+      if (typeof window !== 'undefined' && !localStorage.getItem('notificationPromptDismissed')) {
         setShowNotificationPrompt(true);
       }
     }, 5000);
@@ -82,19 +81,29 @@ export default function HomePage() {
 
     if (filters.propertyType && filters.propertyType !== "ANY" && Object.keys(filters).length === 1) {
         currentSummary = `${filters.propertyType.charAt(0).toUpperCase() + filters.propertyType.slice(1).toLowerCase()}s`;
-    } else if (filters.mood && filters.mood !== "ANY" && Object.keys(filters).length === 1) {
+    } else if (filters.mood && filters.mood !== "ANY" && Object.keys(filters).length === 1 && !filters.propertyType && !filters.destination) {
         currentSummary = `Stays with a ${filters.mood} Vibe`;
-    } else if (filters.destination && Object.keys(filters).length <= (filters.propertyType && filters.propertyType !== "ANY" ? 2 : 1)) {
+    } else if (filters.destination && Object.keys(filters).length <= (filters.propertyType && filters.propertyType !== "ANY" ? 2 : 1) && !filters.mood ) {
         currentSummary = `Stays in ${filters.destination}`;
         if(filters.propertyType && filters.propertyType !== "ANY") currentSummary += ` (${filters.propertyType.charAt(0).toUpperCase() + filters.propertyType.slice(1).toLowerCase()}s)`;
     } else if (filters.discount) {
         currentSummary = "Special Deals";
+        if(filters.propertyType && filters.propertyType !== "ANY") currentSummary += ` on ${filters.propertyType.toLowerCase()}s`;
+    } else if (Object.keys(filters).length > 0) {
+        let parts = [];
+        if(filters.destination) parts.push(`in ${filters.destination}`);
+        if(filters.propertyType && filters.propertyType !== "ANY") parts.push(filters.propertyType.toLowerCase());
+        if(filters.mood && filters.mood !== "ANY") parts.push(`${filters.mood.toLowerCase()} vibe`);
+        if(filters.priceMax) parts.push(`under $${filters.priceMax}`);
+        if(filters.ecoFriendly) parts.push("eco-friendly");
+        if(filters.wheelchairAccessible) parts.push("accessible");
+        currentSummary = parts.length > 0 ? `Filtered Stays: ${parts.join(', ')}` : "Search Results";
     }
 
 
     let results = allMockStays.filter(stay => {
       let matches = true;
-      if (filters.destination) matches = matches && stay.location.toLowerCase().includes(filters.destination.toLowerCase());
+      if (filters.destination && stay.location) matches = matches && stay.location.toLowerCase().includes(filters.destination.toLowerCase());
       const totalGuests = (filters.adults || 0) + (filters.children || 0);
       if (filters.adults && stay.maxGuests && totalGuests > stay.maxGuests) matches = false;
       if (filters.propertyType && filters.propertyType !== "ANY") matches = matches && stay.type === filters.propertyType;
@@ -102,7 +111,9 @@ export default function HomePage() {
       if (filters.wheelchairAccessible && !stay.isWheelchairAccessible) matches = false;
       if (filters.ecoFriendly && !stay.isEcoFriendly) matches = false;
       if (filters.priceMax && stay.pricePerNight > filters.priceMax) matches = false;
-      // Add more specific filter logic here as needed
+      if (filters.discount && filters.propertyType && filters.propertyType !== "ANY") {
+        matches = matches && stay.type === filters.propertyType; // For deals, ensure property type matches if specified
+      }
       return matches;
     });
 
@@ -110,7 +121,7 @@ export default function HomePage() {
       setNoResults(true);
       currentSummary = "No Stays Found Matching Your Criteria";
     }
-    setDisplayedStays(results.slice(0, 12)); // Show more results if available
+    setDisplayedStays(results.slice(0, 12)); 
     setActiveFiltersSummary(currentSummary);
     
     const staysSection = document.getElementById('stays-section');
@@ -135,7 +146,7 @@ export default function HomePage() {
     } else {
       toast({ title: "Notifications Declined (Demo)", description: "You can enable them later in settings." });
     }
-    localStorage.setItem('notificationPromptDismissed', 'true');
+    if (typeof window !== 'undefined') localStorage.setItem('notificationPromptDismissed', 'true');
     setShowNotificationPrompt(false);
   };
 
@@ -159,7 +170,7 @@ export default function HomePage() {
 
       {/* AI Trip Planner Offer */}
       <section className="container mx-auto px-4">
-        <Card className="bg-accent/10 border-accent shadow-md hover:shadow-lg transition-shadow rounded-lg">
+        <Card className="bg-accent/10 border-accent/30 shadow-md hover:shadow-lg transition-shadow rounded-lg">
           <CardHeader className="pb-4">
             <CardTitle className="text-2xl font-headline text-accent-foreground flex items-center gap-2">
               <Sparkles className="h-7 w-7 text-accent" />Plan smarter with AI
@@ -237,7 +248,7 @@ export default function HomePage() {
                       className="group-hover:scale-105 transition-transform duration-300 ease-in-out"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                     <Badge variant={stay.isEcoFriendly ? "default" : "secondary"} className={`absolute top-2 right-2 ${stay.isEcoFriendly ? 'bg-green-600 border-green-700 text-white' : ''}`}>
+                     <Badge variant={stay.isEcoFriendly ? "default" : "secondary"} className={`absolute top-2 right-2 ${stay.isEcoFriendly ? 'bg-green-600 border-green-700 text-white' : 'bg-card/80 text-card-foreground/90 border-border'}`}>
                       {stay.isEcoFriendly && <Leaf className="mr-1 h-3 w-3" />}
                       {stay.category}
                     </Badge>
@@ -334,7 +345,7 @@ export default function HomePage() {
           Pick a Vibe & Explore
         </h2>
         <p className="text-muted-foreground mb-6">
-          Quick & easy trip planner — Pick a vibe and explore top destinations!
+          Quick & easy trip planner — Pick a vibe and explore top destinations in Cameroon!
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           {mockVibes.map(vibe => (
@@ -342,7 +353,7 @@ export default function HomePage() {
               key={vibe.name} 
               variant="outline" 
               size="lg" 
-              className="bg-card hover:bg-accent/20 hover:border-accent text-foreground hover:text-accent-foreground shadow-sm border-border min-w-[150px] py-6 flex-col items-center h-auto"
+              className="bg-card hover:bg-accent/20 hover:border-accent text-foreground hover:text-accent-foreground shadow-sm border-border min-w-[150px] py-6 flex-col items-center h-auto group"
               onClick={() => handleAccommodationSearch(vibe.filter as any)}
             >
               <vibe.icon className="h-7 w-7 mb-1.5 text-primary group-hover:text-accent transition-colors" />
@@ -408,16 +419,16 @@ export default function HomePage() {
       {/* Notification Prompt */}
       {showNotificationPrompt && (
         <div className="fixed bottom-5 right-5 z-50">
-          <Card className="w-80 shadow-xl border-primary/50">
+          <Card className="w-80 shadow-xl border-primary/50 bg-card">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2"><Bell className="h-5 w-5 text-primary"/>Enable Notifications?</CardTitle>
             </CardHeader>
-            <CardContent className="text-sm">
+            <CardContent className="text-sm text-muted-foreground">
               <p>Get alerts for exclusive stay deals and price drops near you!</p>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
               <Button variant="ghost" size="sm" onClick={() => handleNotificationPrompt(false)}>Later</Button>
-              <Button size="sm" onClick={() => handleNotificationPrompt(true)} className="bg-primary hover:bg-primary/90">Enable</Button>
+              <Button size="sm" onClick={() => handleNotificationPrompt(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">Enable</Button>
             </CardFooter>
           </Card>
         </div>
