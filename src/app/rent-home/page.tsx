@@ -16,6 +16,7 @@ import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
+import { mockRentalProperties } from '@/lib/mock-data'; // Import mock data
 
 const rentalSearchSchema = z.object({
   location: z.string().optional(),
@@ -28,14 +29,8 @@ const rentalSearchSchema = z.object({
 
 type RentalSearchFormValues = z.infer<typeof rentalSearchSchema>;
 
-const mockRentals = [
-  { id: "rent1", name: "Chic Downtown Loft", price: 2200, location: "City Center", type: "Apartment", bedrooms: 1, amenities: "Gym, Pool, In-unit Laundry", image: "https://placehold.co/600x400.png?text=Downtown+Loft", dataAiHint: "loft apartment", virtualTourLink: "#", floorPlanLink: "#", walkabilityScore: 95, nearbySchools: "City High, Downtown Elementary", utilitiesIncluded: "Water, Trash", ecoFriendly: true },
-  { id: "rent2", name: "Suburban Family House", price: 3500, location: "Green Meadows", type: "House", bedrooms: 3, amenities: "Yard, Garage, Pet-friendly", image: "https://placehold.co/600x400.png?text=Suburban+House", dataAiHint: "family house suburban", virtualTourLink: "#", floorPlanLink: "#", walkabilityScore: 70, nearbySchools: "Greenwood High, Meadowbrook Elementary", utilitiesIncluded: "None", ecoFriendly: false },
-  { id: "rent3", name: "Modern Townhouse", price: 2800, location: "North District", type: "Townhouse", bedrooms: 2, amenities: "Rooftop Deck, Smart Home", image: "https://placehold.co/600x400.png?text=Modern+Townhouse", dataAiHint: "modern townhouse", virtualTourLink: "#", floorPlanLink: "#", walkabilityScore: 85, nearbySchools: "Northwood Academy", utilitiesIncluded: "Internet", ecoFriendly: true },
-];
-
 export default function RentHomePage() {
-  const [rentals, setRentals] = useState(mockRentals);
+  const [rentals, setRentals] = useState(mockRentalProperties); // Use imported data
 
   const rentalSearchForm = useForm<RentalSearchFormValues>({
     resolver: zodResolver(rentalSearchSchema),
@@ -44,7 +39,31 @@ export default function RentHomePage() {
 
   function onRentalSearchSubmit(data: RentalSearchFormValues) {
     console.log("Rental Search Filters:", data);
-    toast({ title: "Search Submitted", description: "Filtering rentals (simulation)." });
+    // Filter logic based on form data
+    const filteredRentals = mockRentalProperties.filter(rental => {
+        let matches = true;
+        if (data.location && !rental.location.toLowerCase().includes(data.location.toLowerCase())) {
+            matches = false;
+        }
+        if (data.minPrice && rental.price && rental.price < data.minPrice) {
+            matches = false;
+        }
+        if (data.maxPrice && rental.price && rental.price > data.maxPrice) {
+            matches = false;
+        }
+        if (data.propertyType !== "ANY" && rental.category?.toLowerCase() !== data.propertyType?.toLowerCase()) {
+            matches = false;
+        }
+        if (data.bedrooms && rental.bedrooms && rental.bedrooms < data.bedrooms) {
+            matches = false;
+        }
+        if (data.amenities && rental.amenities && !rental.amenities.some(a => a.toLowerCase().includes(data.amenities!.toLowerCase()))) {
+            matches = false;
+        }
+        return matches;
+    });
+    setRentals(filteredRentals);
+    toast({ title: "Search Submitted", description: `Found ${filteredRentals.length} rentals.` });
   }
 
   const handleScheduleTour = (propertyName: string) => {
@@ -185,17 +204,19 @@ export default function RentHomePage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {rentals.map(prop => (
                 <Card key={prop.id} className="overflow-hidden flex flex-col">
-                  <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-48 object-cover" data-ai-hint={prop.dataAiHint}/>
+                  <Link href={`/rent-home/${prop.id}`}>
+                    <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-48 object-cover" data-ai-hint={prop.dataAiHint}/>
+                  </Link>
                   <CardHeader>
-                    <CardTitle>{prop.name}</CardTitle>
-                    <CardDescription className="text-primary font-semibold text-lg">${prop.price.toLocaleString()}/month</CardDescription>
+                    <CardTitle><Link href={`/rent-home/${prop.id}`}>{prop.name}</Link></CardTitle>
+                    <CardDescription className="text-primary font-semibold text-lg">${(prop.price ?? prop.pricePerNight).toLocaleString()}{prop.price ? '/month' : '/night'}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2 flex-grow">
                     <p className="text-sm text-muted-foreground"><MapPin className="inline h-4 w-4 mr-1"/>{prop.location}</p>
-                    <p className="text-sm text-muted-foreground"><ClipboardList className="inline h-4 w-4 mr-1"/>Type: {prop.type}</p>
+                    <p className="text-sm text-muted-foreground"><ClipboardList className="inline h-4 w-4 mr-1"/>Type: {prop.category}</p>
                     <p className="text-sm text-muted-foreground"><Bed className="inline h-4 w-4 mr-1"/>Bedrooms: {prop.bedrooms}</p>
-                    <p className="text-sm text-muted-foreground"><Smile className="inline h-4 w-4 mr-1"/>Amenities: {prop.amenities}</p>
-                    {prop.ecoFriendly && <p className="text-sm text-green-600 flex items-center"><Leaf className="inline h-4 w-4 mr-1"/>Eco-Friendly Property</p>}
+                    <p className="text-sm text-muted-foreground"><Smile className="inline h-4 w-4 mr-1"/>Amenities: {Array.isArray(prop.amenities) ? prop.amenities.join(', ') : prop.amenities}</p>
+                    {prop.isEcoFriendly && <p className="text-sm text-green-600 flex items-center"><Leaf className="inline h-4 w-4 mr-1"/>Eco-Friendly Property</p>}
                     <Separator className="my-2"/>
                     <h4 className="text-xs font-semibold text-muted-foreground">Neighborhood (Demo):</h4>
                     <p className="text-xs text-muted-foreground"><CheckCircle className="inline h-3 w-3 mr-1 text-green-500"/>Walkability: {prop.walkabilityScore}/100</p>
@@ -247,5 +268,3 @@ export default function RentHomePage() {
     </div>
   );
 }
-
-    

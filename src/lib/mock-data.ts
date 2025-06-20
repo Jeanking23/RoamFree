@@ -1,6 +1,6 @@
 
 // src/lib/mock-data.ts
-import type { BedDouble, MapPin, Star, Lightbulb, Hotel, Building2, Home as HomeIconType, Bed, Search, History, TrendingUp, Sparkles, Waves, MountainSnow, Users, Percent, Clock, Bell, MessageSquare, UserCircle, LayoutDashboard, Heart, Award, Building as BuildingIconType, KeyRound, Landmark as LandmarkIconType, ClipboardList, Truck, CarFront as CarSaleIconType, Plane, TvIcon, Layers, School, Leaf, CheckCircle, CalendarDays, DollarSign } from 'lucide-react';
+import type { BedDouble, MapPin, Star, Lightbulb, Hotel, Building2, Home as HomeIconType, Bed, Search, History, TrendingUp, Sparkles, Waves, MountainSnow, Users, Percent, Clock, Bell, MessageSquare, UserCircle, LayoutDashboard, Heart, Award, Building as BuildingIconType, KeyRound, Landmark as LandmarkIconType, ClipboardList, Truck, CarFront as CarSaleIconType, Plane, TvIcon, Layers, School, Leaf, CheckCircle, CalendarDays, DollarSign, Bath, Maximize, Smile, Phone, FileText, Calculator, Video, Contact, ShieldCheck as ShieldCheckIcon } from 'lucide-react';
 
 export interface StayPhoto {
   id: string;
@@ -63,7 +63,22 @@ export interface MockStay {
   virtualTourLink?: string;
   floorPlanLink?: string;
   neighborhoodInsights?: NeighborhoodInsights;
+  // Fields for rentals and properties for sale can be added here or in specific types
+  bedrooms?: number;
+  bathrooms?: number;
+  sizeSqft?: string | number; // Can be "2200 sqft" or just 2200
+  sizeAcres?: string | number;
+  propertyType?: string; // More specific: "House", "Apartment", "Land"
+  zoning?: string; // For land/property sale
+  status?: string; // e.g., "Verified", "Title Deed Uploaded"
+  lastSalePrice?: number;
+  marketTrend?: string;
+  utilitiesIncluded?: string;
+  walkabilityScore?: number;
+  nearbySchools?: string;
+  price?: number; // For total price in sales
 }
+
 
 export const allMockStays: MockStay[] = [
   {
@@ -77,6 +92,8 @@ export const allMockStays: MockStay[] = [
     category: "Villa",
     type: "Rental",
     maxGuests: 8,
+    bedrooms: 4,
+    bathrooms: 5,
     moods: ["Romantic", "Peaceful"],
     isEcoFriendly: true,
     isWheelchairAccessible: false,
@@ -108,6 +125,8 @@ export const allMockStays: MockStay[] = [
     category: "Cabin",
     type: "Rental",
     maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 1,
     moods: ["Peaceful", "Adventurous"],
     isEcoFriendly: false,
     isWheelchairAccessible: false,
@@ -164,6 +183,8 @@ export const allMockStays: MockStay[] = [
     category: "Lodge",
     type: "Rental",
     maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 2,
     moods: ["Peaceful", "Adventurous"],
     isEcoFriendly: true,
     reviewsCount: 95,
@@ -186,7 +207,6 @@ export const allMockStays: MockStay[] = [
     category: "Hotel",
     type: "Hotel",
     maxGuests: 3, // per room
-    moods: ["Peaceful", "Romantic", "Adventurous"],
     isWheelchairAccessible: true,
     reviewsCount: 210,
     description: "Luxury hotel offering stunning red rock views, spa services, and gourmet dining. Perfect for a rejuvenating escape.",
@@ -208,6 +228,8 @@ export const allMockStays: MockStay[] = [
     category: "Flat",
     type: "Rental",
     maxGuests: 3,
+    bedrooms: 1,
+    bathrooms: 1,
     moods: ["Romantic"],
     isEcoFriendly: false,
     reviewsCount: 155,
@@ -220,3 +242,167 @@ export const allMockStays: MockStay[] = [
     neighborhoodInsights: { walkabilityScore: 99, crimeRate: "Medium", nearbySchools: "N/A", publicTransport: "Excellent (Metro, Bus)" }
   }
 ];
+
+export const mockRentalProperties: MockStay[] = [
+  { 
+    id: "rent1", 
+    name: "Chic Downtown Loft", 
+    pricePerNight: 73, // Assuming 2200/month ~ 73/night for consistency, though listing might be per month
+    price: 2200, // Monthly price
+    location: "City Center", 
+    category: "Apartment", 
+    type: "Rental",
+    bedrooms: 1, 
+    amenities: ["Gym", "Pool", "In-unit Laundry"], 
+    image: "https://placehold.co/600x400.png?text=Downtown+Loft", 
+    dataAiHint: "loft apartment", 
+    virtualTourLink: "#", 
+    floorPlanLink: "#", 
+    walkabilityScore: 95, 
+    nearbySchools: "City High, Downtown Elementary", 
+    utilitiesIncluded: "Water, Trash", 
+    isEcoFriendly: true,
+    description: "A stylish and modern loft apartment in the heart of downtown. Features high ceilings, large windows, and access to building amenities like a gym and pool. Perfect for urban living.",
+    rating: 4.7, // Added for consistency
+    reviewsCount: 55, // Added
+    photos: [
+        { id: "p1r1", src: "https://placehold.co/800x600.png?text=Loft+Living", alt: "Loft living area", dataAiHint: "loft interior" },
+        { id: "p2r1", src: "https://placehold.co/400x300.png?text=Loft+Kitchen", alt: "Loft kitchen", dataAiHint: "modern kitchen" },
+    ],
+    host: { name: "Urban Living Inc.", avatar: "https://placehold.co/100x100.png?text=UL", dataAiHint: "company logo" }
+  },
+  { 
+    id: "rent2", 
+    name: "Suburban Family House", 
+    pricePerNight: 116, // Approx from 3500/month
+    price: 3500,
+    location: "Green Meadows", 
+    category: "House", 
+    type: "Rental",
+    bedrooms: 3, 
+    amenities: ["Yard", "Garage", "Pet-friendly"], 
+    image: "https://placehold.co/600x400.png?text=Suburban+House", 
+    dataAiHint: "family house suburban", 
+    virtualTourLink: "#", 
+    floorPlanLink: "#", 
+    walkabilityScore: 70, 
+    nearbySchools: "Greenwood High, Meadowbrook Elementary", 
+    utilitiesIncluded: "None", 
+    isEcoFriendly: false,
+    description: "Spacious family home in a quiet suburban neighborhood. Large backyard, two-car garage, and pet-friendly policy. Close to parks and good schools.",
+    rating: 4.5, // Added
+    reviewsCount: 30, // Added
+    photos: [ { id: "p1r2", src: "https://placehold.co/800x600.png?text=Family+House+Exterior", alt: "Family house exterior", dataAiHint: "suburban house" } ],
+    host: { name: "Sarah Miller", avatar: "https://placehold.co/100x100.png?text=SM", dataAiHint: "woman portrait" }
+  },
+  { 
+    id: "rent3", 
+    name: "Modern Townhouse", 
+    pricePerNight: 93, // Approx from 2800/month
+    price: 2800,
+    location: "North District", 
+    category: "Townhouse", 
+    type: "Rental",
+    bedrooms: 2, 
+    amenities: ["Rooftop Deck", "Smart Home"], 
+    image: "https://placehold.co/600x400.png?text=Modern+Townhouse", 
+    dataAiHint: "modern townhouse", 
+    virtualTourLink: "#", 
+    floorPlanLink: "#", 
+    walkabilityScore: 85, 
+    nearbySchools: "Northwood Academy", 
+    utilitiesIncluded: "Internet", 
+    isEcoFriendly: true,
+    description: "Contemporary townhouse with a private rooftop deck and smart home features. Two bedrooms, open-plan living, and close to city amenities.",
+    rating: 4.6, // Added
+    reviewsCount: 42, // Added
+    photos: [ { id: "p1r3", src: "https://placehold.co/800x600.png?text=Townhouse+Rooftop", alt: "Townhouse rooftop deck", dataAiHint: "rooftop deck city" } ],
+    host: { name: "Tech Homes LLC", avatar: "https://placehold.co/100x100.png?text=TH", dataAiHint: "company logo" }
+  },
+];
+
+export const mockSaleProperties: MockStay[] = [
+  { 
+    id: "sale1", 
+    name: "Spacious Family Home", 
+    price: 350000, 
+    pricePerNight: 0, // Not applicable for sale
+    location: "Green Valley", 
+    propertyType: "House", 
+    type: "Rental", // This should probably be 'Sale' or a new type
+    category: "House",
+    sizeSqft: "2200 sqft", 
+    zoning: "Residential", 
+    image: "https://placehold.co/600x400.png?text=Family+Home", 
+    dataAiHint: "family house", 
+    status: "Verified", 
+    lastSalePrice: 280000, 
+    marketTrend: "+5% YoY",
+    description: "A beautiful and spacious family home located in the desirable Green Valley neighborhood. Features 4 bedrooms, 2.5 bathrooms, a large kitchen, and a well-maintained backyard. Perfect for a growing family.",
+    bedrooms: 4,
+    bathrooms: 2.5,
+    rating: 4.8, // Added for consistency if needed
+    amenities: ["Backyard", "Garage", "Updated Kitchen"],
+    photos: [ { id: "p1sa1", src: "https://placehold.co/800x600.png?text=Sale+Home+Exterior", alt: "Sale home exterior", dataAiHint: "house exterior sale" } ],
+    host: { name: "Real Estate Pro", avatar: "https://placehold.co/100x100.png?text=RE", dataAiHint: "agent portrait" }
+  },
+  { 
+    id: "sale2", 
+    name: "Prime Commercial Land", 
+    price: 1200000, 
+    pricePerNight: 0,
+    location: "Downtown Core", 
+    propertyType: "Land", 
+    type: "Rental", // This should probably be 'Sale'
+    category: "Land",
+    sizeAcres: "2 acres", 
+    zoning: "Commercial", 
+    image: "https://placehold.co/600x400.png?text=Commercial+Land", 
+    dataAiHint: "empty lot", 
+    status: "Title Deed Uploaded", 
+    lastSalePrice: 950000, 
+    marketTrend: "+8% YoY",
+    description: "An exceptional opportunity to acquire 2 acres of prime commercial land in the bustling Downtown Core. High traffic area with excellent development potential for retail, office, or mixed-use projects.",
+    rating: 4.5, // Added
+    amenities: ["Road Frontage", "Utilities Nearby"],
+    photos: [ { id: "p1sa2", src: "https://placehold.co/800x600.png?text=Land+Plot+Aerial", alt: "Land plot aerial view", dataAiHint: "land aerial" } ],
+    host: { name: "Land Investments Co.", avatar: "https://placehold.co/100x100.png?text=LI", dataAiHint: "company logo" }
+  },
+  { 
+    id: "sale3", 
+    name: "Modern Downtown Apartment", 
+    price: 450000, 
+    pricePerNight: 0,
+    location: "City Center", 
+    propertyType: "Apartment", 
+    type: "Rental", // This should probably be 'Sale'
+    category: "Apartment",
+    sizeSqft: "1200 sqft", 
+    zoning: "Residential", 
+    image: "https://placehold.co/600x400.png?text=Modern+Apartment", 
+    dataAiHint: "apartment building", 
+    status: "Leasehold", 
+    lastSalePrice: 400000, 
+    marketTrend: "+3% YoY",
+    description: "A sleek and modern apartment in a prime city center location. This 2-bedroom, 2-bathroom unit offers stunning city views, high-end finishes, and access to building amenities including a fitness center and concierge.",
+    bedrooms: 2,
+    bathrooms: 2,
+    rating: 4.9, // Added
+    amenities: ["City Views", "Fitness Center", "Concierge"],
+    photos: [ { id: "p1sa3", src: "https://placehold.co/800x600.png?text=Apartment+Sale+Interior", alt: "Apartment sale interior", dataAiHint: "modern apartment interior" } ],
+    host: { name: "City Living Sales", avatar: "https://placehold.co/100x100.png?text=CS", dataAiHint: "agent portrait" }
+  },
+];
+
+// You might want to combine or ensure IDs are unique if using allMockStays as a single source
+// For now, I'll keep them separate but the detail pages will need to know which list to pull from.
+// Or better, create a unified list or a getter function.
+// For simplicity of this step, I will assume detail pages will fetch from these specific arrays.
+
+export function findRentalPropertyById(id: string): MockStay | undefined {
+  return mockRentalProperties.find(property => property.id === id);
+}
+
+export function findSalePropertyById(id: string): MockStay | undefined {
+  return mockSaleProperties.find(property => property.id === id);
+}

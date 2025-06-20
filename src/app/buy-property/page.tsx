@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -17,6 +17,7 @@ import Image from 'next/image';
 import { Separator } from '@/components/ui/separator'; 
 import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
+import { mockSaleProperties } from '@/lib/mock-data'; // Import mock data
 
 const mortgageSchema = z.object({
   loanAmount: z.coerce.number().positive("Loan amount must be positive."),
@@ -34,7 +35,7 @@ const propertySearchSchema = z.object({
   minSize: z.coerce.number().optional(), 
   zoning: z.string().optional(),
   amenities: z.string().optional(), 
-  investmentReady: z.boolean().default(false).optional(), // New
+  investmentReady: z.boolean().default(false).optional(),
 });
 
 type PropertySearchFormValues = z.infer<typeof propertySearchSchema>;
@@ -42,11 +43,7 @@ type PropertySearchFormValues = z.infer<typeof propertySearchSchema>;
 
 export default function BuyPropertyPage() {
   const [monthlyPayment, setMonthlyPayment] = useState<string | null>(null);
-  const [properties, setProperties] = useState([
-    { id: 1, name: "Spacious Family Home", price: 350000, location: "Green Valley", type: "House", size: "2200 sqft", zoning: "Residential", image: "https://placehold.co/600x400.png?text=Family+Home", dataAiHint: "family house", status: "Verified", lastSalePrice: 280000, marketTrend: "+5% YoY" },
-    { id: 2, name: "Prime Commercial Land", price: 1200000, location: "Downtown Core", type: "Land", size: "2 acres", zoning: "Commercial", image: "https://placehold.co/600x400.png?text=Commercial+Land", dataAiHint: "empty lot", status: "Title Deed Uploaded", lastSalePrice: 950000, marketTrend: "+8% YoY" },
-    { id: 3, name: "Modern Downtown Apartment", price: 450000, location: "City Center", type: "Apartment", size: "1200 sqft", zoning: "Residential", image: "https://placehold.co/600x400.png?text=Modern+Apartment", dataAiHint: "apartment building", status: "Leasehold", lastSalePrice: 400000, marketTrend: "+3% YoY" },
-  ]);
+  const [properties, setProperties] = useState(mockSaleProperties); // Use imported data
 
   const mortgageForm = useForm<MortgageFormValues>({
     resolver: zodResolver(mortgageSchema),
@@ -77,7 +74,17 @@ export default function BuyPropertyPage() {
 
   function onPropertySearchSubmit(data: PropertySearchFormValues) {
     console.log("Property Search Filters:", data);
-    toast({ title: "Search Submitted (Demo)", description: "Filtering properties based on your criteria." });
+    const filteredProperties = mockSaleProperties.filter(prop => {
+        let matches = true;
+        if (data.location && !prop.location.toLowerCase().includes(data.location.toLowerCase())) matches = false;
+        if (data.minPrice && prop.price && prop.price < data.minPrice) matches = false;
+        if (data.maxPrice && prop.price && prop.price > data.maxPrice) matches = false;
+        if (data.propertyType !== "ANY" && prop.propertyType?.toLowerCase() !== data.propertyType?.toLowerCase()) matches = false;
+        // Add more filters as needed (size, zoning, amenities)
+        return matches;
+    });
+    setProperties(filteredProperties);
+    toast({ title: "Search Submitted (Demo)", description: `Found ${filteredProperties.length} properties.` });
   }
 
   const handleScheduleTour = (propertyName: string) => {
@@ -148,15 +155,17 @@ export default function BuyPropertyPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map(prop => (
               <Card key={prop.id} className="overflow-hidden flex flex-col">
-                <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-48 object-cover" data-ai-hint={prop.dataAiHint}/>
+                <Link href={`/buy-property/${prop.id}`}>
+                  <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-48 object-cover" data-ai-hint={prop.dataAiHint}/>
+                </Link>
                 <CardHeader>
-                  <CardTitle>{prop.name}</CardTitle>
-                  <CardDescription className="text-primary font-semibold text-lg">${prop.price.toLocaleString()}</CardDescription>
+                  <CardTitle><Link href={`/buy-property/${prop.id}`}>{prop.name}</Link></CardTitle>
+                  <CardDescription className="text-primary font-semibold text-lg">${(prop.price ?? 0).toLocaleString()}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2 flex-grow">
                   <p className="text-sm text-muted-foreground"><MapPin className="inline h-4 w-4 mr-1"/>{prop.location}</p>
-                  <p className="text-sm text-muted-foreground"><ClipboardList className="inline h-4 w-4 mr-1"/>Type: {prop.type}</p>
-                  <p className="text-sm text-muted-foreground"><Maximize className="inline h-4 w-4 mr-1"/>Size: {prop.size}</p>
+                  <p className="text-sm text-muted-foreground"><ClipboardList className="inline h-4 w-4 mr-1"/>Type: {prop.propertyType}</p>
+                  <p className="text-sm text-muted-foreground"><Maximize className="inline h-4 w-4 mr-1"/>Size: {prop.sizeSqft || prop.sizeAcres}</p>
                   <p className="text-sm text-muted-foreground"><Layers className="inline h-4 w-4 mr-1"/>Zoning: {prop.zoning}</p>
                   <p className="text-sm text-muted-foreground"><ShieldCheck className="inline h-4 w-4 mr-1 text-green-600"/>Status: {prop.status} (Doc Upload Demo)</p>
                    <Separator className="my-2"/>
@@ -166,7 +175,7 @@ export default function BuyPropertyPage() {
                   <div className="flex flex-wrap gap-1 pt-2">
                       <Button variant="outline" size="xs" onClick={() => handleMediaTool("Drone View", prop.name)}><Plane className="mr-1 h-3 w-3"/>Drone View</Button>
                       <Button variant="outline" size="xs" onClick={() => handleMediaTool("Floor Plan", prop.name)}><Contact className="mr-1 h-3 w-3"/>Floor Plan</Button>
-                      {prop.type === "Land" && <Button variant="outline" size="xs" onClick={() => handleViewPlotMap(prop.name)}><MapPin className="mr-1 h-3 w-3"/>Plot Map</Button>}
+                      {prop.propertyType === "Land" && <Button variant="outline" size="xs" onClick={() => handleViewPlotMap(prop.name)}><MapPin className="mr-1 h-3 w-3"/>Plot Map</Button>}
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-2 pt-4 border-t">
@@ -189,6 +198,12 @@ export default function BuyPropertyPage() {
               </Card>
             ))}
           </div>
+          {properties.length === 0 && (
+            <div className="mt-8 py-12 bg-muted/50 rounded-md flex flex-col items-center justify-center">
+                <p className="text-xl font-semibold text-foreground">No properties match your criteria.</p>
+                <p className="text-muted-foreground mt-2">Try adjusting your search filters.</p>
+            </div>
+           )}
           <div className="mt-8 py-12 bg-muted/50 rounded-md flex flex-col items-center justify-center">
             <p className="text-xl font-semibold text-foreground">More listings coming soon!</p>
             <p className="text-muted-foreground mt-2">Discover your dream property shortly. Get listing alerts (Demo).</p>

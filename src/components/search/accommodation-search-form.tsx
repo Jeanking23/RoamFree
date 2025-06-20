@@ -23,6 +23,7 @@ import { CalendarIcon, MapPin, Users, Search, ChevronsUpDown, Building2, Smile, 
 import type { DateRange } from "react-day-picker";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 const accommodationSearchSchema = z.object({
   destination: z.string().optional(),
@@ -45,11 +46,13 @@ const accommodationSearchSchema = z.object({
 export type AccommodationSearchFormValues = z.infer<typeof accommodationSearchSchema>;
 
 interface AccommodationSearchFormProps {
-  onSearch: (values: AccommodationSearchFormValues) => void;
+  onSearch: (values: AccommodationSearchFormValues) => void; // Keep for in-page filtering
+  isResultsPage?: boolean; // To differentiate behavior
 }
 
 
-export default function AccommodationSearchForm({ onSearch }: AccommodationSearchFormProps) {
+export default function AccommodationSearchForm({ onSearch, isResultsPage = false }: AccommodationSearchFormProps) {
+  const router = useRouter(); // Initialize router
   const [hasMounted, setHasMounted] = useState(false);
   const form = useForm<AccommodationSearchFormValues>({
     resolver: zodResolver(accommodationSearchSchema),
@@ -71,15 +74,34 @@ export default function AccommodationSearchForm({ onSearch }: AccommodationSearc
   
   useEffect(() => {
     setHasMounted(true);
-    // Set default dates only on the client after mount
-    form.setValue("dateRange.from", new Date(), { shouldValidate: false }); // Avoid immediate validation if not needed
-    form.setValue("dateRange.to", addDays(new Date(), 7), { shouldValidate: false });
+    if (!form.getValues("dateRange.from") && !form.getValues("dateRange.to")) {
+      form.setValue("dateRange.from", new Date(), { shouldValidate: false });
+      form.setValue("dateRange.to", addDays(new Date(), 7), { shouldValidate: false });
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.setValue]); // form.setValue is stable, but good to include if used directly
+  }, [form.setValue]);
 
 
   function onSubmit(values: AccommodationSearchFormValues) {
-    onSearch(values);
+    if (isResultsPage) {
+        // If on results page, call onSearch to update results in place
+        onSearch(values);
+    } else {
+        // If on homepage or other pages, navigate to search results page
+        const queryParams = new URLSearchParams();
+        if (values.destination) queryParams.set('destination', values.destination);
+        if (values.dateRange?.from) queryParams.set('dateFrom', values.dateRange.from.toISOString());
+        if (values.dateRange?.to) queryParams.set('dateTo', values.dateRange.to.toISOString());
+        if (values.adults) queryParams.set('adults', values.adults.toString());
+        if (values.children) queryParams.set('children', values.children.toString());
+        if (values.rooms) queryParams.set('rooms', values.rooms.toString());
+        if (values.propertyType && values.propertyType !== "ANY") queryParams.set('propertyType', values.propertyType);
+        if (values.mood && values.mood !== "ANY") queryParams.set('mood', values.mood);
+        if (values.wheelchairAccessible) queryParams.set('wheelchairAccessible', 'true');
+        if (values.ecoFriendly) queryParams.set('ecoFriendly', 'true');
+        
+        router.push(`/stays/search?${queryParams.toString()}`);
+    }
   }
 
   const { watch } = form;

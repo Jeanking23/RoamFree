@@ -12,36 +12,35 @@ import { useState, useEffect, useCallback } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { allMockStays, type MockStay } from '@/lib/mock-data';
 import type { AccommodationSearchFormValues } from '@/components/search/accommodation-search-form';
-import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 
 const mockPropertyTypes = [
-  { name: "Hotel", icon: Building, image: "https://placehold.co/400x300.png?text=Hotel", dataAiHint: "hotel building", filterType: "Hotel" },
-  { name: "Apartment", icon: HomeIcon, image: "https://placehold.co/400x300.png?text=Apartment", dataAiHint: "apartment building", filterType: "Rental" },
-  { name: "Resort", icon: Waves, image: "https://placehold.co/400x300.png?text=Resort", dataAiHint: "beach resort", filterType: "Hotel" },
-  { name: "Villa", icon: HomeIcon, image: "https://placehold.co/400x300.png?text=Villa", dataAiHint: "luxury villa", filterType: "Rental" },
-  { name: "Guest House", icon: BedDouble, image: "https://placehold.co/400x300.png?text=Guest+House", dataAiHint: "guest house exterior", filterType: "Rental" },
+  { name: "Hotel", icon: Building, image: "https://placehold.co/400x300.png?text=Hotel", dataAiHint: "hotel building", filterType: "HOTEL" },
+  { name: "Apartment", icon: HomeIcon, image: "https://placehold.co/400x300.png?text=Apartment", dataAiHint: "apartment building", filterType: "RENTAL" },
+  { name: "Resort", icon: Waves, image: "https://placehold.co/400x300.png?text=Resort", dataAiHint: "beach resort", filterType: "HOTEL" },
+  { name: "Villa", icon: HomeIcon, image: "https://placehold.co/400x300.png?text=Villa", dataAiHint: "luxury villa", filterType: "RENTAL" },
+  { name: "Guest House", icon: BedDouble, image: "https://placehold.co/400x300.png?text=Guest+House", dataAiHint: "guest house exterior", filterType: "RENTAL" },
 ];
 
 const mockRecentSearches = [
   { id: "rs1", term: "Bali, Indonesia", filter: { destination: "Bali, Indonesia" } },
   { id: "rs2", term: "Romantic Getaways", filter: { mood: "Romantic" } },
-  { id: "rs3", term: "Eco-Friendly Hotels", filter: { ecoFriendly: true, propertyType: "Hotel" } },
+  { id: "rs3", term: "Eco-Friendly Hotels", filter: { ecoFriendly: true, propertyType: "HOTEL" } },
 ];
 
 const mockTrendingDestinations = [
-  { id: "td1", name: "Top Hotels in Paris", image: "https://placehold.co/400x300.png?text=Paris+Hotels", dataAiHint: "paris eiffel tower", price: "120", rating: 4.7, filter: { destination: "Paris", propertyType: "Hotel" } },
-  { id: "td2", name: "Apartments in Douala", image: "https://placehold.co/400x300.png?text=Douala+Apartments", dataAiHint: "city douala", price: "80", rating: 4.3, filter: { destination: "Douala", propertyType: "Rental" } },
-  { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://placehold.co/400x300.png?text=Abidjan+Resorts", dataAiHint: "beach abidjan", price: "150", rating: 4.5, filter: { destination: "Abidjan", propertyType: "Hotel" } },
-  { id: "td4", name: "Villas in Aspen", image: "https://placehold.co/400x300.png?text=Aspen+Villas", dataAiHint: "aspen mountains", price: "300", rating: 4.9, filter: { destination: "Aspen", propertyType: "Rental" } },
+  { id: "td1", name: "Top Hotels in Paris", image: "https://placehold.co/400x300.png?text=Paris+Hotels", dataAiHint: "paris eiffel tower", price: "120", rating: 4.7, filter: { destination: "Paris", propertyType: "HOTEL" } },
+  { id: "td2", name: "Apartments in Douala", image: "https://placehold.co/400x300.png?text=Douala+Apartments", dataAiHint: "city douala", price: "80", rating: 4.3, filter: { destination: "Douala", propertyType: "RENTAL" } },
+  { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://placehold.co/400x300.png?text=Abidjan+Resorts", dataAiHint: "beach abidjan", price: "150", rating: 4.5, filter: { destination: "Abidjan", propertyType: "HOTEL" } },
+  { id: "td4", name: "Villas in Aspen", image: "https://placehold.co/400x300.png?text=Aspen+Villas", dataAiHint: "aspen mountains", price: "300", rating: 4.9, filter: { destination: "Aspen", propertyType: "RENTAL" } },
 ];
 
 const mockVibes = [
   { name: "Adventure", icon: MountainSnow, filter: { mood: "Adventurous" } },
   { name: "Relaxation", icon: Waves, filter: { mood: "Peaceful" } },
   { name: "Romantic", icon: Heart, filter: { mood: "Romantic" } },
-  { name: "Family-Friendly", icon: Users, filter: { propertyType: "Rental" } }, 
+  { name: "Family-Friendly", icon: Users, filter: { propertyType: "RENTAL" } }, 
   { name: "Budget-Friendly", icon: DollarSign, filter: { priceMax: 100 } },
 ];
 
@@ -52,14 +51,13 @@ const mockNearbyGems = [
 ];
 
 const mockDeals = [
-  { id: "deal1", title: "Up to 30% off Resorts", image: "https://placehold.co/400x250.png?text=Resort+Deal", dataAiHint: "resort pool", urgency: 75, urgencyText: "75% Claimed!", filter: { propertyType: "Hotel", discount: true } },
-  { id: "deal2", title: "Last-minute Apartment Deals - Save 20%", image: "https://placehold.co/400x250.png?text=Apartment+Deal", dataAiHint: "apartment city", urgency: 3, urgencyText: "Only 3 left!", filter: { propertyType: "Rental", discount: true } },
-  { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://placehold.co/400x250.png?text=Villa+Flash+Sale", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", filter: { propertyType: "Rental", priceMax: 100, discount: true } },
+  { id: "deal1", title: "Up to 30% off Resorts", image: "https://placehold.co/400x250.png?text=Resort+Deal", dataAiHint: "resort pool", urgency: 75, urgencyText: "75% Claimed!", filter: { propertyType: "HOTEL", discount: true } },
+  { id: "deal2", title: "Last-minute Apartment Deals - Save 20%", image: "https://placehold.co/400x250.png?text=Apartment+Deal", dataAiHint: "apartment city", urgency: 3, urgencyText: "Only 3 left!", filter: { propertyType: "RENTAL", discount: true } },
+  { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://placehold.co/400x250.png?text=Villa+Flash+Sale", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", filter: { propertyType: "RENTAL", priceMax: 100, discount: true } },
 ];
 
 
 export default function HomePage() {
-  const router = useRouter();
   const [displayedStays, setDisplayedStays] = useState<MockStay[]>(allMockStays.slice(0, 6));
   const [noResults, setNoResults] = useState(false);
   const [activeFiltersSummary, setActiveFiltersSummary] = useState<string>("Featured Stays");
@@ -75,7 +73,8 @@ export default function HomePage() {
   }, []);
 
 
-  const handleAccommodationSearch = useCallback((filters: Partial<AccommodationSearchFormValues & { discount?: boolean, priceMax?: number }>) => {
+  // This function handles IN-PAGE filtering for quick discovery links (e.g. browse by type, vibe)
+  const handleInPageFilter = useCallback((filters: Partial<AccommodationSearchFormValues & { discount?: boolean, priceMax?: number }>) => {
     setNoResults(false);
     let currentSummary = "Search Results";
 
@@ -112,7 +111,7 @@ export default function HomePage() {
       if (filters.ecoFriendly && !stay.isEcoFriendly) matches = false;
       if (filters.priceMax && stay.pricePerNight > filters.priceMax) matches = false;
       if (filters.discount && filters.propertyType && filters.propertyType !== "ANY") {
-        matches = matches && stay.type === filters.propertyType; // For deals, ensure property type matches if specified
+        matches = matches && stay.type === filters.propertyType;
       }
       return matches;
     });
@@ -128,7 +127,7 @@ export default function HomePage() {
     if (staysSection) staysSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     if(Object.keys(filters).length > 0 || results.length === 0) {
-        toast({title: "Search Complete", description: `${results.length} stays found for "${currentSummary}".`});
+        toast({title: "Filter Applied", description: `${results.length} stays found for "${currentSummary}".`});
     }
   }, []);
   
@@ -163,7 +162,8 @@ export default function HomePage() {
             Discover amazing places to stay for your next adventure, from cozy cabins to luxury villas.
           </p>
           <div className="max-w-4xl mx-auto bg-card p-3 md:p-4 rounded-xl shadow-lg border">
-            <AccommodationSearchForm onSearch={handleAccommodationSearch} />
+            {/* The onSearch prop for AccommodationSearchForm is now for navigating to a new page */}
+            <AccommodationSearchForm onSearch={() => { /* This prop is for navigating, handled by the form itself */ }} />
           </div>
         </div>
       </section>
@@ -200,7 +200,7 @@ export default function HomePage() {
             <Card 
               key={prop.name} 
               className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer group rounded-lg border hover:border-primary/50"
-              onClick={() => handleAccommodationSearch({ propertyType: prop.filterType as "HOTEL" | "RENTAL" | "ANY" })}
+              onClick={() => handleInPageFilter({ propertyType: prop.filterType as "HOTEL" | "RENTAL" | "ANY" })}
             >
               <div className="relative h-32 sm:h-40 w-full overflow-hidden rounded-t-lg">
                 <Image src={prop.image} alt={prop.name} layout="fill" objectFit="cover" data-ai-hint={prop.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
@@ -215,7 +215,7 @@ export default function HomePage() {
         </div>
       </section>
       
-      {/* Featured Stays Section - This is where results will be displayed */}
+      {/* Featured Stays Section - This is where results will be displayed by in-page filters */}
       <section id="stays-section" className="container mx-auto px-4">
         <div className="flex flex-col sm:flex-row items-baseline justify-between mb-8">
           <h2 className="text-2xl md:text-3xl font-headline font-semibold text-foreground flex items-center mb-3 sm:mb-0">
@@ -304,7 +304,7 @@ export default function HomePage() {
               key={search.id} 
               variant="outline" 
               className="bg-muted/50 hover:bg-muted border-border hover:border-primary/50 text-foreground hover:text-primary"
-              onClick={() => handleAccommodationSearch(search.filter as any)}
+              onClick={() => handleInPageFilter(search.filter as any)}
             >
               {search.term}
             </Button>
@@ -320,7 +320,7 @@ export default function HomePage() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {mockTrendingDestinations.map(dest => (
-            <Card key={dest.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer group rounded-lg" onClick={() => handleAccommodationSearch(dest.filter as any)}>
+            <Card key={dest.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer group rounded-lg" onClick={() => handleInPageFilter(dest.filter as any)}>
               <div className="relative h-48 w-full">
                  <Image src={dest.image} alt={dest.name} layout="fill" objectFit="cover" data-ai-hint={dest.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -354,7 +354,7 @@ export default function HomePage() {
               variant="outline" 
               size="lg" 
               className="bg-card hover:bg-accent/20 hover:border-accent text-foreground hover:text-accent-foreground shadow-sm border-border min-w-[150px] py-6 flex-col items-center h-auto group"
-              onClick={() => handleAccommodationSearch(vibe.filter as any)}
+              onClick={() => handleInPageFilter(vibe.filter as any)}
             >
               <vibe.icon className="h-7 w-7 mb-1.5 text-primary group-hover:text-accent transition-colors" />
               {vibe.name}
@@ -399,7 +399,7 @@ export default function HomePage() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {mockDeals.map(deal => (
-            <Card key={deal.id} className="overflow-hidden shadow-md hover:shadow-xl transition-shadow group rounded-lg cursor-pointer" onClick={() => handleAccommodationSearch(deal.filter as any)}>
+            <Card key={deal.id} className="overflow-hidden shadow-md hover:shadow-xl transition-shadow group rounded-lg cursor-pointer" onClick={() => handleInPageFilter(deal.filter as any)}>
                <div className="relative h-40 w-full">
                  <Image src={deal.image} alt={deal.title} layout="fill" objectFit="cover" data-ai-hint={deal.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10"></div>
@@ -437,3 +437,4 @@ export default function HomePage() {
     </div>
   );
 }
+
