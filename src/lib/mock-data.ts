@@ -1,6 +1,5 @@
 
 // src/lib/mock-data.ts
-import type { BedDouble, MapPin, Star, Lightbulb, Hotel, Building2, Home as HomeIconType, Bed, Search, History, TrendingUp, Sparkles, Waves, MountainSnow, Users, Percent, Clock, Bell, MessageSquare, UserCircle, LayoutDashboard, Heart, Award, Building as BuildingIconType, KeyRound, Landmark as LandmarkIconType, ClipboardList, Truck, CarFront as CarSaleIconType, Plane, TvIcon, Layers, School, Leaf, CheckCircle, CalendarDays, DollarSign, Bath, Maximize, Smile, Phone, FileText, Calculator, Video, Contact, ShieldCheck as ShieldCheckIcon } from 'lucide-react';
 
 export interface StayPhoto {
   id: string;
