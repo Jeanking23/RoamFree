@@ -1,4 +1,4 @@
-
+// src/app/transport/page.tsx
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -47,6 +47,7 @@ import {
   Search,
   CarFront,
   Bus,
+  Bike, // Added Bike icon
   Armchair,
   Ticket as TicketIcon,
   ListFilter,
@@ -756,6 +757,46 @@ function FlightSearchForm() {
   );
 }
 
+function BikeRentalForm() {
+    const { toast } = useToast();
+    function onSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        toast({ title: "Bike Rental (Demo)", description: "Searching for available bikes near you..." });
+    }
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-2xl">Rent a Bike</CardTitle>
+                <CardDescription>Explore the city on two wheels. More options coming soon!</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={onSubmit} className="space-y-4">
+                    <div>
+                        <Label htmlFor="bike-location">Your Location</Label>
+                        <Input id="bike-location" placeholder="Enter address or landmark" />
+                    </div>
+                     <div>
+                        <Label htmlFor="bike-type">Bike Type</Label>
+                        <Select defaultValue="city">
+                          <SelectTrigger id="bike-type">
+                            <SelectValue placeholder="Select bike type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="city">City Bike</SelectItem>
+                            <SelectItem value="electric">E-Bike</SelectItem>
+                            <SelectItem value="mountain">Mountain Bike (Demo)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                    </div>
+                    <Button type="submit" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
+                        <Search className="mr-2 h-4 w-4" /> Find Bikes (Demo)
+                    </Button>
+                </form>
+            </CardContent>
+        </Card>
+    );
+}
+
 interface PassengerDetail {
   id: string;
   name: string;
@@ -847,7 +888,7 @@ function IntercityBusSearchForm() {
             setCurrentTrackingStatusIndex(prev => prev + 1);
         }, 5000); // Simulate status update every 5 seconds
     }
-    return () => clearTimeout(timer);
+    return () => clearInterval(timer);
   }, [isLiveTrackingDialogOpen, currentTrackingStatusIndex, mockTrackingStatuses.length]);
 
   const formatTime = (totalSeconds: number) => {
@@ -1031,7 +1072,7 @@ function IntercityBusSearchForm() {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                         <FormField control={form.control} name="tripType" render={({ field }) => (<FormItem><FormLabel className="text-sm">{getTranslatedText('transport.tripType', 'Trip Type')}</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Any" /></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY"><Sun className="inline h-4 w-4 mr-1"/><Moon className="inline h-4 w-4 mr-1"/>Any</SelectItem><SelectItem value="DAY"><Sun className="inline h-4 w-4 mr-1"/>Day</SelectItem><SelectItem value="NIGHT"><Moon className="inline h-4 w-4 mr-1"/>Night</SelectItem></SelectContent></Select></FormItem>)} />
                         <FormField control={form.control} name="operatorRating" render={({ field }) => (<FormItem><FormLabel className="text-sm">{getTranslatedText('transport.operatorRating', 'Min. Operator Rating')}</FormLabel><Select onValueChange={(v) => field.onChange(parseInt(v))} value={field.value?.toString()}><FormControl><SelectTrigger><SelectValue placeholder="Any" /></SelectTrigger></FormControl><SelectContent>{[0,1,2,3,4,5].map(r=><SelectItem key={r} value={r.toString()}>{r === 0 ? "Any" : `${r}+ Stars`}</SelectItem>)}</SelectContent></Select></FormItem>)} />
-                        <FormField control={form.control} name="fareType" render={({ field }) => (<FormItem><FormLabel className="text-sm">{getTranslatedText('transport.fareType', 'Fare Type')}</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Any" /></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="PAY_NOW">Pay Now</SelectItem><SelectItem value="RESERVE_LATER">Reserve (Pay Later)</SelectItem></SelectContent></Select><FormDescription className="text-xs">Reserve holds seat for 1hr (Demo).</FormDescription></FormItem>)} />
+                        <FormField control={form.control} name="fareType" render={({ field }) => (<FormItem><FormLabel className="text-sm">{getTranslatedText('transport.fareType', 'Fare Type')}</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Any" /></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="PAY_NOW">Pay Now</SelectItem><SelectItem value="RESERVE_LATER">Reserve (Pay Later)</SelectItem></SelectContent><FormDescription className="text-xs">Reserve holds seat for 1hr (Demo).</FormDescription></FormItem>)} />
                     </div>
                      <div>
                         <FormLabel className="text-sm font-medium block mb-1">{getTranslatedText('transport.safetyAccessibility', 'Safety & Accessibility')}</FormLabel>
@@ -1407,9 +1448,10 @@ function TransportationSearchForm() {
   const { getTranslatedText } = useLocalization();
   return (
     <Tabs defaultValue="rides" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-6 h-auto">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-6 h-auto">
           <TabsTrigger value="rides" className="py-2.5 gap-2"><Car className="h-5 w-5" />{getTranslatedText('transport.tabRideBooking', 'Ride Booking')}</TabsTrigger>
           <TabsTrigger value="intercity-bus" className="py-2.5 gap-2"><Bus className="h-5 w-5" />{getTranslatedText('transport.tabIntercityBus', 'Intercity Bus')}</TabsTrigger>
+          <TabsTrigger value="bikes" className="py-2.5 gap-2"><Bike className="h-5 w-5" />Bike Rental</TabsTrigger>
           <TabsTrigger value="cars" className="py-2.5 gap-2"><CarFront className="h-5 w-5" />{getTranslatedText('transport.tabRentalCars', 'Rental Cars')}</TabsTrigger>
           <TabsTrigger value="flights" className="py-2.5 gap-2"><Plane className="h-5 w-5" />{getTranslatedText('transport.tabFlights', 'Flights')}</TabsTrigger>
         </TabsList>
@@ -1418,6 +1460,9 @@ function TransportationSearchForm() {
         </TabsContent>
         <TabsContent value="intercity-bus">
           <IntercityBusSearchForm />
+        </TabsContent>
+        <TabsContent value="bikes">
+            <BikeRentalForm />
         </TabsContent>
         <TabsContent value="cars">
           <RentalCarForm />
@@ -1515,4 +1560,3 @@ export default function TransportPage() {
     </div>
   );
 }
-
