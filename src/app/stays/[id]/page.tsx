@@ -31,10 +31,17 @@ export default function AccommodationProfilePage() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [currentImage, setCurrentImage] = useState<StayPhoto | null>(null);
   
-  const [checkInDate, setCheckInDate] = useState<Date | undefined>(new Date());
-  const [checkOutDate, setCheckOutDate] = useState<Date | undefined>(addDays(new Date(), 7));
+  const [checkInDate, setCheckInDate] = useState<Date | undefined>(undefined);
+  const [checkOutDate, setCheckOutDate] = useState<Date | undefined>(undefined);
   const [numberOfGuests, setNumberOfGuests] = useState<number>(2);
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
+
+  useEffect(() => {
+    // This effect runs only on the client, after the initial render.
+    // This avoids a hydration mismatch between server-rendered and client-rendered HTML.
+    setCheckInDate(new Date());
+    setCheckOutDate(addDays(new Date(), 7));
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   useEffect(() => {
     if (params.id) {
