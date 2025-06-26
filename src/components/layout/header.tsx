@@ -33,6 +33,7 @@ import { Separator } from '@/components/ui/separator';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
+import { useLocalization, languages, regions, currencies } from '@/contexts/LocalizationContext';
 
 
 const mainNavItems = [
@@ -46,54 +47,16 @@ const mainNavItems = [
   { href: '/buy-property', label: 'Buy Land/House', icon: ClipboardList },
 ];
 
-const languages = [
-  { code: 'en', name: 'English (US)', flag: '🇺🇸' },
-  { code: 'gb', name: 'English (UK)', flag: '🇬🇧' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { code: 'pt', name: 'Português', flag: '🇵🇹' },
-  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
-  { code: 'ja', name: '日本語', flag: '🇯🇵' },
-  { code: 'ko', name: '한국어', flag: '🇰🇷' },
-  { code: 'zh', name: '中文 (简体)', flag: '🇨🇳' }, // Simplified Chinese
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  // Add more common languages as needed
-];
-
-const regions = [
-    { code: 'CM', name: 'Cameroon', flag: '🇨🇲', defaultLang: 'fr', defaultCurrency: 'XAF' },
-    { code: 'NG', name: 'Nigeria', flag: '🇳🇬', defaultLang: 'en', defaultCurrency: 'NGN' },
-    { code: 'CI', name: "Côte d'Ivoire", flag: '🇨🇮', defaultLang: 'fr', defaultCurrency: 'XAF' },
-    { code: 'US', name: 'United States', flag: '🇺🇸', defaultLang: 'en', defaultCurrency: 'USD' },
-    { code: 'GB', name: 'United Kingdom', flag: '🇬🇧', defaultLang: 'gb', defaultCurrency: 'GBP' },
-    { code: 'DE', name: 'Germany', flag: '🇩🇪', defaultLang: 'de', defaultCurrency: 'EUR' },
-    { code: 'FR', name: 'France', flag: '🇫🇷', defaultLang: 'fr', defaultCurrency: 'EUR' },
-    { code: 'CN', name: 'China', flag: '🇨🇳', defaultLang: 'zh', defaultCurrency: 'CNY' },
-    { code: 'JP', name: 'Japan', flag: '🇯🇵', defaultLang: 'ja', defaultCurrency: 'JPY' },
-    { code: 'AE', name: 'United Arab Emirates', flag: '🇦🇪', defaultLang: 'ar', defaultCurrency: 'AED'},
-];
-
-const currencies = [
-    { code: 'USD', name: 'US Dollar', symbol: '$' },
-    { code: 'EUR', name: 'Euro', symbol: '€' },
-    { code: 'GBP', name: 'British Pound', symbol: '£' },
-    { code: 'XAF', name: 'CFA Franc BEAC', symbol: 'FCFA' },
-    { code: 'NGN', name: 'Nigerian Naira', symbol: '₦' },
-    { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
-    { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
-    { code: 'AED', name: 'UAE Dirham', symbol: 'د.إ' },
-    // Add more common currencies as needed
-];
-
-
 export default function Header() {
-  const [selectedLanguage, setSelectedLanguage] = useState(languages.find(l => l.code === 'en') || languages[0]);
-  const [selectedRegion, setSelectedRegion] = useState(regions.find(r => r.code === 'US') || regions[0]);
-  const [selectedCurrency, setSelectedCurrency] = useState(currencies.find(c => c.code === 'USD') || currencies[0]);
+  const {
+    selectedLanguage,
+    setLanguage: setSelectedLanguage,
+    selectedRegion,
+    setRegion: setSelectedRegion,
+    selectedCurrency,
+    setCurrency: setSelectedCurrency,
+    isHydrated
+  } = useLocalization();
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -151,14 +114,8 @@ export default function Header() {
 
   const handleRegionChange = (region: typeof regions[0], silent = false) => {
     setSelectedRegion(region);
-    const newLang = languages.find(l => l.code === region.defaultLang) || selectedLanguage;
-    const newCurrency = currencies.find(c => c.code === region.defaultCurrency) || selectedCurrency;
-    
-    setSelectedLanguage(newLang);
-    setSelectedCurrency(newCurrency);
-
     if (!silent) {
-        toast({ title: "Region Changed (Demo)", description: `Region set to ${region.name}. Language set to ${newLang.name}, Currency to ${newCurrency.name} (${newCurrency.symbol}).` });
+        toast({ title: "Region Changed (Demo)", description: `Region set to ${region.name}. Language and currency settings updated.` });
     }
     setIsPopoverOpen(false);
   };
@@ -186,11 +143,17 @@ export default function Header() {
          
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="ghost" className="text-foreground hover:bg-muted px-2 h-9" aria-label="Select language, region or currency">
-                <span className="mr-1.5 text-lg">{selectedLanguage.flag}</span>
-                <span className="text-sm font-medium mr-1.5">{selectedLanguage.code.toUpperCase()}</span>
-                <Globe className="h-5 w-5 mr-1.5" />
-                <span className="text-sm font-medium">{selectedCurrency.symbol}</span>
+              <Button variant="ghost" className="text-foreground hover:bg-muted px-2 h-9 min-w-[70px]" aria-label="Select language, region or currency">
+                {isHydrated ? (
+                  <>
+                    <span className="mr-1.5 text-lg">{selectedLanguage.flag}</span>
+                    <span className="text-sm font-medium mr-1.5">{selectedLanguage.code.toUpperCase()}</span>
+                    <Globe className="h-5 w-5 mr-1.5" />
+                    <span className="text-sm font-medium">{selectedCurrency.symbol}</span>
+                  </>
+                ) : (
+                  <Globe className="h-5 w-5" />
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80 z-50" sideOffset={10}>
@@ -342,7 +305,11 @@ export default function Header() {
                   </Link>
                   <Button variant="ghost" onClick={() => { setIsMobileMenuOpen(false); setIsPopoverOpen(true);}} className="w-full justify-start flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 text-foreground">
                      <Globe className="h-5 w-5" />
-                    <span className="text-base font-medium">{selectedLanguage.flag} {selectedLanguage.code.toUpperCase()} / {selectedCurrency.symbol}</span>
+                      {isHydrated ? (
+                        <span className="text-base font-medium">{selectedLanguage.flag} {selectedLanguage.code.toUpperCase()} / {selectedCurrency.symbol}</span>
+                      ) : (
+                        <span className="text-base font-medium">Language & Currency</span>
+                      )}
                   </Button>
 
                   <div className="pt-4 space-y-2 border-t mt-4">
