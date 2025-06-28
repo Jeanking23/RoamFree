@@ -159,9 +159,9 @@ export default function Header() {
             <div className="flex items-center gap-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" asChild><Link href="/stays/search"><Search className="h-5 w-5"/></Link></Button>
+                    <Button variant="ghost" size="icon" onClick={() => toast({title: "Messages (Demo)", description:"No new messages."})}><MessageSquare className="h-5 w-5"/></Button>
                   </TooltipTrigger>
-                  <TooltipContent><p>Search Stays</p></TooltipContent>
+                  <TooltipContent><p>Messages</p></TooltipContent>
                 </Tooltip>
                 <Tooltip>
                     <TooltipTrigger asChild>
