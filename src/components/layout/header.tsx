@@ -34,6 +34,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
 import { useLocalization, languages, regions, currencies } from '@/contexts/LocalizationContext';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 const mainNavItems = [
@@ -137,110 +138,149 @@ export default function Header() {
         </Link>
 
         <div className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
-            <ShieldAlert className="h-6 w-6" />
-          </Button>
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
+                  <ShieldAlert className="h-6 w-6" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>SOS Emergency</p>
+              </TooltipContent>
+            </Tooltip>
          
-          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" className="text-foreground hover:bg-muted px-2 h-9 min-w-[70px]" aria-label="Select language, region or currency">
-                {isHydrated ? (
-                  <>
-                    <span className="mr-1.5 text-lg">{selectedLanguage.flag}</span>
-                    <span className="text-sm font-medium mr-1.5">{selectedLanguage.code.toUpperCase()}</span>
-                    <Globe className="h-5 w-5 mr-1.5" />
-                    <span className="text-sm font-medium">{selectedCurrency.symbol}</span>
-                  </>
-                ) : (
-                  <Globe className="h-5 w-5" />
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 z-50" sideOffset={10}>
-              <div className="grid gap-4">
-                <div className="space-y-2">
-                  <h4 className="font-medium leading-none">Language, Region & Currency</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Customize your experience.
-                  </p>
-                </div>
-                <Separator />
-                <div>
-                  <Label htmlFor="language-select" className="font-medium mb-1.5 block">Language</Label>
-                  <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
-                    {languages.map((lang) => (
-                      <Button
-                        key={lang.code}
-                        variant={selectedLanguage.code === lang.code ? "secondary" : "ghost"}
-                        className="w-full justify-start h-8 text-sm"
-                        onClick={() => handleLanguageChange(lang)}
-                      >
-                        <span className="mr-2 text-base">{lang.flag}</span> {lang.name}
-                      </Button>
-                    ))}
+            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" className="text-foreground hover:bg-muted px-2 h-9 min-w-[70px]" aria-label="Select language, region or currency">
+                      {isHydrated ? (
+                        <>
+                          <span className="mr-1.5 text-lg">{selectedLanguage.flag}</span>
+                          <span className="text-sm font-medium mr-1.5">{selectedLanguage.code.toUpperCase()}</span>
+                          <Globe className="h-5 w-5 mr-1.5" />
+                          <span className="text-sm font-medium">{selectedCurrency.symbol}</span>
+                        </>
+                      ) : (
+                        <Globe className="h-5 w-5" />
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Select language, region, or currency</p>
+                </TooltipContent>
+              </Tooltip>
+              <PopoverContent className="w-80 z-50" sideOffset={10}>
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium leading-none">Language, Region & Currency</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Customize your experience.
+                    </p>
+                  </div>
+                  <Separator />
+                  <div>
+                    <Label htmlFor="language-select" className="font-medium mb-1.5 block">Language</Label>
+                    <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
+                      {languages.map((lang) => (
+                        <Button
+                          key={lang.code}
+                          variant={selectedLanguage.code === lang.code ? "secondary" : "ghost"}
+                          className="w-full justify-start h-8 text-sm"
+                          onClick={() => handleLanguageChange(lang)}
+                        >
+                          <span className="mr-2 text-base">{lang.flag}</span> {lang.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  <Separator />
+                   <div>
+                    <Label htmlFor="region-select" className="font-medium mb-1.5 block">Region/Country</Label>
+                     <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
+                      {regions.map((region) => (
+                        <Button
+                          key={region.code}
+                          variant={selectedRegion.code === region.code ? "secondary" : "ghost"}
+                          className="w-full justify-start h-8 text-sm"
+                          onClick={() => handleRegionChange(region)}
+                        >
+                          <span className="mr-2 text-base">{region.flag}</span> {region.name}
+                        </Button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Changing region may update language & currency.</p>
+                  </div>
+                  <Separator />
+                  <div>
+                    <Label htmlFor="currency-select" className="font-medium mb-1.5 block">Currency</Label>
+                    <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
+                      {currencies.map((curr) => (
+                        <Button
+                          key={curr.code}
+                          variant={selectedCurrency.code === curr.code ? "secondary" : "ghost"}
+                          className="w-full justify-start h-8 text-sm"
+                          onClick={() => handleCurrencyChange(curr)}
+                        >
+                          <span className="font-semibold mr-2 w-6 text-center">{curr.symbol}</span> {curr.name} ({curr.code})
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <Separator />
-                 <div>
-                  <Label htmlFor="region-select" className="font-medium mb-1.5 block">Region/Country</Label>
-                   <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
-                    {regions.map((region) => (
-                      <Button
-                        key={region.code}
-                        variant={selectedRegion.code === region.code ? "secondary" : "ghost"}
-                        className="w-full justify-start h-8 text-sm"
-                        onClick={() => handleRegionChange(region)}
-                      >
-                        <span className="mr-2 text-base">{region.flag}</span> {region.name}
-                      </Button>
-                    ))}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">Changing region may update language & currency.</p>
-                </div>
-                <Separator />
-                <div>
-                  <Label htmlFor="currency-select" className="font-medium mb-1.5 block">Currency</Label>
-                  <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
-                    {currencies.map((curr) => (
-                      <Button
-                        key={curr.code}
-                        variant={selectedCurrency.code === curr.code ? "secondary" : "ghost"}
-                        className="w-full justify-start h-8 text-sm"
-                        onClick={() => handleCurrencyChange(curr)}
-                      >
-                        <span className="font-semibold mr-2 w-6 text-center">{curr.symbol}</span> {curr.name} ({curr.code})
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+              </PopoverContent>
+            </Popover>
 
-          <Link href="/contact-support" passHref legacyBehavior>
-            <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" aria-label="Help">
-              <HelpCircle className="h-6 w-6" />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/contact-support" passHref legacyBehavior>
+                  <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" aria-label="Help">
+                    <HelpCircle className="h-6 w-6" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Help & Support</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/dashboard" className="text-sm font-medium text-foreground hover:text-primary px-3 py-1.5 rounded-sm">
+                  Owner Dashboard
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Manage your listings and performance</p>
+              </TooltipContent>
+            </Tooltip>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/community-forum-demo" className="text-sm font-medium text-foreground hover:text-primary px-3 py-1.5 rounded-sm flex items-center gap-1">
+                  <Users2 className="h-4 w-4"/> Forum
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Visit the community forum</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Button
+              variant="outline"
+              className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium focus-visible:ring-primary"
+            >
+              Register (Demo)
             </Button>
-          </Link>
-
-          <Link href="/dashboard" className="text-sm font-medium text-foreground hover:text-primary px-3 py-1.5 rounded-sm">
-            Owner Dashboard
-          </Link>
-           <Link href="/community-forum-demo" className="text-sm font-medium text-foreground hover:text-primary px-3 py-1.5 rounded-sm flex items-center gap-1">
-            <Users2 className="h-4 w-4"/> Forum
-          </Link>
-          <Button
-            variant="outline"
-            className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium focus-visible:ring-primary"
-          >
-            Register (Demo)
-          </Button>
-          <Button
-            variant="outline"
-            className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium focus-visible:ring-primary"
-          >
-            Sign in (Demo)
-          </Button>
+            <Button
+              variant="outline"
+              className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium focus-visible:ring-primary"
+            >
+              Sign in (Demo)
+            </Button>
+          </TooltipProvider>
         </div>
 
         <div className="md:hidden flex items-center gap-2">

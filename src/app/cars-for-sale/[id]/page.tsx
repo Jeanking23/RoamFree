@@ -1,4 +1,3 @@
-
 // src/app/cars-for-sale/[id]/page.tsx
 'use client';
 
@@ -12,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 // Mock data - in a real app, you'd fetch this based on params.id
 const mockCarForSaleDetails = {
@@ -99,12 +99,28 @@ export default function CarSaleProfilePage() {
               </div>
             </div>
             <div className="flex items-center gap-2 mt-2 md:mt-0 self-start">
-              <Button variant="ghost" size="icon" onClick={handleToggleFavorite} aria-label={isFavorited ? "Remove from wishlist" : "Add to wishlist"}>
-                <Heart className={`h-6 w-6 ${isFavorited ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={handleShare} aria-label="Share">
-                <Share2 className="h-6 w-6 text-muted-foreground" />
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" onClick={handleToggleFavorite} aria-label={isFavorited ? "Remove from wishlist" : "Add to wishlist"}>
+                      <Heart className={`h-6 w-6 ${isFavorited ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{isFavorited ? "Remove from wishlist" : "Add to wishlist"}</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" onClick={handleShare} aria-label="Share">
+                      <Share2 className="h-6 w-6 text-muted-foreground" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Share</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         </CardHeader>

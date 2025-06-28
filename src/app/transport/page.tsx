@@ -1,4 +1,3 @@
-
 // src/app/transport/page.tsx
 'use client';
 
@@ -963,18 +962,6 @@ function IntercityBusSearchForm() {
     });
   };
   
-  const handleSeatHover = (seatId: string, seatType?: string) => {
-    let typeInfo = seatType ? `Type: ${seatType}` : 'Standard Seat';
-    if (selectedRouteForSeats?.seatsLayout?.seatTypes?.[seatId]) {
-        typeInfo = `Type: ${selectedRouteForSeats.seatsLayout.seatTypes[seatId]}`;
-    }
-    toast({
-        title: `Seat ${seatId}`,
-        description: `${typeInfo}. Click to select/deselect. (Demo info)`,
-        duration: 2000,
-    });
-  };
-
   const handleConfirmSeats = () => {
     const passengerCount = form.getValues("passengers") || 1;
     if (currentSelectedSeats.length !== passengerCount) {
@@ -1195,7 +1182,6 @@ function IntercityBusSearchForm() {
                                     variant={seatVariant} size="icon"
                                     className={cn("h-8 w-8 sm:h-10 sm:w-10 transition-all duration-150", seatColorClass, colIndex === (layout.aisleAfter || 2) -1 ? "mr-3 sm:mr-6" : "" )}
                                     onClick={() => !isTaken && !isReserved && toggleSeatSelection(seatId)}
-                                    onMouseEnter={() => !isTaken && !isReserved && handleSeatHover(seatId, seatType)}
                                     disabled={isTaken || isReserved}
                                     aria-label={`Seat ${seatId}${isTaken ? ' (Taken)' : isReserved ? ' (Reserved)' : isSelected ? ' (Selected)' : ' (Available)'}`}
                                 ><Armchair className="h-4 w-4 sm:h-5 sm:w-5" /><span className="sr-only">{seatId}</span></Button>
