@@ -74,7 +74,7 @@ const mockBusRoutes: BusRoute[] = [
   {
     id: "route001",
     operator: "ComfortLines Express",
-    operatorLogo: "https://placehold.co/100x50.png?text=ComfortLines",
+    operatorLogo: "https://placehold.co/100x50.png",
     dataAiHint: "bus company logo",
     operatorRating: 4.5,
     departureTime: "08:00 AM",
@@ -94,7 +94,7 @@ const mockBusRoutes: BusRoute[] = [
   {
     id: "route002",
     operator: "Speedy Ways",
-    operatorLogo: "https://placehold.co/100x50.png?text=SpeedyWays",
+    operatorLogo: "https://placehold.co/100x50.png",
     dataAiHint: "bus company logo",
     operatorRating: 4.2,
     departureTime: "10:30 PM",
@@ -114,7 +114,7 @@ const mockBusRoutes: BusRoute[] = [
   {
     id: "route003",
     operator: "Budget Bus Co.",
-    operatorLogo: "https://placehold.co/100x50.png?text=BudgetBus",
+    operatorLogo: "https://placehold.co/100x50.png",
     dataAiHint: "bus company logo",
     operatorRating: 3.8,
     departureTime: "02:00 PM",
@@ -134,7 +134,7 @@ const mockBusRoutes: BusRoute[] = [
    {
     id: "route004",
     operator: "Prestige Travel",
-    operatorLogo: "https://placehold.co/100x50.png?text=Prestige",
+    operatorLogo: "https://placehold.co/100x50.png",
     dataAiHint: "bus company logo",
     operatorRating: 4.8,
     departureTime: "11:00 AM",

@@ -30,12 +30,12 @@ const mockCarForSaleDetails = {
   description: "A reliable and fuel-efficient 2018 Toyota Corolla, perfect for city driving and daily commutes. Regularly serviced with a clean title and no accident history. Features include a rearview camera, Bluetooth connectivity, and adaptive cruise control.",
   features: ["Rearview Camera", "Bluetooth", "Adaptive Cruise Control", "Keyless Entry", "Power Windows", "Air Conditioning"],
   photos: [
-    { id: "p1", src: "https://placehold.co/800x600.png?text=Corolla+Front", alt: "Corolla front view", dataAiHint: "sedan silver front" },
-    { id: "p2", src: "https://placehold.co/400x300.png?text=Corolla+Interior", alt: "Corolla interior", dataAiHint: "car interior dashboard" },
-    { id: "p3", src: "https://placehold.co/400x300.png?text=Corolla+Side", alt: "Corolla side profile", dataAiHint: "sedan silver side" },
-    { id: "p4", src: "https://placehold.co/400x300.png?text=Corolla+Engine", alt: "Corolla engine bay", dataAiHint: "car engine" },
+    { id: "p1", src: "https://placehold.co/800x600.png", alt: "Corolla front view", dataAiHint: "sedan silver front" },
+    { id: "p2", src: "https://placehold.co/400x300.png", alt: "Corolla interior", dataAiHint: "car interior dashboard" },
+    { id: "p3", src: "https://placehold.co/400x300.png", alt: "Corolla side profile", dataAiHint: "sedan silver side" },
+    { id: "p4", src: "https://placehold.co/400x300.png", alt: "Corolla engine bay", dataAiHint: "car engine" },
   ],
-  seller: { name: "John Doe", rating: 4.8, responseRate: "95%", memberSince: "2022", isVerified: true, avatar: "https://placehold.co/100x100.png?text=JD", dataAiHint: "man portrait" },
+  seller: { name: "John Doe", rating: 4.8, responseRate: "95%", memberSince: "2022", isVerified: true, avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
   vehicleHistoryReport: { summary: "Clean title, No accidents reported, 2 previous owners, Regular maintenance records available.", link: "#" },
   inspectionReport: { summary: "Passed 150-point inspection. Brakes and tires in good condition.", link: "#" }
 };

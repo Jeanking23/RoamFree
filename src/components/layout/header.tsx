@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   BedDouble, Car, KeyRound, Landmark, Home, ClipboardList, HelpCircle, Building,
   UserCircle, LayoutDashboard, Heart, Award, MessageSquare, ShieldAlert, Search, Bell,
-  CalendarCheck2, Globe, MapPin, LogOut
+  CalendarCheck2, Globe, MapPin, LogOut, Menu
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -14,6 +14,7 @@ import { toast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 // Main navigation items for desktop view
 const mainNavItems = [
@@ -44,7 +45,7 @@ export default function Header() {
 
   return (
     <TooltipProvider>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between gap-4">
           
           {/* Desktop Layout */}
@@ -95,13 +96,6 @@ export default function Header() {
                 <TooltipContent><p>Notifications</p></TooltipContent>
               </Tooltip>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={() => toast({title: "Messages (Demo)", description:"No new messages."})}><MessageSquare className="h-5 w-5" /></Button>
-                </TooltipTrigger>
-                <TooltipContent><p>Messages</p></TooltipContent>
-              </Tooltip>
-
               <DropdownMenu>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -124,7 +118,7 @@ export default function Header() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild><Link href="/profile"><UserCircle className="mr-2 h-4 w-4" />Profile</Link></DropdownMenuItem>
+                   <DropdownMenuItem asChild><Link href="/profile"><UserCircle className="mr-2 h-4 w-4" />Profile</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link href="/wishlist"><Heart className="mr-2 h-4 w-4" />Wishlist</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link href="/bookings"><CalendarCheck2 className="mr-2 h-4 w-4" />Bookings</Link></DropdownMenuItem>
@@ -143,33 +137,38 @@ export default function Header() {
           </div>
           
           {/* Mobile Layout */}
-          <div className="md:hidden flex flex-1 items-center justify-between gap-2">
-            {/* Left Icons */}
-            <div className="flex items-center">
-              <Popover>
-                <PopoverTrigger asChild><Button variant="ghost" size="icon"><Globe className="h-5 w-5"/></Button></PopoverTrigger>
-                <PopoverContent className="w-56 p-2"><p className="p-2 text-sm text-center text-muted-foreground">Language options (Demo)</p></PopoverContent>
-              </Popover>
-              <Popover>
-                <PopoverTrigger asChild><Button variant="ghost" size="icon"><MapPin className="h-5 w-5"/></Button></PopoverTrigger>
-                <PopoverContent className="w-56 p-2"><p className="p-2 text-sm text-center text-muted-foreground">Location selection (Demo)</p></PopoverContent>
-              </Popover>
-            </div>
-
-            {/* Center Search */}
-            <div className="flex-1 min-w-0">
-              <Button variant="outline" className="w-full justify-start text-muted-foreground truncate" asChild>
-                <Link href="/stays/search">
-                  <Search className="h-4 w-4 mr-2"/>
-                  Search...
-                </Link>
-              </Button>
-            </div>
+          <div className="md:hidden flex flex-1 items-center justify-between">
+            <Link href="/" className="text-2xl font-extrabold text-primary">RoamFree</Link>
             
-            {/* Right Icons */}
-            <div className="flex items-center">
-              <Button variant="ghost" size="icon" onClick={() => toast({title: "Notifications (Demo)"})}><Bell className="h-5 w-5" /></Button>
-              <Button variant="ghost" size="icon" onClick={() => toast({title: "Messages (Demo)"})}><MessageSquare className="h-5 w-5" /></Button>
+            <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" asChild><Link href="/stays/search"><Search className="h-5 w-5"/></Link></Button>
+                 <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon"><Menu className="h-5 w-5" /></Button>
+                    </SheetTrigger>
+                    <SheetContent side="right">
+                         <nav className="flex flex-col gap-4 mt-8">
+                            {mainNavItems.map((item) => (
+                              <Link key={item.label} href={item.href} className={`flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-muted ${isLinkActive(item.href) ? 'bg-muted font-semibold' : ''}`}>
+                                 <item.icon className="h-5 w-5 text-primary" />
+                                 <span className="text-lg">{item.label}</span>
+                              </Link>
+                            ))}
+                             <hr className="my-4"/>
+                              <Link href="/profile" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-muted">
+                                 <UserCircle className="h-5 w-5 text-primary" />
+                                 <span className="text-lg">My Account</span>
+                              </Link>
+                              <Link href="/dashboard" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-muted">
+                                 <LayoutDashboard className="h-5 w-5 text-primary" />
+                                 <span className="text-lg">Dashboard</span>
+                              </Link>
+                              <Button variant="destructive" className="mt-4" onClick={handleSosClick}>
+                                <ShieldAlert className="mr-2 h-4 w-4"/> Emergency SOS
+                              </Button>
+                         </nav>
+                    </SheetContent>
+                </Sheet>
             </div>
           </div>
 

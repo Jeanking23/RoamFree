@@ -25,10 +25,10 @@ const mockAttractionDetails = {
   ticketPrice: "$25 (Adults), $15 (Students/Seniors), Free (Children under 12)",
   amenities: ["Cafe", "Gift Shop", "Wheelchair Accessible", "Guided Tours", "Restrooms", "Family Areas"],
   photos: [
-    { id: "p1", src: "https://placehold.co/800x600.png?text=Museum+Exhibit+1", alt: "Museum main exhibit hall", dataAiHint: "museum exhibit" },
-    { id: "p2", src: "https://placehold.co/400x300.png?text=Sculpture+Garden", alt: "Museum sculpture garden", dataAiHint: "sculpture garden" },
-    { id: "p3", src: "https://placehold.co/400x300.png?text=Museum+Facade", alt: "Museum exterior facade", dataAiHint: "museum building" },
-    { id: "p4", src: "https://placehold.co/400x300.png?text=Interactive+Display", alt: "Interactive display for kids", dataAiHint: "interactive museum" },
+    { id: "p1", src: "https://placehold.co/800x600.png", alt: "Museum main exhibit hall", dataAiHint: "museum exhibit" },
+    { id: "p2", src: "https://placehold.co/400x300.png", alt: "Museum sculpture garden", dataAiHint: "sculpture garden" },
+    { id: "p3", src: "https://placehold.co/400x300.png", alt: "Museum exterior facade", dataAiHint: "museum building" },
+    { id: "p4", src: "https://placehold.co/400x300.png", alt: "Interactive display for kids", dataAiHint: "interactive museum" },
   ],
   userReviews: [
     { id: "r1", user: "Chris P.", rating: 5, comment: "Incredible collection and beautifully curated. Spent the whole afternoon here!", date: "2024-04-10" },
