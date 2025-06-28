@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { LocalizationProvider } from '@/contexts/LocalizationContext';
+import BottomNavBar from '@/components/layout/bottom-nav-bar';
 
 export const metadata: Metadata = {
   title: 'RoamFree',
@@ -26,12 +27,15 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased" suppressHydrationWarning={true}>
         <LocalizationProvider>
-          <Header />
-          <main className="container mx-auto px-4 py-8">
-            {children}
-          </main>
-          <Footer />
+          <div className="relative flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1 container mx-auto px-4 py-8 pb-24 md:pb-8">
+              {children}
+            </main>
+            <Footer />
+          </div>
           <Toaster />
+          <BottomNavBar />
         </LocalizationProvider>
       </body>
     </html>
