@@ -1,4 +1,3 @@
-
 // src/app/stays/[id]/page.tsx
 'use client';
 
@@ -6,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Users, Star, MapPin, CreditCard, MessageSquare, ShieldCheck, Camera, Share2, Heart, AlertTriangle, Car, Clock, CheckCircle, Landmark as LandmarkIcon, CloudSun, Calendar, Info, Plane, Percent, TvIcon, Contact, Waves, Layers, HomeIcon as HomeIconLucide, School, Building as BuildingIconLucide, Leaf } from 'lucide-react';
+import { CalendarDays, Users, Star, MapPin, CreditCard, MessageSquare, ShieldCheck, Camera, Share2, Heart, AlertTriangle, Car, Clock, CheckCircle, Landmark as LandmarkIcon, CloudSun, Calendar, Info, Plane, Percent, TvIcon, Contact, Waves, Layers, HomeIcon as HomeIconLucide, School, Building as BuildingIconLucide, Leaf, BadgeCheck } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -385,7 +384,10 @@ export default function AccommodationProfilePage() {
                     <Image src={review.avatar || `https://placehold.co/40x40.png?text=${review.user.substring(0,1)}`} alt={review.user} width={40} height={40} className="rounded-full" data-ai-hint={review.dataAiHintAvatar || "person avatar"} />
                     <div>
                       <p className="font-semibold">{review.user}</p>
-                      <p className="text-xs text-muted-foreground">{new Date(review.date).toLocaleDateString()}</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs text-muted-foreground">{new Date(review.date).toLocaleDateString()}</p>
+                        <BadgeCheck className="h-3 w-3 text-green-500" title="Verified Review"/>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center">
@@ -435,4 +437,3 @@ function HostInfo({ host, onContact }: HostInfoProps) {
     </Card>
   );
 }
-    
