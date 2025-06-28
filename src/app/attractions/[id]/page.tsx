@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Star, MapPin, Ticket, MessageSquare, Share2, Heart, AlertTriangle, Clock, Users, ExternalLink, Camera, Users2, Wifi, Moon, Sun } from 'lucide-react';
+import { CalendarDays, Star, MapPin, Ticket, MessageSquare, Share2, Heart, AlertTriangle, Clock, Users, ExternalLink, Camera, Users2, Wifi, Moon, Sun, CloudSun, Calendar, Info, Landmark as LandmarkIcon, BadgeCheck, Percent, Ear } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
@@ -23,7 +23,7 @@ const mockAttractionDetails = {
   description: "Explore a vast collection of modern and classical art spanning centuries. The City Museum of Art offers engaging exhibits, workshops, and guided tours. A must-visit for art enthusiasts and curious minds alike.",
   openingHours: "Tue-Sun: 10:00 AM - 6:00 PM (Closed Mondays)",
   ticketPrice: "$25 (Adults), $15 (Students/Seniors), Free (Children under 12)",
-  amenities: ["Cafe", "Gift Shop", "Wheelchair Accessible", "Guided Tours"],
+  amenities: ["Cafe", "Gift Shop", "Wheelchair Accessible", "Guided Tours", "Restrooms", "Family Areas"],
   photos: [
     { id: "p1", src: "https://placehold.co/800x600.png?text=Museum+Exhibit+1", alt: "Museum main exhibit hall", dataAiHint: "museum exhibit" },
     { id: "p2", src: "https://placehold.co/400x300.png?text=Sculpture+Garden", alt: "Museum sculpture garden", dataAiHint: "sculpture garden" },
@@ -34,9 +34,11 @@ const mockAttractionDetails = {
     { id: "r1", user: "Chris P.", rating: 5, comment: "Incredible collection and beautifully curated. Spent the whole afternoon here!", date: "2024-04-10" },
     { id: "r2", user: "Jordan B.", rating: 4, comment: "Great museum, very informative. Some sections were a bit crowded.", date: "2024-03-22" },
   ],
-  website: "https://examplemuseum.com", // Placeholder
-  expectedCrowdLevel: "Moderate", // New field
-  contactInfo: "info@examplemuseum.com / +1-555-ART-MUSEUM" // New field
+  website: "https://examplemuseum.com", 
+  expectedCrowdLevel: "Moderate",
+  contactInfo: "info@examplemuseum.com / +1-555-ART-MUSEUM",
+  liveStatus: "Open", // New
+  maintenanceNote: "The East Wing will be closed for renovations from July 1st.", // New
 };
 
 export default function AttractionProfilePage() {
@@ -78,8 +80,11 @@ export default function AttractionProfilePage() {
     toast({ title: isFavorited ? "Removed from Wishlist" : "Added to Wishlist" });
   };
    const handleArView = () => {
-    toast({ title: "Augmented Reality View", description: "AR landmark identification feature is under development. (Placeholder for historical facts, directions)" });
+    toast({ title: "Augmented Reality View (Demo)", description: "Starting AR guide. Overlaying historical facts and directions onto your camera view." });
   };
+  const handleAudioGuide = () => {
+    toast({ title: "Audio Guide (Demo)", description: "Playing audio guide for Exhibit Hall A. Synced to your location via GPS."});
+  }
 
 
   if (!mockAttractionDetails) { 
@@ -91,6 +96,13 @@ export default function AttractionProfilePage() {
     if (level === "Moderate") return <Users className="inline h-4 w-4 mr-1 text-yellow-500"/>;
     if (level === "High") return <Users2 className="inline h-4 w-4 mr-1 text-red-500"/>;
     return <Users className="inline h-4 w-4 mr-1 text-muted-foreground"/>;
+  }
+  
+  const getLiveStatusColor = (status: string) => {
+      if (status === "Open") return "text-green-600";
+      if (status === "Closing Soon") return "text-orange-500";
+      if (status === "Closed") return "text-red-500";
+      return "text-muted-foreground";
   }
 
   return (
@@ -150,7 +162,8 @@ export default function AttractionProfilePage() {
              ))}
           </div>
            <div className="text-center mt-2">
-             <Button variant="outline" onClick={handleArView}><Camera className="mr-2 h-4 w-4" /> Try AR Discovery (Demo)</Button>
+             <Button variant="outline" onClick={handleArView}><Camera className="mr-2 h-4 w-4" /> Try AR Guide (Demo)</Button>
+             <Button variant="outline" onClick={handleAudioGuide} className="ml-2"><Ear className="mr-2 h-4 w-4" /> Start Audio Guide (Demo)</Button>
            </div>
         </CardContent>
         
@@ -164,6 +177,7 @@ export default function AttractionProfilePage() {
             </div>
              <div>
               <h3 className="text-xl font-semibold mb-2">Details</h3>
+               <p className={`text-sm font-bold ${getLiveStatusColor(mockAttractionDetails.liveStatus)}`}>Live Status: {mockAttractionDetails.liveStatus}</p>
               <p className="text-sm text-muted-foreground"><strong><Clock className="inline h-4 w-4 mr-1"/>Opening Hours:</strong> {mockAttractionDetails.openingHours}</p>
               <p className="text-sm text-muted-foreground"><strong><Ticket className="inline h-4 w-4 mr-1"/>Ticket Price:</strong> {mockAttractionDetails.ticketPrice}</p>
               <p className="text-sm text-muted-foreground"><strong>{getCrowdLevelIcon(mockAttractionDetails.expectedCrowdLevel)}Expected Crowd:</strong> {mockAttractionDetails.expectedCrowdLevel}</p>
@@ -171,6 +185,7 @@ export default function AttractionProfilePage() {
               {mockAttractionDetails.website && 
                 <p className="text-sm text-muted-foreground"><strong><ExternalLink className="inline h-4 w-4 mr-1"/>Website:</strong> <a href={mockAttractionDetails.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{mockAttractionDetails.website}</a></p>
               }
+               {mockAttractionDetails.maintenanceNote && <p className="text-sm text-orange-500 mt-1"><strong><Info className="inline h-4 w-4 mr-1"/>Note:</strong> {mockAttractionDetails.maintenanceNote}</p>}
             </div>
             <div>
               <h3 className="text-xl font-semibold mb-3">Amenities/Features</h3>
@@ -207,6 +222,17 @@ export default function AttractionProfilePage() {
                  <p className="text-xs text-muted-foreground text-center">Ticket booking is a demo feature. QR codes for entry coming soon.</p>
               </CardContent>
             </Card>
+             <Card className="shadow-md border">
+                <CardHeader>
+                    <CardTitle className="text-xl flex items-center gap-2"><Percent className="h-5 w-5"/>Deals & Combos (Demo)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ul className="list-disc list-inside text-sm text-muted-foreground">
+                        <li>Family Pass (2 Adults, 2 Kids) - Save 15%</li>
+                        <li>Museum + Lunch Combo - $40</li>
+                    </ul>
+                </CardContent>
+            </Card>
           </div>
         </CardContent>
         
@@ -224,7 +250,10 @@ export default function AttractionProfilePage() {
                     </div>
                     <div>
                       <p className="font-semibold">{review.user}</p>
-                      <p className="text-xs text-muted-foreground">{new Date(review.date).toLocaleDateString()}</p>
+                      <div className="flex items-center">
+                        <p className="text-xs text-muted-foreground">{new Date(review.date).toLocaleDateString()}</p>
+                        <BadgeCheck className="h-4 w-4 ml-1 text-green-500" title="Verified Review"/>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center">

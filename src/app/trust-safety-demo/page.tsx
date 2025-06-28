@@ -1,10 +1,9 @@
-
 // src/app/trust-safety-demo/page.tsx
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, Lock, Users, Video, MessageCircle, Info, BadgeCheck, FileText } from 'lucide-react';
+import { ShieldCheck, Lock, Users, Video, MessageCircle, Info, BadgeCheck, FileText, Library } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TrustSafetyDemoPage() {
@@ -38,7 +37,7 @@ export default function TrustSafetyDemoPage() {
                 <ul className="list-disc list-inside text-sm text-muted-foreground pl-4 space-y-1">
                   <li><strong>ID Verification (Demo):</strong> Secure document checks for hosts, renters, and buyers.</li>
                   <li><strong>Video ID Verification (Demo):</strong> Advanced video-based checks for enhanced identity confirmation.</li>
-                  <li><strong>Verified Reviews:</strong> Only users who have completed a booking can leave reviews.</li>
+                  <li><strong>Verified Reviews:</strong> Only users who have completed a booking can leave reviews, ensuring authenticity.</li>
                 </ul>
               </CardContent>
             </Card>
@@ -50,17 +49,21 @@ export default function TrustSafetyDemoPage() {
                  <p className="text-sm text-muted-foreground">Your data and transactions are protected:</p>
                 <ul className="list-disc list-inside text-sm text-muted-foreground pl-4 space-y-1">
                   <li><strong>AI Smart Fraud Detection (Demo):</strong> Our systems monitor for suspicious activities and payment anomalies.</li>
-                  <li><strong>Secure Payment Processing (Demo):</strong> Industry-standard encryption for all financial transactions.</li>
-                  <li><strong>Blockchain Verification (Future Feature):</strong> Exploring blockchain for transparent proof of property ownership and secure transaction records.</li>
+                  <li><strong>Secure Payment Processing (Demo):</strong> Industry-standard encryption for all financial transactions. We partner with Stripe for secure payment handling.</li>
+                   <li><strong>Secure Escrow Service (Demo):</strong> For high-value transactions like property or car sales, funds are held securely until both parties are satisfied.</li>
                 </ul>
               </CardContent>
             </Card>
              <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2"><MessageCircle className="h-6 w-6 text-accent"/>Secure Communication</CardTitle>
+                <CardTitle className="flex items-center gap-2"><Library className="h-6 w-6 text-accent"/>Property & Vehicle Verification</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">Communicate safely through our platform's encrypted messaging system between users, hosts, and agents.</p>
+                <p className="text-sm text-muted-foreground">We encourage transparency for high-value assets:</p>
+                 <ul className="list-disc list-inside text-sm text-muted-foreground pl-4 space-y-1">
+                    <li><strong>Document Upload (Demo):</strong> Sellers can upload legal documents like title deeds or vehicle history reports.</li>
+                    <li><strong>Blockchain Verification (Future Feature):</strong> Exploring blockchain for transparent proof of property ownership and secure transaction records.</li>
+                 </ul>
               </CardContent>
             </Card>
             <Card>
@@ -70,6 +73,7 @@ export default function TrustSafetyDemoPage() {
               <CardContent className="space-y-2">
                 <p className="text-sm text-muted-foreground">Stay informed and get help when you need it:</p>
                  <ul className="list-disc list-inside text-sm text-muted-foreground pl-4 space-y-1">
+                    <li><strong>Secure Communication:</strong> Communicate safely through our platform's encrypted messaging system.</li>
                     <li><strong>Cultural Tips & Travel Advisories (Demo):</strong> Real-time safety info and etiquette guides.</li>
                     <li><strong>24/7 Customer Support (Demo):</strong> Our AI chatbot and human support team are here to assist.</li>
                     <li><strong>SOS Emergency Feature (Demo):</strong> Quick access to help in urgent situations.</li>
@@ -89,4 +93,3 @@ export default function TrustSafetyDemoPage() {
     </div>
   );
 }
-    

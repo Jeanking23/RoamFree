@@ -63,10 +63,8 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const [currentHash, setCurrentHash] = useState('');
-  const [hasMounted, setHasMounted] = useState(false);
-
+  
   useEffect(() => {
-    setHasMounted(true);
     if (typeof window !== 'undefined') {
       setCurrentHash(window.location.hash);
       const handleHashChange = () => {
@@ -89,16 +87,13 @@ export default function Header() {
       title: "SOS Activated (Demo)",
       description: "Emergency services are being contacted. This is a simulation.",
       variant: "destructive",
+      duration: 10000,
     });
   };
 
   const isLinkActive = (itemHref: string) => {
-    if (!hasMounted) {
-      if (itemHref.startsWith('/#')) {
-        return pathname === '/';
-      }
-      return pathname === itemHref || pathname.startsWith(itemHref + '/');
-    }
+    if (!isHydrated) return false;
+    
     if (itemHref.startsWith('/#')) {
       return pathname === '/' && currentHash === itemHref.substring(1);
     }
@@ -392,7 +387,7 @@ export default function Header() {
             </li>
           ))}
            <Separator orientation="vertical" className="h-6 mx-2" />
-            <Link href="/profile" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/profile' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
+            <Link href="/profile" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/profile' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground hover:bg-muted/50 hover:text-primary'}`}>
                 <UserCircle className="h-5 w-5" /> Profile
             </Link>
              <Link href="/wishlist" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/wishlist' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground hover:bg-muted/50 hover:text-primary'}`}>

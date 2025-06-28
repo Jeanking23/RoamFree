@@ -1,4 +1,3 @@
-
 // src/app/faq/page.tsx
 'use client';
 
@@ -13,15 +12,19 @@ const faqItems = [
   },
   {
     question: "What payment methods are accepted?",
-    answer: "We accept major credit cards (Visa, MasterCard, American Express). We are also working on integrating options like PayPal, Apple Pay, Google Pay, and Buy Now, Pay Later services (e.g., Klarna, Afterpay). (Demo)"
+    answer: "We accept major credit cards (Visa, MasterCard, American Express). We are also working on integrating options like PayPal, Apple Pay, Google Pay, and Buy Now, Pay Later services (e.g., Klarna, Afterpay). All payments are processed securely. (Demo)"
   },
   {
     question: "How does the AI Trip Planner work?",
-    answer: "Our AI Trip Planner uses a large language model. You provide your destination, duration, and preferences (like interests in history, food, adventure), and it generates a personalized day-by-day itinerary with suggested activities and sights. (Demo)"
+    answer: "Our AI Trip Planner uses a large language model. You provide your destination, duration, and preferences (like interests in history, food, adventure), and it generates a personalized day-by-day itinerary with suggested activities and sights. You can find it under 'AI Trip Planner' in the header. (Demo)"
   },
   {
-    question: "Can I list my own property on RoamFree?",
-    answer: "Yes! You can list your house, apartment, villa, or land for sale or rent. Navigate to the 'Owner Dashboard' (link in the header) and click 'Add New Listing' to get started. (Demo)"
+    question: "Can I list my own property or car on RoamFree?",
+    answer: "Yes! You can list your house, apartment, villa, land for sale or rent, and also cars for sale or rent. Navigate to the 'Owner Dashboard' (link in the header) and click 'Add New Listing' to get started. (Demo)"
+  },
+    {
+    question: "What is verified ID and why is it needed?",
+    answer: "Verified ID is a process where we confirm your identity using official documents. This builds trust and safety on the platform for both hosts and guests, especially for high-value transactions like property rentals or sales. You can complete this in your profile under the 'Security' tab. (Demo)"
   },
   {
     question: "What is the RoamFree Loyalty Program?",
@@ -29,7 +32,7 @@ const faqItems = [
   },
   {
     question: "Is there an SOS feature?",
-    answer: "Yes, RoamFree includes an SOS button for urgent help or emergencies during your trips. You can find this button in the header and on the 'Contact Support' page. Activating it will simulate contacting emergency services. (Demo)"
+    answer: "Yes, RoamFree includes an SOS button for urgent help or emergencies during your trips. You can find this button in the header and on the 'Contact Support' page. Activating it will simulate contacting emergency services and alerting your emergency contacts if you've set them up. (Demo)"
   },
    {
     question: "How do I change or cancel a booking?",
@@ -37,7 +40,7 @@ const faqItems = [
   },
   {
     question: "Are there features for business travel?",
-    answer: "Yes, we are developing 'RoamFree for Business' which will offer tools for companies, including group booking discounts, reporting tools, and centralized billing. Look for the 'RoamFree for Business' link for more information as it becomes available. (Demo)"
+    answer: "Yes, we are developing 'RoamFree for Business' which will offer tools for companies, including group booking discounts, reporting tools, and centralized billing. Look for the 'Corporate Solutions' link for more information as it becomes available. (Demo)"
   }
 ];
 
@@ -76,4 +79,3 @@ export default function FAQPage() {
     </div>
   );
 }
-    
