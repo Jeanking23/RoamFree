@@ -23,7 +23,8 @@ import {
   Truck,
   CarFront as CarSaleIcon,
   DollarSign, // For currency
-  MapPin as RegionPinIcon // For region
+  MapPin as RegionPinIcon, // For region
+  Search
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -126,7 +127,7 @@ export default function Header() {
 
 
   return (
-    <header className="bg-background text-foreground border-b print:hidden">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 text-foreground border-b print:hidden">
       <div className="container mx-auto px-4 h-[60px] flex items-center justify-between">
         <Link href="/" className="text-3xl font-extrabold text-primary">
           RoamFree
@@ -278,7 +279,12 @@ export default function Header() {
           </TooltipProvider>
         </div>
 
-        <div className="md:hidden flex items-center gap-2">
+        <div className="md:hidden flex items-center gap-1">
+           <Link href="/stays/search" passHref legacyBehavior>
+                <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" aria-label="Search">
+                    <Search className="h-6 w-6" />
+                </Button>
+            </Link>
            <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
             <ShieldAlert className="h-6 w-6" />
           </Button>
