@@ -64,11 +64,15 @@ export default function HomePage() {
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
   useEffect(() => {
+    // This effect runs only on the client, after hydration
     const timer = setTimeout(() => {
+      // Check if window is defined (ensuring it's client-side) and if the prompt hasn't been dismissed
       if (typeof window !== 'undefined' && !localStorage.getItem('notificationPromptDismissed')) {
         setShowNotificationPrompt(true);
       }
-    }, 5000);
+    }, 5000); // Delay of 5 seconds
+
+    // Cleanup function to clear the timer if the component unmounts
     return () => clearTimeout(timer);
   }, []);
 
@@ -199,7 +203,7 @@ export default function HomePage() {
           {mockPropertyTypes.map(prop => (
             <Card 
               key={prop.name} 
-              className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer group rounded-lg border hover:border-primary/50"
+              className="overflow-hidden cursor-pointer group rounded-lg"
               onClick={() => handleInPageFilter({ propertyType: prop.filterType as "HOTEL" | "RENTAL" | "ANY" })}
             >
               <div className="relative h-32 sm:h-40 w-full overflow-hidden rounded-t-lg">
@@ -236,7 +240,7 @@ export default function HomePage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayedStays.map((stay) => (
-              <Card key={stay.id} className="overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col group rounded-lg border-border hover:border-primary/50">
+              <Card key={stay.id} className="overflow-hidden flex flex-col group rounded-lg">
                 <Link href={`/stays/${stay.id}`} className="block">
                   <div className="relative w-full h-56 overflow-hidden rounded-t-lg">
                     <Image
@@ -320,7 +324,7 @@ export default function HomePage() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {mockTrendingDestinations.map(dest => (
-            <Card key={dest.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer group rounded-lg" onClick={() => handleInPageFilter(dest.filter as any)}>
+            <Card key={dest.id} className="overflow-hidden group rounded-lg cursor-pointer" onClick={() => handleInPageFilter(dest.filter as any)}>
               <div className="relative h-48 w-full">
                  <Image src={dest.image} alt={dest.name} layout="fill" objectFit="cover" data-ai-hint={dest.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -374,7 +378,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {mockNearbyGems.map(gem => (
             <Link key={gem.id} href={gem.link} passHref>
-              <Card className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow group rounded-lg cursor-pointer">
+              <Card className="overflow-hidden group rounded-lg cursor-pointer">
                 <div className="relative h-56 w-full">
                   <Image src={gem.image} alt={gem.name} layout="fill" objectFit="cover" data-ai-hint={gem.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
@@ -399,7 +403,7 @@ export default function HomePage() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {mockDeals.map(deal => (
-            <Card key={deal.id} className="overflow-hidden shadow-md hover:shadow-xl transition-shadow group rounded-lg cursor-pointer" onClick={() => handleInPageFilter(deal.filter as any)}>
+            <Card key={deal.id} className="overflow-hidden group rounded-lg cursor-pointer" onClick={() => handleInPageFilter(deal.filter as any)}>
                <div className="relative h-40 w-full">
                  <Image src={deal.image} alt={deal.title} layout="fill" objectFit="cover" data-ai-hint={deal.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10"></div>
@@ -418,7 +422,7 @@ export default function HomePage() {
 
       {/* Notification Prompt */}
       {showNotificationPrompt && (
-        <div className="fixed bottom-5 right-5 z-50">
+        <div className="fixed bottom-20 right-5 z-50 md:bottom-5">
           <Card className="w-80 shadow-xl border-primary/50 bg-card">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2"><Bell className="h-5 w-5 text-primary"/>Enable Notifications?</CardTitle>
@@ -437,4 +441,3 @@ export default function HomePage() {
     </div>
   );
 }
-

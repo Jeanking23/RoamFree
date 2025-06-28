@@ -22,9 +22,10 @@ import {
   Users2,
   Truck,
   CarFront as CarSaleIcon,
-  DollarSign, // For currency
-  MapPin as RegionPinIcon, // For region
-  Search
+  DollarSign,
+  MapPin as RegionPinIcon,
+  Search,
+  Bell
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -129,172 +130,15 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 text-foreground border-b print:hidden">
       <div className="container mx-auto px-4 h-[60px] flex items-center justify-between">
-        <Link href="/" className="text-3xl font-extrabold text-primary">
-          RoamFree
-        </Link>
-
-        <div className="hidden md:flex items-center gap-2">
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
-                  <ShieldAlert className="h-6 w-6" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>SOS Emergency</p>
-              </TooltipContent>
-            </Tooltip>
-         
-            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" className="text-foreground hover:bg-muted px-2 h-9 min-w-[70px]" aria-label="Select language, region or currency">
-                      {isHydrated ? (
-                        <>
-                          <span className="mr-1.5 text-lg">{selectedLanguage.flag}</span>
-                          <span className="text-sm font-medium mr-1.5">{selectedLanguage.code.toUpperCase()}</span>
-                          <Globe className="h-5 w-5 mr-1.5" />
-                          <span className="text-sm font-medium">{selectedCurrency.symbol}</span>
-                        </>
-                      ) : (
-                        <Globe className="h-5 w-5" />
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Select language, region, or currency</p>
-                </TooltipContent>
-              </Tooltip>
-              <PopoverContent className="w-80 z-50" sideOffset={10}>
-                <div className="grid gap-4">
-                  <div className="space-y-2">
-                    <h4 className="font-medium leading-none">Language, Region & Currency</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Customize your experience.
-                    </p>
-                  </div>
-                  <Separator />
-                  <div>
-                    <Label htmlFor="language-select" className="font-medium mb-1.5 block">Language</Label>
-                    <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
-                      {languages.map((lang) => (
-                        <Button
-                          key={lang.code}
-                          variant={selectedLanguage.code === lang.code ? "secondary" : "ghost"}
-                          className="w-full justify-start h-8 text-sm"
-                          onClick={() => handleLanguageChange(lang)}
-                        >
-                          <span className="mr-2 text-base">{lang.flag}</span> {lang.name}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                  <Separator />
-                   <div>
-                    <Label htmlFor="region-select" className="font-medium mb-1.5 block">Region/Country</Label>
-                     <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
-                      {regions.map((region) => (
-                        <Button
-                          key={region.code}
-                          variant={selectedRegion.code === region.code ? "secondary" : "ghost"}
-                          className="w-full justify-start h-8 text-sm"
-                          onClick={() => handleRegionChange(region)}
-                        >
-                          <span className="mr-2 text-base">{region.flag}</span> {region.name}
-                        </Button>
-                      ))}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Changing region may update language & currency.</p>
-                  </div>
-                  <Separator />
-                  <div>
-                    <Label htmlFor="currency-select" className="font-medium mb-1.5 block">Currency</Label>
-                    <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
-                      {currencies.map((curr) => (
-                        <Button
-                          key={curr.code}
-                          variant={selectedCurrency.code === curr.code ? "secondary" : "ghost"}
-                          className="w-full justify-start h-8 text-sm"
-                          onClick={() => handleCurrencyChange(curr)}
-                        >
-                          <span className="font-semibold mr-2 w-6 text-center">{curr.symbol}</span> {curr.name} ({curr.code})
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link href="/contact-support" passHref legacyBehavior>
-                  <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" aria-label="Help">
-                    <HelpCircle className="h-6 w-6" />
-                  </Button>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Help & Support</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link href="/dashboard" className="text-sm font-medium text-foreground hover:text-primary px-3 py-1.5 rounded-sm">
-                  Owner Dashboard
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Manage your listings and performance</p>
-              </TooltipContent>
-            </Tooltip>
-            
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link href="/community-forum-demo" className="text-sm font-medium text-foreground hover:text-primary px-3 py-1.5 rounded-sm flex items-center gap-1">
-                  <Users2 className="h-4 w-4"/> Forum
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Visit the community forum</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Button
-              variant="outline"
-              className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium focus-visible:ring-primary"
-            >
-              Register (Demo)
-            </Button>
-            <Button
-              variant="outline"
-              className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium focus-visible:ring-primary"
-            >
-              Sign in (Demo)
-            </Button>
-          </TooltipProvider>
-        </div>
-
-        <div className="md:hidden flex items-center gap-1">
-           <Link href="/stays/search" passHref legacyBehavior>
-                <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" aria-label="Search">
-                    <Search className="h-6 w-6" />
-                </Button>
-            </Link>
-           <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
-            <ShieldAlert className="h-6 w-6" />
-          </Button>
-          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+        {/* Mobile Header */}
+        <div className="md:hidden flex items-center gap-1 w-full">
+           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-background text-foreground w-[300px] p-0">
+            <SheetContent side="left" className="bg-background text-foreground w-[300px] p-0">
               <div className="flex flex-col h-full">
                 <div className="p-6 border-b">
                    <Link href="/" className="text-2xl font-extrabold text-primary">
@@ -315,17 +159,9 @@ export default function Header() {
                     </Link>
                   ))}
                   <Separator className="my-2" />
-                  <Link href="/profile" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/profile' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
-                    <UserCircle className="h-5 w-5" />
-                    My Profile
-                  </Link>
                   <Link href="/dashboard" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/dashboard' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
                     <LayoutDashboard className="h-5 w-5" />
                     Owner Dashboard
-                  </Link>
-                  <Link href="/wishlist" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/wishlist' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
-                    <Heart className="h-5 w-5" />
-                    Wishlist
                   </Link>
                   <Link href="/loyalty" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${pathname === '/loyalty' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground'}`}>
                     <Award className="h-5 w-5" />
@@ -344,16 +180,8 @@ export default function Header() {
                     <MessageSquare className="h-5 w-5" />
                     Customer Service
                   </Link>
-                  <Button variant="ghost" onClick={() => { setIsMobileMenuOpen(false); setIsPopoverOpen(true);}} className="w-full justify-start flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 text-foreground">
-                     <Globe className="h-5 w-5" />
-                      {isHydrated ? (
-                        <span className="text-base font-medium">{selectedLanguage.flag} {selectedLanguage.code.toUpperCase()} / {selectedCurrency.symbol}</span>
-                      ) : (
-                        <span className="text-base font-medium">Language & Currency</span>
-                      )}
-                  </Button>
-
-                  <div className="pt-4 space-y-2 border-t mt-4">
+                </nav>
+                 <div className="p-4 border-t space-y-2">
                      <Button
                         variant="outline"
                         className="w-full justify-start text-primary border-primary hover:bg-primary/10 px-3 h-10 rounded-sm text-base font-medium"
@@ -367,43 +195,184 @@ export default function Header() {
                         Sign in (Demo)
                       </Button>
                   </div>
-                </nav>
               </div>
             </SheetContent>
           </Sheet>
+          <Link href="/" className="text-2xl font-extrabold text-primary mx-auto">
+            RoamFree
+          </Link>
+          <div className="flex items-center">
+            <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" aria-label="Notifications" onClick={() => toast({title: "Notifications (Demo)", description: "You have no new notifications."})}>
+              <Bell className="h-6 w-6" />
+            </Button>
+            <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
+              <ShieldAlert className="h-6 w-6" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Desktop Header */}
+        <div className="hidden md:flex items-center justify-between w-full">
+            <div className="flex items-center gap-4">
+                 <Link href="/" className="text-3xl font-extrabold text-primary">
+                    RoamFree
+                </Link>
+                <nav>
+                    <ul className="flex items-center gap-1 h-full">
+                    {mainNavItems.slice(0, 4).map((item) => ( // Show first 4 items
+                        <li key={item.label}>
+                        <Link
+                            href={item.href}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors
+                            ${
+                                isLinkActive(item.href)
+                                ? 'bg-primary/10 text-primary'
+                                : 'text-muted-foreground hover:bg-muted/50 hover:text-primary'
+                            }`}
+                        >
+                            <item.icon className="h-5 w-5" />
+                            {item.label}
+                        </Link>
+                        </li>
+                    ))}
+                    </ul>
+                </nav>
+            </div>
+          
+            <div className="flex items-center gap-2">
+            <TooltipProvider delayDuration={100}>
+                <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                    <PopoverTrigger asChild>
+                        <Button variant="ghost" className="text-foreground hover:bg-muted px-2 h-9 min-w-[70px]" aria-label="Select language, region or currency">
+                        {isHydrated ? (
+                            <>
+                            <span className="mr-1.5 text-lg">{selectedLanguage.flag}</span>
+                            <span className="text-sm font-medium mr-1.5">{selectedLanguage.code.toUpperCase()}</span>
+                            <Globe className="h-5 w-5 mr-1.5" />
+                            <span className="text-sm font-medium">{selectedCurrency.symbol}</span>
+                            </>
+                        ) : (
+                            <Globe className="h-5 w-5" />
+                        )}
+                        </Button>
+                    </PopoverTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                    <p>Select language, region, or currency</p>
+                    </TooltipContent>
+                </Tooltip>
+                <PopoverContent className="w-80 z-50" sideOffset={10}>
+                    <div className="grid gap-4">
+                    <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Language, Region & Currency</h4>
+                        <p className="text-sm text-muted-foreground">
+                        Customize your experience.
+                        </p>
+                    </div>
+                    <Separator />
+                    <div>
+                        <Label htmlFor="language-select" className="font-medium mb-1.5 block">Language</Label>
+                        <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
+                        {languages.map((lang) => (
+                            <Button
+                            key={lang.code}
+                            variant={selectedLanguage.code === lang.code ? "secondary" : "ghost"}
+                            className="w-full justify-start h-8 text-sm"
+                            onClick={() => handleLanguageChange(lang)}
+                            >
+                            <span className="mr-2 text-base">{lang.flag}</span> {lang.name}
+                            </Button>
+                        ))}
+                        </div>
+                    </div>
+                    <Separator />
+                    <div>
+                        <Label htmlFor="region-select" className="font-medium mb-1.5 block">Region/Country</Label>
+                        <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
+                        {regions.map((region) => (
+                            <Button
+                            key={region.code}
+                            variant={selectedRegion.code === region.code ? "secondary" : "ghost"}
+                            className="w-full justify-start h-8 text-sm"
+                            onClick={() => handleRegionChange(region)}
+                            >
+                            <span className="mr-2 text-base">{region.flag}</span> {region.name}
+                            </Button>
+                        ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">Changing region may update language & currency.</p>
+                    </div>
+                    <Separator />
+                    <div>
+                        <Label htmlFor="currency-select" className="font-medium mb-1.5 block">Currency</Label>
+                        <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
+                        {currencies.map((curr) => (
+                            <Button
+                            key={curr.code}
+                            variant={selectedCurrency.code === curr.code ? "secondary" : "ghost"}
+                            className="w-full justify-start h-8 text-sm"
+                            onClick={() => handleCurrencyChange(curr)}
+                            >
+                            <span className="font-semibold mr-2 w-6 text-center">{curr.symbol}</span> {curr.name} ({curr.code})
+                            </Button>
+                        ))}
+                        </div>
+                    </div>
+                    </div>
+                </PopoverContent>
+                </Popover>
+
+                <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" aria-label="Notifications" onClick={() => toast({title: "Notifications (Demo)", description: "You have no new notifications."})}>
+                        <Bell className="h-6 w-6" />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Notifications</p>
+                </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" aria-label="Messages" onClick={() => toast({title: "Messages (Demo)", description: "You have no new messages."})}>
+                        <MessageSquare className="h-6 w-6" />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Messages</p>
+                </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Link href="/dashboard" className="text-sm font-medium text-foreground hover:text-primary px-3 py-1.5 rounded-sm">
+                            Owner Dashboard
+                        </Link>
+                    </TooltipTrigger>
+                    <TooltipContent><p>Manage your listings</p></TooltipContent>
+                </Tooltip>
+            
+                <Separator orientation="vertical" className="h-6"/>
+
+                <Button
+                variant="outline"
+                className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium focus-visible:ring-primary"
+                >
+                Register (Demo)
+                </Button>
+                <Button
+                variant="outline"
+                className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium focus-visible:ring-primary"
+                >
+                Sign in (Demo)
+                </Button>
+            </TooltipProvider>
+            </div>
         </div>
       </div>
-
-      <nav className="hidden md:block container mx-auto px-4 h-[52px]">
-        <ul className="flex items-center gap-1 h-full">
-          {mainNavItems.map((item) => (
-            <li key={item.label}>
-              <Link
-                href={item.href}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors
-                  ${
-                    isLinkActive(item.href)
-                      ? 'bg-primary/10 border border-primary text-primary'
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-primary'
-                  }`}
-              >
-                <item.icon className="h-5 w-5" />
-                {item.label}
-              </Link>
-            </li>
-          ))}
-           <Separator orientation="vertical" className="h-6 mx-2" />
-            <Link href="/profile" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/profile' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground hover:bg-muted/50 hover:text-primary'}`}>
-                <UserCircle className="h-5 w-5" /> Profile
-            </Link>
-             <Link href="/wishlist" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/wishlist' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground hover:bg-muted/50 hover:text-primary'}`}>
-                <Heart className="h-5 w-5" /> Wishlist
-            </Link>
-             <Link href="/loyalty" className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === '/loyalty' ? 'bg-primary/10 border border-primary text-primary' : 'text-foreground hover:bg-muted/50 hover:text-primary'}`}>
-                <Award className="h-5 w-5" /> Loyalty
-            </Link>
-        </ul>
-      </nav>
     </header>
   );
 }
