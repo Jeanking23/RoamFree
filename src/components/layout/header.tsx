@@ -10,7 +10,6 @@ import {
   Home,
   ClipboardList,
   HelpCircle,
-  Globe,
   Menu,
   Building,
   UserCircle,
@@ -26,11 +25,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Separator } from '@/components/ui/separator';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
-import { useLocalization } from '@/contexts/LocalizationContext';
 
 
 const mainNavItems = [
@@ -55,8 +52,6 @@ const allMenuItems = [
 
 
 export default function Header() {
-  const { isHydrated } = useLocalization();
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -74,7 +69,6 @@ export default function Header() {
   };
 
   const isLinkActive = (itemHref: string) => {
-    if (!isHydrated) return false;
     if (itemHref === '/') return pathname === '/';
     if (itemHref === '/#stays' && pathname === '/') return true;
     return pathname.startsWith(itemHref);
