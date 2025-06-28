@@ -160,8 +160,8 @@ export default function Header() {
                     </Link>
                   ))}
                   <Separator className="my-2" />
-                  <Link href="/contact-support" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${isLinkActive('/contact-support') ? 'bg-primary/10 text-primary' : ''}`}>
-                    <MessageSquare className="h-5 w-5" />
+                   <Link href="/contact-support" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium hover:bg-muted/80 ${isLinkActive('/contact-support') ? 'bg-primary/10 text-primary' : ''}`}>
+                    <HelpCircle className="h-5 w-5" />
                     Customer Service
                   </Link>
                 </nav>
@@ -182,9 +182,6 @@ export default function Header() {
               </div>
             </SheetContent>
           </Sheet>
-          <Button variant="ghost" size="icon" className="md:hidden" aria-label="Quick Search">
-            <Search className="h-6 w-6" />
-          </Button>
         </div>
 
         <Link href="/" className="text-3xl font-extrabold text-primary md:text-4xl">
@@ -232,10 +229,23 @@ export default function Header() {
           </ul>
         </nav>
         
-        <div className="flex items-center gap-2">
+        {/* Mobile quick actions */}
+        <div className="flex items-center gap-1 md:hidden">
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/stays/search"><Search className="h-6 w-6" /></Link>
+            </Button>
+            <Button variant="ghost" size="icon"><Bell className="h-6 w-6" /></Button>
+            <Button variant="ghost" size="icon"><MessageSquare className="h-6 w-6" /></Button>
+        </div>
+
+
+        {/* Desktop quick actions */}
+        <div className="hidden md:flex items-center gap-2">
           <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}>
             <ShieldAlert className="h-6 w-6" />
           </Button>
+           <Button variant="ghost" size="icon"><Bell className="h-6 w-6" /></Button>
+           <Button variant="ghost" size="icon"><MessageSquare className="h-6 w-6" /></Button>
 
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
@@ -304,29 +314,11 @@ export default function Header() {
             </PopoverContent>
             </Popover>
 
-          <Link href="/contact-support" passHref legacyBehavior>
-            <Button variant="ghost" size="icon" className="hidden md:inline-flex" aria-label="Help">
-              <HelpCircle className="h-6 w-6" />
+          <Link href="/profile" passHref legacyBehavior>
+            <Button variant="ghost" size="icon" aria-label="Profile">
+              <UserCircle className="h-6 w-6" />
             </Button>
           </Link>
-          
-          <div className="hidden md:flex items-center gap-2">
-            <Button
-              variant="outline"
-              className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium"
-            >
-              Register (Demo)
-            </Button>
-            <Button
-              variant="outline"
-              className="text-primary border-primary hover:bg-primary/10 px-3 h-9 rounded-sm text-sm font-medium"
-            >
-              Sign in (Demo)
-            </Button>
-          </div>
-           <Button variant="ghost" size="icon" className="md:hidden" aria-label="User Profile">
-            <UserCircle className="h-6 w-6" />
-          </Button>
         </div>
       </div>
     </header>
