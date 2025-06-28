@@ -1,3 +1,4 @@
+
 // src/app/transport/page.tsx
 'use client';
 
@@ -66,7 +67,9 @@ import {
   Sun,
   Wind, // For restroom
   Sofa, // For recliner seats
-  PersonStanding // For female-only seating
+  PersonStanding, // For female-only seating
+  UtensilsCrossed,
+  Luggage
 } from 'lucide-react';
 import Link from 'next/link';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -820,7 +823,7 @@ function IntercityBusSearchForm() {
   const [passengers, setPassengers] = useState<PassengerDetail[]>([]);
 
   const [isFareBreakdownDialogOpen, setIsFareBreakdownDialogOpen] = useState(false);
-  const [addOns, setAddOns] = useState({snacks: false, insurance: false, priorityBoarding: false, extraBaggage: false, wifiVoucher: false, carbonOffset: false });
+  const [addOns, setAddOns] = useState({ mealCombo: false, extraLuggage: false, travelInsurance: false, premiumSeat: false, premiumWifi: false });
 
   const [isETicketDialogOpen, setIsETicketDialogOpen] = useState(false);
   const [boardingTimeRemaining, setBoardingTimeRemaining] = useState(45 * 60); // 45 minutes in seconds
@@ -1002,13 +1005,13 @@ function IntercityBusSearchForm() {
 
   const calculateTotalPrice = useMemo(() => {
     if (!selectedRouteForSeats) return 0;
-    let total = selectedRouteForSeats.price * (form.getValues("passengers") || 1);
-    if (addOns.snacks) total += 5 * (form.getValues("passengers") || 1); // $5 per passenger
-    if (addOns.insurance) total += 10; // Flat $10
-    if (addOns.priorityBoarding) total += 3 * (form.getValues("passengers") || 1);
-    if (addOns.extraBaggage) total += 15; // Flat $15 for extra bag
-    if (addOns.wifiVoucher) total += 2;
-    if (addOns.carbonOffset) total += 1;
+    const numPassengers = form.getValues("passengers") || 1;
+    let total = selectedRouteForSeats.price * numPassengers;
+    if (addOns.mealCombo) total += 2000 * numPassengers;
+    if (addOns.extraLuggage) total += 1500;
+    if (addOns.travelInsurance) total += 1000;
+    if (addOns.premiumSeat) total += 2000 * numPassengers;
+    if (addOns.premiumWifi) total += 500;
     return total;
   }, [selectedRouteForSeats, addOns, form]);
 
@@ -1035,6 +1038,13 @@ function IntercityBusSearchForm() {
     setIsLiveTrackingDialogOpen(true);
   }
 
+  const addOnsList = [
+      {key: 'mealCombo', label: 'Meal Combo (Sandwich, drink, snack)', price: 2000, icon: UtensilsCrossed, perPassenger: true},
+      {key: 'extraLuggage', label: 'Extra Luggage (20kg allowance)', price: 1500, icon: Luggage, perPassenger: false},
+      {key: 'travelInsurance', label: 'Travel Insurance', price: 1000, icon: ShieldCheck, perPassenger: false},
+      {key: 'premiumSeat', label: 'Premium Seat (Extra legroom)', price: 2000, icon: Armchair, perPassenger: true},
+      {key: 'premiumWifi', label: 'Premium WiFi', price: 500, icon: Wifi, perPassenger: false},
+  ];
 
   return (
     <Card>
@@ -1268,20 +1278,16 @@ function IntercityBusSearchForm() {
                      <Card className="p-3">
                         <Label className="font-semibold block mb-2">{getTranslatedText('transport.addOns', 'Add-ons (Demo):')}</Label>
                         <div className="space-y-2">
-                           {[
-                             {key: 'snacks', label: getTranslatedText('transport.addOnSnacks', 'Snacks/Water/Pillows'), price: 5, icon: ShoppingBag},
-                             {key: 'insurance', label: getTranslatedText('transport.addOnInsurance', 'Travel Insurance'), price: 10, icon: ShieldCheck},
-                             {key: 'priorityBoarding', label: getTranslatedText('transport.addOnPriorityBoarding', 'Priority Boarding'), price: 3, icon: Award},
-                             {key: 'extraBaggage', label: getTranslatedText('transport.addOnExtraBaggage', 'Extra Baggage (1 piece)'), price: 15, icon: Briefcase},
-                             {key: 'wifiVoucher', label: getTranslatedText('transport.addOnWifi', 'Wi-Fi Voucher'), price: 2, icon: Wifi},
-                             {key: 'carbonOffset', label: getTranslatedText('transport.addOnCarbonOffset', 'Carbon Offset Donation'), price: 1, icon: Leaf},
-                           ].map(item => (
+                           {addOnsList.map(item => (
                                 <FormItem key={item.key} className="flex items-center justify-between space-x-2 p-2 border rounded-md">
                                     <div className="flex items-center space-x-2">
                                         <Checkbox id={item.key} checked={addOns[item.key as keyof typeof addOns]} onCheckedChange={() => handleAddOnToggle(item.key as keyof typeof addOns)} />
                                         <Label htmlFor={item.key} className="text-xs font-normal flex items-center gap-1"><item.icon className="h-4 w-4"/>{item.label}</Label>
                                     </div>
-                                    <span className="text-xs">{item.price > 0 ? `+${selectedCurrency.symbol}${item.price.toFixed(2)}` : getTranslatedText('transport.included', 'Included')}</span>
+                                    <span className="text-xs">
+                                        {`+${selectedCurrency.symbol}${item.price.toFixed(2)}`}
+                                        {item.perPassenger && <span className="text-muted-foreground"> /pax</span>}
+                                    </span>
                                 </FormItem>
                            ))}
                         </div>
