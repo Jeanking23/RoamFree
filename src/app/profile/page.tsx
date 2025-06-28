@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import { toast } from '@/hooks/use-toast';
+import { useState, useEffect } from 'react';
 
 // Mock data - replace with actual data fetching
 const mockUser = {
@@ -51,6 +52,12 @@ const mockSavedDrivers = [
 ];
 
 export default function ProfilePage() {
+  const [lastLoginTime, setLastLoginTime] = useState('');
+
+  useEffect(() => {
+    // Set time only on the client-side after mounting to prevent hydration mismatch
+    setLastLoginTime(new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}));
+  }, []);
 
   const handleIdVerification = () => {
     toast({ title: "ID Verification (Demo)", description: "Starting ID verification process. This would typically involve uploading documents." });
@@ -290,7 +297,7 @@ export default function ProfilePage() {
                    <p className="text-xs text-muted-foreground">Blockchain-based verification for property ownership proof is a future feature.</p>
                 </CardContent>
                  <CardFooter className="border-t px-6 py-4">
-                   <p className="text-xs text-muted-foreground">Last login: Today at {new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} (Simulated)</p>
+                   <p className="text-xs text-muted-foreground">Last login: Today at {lastLoginTime} (Simulated)</p>
                 </CardFooter>
               </Card>
             </TabsContent>

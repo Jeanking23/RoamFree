@@ -35,10 +35,12 @@ export default function AccommodationProfilePage() {
   const [checkOutDate, setCheckOutDate] = useState<Date | undefined>(undefined);
   const [numberOfGuests, setNumberOfGuests] = useState<number>(2);
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
     // This effect runs only on the client, after the initial render.
     // This avoids a hydration mismatch between server-rendered and client-rendered HTML.
+    setHasMounted(true);
     setCheckInDate(new Date());
     setCheckOutDate(addDays(new Date(), 7));
   }, []); // Empty dependency array ensures this runs only once on mount
@@ -323,7 +325,7 @@ export default function AccommodationProfilePage() {
                         id="checkin" 
                         value={checkInDate ? checkInDate.toISOString().split('T')[0] : ''}
                         onChange={(e) => setCheckInDate(e.target.value ? new Date(e.target.value) : undefined)} 
-                        min={new Date().toISOString().split('T')[0]}
+                        min={hasMounted ? new Date().toISOString().split('T')[0] : undefined}
                     />
                   </div>
                   <div>
@@ -333,7 +335,7 @@ export default function AccommodationProfilePage() {
                         id="checkout" 
                         value={checkOutDate ? checkOutDate.toISOString().split('T')[0] : ''}
                         onChange={(e) => setCheckOutDate(e.target.value ? new Date(e.target.value) : undefined)}
-                        min={checkInDate ? addDays(checkInDate, 1).toISOString().split('T')[0] : addDays(new Date(), 1).toISOString().split('T')[0]}
+                        min={hasMounted && checkInDate ? addDays(checkInDate, 1).toISOString().split('T')[0] : undefined}
                     />
                   </div>
                 </div>
