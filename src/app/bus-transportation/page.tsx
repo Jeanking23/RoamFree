@@ -28,6 +28,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const busSearchSchema = z.object({
   originCity: z.string().min(2, "Origin city is required."),
@@ -466,76 +467,83 @@ export default function BusTransportationPage() {
                 Hover over a seat for details (e.g., recliner, extra legroom - Demo Feature).
               </DialogDescription>
             </DialogHeader>
-            <div className="py-4">
-              <div className="mb-4 flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-sm">
-                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-green-500" /> Available</span>
-                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-yellow-400" /> Reserved (Demo)</span>
-                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-blue-500" /> Selected</span>
-                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-red-500 opacity-50" /> Taken</span>
-              </div>
-              <div className="w-16 h-8 bg-gray-300 rounded-t-md mx-auto mb-2 flex items-center justify-center text-xs">Front</div>
-              <div className="bg-muted/30 p-2 sm:p-4 rounded-md flex justify-center">
-                <div className="grid gap-1 sm:gap-1.5" style={{ gridTemplateColumns: `repeat(${selectedRouteForSeats.seatsLayout?.cols || 4}, minmax(0, 1fr))` }}>
-                  {Array.from({ length: selectedRouteForSeats.totalSeats || 40 }).map((_, index) => {
-                    const layout = selectedRouteForSeats.seatsLayout || { rows: 10, cols: 4, aisleAfter: 2 };
-                    const rowIndex = Math.floor(index / layout.cols);
-                    const colIndex = index % layout.cols;
-                    const seatId = getSeatLabel(rowIndex, colIndex, layout);
-                    
-                    const isTaken = index % 5 === 0 || ["2A", "3C"].includes(seatId); // Simulate some taken seats
-                    const isSelected = currentSelectedSeats.includes(seatId);
-                    // Placeholder for reserved seats, can be made dynamic later
-                    const isReserved = ["1D"].includes(seatId) && !isSelected && !isTaken;
-
-
-                    let seatVariant: "default" | "destructive" | "secondary" | "outline" = "outline";
-                    let seatDisabled = false;
-                    let seatColorClass = "border-green-500 text-green-600 hover:bg-green-100 focus-visible:ring-green-400";
-
-                    if (isTaken) {
-                      seatVariant = "secondary";
-                      seatDisabled = true;
-                      seatColorClass = "border-destructive/30 text-destructive/50 opacity-60 cursor-not-allowed bg-destructive/10";
-                    } else if (isReserved) {
-                      seatVariant = "secondary";
-                      seatDisabled = true; // For demo, reserved seats are also not selectable by user for now
-                      seatColorClass = "border-yellow-500/50 text-yellow-600/70 opacity-70 cursor-not-allowed bg-yellow-400/20";
-                    } else if (isSelected) {
-                      seatVariant = "default";
-                      seatColorClass = "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary";
-                    }
-
-                    return (
-                      <Button
-                        key={seatId}
-                        variant={seatVariant}
-                        size="icon"
-                        className={cn(
-                            "h-8 w-8 sm:h-10 sm:w-10 transition-all duration-150", 
-                            seatColorClass, 
-                            colIndex === layout.aisleAfter -1 ? "mr-3 sm:mr-6" : "" // Aisle spacing
-                        )}
-                        onClick={() => !isTaken && !isReserved && toggleSeatSelection(seatId)}
-                        disabled={seatDisabled}
-                        aria-label={`Seat ${seatId}${isTaken ? ' (Taken)' : isReserved ? ' (Reserved)' : isSelected ? ' (Selected)' : ' (Available)'}`}
-                      >
-                        <Armchair className="h-4 w-4 sm:h-5 sm:w-5" />
-                        <span className="sr-only">{seatId}</span>
-                      </Button>
-                    );
-                  })}
+             <TooltipProvider>
+                <div className="py-4">
+                <div className="mb-4 flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-sm">
+                    <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-green-500" /> Available</span>
+                    <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-yellow-400" /> Reserved (Demo)</span>
+                    <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-blue-500" /> Selected</span>
+                    <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-red-500 opacity-50" /> Taken</span>
                 </div>
-              </div>
-               <div className="mt-6">
-                <Label className="text-sm font-medium flex items-center gap-1 mb-2"><Filter className="h-4 w-4"/>Seat Preference Filters (Demo)</Label>
-                <div className="flex flex-wrap gap-3">
-                    <div className="flex items-center space-x-2"><Checkbox id="filter-window" disabled /><Label htmlFor="filter-window" className="text-xs text-muted-foreground">Window</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox id="filter-aisle" disabled /><Label htmlFor="filter-aisle" className="text-xs text-muted-foreground">Aisle</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox id="filter-front" disabled /><Label htmlFor="filter-front" className="text-xs text-muted-foreground">Front Row</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox id="filter-exit" disabled /><Label htmlFor="filter-exit" className="text-xs text-muted-foreground">Exit Row</Label></div>
+                <div className="w-16 h-8 bg-gray-300 rounded-t-md mx-auto mb-2 flex items-center justify-center text-xs">Front</div>
+                <div className="bg-muted/30 p-2 sm:p-4 rounded-md flex justify-center">
+                    <div className="grid gap-1 sm:gap-1.5" style={{ gridTemplateColumns: `repeat(${selectedRouteForSeats.seatsLayout?.cols || 4}, minmax(0, 1fr))` }}>
+                    {Array.from({ length: selectedRouteForSeats.totalSeats || 40 }).map((_, index) => {
+                        const layout = selectedRouteForSeats.seatsLayout || { rows: 10, cols: 4, aisleAfter: 2 };
+                        const rowIndex = Math.floor(index / layout.cols);
+                        const colIndex = index % layout.cols;
+                        const seatId = getSeatLabel(rowIndex, colIndex, layout);
+                        
+                        const isTaken = index % 5 === 0 || ["2A", "3C"].includes(seatId); // Simulate some taken seats
+                        const isSelected = currentSelectedSeats.includes(seatId);
+                        const isReserved = ["1D"].includes(seatId) && !isSelected && !isTaken;
+
+                        let seatVariant: "default" | "destructive" | "secondary" | "outline" = "outline";
+                        let seatDisabled = false;
+                        let seatColorClass = "border-green-500 text-green-600 hover:bg-green-100 focus-visible:ring-green-400";
+
+                        if (isTaken) {
+                        seatVariant = "secondary";
+                        seatDisabled = true;
+                        seatColorClass = "border-destructive/30 text-destructive/50 opacity-60 cursor-not-allowed bg-destructive/10";
+                        } else if (isReserved) {
+                        seatVariant = "secondary";
+                        seatDisabled = true;
+                        seatColorClass = "border-yellow-500/50 text-yellow-600/70 opacity-70 cursor-not-allowed bg-yellow-400/20";
+                        } else if (isSelected) {
+                        seatVariant = "default";
+                        seatColorClass = "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary";
+                        }
+
+                        return (
+                            <Tooltip key={seatId}>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                    variant={seatVariant}
+                                    size="icon"
+                                    className={cn(
+                                        "h-8 w-8 sm:h-10 sm:w-10 transition-all duration-150", 
+                                        seatColorClass, 
+                                        colIndex === layout.aisleAfter -1 ? "mr-3 sm:mr-6" : "" // Aisle spacing
+                                    )}
+                                    onClick={() => !isTaken && !isReserved && toggleSeatSelection(seatId)}
+                                    disabled={seatDisabled}
+                                    aria-label={`Seat ${seatId}${isTaken ? ' (Taken)' : isReserved ? ' (Reserved)' : isSelected ? ' (Selected)' : ' (Available)'}`}
+                                    >
+                                    <Armchair className="h-4 w-4 sm:h-5 sm:w-5" />
+                                    <span className="sr-only">{seatId}</span>
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Seat {seatId}</p>
+                                    <p className="text-xs">{isTaken ? "Taken" : isReserved ? "Reserved" : "Available"}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        );
+                    })}
+                    </div>
                 </div>
-               </div>
-            </div>
+                <div className="mt-6">
+                    <Label className="text-sm font-medium flex items-center gap-1 mb-2"><Filter className="h-4 w-4"/>Seat Preference Filters (Demo)</Label>
+                    <div className="flex flex-wrap gap-3">
+                        <div className="flex items-center space-x-2"><Checkbox id="filter-window" disabled /><Label htmlFor="filter-window" className="text-xs text-muted-foreground">Window</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox id="filter-aisle" disabled /><Label htmlFor="filter-aisle" className="text-xs text-muted-foreground">Aisle</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox id="filter-front" disabled /><Label htmlFor="filter-front" className="text-xs text-muted-foreground">Front Row</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox id="filter-exit" disabled /><Label htmlFor="filter-exit" className="text-xs text-muted-foreground">Exit Row</Label></div>
+                    </div>
+                </div>
+                </div>
+            </TooltipProvider>
             <DialogFooter className="sm:justify-between items-center">
                 <p className="text-sm text-muted-foreground">Selected: {currentSelectedSeats.length} seat(s) - {currentSelectedSeats.join(', ')}</p>
                 <div className="flex gap-2">
@@ -574,4 +582,3 @@ export default function BusTransportationPage() {
     </div>
   );
 }
-

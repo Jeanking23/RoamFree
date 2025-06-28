@@ -18,7 +18,7 @@ export default function BottomNavBar() {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border z-40 flex justify-around items-center">
       {navItems.map((item) => {
-        const isActive = pathname === item.href || (item.href === '/stays/search' && pathname.startsWith('/stays'));
+        const isActive = pathname === item.href || (item.href === '/stays/search' && (pathname === '/' || pathname.startsWith('/stays')));
         return (
           <Link key={item.href} href={item.href} legacyBehavior>
             <a className="flex flex-col items-center justify-center text-center w-full h-full p-1">
