@@ -3,11 +3,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, Heart, CalendarCheck2, UserCircle } from 'lucide-react';
+import { Search, Heart, CalendarCheck2, UserCircle, Car } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/stays/search', label: 'Search', icon: Search },
+  { href: '/transport', label: 'Ride', icon: Car },
   { href: '/wishlist', label: 'Wishlist', icon: Heart },
   { href: '/bookings', label: 'Bookings', icon: CalendarCheck2 },
   { href: '/profile', label: 'Profile', icon: UserCircle },

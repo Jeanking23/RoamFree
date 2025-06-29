@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   BedDouble, Car, KeyRound, Landmark, Home, ClipboardList, HelpCircle, Building,
   UserCircle, LayoutDashboard, Heart, Award, MessageSquare, ShieldAlert, Search, Bell,
-  CalendarCheck2, Globe, MapPin, LogOut, Menu, Users, Phone
+  CalendarCheck2, Globe, MapPin, LogOut, Menu, Users, Phone, CarFront
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -24,6 +24,7 @@ const mainNavItems = [
   { href: '/attractions', label: 'Attractions', icon: Landmark },
   { href: '/rent-home', label: 'Rent Home', icon: Home },
   { href: '/buy-property', label: 'Buy Property', icon: ClipboardList },
+  { href: '/cars-for-sale', label: 'Buy Car', icon: CarFront },
 ];
 
 export default function Header() {

@@ -1,4 +1,3 @@
-
 // src/lib/mock-data.ts
 
 export interface StayPhoto {
