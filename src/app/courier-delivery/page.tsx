@@ -239,7 +239,7 @@ export default function CourierDeliveryPage() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="aspect-video bg-muted rounded-md flex items-center justify-center border">
-                       <Image src={`https://placehold.co/400x225.png?text=Live+Map+Placeholder`} alt="Live map placeholder" width={400} height={225} className="object-cover w-full h-full" data-ai-hint="city map courier route"/>
+                       <Image src={`https://placehold.co/400x225.png`} alt="Live map placeholder" width={400} height={225} className="object-cover w-full h-full" data-ai-hint="city map courier route"/>
                     </div>
                     <p className="font-semibold text-lg">Current Status:</p>
                     <p className="text-primary animate-pulse">{mockPackageStatuses[currentPackageStatusIndex]}</p>

@@ -16,11 +16,11 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 
 const mockPropertyTypes = [
-  { name: "Hotel", icon: Building, image: "https://placehold.co/400x300.png?text=Hotel", dataAiHint: "hotel building", filterType: "HOTEL" },
-  { name: "Apartment", icon: HomeIcon, image: "https://placehold.co/400x300.png?text=Apartment", dataAiHint: "apartment building", filterType: "RENTAL" },
-  { name: "Resort", icon: Waves, image: "https://placehold.co/400x300.png?text=Resort", dataAiHint: "beach resort", filterType: "HOTEL" },
-  { name: "Villa", icon: HomeIcon, image: "https://placehold.co/400x300.png?text=Villa", dataAiHint: "luxury villa", filterType: "RENTAL" },
-  { name: "Guest House", icon: BedDouble, image: "https://placehold.co/400x300.png?text=Guest+House", dataAiHint: "guest house exterior", filterType: "RENTAL" },
+  { name: "Hotel", icon: Building, image: "https://placehold.co/400x300.png", dataAiHint: "hotel building", filterType: "HOTEL" },
+  { name: "Apartment", icon: HomeIcon, image: "https://placehold.co/400x300.png", dataAiHint: "apartment building", filterType: "RENTAL" },
+  { name: "Resort", icon: Waves, image: "https://placehold.co/400x300.png", dataAiHint: "beach resort", filterType: "HOTEL" },
+  { name: "Villa", icon: HomeIcon, image: "https://placehold.co/400x300.png", dataAiHint: "luxury villa", filterType: "RENTAL" },
+  { name: "Guest House", icon: BedDouble, image: "https://placehold.co/400x300.png", dataAiHint: "guest house exterior", filterType: "RENTAL" },
 ];
 
 const mockRecentSearches = [
@@ -30,10 +30,10 @@ const mockRecentSearches = [
 ];
 
 const mockTrendingDestinations = [
-  { id: "td1", name: "Top Hotels in Paris", image: "https://placehold.co/400x300.png?text=Paris+Hotels", dataAiHint: "paris eiffel tower", price: "120", rating: 4.7, filter: { destination: "Paris", propertyType: "HOTEL" } },
-  { id: "td2", name: "Apartments in Douala", image: "https://placehold.co/400x300.png?text=Douala+Apartments", dataAiHint: "city douala", price: "80", rating: 4.3, filter: { destination: "Douala", propertyType: "RENTAL" } },
-  { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://placehold.co/400x300.png?text=Abidjan+Resorts", dataAiHint: "beach abidjan", price: "150", rating: 4.5, filter: { destination: "Abidjan", propertyType: "HOTEL" } },
-  { id: "td4", name: "Villas in Aspen", image: "https://placehold.co/400x300.png?text=Aspen+Villas", dataAiHint: "aspen mountains", price: "300", rating: 4.9, filter: { destination: "Aspen", propertyType: "RENTAL" } },
+  { id: "td1", name: "Top Hotels in Paris", image: "https://placehold.co/400x300.png", dataAiHint: "paris eiffel tower", price: "120", rating: 4.7, filter: { destination: "Paris", propertyType: "HOTEL" } },
+  { id: "td2", name: "Apartments in Douala", image: "https://placehold.co/400x300.png", dataAiHint: "city douala", price: "80", rating: 4.3, filter: { destination: "Douala", propertyType: "RENTAL" } },
+  { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://placehold.co/400x300.png", dataAiHint: "beach abidjan", price: "150", rating: 4.5, filter: { destination: "Abidjan", propertyType: "HOTEL" } },
+  { id: "td4", name: "Villas in Aspen", image: "https://placehold.co/400x300.png", dataAiHint: "aspen mountains", price: "300", rating: 4.9, filter: { destination: "Aspen", propertyType: "RENTAL" } },
 ];
 
 const mockVibes = [
@@ -45,15 +45,15 @@ const mockVibes = [
 ];
 
 const mockNearbyGems = [
-  { id: "ng1", name: "Lake House Retreat", image: "https://placehold.co/400x300.png?text=Lake+House", dataAiHint: "lake house", distance: "30km", type: "Stay", link: "/stays/stay4" }, 
-  { id: "ng2", name: "City Park Resort", image: "https://placehold.co/400x300.png?text=City+Resort", dataAiHint: "city resort", distance: "5km", type: "Stay", link: "/stays/stay5" },
-  { id: "ng3", name: "Affordable Guest House", image: "https://placehold.co/400x300.png?text=Affordable+GuestHouse", dataAiHint: "guest house", distance: "in your city", type: "Stay", link: "/stays/stay6" },
+  { id: "ng1", name: "Lake House Retreat", image: "https://placehold.co/400x300.png", dataAiHint: "lake house", distance: "30km", type: "Stay", link: "/stays/stay4" }, 
+  { id: "ng2", name: "City Park Resort", image: "https://placehold.co/400x300.png", dataAiHint: "city resort", distance: "5km", type: "Stay", link: "/stays/stay5" },
+  { id: "ng3", name: "Affordable Guest House", image: "https://placehold.co/400x300.png", dataAiHint: "guest house", distance: "in your city", type: "Stay", link: "/stays/stay6" },
 ];
 
 const mockDeals = [
-  { id: "deal1", title: "Up to 30% off Resorts", image: "https://placehold.co/400x250.png?text=Resort+Deal", dataAiHint: "resort pool", urgency: 75, urgencyText: "75% Claimed!", filter: { propertyType: "HOTEL", discount: true } },
-  { id: "deal2", title: "Last-minute Apartment Deals - Save 20%", image: "https://placehold.co/400x250.png?text=Apartment+Deal", dataAiHint: "apartment city", urgency: 3, urgencyText: "Only 3 left!", filter: { propertyType: "RENTAL", discount: true } },
-  { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://placehold.co/400x250.png?text=Villa+Flash+Sale", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", filter: { propertyType: "RENTAL", priceMax: 100, discount: true } },
+  { id: "deal1", title: "Up to 30% off Resorts", image: "https://placehold.co/400x250.png", dataAiHint: "resort pool", urgency: 75, urgencyText: "75% Claimed!", filter: { propertyType: "HOTEL", discount: true } },
+  { id: "deal2", title: "Last-minute Apartment Deals - Save 20%", image: "https://placehold.co/400x250.png", dataAiHint: "apartment city", urgency: 3, urgencyText: "Only 3 left!", filter: { propertyType: "RENTAL", discount: true } },
+  { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://placehold.co/400x250.png", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", filter: { propertyType: "RENTAL", priceMax: 100, discount: true } },
 ];
 
 
@@ -182,7 +182,7 @@ export default function HomePage() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              Unlock promotions, exclusive deals & personalized specials for your next trip with our AI-powered planner.
+              Unlock promotions, exclusive deals &amp; personalized specials for your next trip with our AI-powered planner.
             </p>
           </CardContent>
           <CardFooter>
@@ -346,10 +346,10 @@ export default function HomePage() {
       {/* Quick & Easy Trip Planner (Pick a Vibe) */}
       <section className="container mx-auto px-4 text-center">
         <h2 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-2">
-          Pick a Vibe & Explore
+          Pick a Vibe &amp; Explore
         </h2>
         <p className="text-muted-foreground mb-6">
-          Quick & easy trip planner — Pick a vibe and explore top destinations in Cameroon!
+          Quick &amp; easy trip planner — Pick a vibe and explore top destinations in Cameroon!
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           {mockVibes.map(vibe => (
