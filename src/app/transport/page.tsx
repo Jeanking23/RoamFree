@@ -1,16 +1,20 @@
+
 // src/app/transport/page.tsx
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Bike, Shield, ShoppingBag, Utensils, Star, LocateFixed, Clock, CalendarDays, CircleDot, Square, Users, Package, Wand2 } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Bike, Shield, ShoppingBag, Utensils, Star, LocateFixed, Clock, CalendarDays, CircleDot, Square, Users, Package, Wand2, Home, Briefcase, History } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
-import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
+import { useRouter } from 'next/navigation';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+
 
 const serviceCategories = [
   { name: 'Ride', icon: Car, link: '#ride-booking' },
@@ -25,52 +29,47 @@ const destinationSuggestions = [
     { name: "Grand Museum of Art", address: "789 Museum Ave, Cityville" },
 ];
 
-const rideTypes = [
-    { name: 'Bike', icon: Bike, eta: '5 min', price: '$5-7', description: 'Quickest for short trips' },
-    { name: 'Economy', icon: Car, eta: '7 min', price: '$10-12', description: 'Most affordable option' },
-    { name: 'Premium', icon: Shield, eta: '6 min', price: '$18-22', description: 'Luxury or comfort ride' },
+const pickupSuggestions = [
+    { name: "Use current location", address: "Detecting your location...", icon: LocateFixed, type: "action" },
+    { name: "Home", address: "123 Suburbia Lane", icon: Home, type: "saved" },
+    { name: "Work", address: "456 Business Park", icon: Briefcase, type: "saved" },
+    { name: "Previous", address: "789 Downtown Street", icon: History, type: "history" }
 ];
 
-const followUpSuggestions = [
-    { name: 'Courier Delivery', image: 'https://placehold.co/400x300.png', dataAiHint: "courier package", link: '/courier-delivery', description: 'Quick package delivery' },
-    { name: 'Rent a Car', image: 'https://placehold.co/400x300.png', dataAiHint: "rental car", link: '/car-rent', description: 'Explore on your own time' },
-    { name: 'Buy a Car', image: 'https://placehold.co/400x300.png', dataAiHint: "car dealership", link: '/cars-for-sale', description: 'Find your next vehicle' },
-    { name: 'Food Delivery', image: 'https://placehold.co/400x300.png', dataAiHint: "food meal", link: '#', description: 'From local restaurants' },
-];
-
-const visualSuggestions = [
-    { name: 'Top Places to Eat', image: 'https://placehold.co/400x300.png', dataAiHint: "restaurant food", link: '#' },
-    { name: 'Weekend Getaways', image: 'https://placehold.co/400x300.png', dataAiHint: "beach resort", link: '/stays/search' },
-    { name: 'Attractions With Delivery', image: 'https://placehold.co/400x300.png', dataAiHint: "museum exterior", link: '/attractions' },
-    { name: 'Recommended Drivers', image: 'https://placehold.co/400x300.png', dataAiHint: "driver portrait", link: '#' },
-    { name: 'Popular Rentals Nearby', image: 'https://placehold.co/400x300.png', dataAiHint: "sports car", link: '/car-rent' },
+const dropoffSuggestions = [
+     { name: "Previous", address: "101 Grand Hotel", icon: History, type: "history" },
+     { name: "International Airport (CVA)", address: "456 Airport Rd, Cityville", icon: Plane, type: "popular" },
+     { name: "City Center Plaza", address: "123 Main St, Cityville", icon: MapPin, type: "popular" },
 ];
 
 
 export default function TransportPage() {
-    const [showResults, setShowResults] = useState(false);
+    const router = useRouter();
+    const [pickupLocation, setPickupLocation] = useState('');
     const [dropoffLocation, setDropoffLocation] = useState('');
 
     const handleSearch = () => {
-        setShowResults(true);
-        toast({ title: 'Ride Search (Demo)', description: "Showing AI-suggested rides we think you'll like." });
-        const rideResultsSection = document.getElementById('ride-results');
-        if (rideResultsSection) {
-            rideResultsSection.scrollIntoView({ behavior: 'smooth' });
+        if (!pickupLocation || !dropoffLocation) {
+            toast({
+                title: 'Missing Information',
+                description: 'Please select both pickup and dropoff locations.',
+                variant: 'destructive',
+            });
+            return;
         }
+        
+        const query = new URLSearchParams({
+            from: pickupLocation,
+            to: dropoffLocation,
+        });
+
+        router.push(`/transport/search?${query.toString()}`);
     };
     
-    const handleSuggestionClick = (destination: string) => {
-        setDropoffLocation(destination);
-        handleSearch();
+    const handleDestinationSuggestionClick = (destinationName: string) => {
+        setDropoffLocation(destinationName);
     };
 
-    const handleRideForSomeoneElse = () => {
-        toast({
-            title: "Ride for Someone Else (Demo)",
-            description: "You can now enter the passenger's details. This is a placeholder action."
-        });
-    }
 
   return (
     <div className="space-y-8">
@@ -106,43 +105,67 @@ export default function TransportPage() {
                 <div className="relative">
                     <div className="absolute left-3.5 top-11 h-8 w-px bg-muted-foreground"></div>
                     <div className="space-y-2">
+                        {/* Pickup Location Input */}
                         <div className="relative">
                             <CircleDot className="absolute left-2 top-1/2 -translate-y-1/2 h-5 w-5 text-primary"/>
-                            <Input id="pickup-location" placeholder="Pickup location" className="pl-9"/>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Input value={pickupLocation} onChange={(e) => setPickupLocation(e.target.value)} placeholder="Pickup location" className="pl-9"/>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[300px] p-0">
+                                    <Command>
+                                        <CommandInput placeholder="Type an address..." />
+                                        <CommandList>
+                                            <CommandEmpty>No results found.</CommandEmpty>
+                                            <CommandGroup heading="Suggestions">
+                                                {pickupSuggestions.map(suggestion => (
+                                                    <CommandItem key={suggestion.name} onSelect={() => setPickupLocation(suggestion.address)}>
+                                                        <suggestion.icon className="mr-2 h-4 w-4" />
+                                                        <span>{suggestion.name} - <span className="text-muted-foreground">{suggestion.address}</span></span>
+                                                    </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                        </CommandList>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
                         </div>
+                        {/* Dropoff Location Input */}
                         <div className="relative">
                             <Square className="absolute left-2 top-1/2 -translate-y-1/2 h-5 w-5 text-primary"/>
-                            <Input 
-                                id="dropoff-location" 
-                                placeholder="Dropoff location" 
-                                className="pl-9"
-                                value={dropoffLocation}
-                                onChange={(e) => setDropoffLocation(e.target.value)}
-                            />
+                             <Popover>
+                                <PopoverTrigger asChild>
+                                    <Input value={dropoffLocation} onChange={(e) => setDropoffLocation(e.target.value)} placeholder="Dropoff location" className="pl-9"/>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[300px] p-0">
+                                    <Command>
+                                        <CommandInput placeholder="Type an address..." />
+                                        <CommandList>
+                                            <CommandEmpty>No results found.</CommandEmpty>
+                                            <CommandGroup heading="Suggestions">
+                                                {dropoffSuggestions.map(suggestion => (
+                                                    <CommandItem key={suggestion.name} onSelect={() => setDropoffLocation(suggestion.address)}>
+                                                        <suggestion.icon className="mr-2 h-4 w-4" />
+                                                        <span>{suggestion.name} - <span className="text-muted-foreground">{suggestion.address}</span></span>
+                                                    </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                        </CommandList>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
                         </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                        <label htmlFor="date-input" className="text-xs text-muted-foreground">Date</label>
-                        <Input id="date-input" type="text" defaultValue="Today" icon={<CalendarDays className="h-4 w-4 text-muted-foreground"/>} />
-                    </div>
-                    <div className="space-y-1">
-                        <label htmlFor="time-input" className="text-xs text-muted-foreground">Time</label>
-                        <Input id="time-input" type="text" defaultValue="Now" icon={<Clock className="h-4 w-4 text-muted-foreground"/>} />
-                    </div>
-                </div>
-                
                  <div className="flex flex-col sm:flex-row gap-2">
                     <Button className="w-full sm:w-auto" onClick={handleSearch}><Search className="mr-2 h-4 w-4"/>Search Rides</Button>
-                    <Button variant="outline" className="w-full sm:w-auto" onClick={handleRideForSomeoneElse}><Users className="mr-2 h-4 w-4"/>For Someone Else</Button>
                 </div>
 
                 <div className="pt-4 space-y-3">
                     <h4 className="font-semibold text-foreground">Destination suggestions</h4>
                     {destinationSuggestions.map((dest) => (
-                        <button key={dest.name} onClick={() => handleSuggestionClick(dest.name)} className="flex items-start gap-3 w-full text-left p-2 rounded-md hover:bg-muted">
+                        <button key={dest.name} onClick={() => handleDestinationSuggestionClick(dest.name)} className="flex items-start gap-3 w-full text-left p-2 rounded-md hover:bg-muted">
                             <div className="bg-muted p-2 rounded-full mt-1">
                                 <Clock className="h-4 w-4 text-muted-foreground"/>
                             </div>
@@ -154,84 +177,14 @@ export default function TransportPage() {
                     ))}
                 </div>
             </div>
-
-            <div className="hidden md:block">
-              <InteractiveMapPlaceholder />
+            <div className="text-center text-muted-foreground py-8">
+                <p>Map will be displayed on the results page.</p>
             </div>
           </div>
         </CardContent>
       </Card>
       
-      {/* Search Results (Conditional) */}
-      {showResults && (
-        <Card id="ride-results">
-            <CardHeader>
-                <CardTitle>Rides we think you&apos;ll like (Demo)</CardTitle>
-                <CardDescription>AI-suggested rides based on your preferences and location.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-            {rideTypes.map(ride => (
-                <Card key={ride.name} className="hover:bg-accent/10 cursor-pointer" onClick={() => toast({title: `Selected ${ride.name}`, description: "Proceeding to confirmation..."})}>
-                    <CardContent className="p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <ride.icon className="h-10 w-10 text-primary"/>
-                            <div>
-                                <p className="font-bold text-lg">{ride.name}</p>
-                                <p className="text-sm text-muted-foreground">{ride.eta} away &bull; {ride.description}</p>
-                            </div>
-                        </div>
-                        <p className="font-semibold text-lg">{ride.price}</p>
-                    </CardContent>
-                </Card>
-            ))}
-            </CardContent>
-        </Card>
-      )}
-      
-      {/* Follow-Up Suggestions */}
-       <div className="space-y-6 pt-8">
-        <h3 className="text-2xl font-semibold">Need Something Else?</h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {followUpSuggestions.map(suggestion => (
-                <Link key={suggestion.name} href={suggestion.link} passHref>
-                    <Card className="overflow-hidden group cursor-pointer h-full">
-                        <div className="relative h-32 w-full">
-                            <Image src={suggestion.image} alt={suggestion.name} layout="fill" objectFit="cover" className="group-hover:scale-105 transition-transform" data-ai-hint={suggestion.dataAiHint}/>
-                        </div>
-                        <CardContent className="p-3">
-                             <p className="font-semibold group-hover:text-primary">{suggestion.name}</p>
-                             <p className="text-xs text-muted-foreground">{suggestion.description}</p>
-                        </CardContent>
-                    </Card>
-                 </Link>
-            ))}
-        </div>
-      </div>
-
-       {/* Visual Suggestions */}
-       <div className="space-y-6 pt-8">
-         <h3 className="text-2xl font-semibold">Inspiration for Your Trip</h3>
-         <div className="relative">
-             <div className="flex space-x-4 overflow-x-auto pb-4">
-                {visualSuggestions.map((item) => (
-                    <Link key={item.name} href={item.link} passHref>
-                        <div className="flex-shrink-0 w-64 group cursor-pointer">
-                            <Card className="overflow-hidden">
-                                <div className="relative h-40">
-                                    <Image src={item.image} alt={item.name} layout="fill" objectFit="cover" data-ai-hint={item.dataAiHint}/>
-                                </div>
-                                <CardContent className="p-3">
-                                    <p className="font-semibold truncate group-hover:text-primary">{item.name}</p>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </Link>
-                ))}
-             </div>
-         </div>
-       </div>
-
-        {/* AI Planner CTA */}
+      {/* AI Planner CTA */}
         <Card className="bg-accent/10 border-accent/30 shadow-md hover:shadow-lg transition-shadow">
           <CardHeader className="pb-4">
             <CardTitle className="text-2xl font-headline text-accent-foreground flex items-center gap-2">
