@@ -67,6 +67,19 @@ const rideOptions = [
         dataAiHint: 'luxury sedan',
         description: 'Newer cars with extra legroom'
     },
+     { 
+        id: 'bike',
+        name: 'Bike', 
+        capacity: 1, 
+        eta: '2 mins away', 
+        arrivalTime: '12:00 PM',
+        price: 15.50,
+        originalPrice: 18.00,
+        tags: ['Quickest'],
+        image: 'https://placehold.co/100x50.png',
+        dataAiHint: 'scooter transport',
+        description: 'Get there faster on a motorbike'
+    },
     { 
         id: 'pet',
         name: 'Pet', 
@@ -91,12 +104,16 @@ function RideSearchResults() {
 
     const handleRideSelection = (rideId: string) => {
         setSelectedRide(rideId);
-        const ride = rideOptions.find(r => r.id === rideId);
+    };
+
+    const handleConfirmRide = () => {
+         const ride = rideOptions.find(r => r.id === selectedRide);
         toast({
-            title: `Selected ${ride?.name} Ride`,
+            title: `Confirming ${ride?.name} Ride`,
             description: `Booking ride from ${from} to ${to}. Proceeding to confirmation...`,
         });
-    };
+        // In a real app, navigate to a booking confirmation page
+    }
 
     return (
         <div className="container mx-auto py-8">
@@ -131,6 +148,7 @@ function RideSearchResults() {
                                                 {ride.eta} &bull; {ride.arrivalTime}
                                             </p>
                                              {ride.tags.includes('Faster') && <Badge variant="outline" className="text-blue-600 border-blue-300 h-5 mt-1">Faster</Badge>}
+                                             {ride.tags.includes('Quickest') && <Badge variant="outline" className="text-purple-600 border-purple-300 h-5 mt-1">Quickest</Badge>}
                                         </div>
                                     </div>
                                     <div className="text-right">
@@ -142,6 +160,7 @@ function RideSearchResults() {
                             </Card>
                         ))}
                     </div>
+                    <Button onClick={handleConfirmRide} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg">Confirm {rideOptions.find(r => r.id === selectedRide)?.name}</Button>
                 </div>
 
                 {/* Right Column: Map */}
