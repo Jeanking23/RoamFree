@@ -1,19 +1,21 @@
+
 // src/app/transport/page.tsx
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Bike, Shield, ShoppingBag, Utensils, Star, LocateFixed, Clock, CalendarDays, CircleDot, Square, Users, Package, Wand2, Home, Briefcase, History } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Bike, Shield, ShoppingBag, Utensils, Star, LocateFixed, Clock, CalendarDays, CircleDot, Square, Users, Package, Wand2, Home, Briefcase, History, Check } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
+import { cn } from '@/lib/utils';
 
 const serviceCategories = [
   { name: 'Ride', icon: Car, link: '#ride-booking' },
@@ -29,7 +31,7 @@ const destinationSuggestions = [
 ];
 
 const pickupSuggestions = [
-    { name: "Use current location", address: "Detecting your location...", icon: LocateFixed, type: "action" },
+    { name: "Use current location", address: "123 Main St, Cityville", icon: LocateFixed, type: "action" },
     { name: "Home", address: "123 Suburbia Lane", icon: Home, type: "saved" },
     { name: "Work", address: "456 Business Park", icon: Briefcase, type: "saved" },
     { name: "Previous", address: "789 Downtown Street", icon: History, type: "history" }
@@ -48,8 +50,15 @@ export default function TransportPage() {
     const [dropoffOpen, setDropoffOpen] = useState(false);
     const [pickupLocation, setPickupLocation] = useState('');
     const [dropoffLocation, setDropoffLocation] = useState('');
-    const [date, setDate] = useState('Today');
-    const [time, setTime] = useState('Now');
+    const [date, setDate] = useState('');
+    const [time, setTime] = useState('');
+
+    useEffect(() => {
+        // Set initial date and time on client mount to avoid hydration mismatch
+        const now = new Date();
+        setDate(now.toISOString().split('T')[0]); // YYYY-MM-DD format
+        setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })); // HH:MM format
+    }, []);
 
     const handleSearch = () => {
         if (!pickupLocation || !dropoffLocation) {
@@ -77,6 +86,8 @@ export default function TransportPage() {
              const query = new URLSearchParams({
                 from: pickupLocation,
                 to: destinationAddress,
+                date: date,
+                time: time,
             });
             router.push(`/transport/search?${query.toString()}`);
         } else {
@@ -135,7 +146,9 @@ export default function TransportPage() {
                                 <CircleDot className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-primary"/>
                                 <Popover open={pickupOpen} onOpenChange={setPickupOpen}>
                                     <PopoverTrigger asChild>
-                                        <Input value={pickupLocation} onChange={(e) => setPickupLocation(e.target.value)} placeholder="Pickup location" className="pl-9"/>
+                                        <Button variant="outline" role="combobox" aria-expanded={pickupOpen} className="w-full justify-start pl-9 h-10 text-left font-normal">
+                                          {pickupLocation || "Pickup location"}
+                                        </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-[300px] p-0">
                                         <Command>
@@ -144,12 +157,13 @@ export default function TransportPage() {
                                                 <CommandEmpty>No results found.</CommandEmpty>
                                                 <CommandGroup heading="Suggestions">
                                                     {pickupSuggestions.map(suggestion => (
-                                                        <CommandItem key={suggestion.name} onSelect={(currentValue) => {
-                                                            setPickupLocation(suggestion.address === 'Detecting your location...' ? '123 Main St, Cityville' : suggestion.address);
+                                                        <CommandItem key={suggestion.name} onSelect={() => {
+                                                            setPickupLocation(suggestion.address);
                                                             setPickupOpen(false);
                                                         }}>
                                                             <suggestion.icon className="mr-2 h-4 w-4" />
                                                             <span>{suggestion.name} <span className="text-muted-foreground text-xs">{suggestion.address}</span></span>
+                                                            <Check className={cn("ml-auto h-4 w-4", pickupLocation === suggestion.address ? "opacity-100" : "opacity-0")} />
                                                         </CommandItem>
                                                     ))}
                                                 </CommandGroup>
@@ -163,7 +177,9 @@ export default function TransportPage() {
                                 <Square className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-primary"/>
                                 <Popover open={dropoffOpen} onOpenChange={setDropoffOpen}>
                                     <PopoverTrigger asChild>
-                                        <Input value={dropoffLocation} onChange={(e) => setDropoffLocation(e.target.value)} placeholder="Dropoff location" className="pl-9"/>
+                                         <Button variant="outline" role="combobox" aria-expanded={dropoffOpen} className="w-full justify-start pl-9 h-10 text-left font-normal">
+                                          {dropoffLocation || "Dropoff location"}
+                                        </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-[300px] p-0">
                                         <Command>
@@ -172,12 +188,13 @@ export default function TransportPage() {
                                                 <CommandEmpty>No results found.</CommandEmpty>
                                                 <CommandGroup heading="Suggestions">
                                                     {dropoffSuggestions.map(suggestion => (
-                                                        <CommandItem key={suggestion.name} onSelect={(currentValue) => {
+                                                        <CommandItem key={suggestion.name} onSelect={() => {
                                                             setDropoffLocation(suggestion.address);
                                                             setDropoffOpen(false);
                                                         }}>
                                                             <suggestion.icon className="mr-2 h-4 w-4" />
                                                             <span>{suggestion.name} <span className="text-muted-foreground text-xs">{suggestion.address}</span></span>
+                                                            <Check className={cn("ml-auto h-4 w-4", dropoffLocation === suggestion.address ? "opacity-100" : "opacity-0")} />
                                                         </CommandItem>
                                                     ))}
                                                 </CommandGroup>
@@ -190,8 +207,8 @@ export default function TransportPage() {
                     </div>
                     {/* Date and Time selectors */}
                     <div className="grid grid-cols-2 gap-2 pt-2">
-                        <Input type="text" defaultValue="Today" icon={<CalendarDays />} />
-                        <Input type="text" defaultValue="Now" icon={<Clock />} />
+                        <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} icon={<CalendarDays />} />
+                        <Input type="time" value={time} onChange={(e) => setTime(e.target.value)} icon={<Clock />} />
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2 pt-2">
                         <Button className="w-full sm:w-auto" onClick={handleSearch}><Search className="mr-2 h-4 w-4"/>Search Rides</Button>
@@ -238,3 +255,5 @@ export default function TransportPage() {
     </div>
   );
 }
+
+    
