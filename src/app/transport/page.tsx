@@ -29,21 +29,17 @@ const destinationSuggestions = [
     { name: "Philadelphia International Airport (PHL)", address: "8000 Essington Ave, Philadelphia, PA" },
     { name: "William H. Gray III 30th Street Amtrak Station", address: "2955 Market St, Philadelphia, PA" },
     { name: "Grand Museum of Art", address: "789 Museum Ave, Cityville" },
+    { name: "Philadelphia Museum of Art", address: "2600 Benjamin Franklin Pkwy, Philadelphia, PA" },
+    { name: "Philadelphia City Hall", address: "1400 John F Kennedy Blvd, Philadelphia, PA" },
+    { name: "Reading Terminal Market", address: "51 N 12th St, Philadelphia, PA" },
 ];
 
-const pickupSuggestions = [
-    { name: "Your location", address: "123 Main St, Cityville (GPS)", icon: LocateFixed, type: "action" },
-    { name: "Home", address: "123 Suburbia Lane, Newark, DE", icon: Home, type: "saved" },
-    { name: "Work", address: "456 Business Park", icon: Briefcase, type: "saved" },
-    { name: "7244 Alexandra Dr, Newark, DE", address: "7244 Alexandra Dr, Newark, DE", icon: History, type: "history" }
+const savedPlaces = [
+    { name: "Your location", address: "123 Main St, Cityville (GPS)", icon: LocateFixed },
+    { name: "Home", address: "123 Suburbia Lane, Newark, DE", icon: Home },
+    { name: "Work", address: "456 Business Park, Wilmington, DE", icon: Briefcase },
+    { name: "7244 Alexandra Dr, Newark, DE", address: "7244 Alexandra Dr, Newark, DE", icon: History }
 ];
-
-const dropoffSuggestions = [
-     { name: "Previous", address: "101 Grand Hotel", icon: History, type: "history" },
-     { name: "Philadelphia International Airport (PHL)", address: "8000 Essington Ave, Philadelphia, PA", icon: Plane, type: "popular" },
-     { name: "William H. Gray III 30th Street Amtrak Station", address: "2955 Market St, Philadelphia, PA", icon: Bus, type: "popular" },
-];
-
 
 export default function TransportPage() {
     const router = useRouter();
@@ -51,6 +47,12 @@ export default function TransportPage() {
     const [dropoffLocation, setDropoffLocation] = useState('');
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [time, setTime] = useState('');
+    
+    const [isPickupFocused, setIsPickupFocused] = useState(false);
+    const [isDropoffFocused, setIsDropoffFocused] = useState(false);
+
+    const [pickupQuery, setPickupQuery] = useState('');
+    const [dropoffQuery, setDropoffQuery] = useState('');
 
     useEffect(() => {
         // Set initial date and time on client mount to avoid hydration mismatch
@@ -78,26 +80,16 @@ export default function TransportPage() {
 
         router.push(`/transport/search?${query.toString()}`);
     };
-    
-    const handleDestinationSuggestionClick = (destinationAddress: string) => {
-        setDropoffLocation(destinationAddress);
-        if (pickupLocation) {
-             const query = new URLSearchParams({
-                from: pickupLocation,
-                to: destinationAddress,
-                date: date?.toISOString() || new Date().toISOString(),
-                time: time,
-            });
-            router.push(`/transport/search?${query.toString()}`);
-        } else {
-             toast({
-                title: 'Missing Pickup Location',
-                description: 'Please enter a pickup location first.',
-                variant: 'destructive',
-            });
-        }
-    };
 
+    const filteredPickupSuggestions = pickupQuery ? destinationSuggestions.filter(d => 
+        d.name.toLowerCase().includes(pickupQuery.toLowerCase()) || 
+        d.address.toLowerCase().includes(pickupQuery.toLowerCase())
+    ) : [];
+    
+    const filteredDropoffSuggestions = dropoffQuery ? destinationSuggestions.filter(d => 
+        d.name.toLowerCase().includes(dropoffQuery.toLowerCase()) || 
+        d.address.toLowerCase().includes(dropoffQuery.toLowerCase())
+    ) : [];
 
   return (
     <div className="space-y-8">
@@ -137,66 +129,102 @@ export default function TransportPage() {
             <div className="space-y-4">
                 <h3 className="text-2xl font-semibold">Book a Ride</h3>
                 <div className="max-w-md space-y-4">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                         <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                            <Input 
-                                placeholder="Pickup location" 
-                                value={pickupLocation}
-                                onChange={(e) => setPickupLocation(e.target.value)}
-                                className="pl-10"
-                            />
-                         </div>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[300px] p-0">
-                         <Command>
-                            <CommandInput placeholder="Type an address..." />
-                            <CommandList>
-                                <CommandEmpty>No results found.</CommandEmpty>
-                                <CommandGroup heading="Suggestions">
-                                    {pickupSuggestions.map(suggestion => (
-                                        <CommandItem key={suggestion.name} onSelect={() => setPickupLocation(suggestion.address)}>
-                                            <suggestion.icon className="mr-2 h-4 w-4" />
-                                            <span>{suggestion.name}</span>
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    {/* Pickup Location Input */}
+                    <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input 
+                            placeholder="Pickup location" 
+                            value={pickupQuery}
+                            onChange={(e) => {
+                                setPickupQuery(e.target.value);
+                                setPickupLocation(e.target.value);
+                            }}
+                            onFocus={() => setIsPickupFocused(true)}
+                            onBlur={() => setTimeout(() => setIsPickupFocused(false), 150)}
+                            className="pl-10"
+                        />
+                         {isPickupFocused && (
+                            <div className="absolute top-full mt-1 w-full bg-popover text-popover-foreground rounded-md border shadow-lg z-10">
+                                <Command shouldFilter={false}>
+                                    <CommandList>
+                                        <CommandGroup heading="Saved places">
+                                            {savedPlaces.map((place) => (
+                                                <CommandItem key={place.name} onMouseDown={() => {
+                                                    setPickupLocation(place.address);
+                                                    setPickupQuery(place.address);
+                                                    setIsPickupFocused(false);
+                                                }}>
+                                                    <place.icon className="mr-2 h-4 w-4" />
+                                                    <span>{place.name}</span>
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                        {filteredPickupSuggestions.length > 0 && (
+                                            <CommandGroup heading="Suggestions">
+                                                {filteredPickupSuggestions.map((suggestion) => (
+                                                    <CommandItem key={suggestion.name} onMouseDown={() => {
+                                                        const fullAddress = `${suggestion.name}, ${suggestion.address}`;
+                                                        setPickupLocation(fullAddress);
+                                                        setPickupQuery(fullAddress);
+                                                        setIsPickupFocused(false);
+                                                    }}>
+                                                        <MapPin className="mr-2 h-4 w-4" />
+                                                        <div>
+                                                           <p>{suggestion.name}</p>
+                                                           <p className="text-xs text-muted-foreground">{suggestion.address}</p>
+                                                        </div>
+                                                    </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                        )}
+                                    </CommandList>
+                                </Command>
+                            </div>
+                        )}
+                    </div>
+                    {/* Dropoff Location Input */}
+                    <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input 
+                            placeholder="Dropoff location" 
+                            value={dropoffQuery}
+                            onChange={(e) => {
+                                setDropoffQuery(e.target.value);
+                                setDropoffLocation(e.target.value);
+                            }}
+                            onFocus={() => setIsDropoffFocused(true)}
+                            onBlur={() => setTimeout(() => setIsDropoffFocused(false), 150)}
+                            className="pl-10"
+                        />
+                         {isDropoffFocused && (
+                            <div className="absolute top-full mt-1 w-full bg-popover text-popover-foreground rounded-md border shadow-lg z-10">
+                                <Command shouldFilter={false}>
+                                    <CommandList>
+                                        {filteredDropoffSuggestions.length === 0 && <CommandEmpty>No results found.</CommandEmpty>}
+                                        {filteredDropoffSuggestions.length > 0 && (
+                                            <CommandGroup heading="Suggestions">
+                                                {filteredDropoffSuggestions.map((suggestion) => (
+                                                    <CommandItem key={suggestion.name} onMouseDown={() => {
+                                                        const fullAddress = `${suggestion.name}, ${suggestion.address}`;
+                                                        setDropoffLocation(fullAddress);
+                                                        setDropoffQuery(fullAddress);
+                                                        setIsDropoffFocused(false);
+                                                    }}>
+                                                        <MapPin className="mr-2 h-4 w-4" />
+                                                        <div>
+                                                           <p>{suggestion.name}</p>
+                                                           <p className="text-xs text-muted-foreground">{suggestion.address}</p>
+                                                        </div>
+                                                    </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                        )}
+                                    </CommandList>
+                                </Command>
+                            </div>
+                        )}
+                    </div>
                     
-                     <Popover>
-                      <PopoverTrigger asChild>
-                         <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                            <Input 
-                                placeholder="Dropoff location" 
-                                value={dropoffLocation}
-                                onChange={(e) => setDropoffLocation(e.target.value)}
-                                className="pl-10"
-                            />
-                         </div>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[300px] p-0">
-                         <Command>
-                            <CommandInput placeholder="Type an address..." />
-                            <CommandList>
-                                <CommandEmpty>No results found.</CommandEmpty>
-                                <CommandGroup heading="Suggestions">
-                                    {dropoffSuggestions.map(suggestion => (
-                                        <CommandItem key={suggestion.name} onSelect={() => setDropoffLocation(suggestion.address)}>
-                                            <suggestion.icon className="mr-2 h-4 w-4" />
-                                            <span>{suggestion.name}</span>
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-
                     {/* Date and Time selectors */}
                     <div className="grid grid-cols-2 gap-2">
                          <Popover>
@@ -223,8 +251,13 @@ export default function TransportPage() {
 
                 <div className="pt-4 space-y-3">
                     <h4 className="font-semibold text-foreground">Destination suggestions</h4>
-                    {destinationSuggestions.map((dest) => (
-                        <button key={dest.name} onClick={() => handleDestinationSuggestionClick(dest.address)} className="flex items-start gap-3 w-full text-left p-2 rounded-md hover:bg-muted">
+                    {destinationSuggestions.slice(0, 3).map((dest) => (
+                        <button key={dest.name} onClick={() => {
+                            const fullAddress = `${dest.name}, ${dest.address}`;
+                            setDropoffLocation(fullAddress);
+                            setDropoffQuery(fullAddress);
+                            if (pickupLocation) handleSearch();
+                        }} className="flex items-start gap-3 w-full text-left p-2 rounded-md hover:bg-muted">
                             <div className="bg-muted p-2 rounded-full mt-1">
                                 <Star className="h-4 w-4 text-muted-foreground"/>
                             </div>
