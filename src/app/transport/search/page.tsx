@@ -12,6 +12,8 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 
 const rideOptions = [
@@ -125,6 +127,10 @@ function RideSearchResults() {
                 <div className="lg:col-span-1 space-y-4">
                      <h1 className="text-2xl font-bold">Choose a ride</h1>
                      <p className="text-sm text-muted-foreground">From: {from} &bull; To: {to}</p>
+                    <div className="flex items-center space-x-2">
+                        <Switch id="ride-for-other" />
+                        <Label htmlFor="ride-for-other">Ride for someone else</Label>
+                    </div>
 
                     <div className="space-y-2">
                         {rideOptions.map((ride) => (
