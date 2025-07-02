@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   BedDouble, Car, KeyRound, Landmark, Home, ClipboardList, HelpCircle, Building,
   UserCircle, LayoutDashboard, Heart, Award, MessageSquare, ShieldAlert, Search, Bell,
-  CalendarCheck2, Globe, MapPin, LogOut, Menu, Users, Phone, CarFront, Bus, Truck
+  CalendarCheck2, Globe, MapPin, LogOut, Menu, Users, Phone, CarFront, Bus, Truck, Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -16,6 +16,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
+import { useState } from 'react';
+import { languages, currencies, type Language, type Currency } from '@/lib/locales';
+import { cn } from '@/lib/utils';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 
 // Main navigation items for desktop view
 const mainNavItems = [
@@ -27,6 +33,101 @@ const mainNavItems = [
   { href: '/buy-property', label: 'Buy Property', icon: ClipboardList },
   { href: '/cars-for-sale', label: 'Buy Car', icon: CarFront },
 ];
+
+
+function LanguageCurrencySelector({ isMobile = false }) {
+  const [open, setOpen] = useState(false);
+  const [selectedLang, setSelectedLang] = useState<Language>(languages[0]);
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currencies[0]);
+
+  const handleLangSelect = (lang: Language) => {
+    setSelectedLang(lang);
+    toast({ title: "Language Updated", description: `Language set to ${lang.name}.` });
+  };
+  
+  const handleCurrencySelect = (currency: Currency) => {
+    setSelectedCurrency(currency);
+    toast({ title: "Currency Updated", description: `Currency set to ${currency.name} (${currency.code}).` });
+  };
+
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size={isMobile ? "default" : "icon"} className={cn(!isMobile && 'px-3', "flex items-center gap-2")}>
+              <Globe className="h-5 w-5" />
+              {!isMobile && <span className="text-xs">{selectedLang.code.split('-')[0].toUpperCase()} / {selectedCurrency.code}</span>}
+              {isMobile && <span className="text-sm">Language & Currency</span>}
+            </Button>
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent><p>Select Language & Currency</p></TooltipContent>
+      </Tooltip>
+      <PopoverContent className="w-80" align="end">
+        <div className="p-2">
+            <h4 className="font-medium text-sm text-foreground">Language & Currency</h4>
+            <p className="text-xs text-muted-foreground">Choose your preferred language and currency.</p>
+        </div>
+        <Tabs defaultValue="language">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="language">Language</TabsTrigger>
+            <TabsTrigger value="currency">Currency</TabsTrigger>
+          </TabsList>
+          <TabsContent value="language">
+            <Command>
+              <CommandInput placeholder="Search language..." />
+              <CommandList>
+                <CommandEmpty>No results found.</CommandEmpty>
+                <CommandGroup>
+                  {languages.map((lang) => (
+                    <CommandItem
+                      key={lang.code}
+                      value={lang.name}
+                      onSelect={() => {
+                        handleLangSelect(lang);
+                        setOpen(false);
+                      }}
+                    >
+                      <Check className={cn("mr-2 h-4 w-4", selectedLang.code === lang.code ? "opacity-100" : "opacity-0")} />
+                      {lang.nativeName}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </TabsContent>
+          <TabsContent value="currency">
+            <Command>
+              <CommandInput placeholder="Search currency..." />
+              <CommandList>
+                <CommandEmpty>No results found.</CommandEmpty>
+                <CommandGroup>
+                  {currencies.map((currency) => (
+                    <CommandItem
+                      key={currency.code}
+                      value={currency.name}
+                      onSelect={() => {
+                        handleCurrencySelect(currency);
+                        setOpen(false);
+                      }}
+                    >
+                      <Check className={cn("mr-2 h-4 w-4", selectedCurrency.code === currency.code ? "opacity-100" : "opacity-0")} />
+                      <span className="font-mono text-xs w-10">{currency.code}</span>
+                      <span>{currency.name} ({currency.symbol})</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </TabsContent>
+        </Tabs>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 
 export default function Header() {
   const pathname = usePathname();
@@ -79,6 +180,8 @@ export default function Header() {
             
             {/* Right: Icons & Profile */}
             <div className="flex flex-1 items-center justify-end gap-1">
+              <LanguageCurrencySelector />
+              
               <Tooltip>
                 <TooltipTrigger asChild><Button variant="ghost" size="icon" onClick={() => toast({title: "Notifications (Demo)", description:"No new notifications."})}><Bell className="h-5 w-5" /></Button></TooltipTrigger>
                 <TooltipContent><p>Notifications</p></TooltipContent>
@@ -152,7 +255,11 @@ export default function Header() {
                       <Separator className="my-2" />
                         <Link href="/bus-transportation" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Bus className="h-5 w-5 text-primary" /><span className="text-lg">Bus Tickets</span></Link>
                         <Link href="/courier-delivery" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Truck className="h-5 w-5 text-primary" /><span className="text-lg">Courier</span></Link>
-                      <hr className="my-4"/>
+                      <Separator className="my-2"/>
+                        <div className="px-0">
+                           <LanguageCurrencySelector isMobile={true} />
+                        </div>
+                      <Separator className="my-2"/>
                         <Link href="/community-forum-demo" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Users className="h-5 w-5 text-primary" /><span className="text-lg">Forum</span></Link>
                         <Link href="/contact-support" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Phone className="h-5 w-5 text-primary" /><span className="text-lg">Contact</span></Link>
                         <Link href="/profile" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><UserCircle className="h-5 w-5 text-primary" /><span className="text-lg">My Account</span></Link>
