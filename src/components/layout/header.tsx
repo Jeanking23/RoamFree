@@ -54,27 +54,25 @@ export default function Header() {
           
           {/* Desktop Layout */}
           <div className="hidden md:flex flex-1 items-center justify-between">
-            {/* Left: Logo */}
+            {/* Left Group: Logo & Nav */}
             <div className="flex items-center gap-6">
               <Link href="/" className="text-3xl font-extrabold text-primary">RoamFree</Link>
+              <nav className="flex items-center gap-1">
+                {mainNavItems.map((item) => (
+                  <Tooltip key={item.label}>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" asChild className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary ${isLinkActive(item.href) ? 'text-primary' : 'text-muted-foreground'}`}>
+                        <Link href={item.href} className="flex items-center gap-2">
+                          <item.icon className="h-4 w-4" />
+                          {item.label}
+                        </Link>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p>Explore {item.label}</p></TooltipContent>
+                  </Tooltip>
+                ))}
+              </nav>
             </div>
-            
-            {/* Center: Nav */}
-            <nav className="flex items-center gap-1">
-              {mainNavItems.map((item) => (
-                <Tooltip key={item.label}>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" asChild className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary ${isLinkActive(item.href) ? 'text-primary' : 'text-muted-foreground'}`}>
-                      <Link href={item.href} className="flex items-center gap-2">
-                        <item.icon className="h-4 w-4" />
-                        {item.label}
-                      </Link>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Explore {item.label}</p></TooltipContent>
-                </Tooltip>
-              ))}
-            </nav>
 
             {/* Right: Icons & Profile */}
             <div className="flex items-center gap-1">
