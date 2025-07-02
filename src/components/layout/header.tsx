@@ -79,10 +79,10 @@ function LanguageCurrencySelector({ isMobile = false }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size={isMobile ? "default" : "icon"} className={cn(!isMobile && 'px-3', "flex items-center gap-2")}>
+            <Button variant="ghost" size={isMobile ? "default" : "icon"} className={cn(isMobile && 'w-full justify-start', "flex items-center gap-2")}>
               <Globe className="h-5 w-5" />
-              {!isMobile && <span className="text-xs">{language.code.split('-')[0].toUpperCase()} / {currency.code}</span>}
               {isMobile && <span className="text-sm">Language & Currency</span>}
+              {!isMobile && <span className="sr-only">Select Language & Currency</span>}
             </Button>
           </PopoverTrigger>
         </TooltipTrigger>
@@ -227,7 +227,7 @@ export default function Header() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                      <Button variant="ghost" size="icon" className="relative rounded-full">
                         <Avatar className="h-9 w-9">
                           <AvatarImage src="https://placehold.co/100x100.png" alt="User Avatar" data-ai-hint="person avatar"/>
                           <AvatarFallback>U</AvatarFallback>
