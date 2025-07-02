@@ -54,7 +54,6 @@
     @apply border-border;
   }
   body {
-    background-color: rgb(252, 252, 252);
-    color: hsl(222, 47%, 11%);
+    @apply bg-background text-foreground;
   }
 }
