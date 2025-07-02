@@ -77,6 +77,31 @@ export interface MockStay {
   price?: number; // For total price in sales
 }
 
+export interface CarListing {
+  id: number;
+  name: string;
+  type: string;
+  year: number;
+  seats: number;
+  transmission: string;
+  pricePerDay: number;
+  pricePerHour: number;
+  pricePerWeek: number;
+  image: string;
+  photos: { id: string, src: string, alt: string, dataAiHint: string }[];
+  dataAiHint: string;
+  features: string[];
+  rating: number;
+  reviews: number;
+  insuranceIncluded: boolean;
+  ecoFriendly: boolean;
+  mileage: string;
+  fuelPolicy: string;
+  pickupLocations: string[];
+  licenseRequired: string;
+  description?: string;
+}
+
 
 export const allMockStays: MockStay[] = [
   {
@@ -238,6 +263,91 @@ export const allMockStays: MockStay[] = [
     guestReviews: [ { id: "gr1s6", user: "Jessica B.", rating: 4, comment: "Amazing location for sightseeing!", date: "2024-03-05", avatar: "https://placehold.co/40x40.png?text=JB", dataAiHintAvatar: "person avatar"} ],
     policies: { checkIn: "After 2:00 PM", checkOut: "Before 10:00 AM", cancellation: "Non-refundable." },
     neighborhoodInsights: { walkabilityScore: 99, crimeRate: "Medium", nearbySchools: "N/A", publicTransport: "Excellent (Metro, Bus)" }
+  }
+];
+
+export const carListings: CarListing[] = [
+  {
+    id: 1,
+    name: "Toyota Camry Hybrid",
+    type: "Sedan",
+    year: 2023,
+    seats: 5,
+    transmission: "Automatic",
+    pricePerDay: 55,
+    pricePerHour: 10,
+    pricePerWeek: 350,
+    image: "https://placehold.co/600x400.png?text=Camry+Hybrid",
+    photos: [
+      { id: "car1p1", src: "https://placehold.co/800x600.png", alt: "Camry front view", dataAiHint: "sedan front" },
+      { id: "car1p2", src: "https://placehold.co/400x300.png", alt: "Camry interior", dataAiHint: "car dashboard" },
+      { id: "car1p3", src: "https://placehold.co/400x300.png", alt: "Camry side view", dataAiHint: "sedan side" },
+    ],
+    dataAiHint: "sedan car",
+    features: ["Hybrid Fuel Efficiency", "Advanced Safety Suite", "Spacious Interior", "Bluetooth Audio", "Apple CarPlay/Android Auto"],
+    rating: 4.8,
+    reviews: 120,
+    insuranceIncluded: true,
+    ecoFriendly: true,
+    mileage: "15,000 miles",
+    fuelPolicy: "Full-to-Full",
+    pickupLocations: ["Airport", "Downtown", "Hotel Delivery (Demo)"],
+    licenseRequired: "Standard Driver's License, Min Age 21",
+    description: "A perfect blend of efficiency and comfort. This Toyota Camry Hybrid offers a smooth ride, excellent gas mileage, and a spacious, tech-forward interior. Ideal for city driving or long road trips."
+  },
+  {
+    id: 2,
+    name: "Ford Explorer XLT",
+    type: "SUV",
+    year: 2022,
+    seats: 7,
+    transmission: "Automatic",
+    pricePerDay: 85,
+    pricePerHour: 18,
+    pricePerWeek: 550,
+    image: "https://placehold.co/600x400.png?text=Ford+Explorer",
+    photos: [
+      { id: "car2p1", src: "https://placehold.co/800x600.png", alt: "Explorer front view", dataAiHint: "suv front" },
+      { id: "car2p2", src: "https://placehold.co/400x300.png", alt: "Explorer interior with third row", dataAiHint: "suv interior seats" },
+    ],
+    dataAiHint: "suv car",
+    features: ["Third-Row Seating", "All-Wheel Drive", "Panoramic Sunroof", "Apple CarPlay/Android Auto", "Towing Package"],
+    rating: 4.5,
+    reviews: 95,
+    insuranceIncluded: true,
+    ecoFriendly: false,
+    mileage: "22,000 miles",
+    fuelPolicy: "Full-to-Full",
+    pickupLocations: ["Airport", "West End Branch", "One-Way to City B (Demo)"],
+    licenseRequired: "Standard Driver's License, Min Age 25",
+    description: "The Ford Explorer is the ultimate family adventure vehicle. With three rows of seating, all-wheel drive, and a panoramic sunroof, it's ready for any journey. Ample cargo space and modern tech make it a comfortable and capable choice."
+  },
+  {
+    id: 3,
+    name: "Mercedes-Benz Sprinter",
+    type: "Van",
+    year: 2023,
+    seats: 12,
+    transmission: "Automatic",
+    pricePerDay: 150,
+    pricePerHour: 30,
+    pricePerWeek: 950,
+    image: "https://placehold.co/600x400.png?text=Sprinter+Van",
+     photos: [
+      { id: "car3p1", src: "https://placehold.co/800x600.png", alt: "Sprinter van exterior", dataAiHint: "white van" },
+      { id: "car3p2", src: "https://placehold.co/400x300.png", alt: "Sprinter van interior seating", dataAiHint: "van interior" },
+    ],
+    dataAiHint: "van vehicle",
+    features: ["High Roof", "Ample Cargo Space", "Comfortable for Groups", "Rear AC", "Bluetooth Connectivity"],
+    rating: 4.9,
+    reviews: 70,
+    insuranceIncluded: false,
+    ecoFriendly: false,
+    mileage: "8,000 miles",
+    fuelPolicy: "Like-for-Like",
+    pickupLocations: ["Business Park Depot", "Custom Location Delivery (Demo)"],
+    licenseRequired: "Standard Driver's License, Min Age 25, Commercial Endorsement (Demo if applicable)",
+    description: "Perfect for large groups, corporate outings, or moving lots of gear. The Mercedes-Benz Sprinter offers unmatched space and comfort for up to 12 passengers. High roof allows for easy movement inside the van."
   }
 ];
 

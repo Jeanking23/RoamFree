@@ -13,76 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-
-const carListings = [
-  {
-    id: 1,
-    name: "Toyota Camry Hybrid",
-    type: "Sedan",
-    year: 2023,
-    seats: 5,
-    transmission: "Automatic",
-    pricePerDay: 55,
-    pricePerHour: 10, // New
-    pricePerWeek: 350, // New
-    image: "https://placehold.co/600x400.png?text=Camry+Hybrid",
-    dataAiHint: "sedan car",
-    features: ["Hybrid Fuel Efficiency", "Advanced Safety Suite", "Spacious Interior", "Bluetooth Audio"],
-    rating: 4.8,
-    reviews: 120,
-    insuranceIncluded: true,
-    ecoFriendly: true,
-    mileage: "15,000 miles", // New
-    fuelPolicy: "Full-to-Full", // New
-    pickupLocations: ["Airport", "Downtown", "Hotel Delivery (Demo)"], // New
-    licenseRequired: "Standard Driver's License, Min Age 21", // New
-  },
-  {
-    id: 2,
-    name: "Ford Explorer XLT",
-    type: "SUV",
-    year: 2022,
-    seats: 7,
-    transmission: "Automatic",
-    pricePerDay: 85,
-    pricePerHour: 18,
-    pricePerWeek: 550,
-    image: "https://placehold.co/600x400.png?text=Ford+Explorer",
-    dataAiHint: "suv car",
-    features: ["Third-Row Seating", "All-Wheel Drive", "Panoramic Sunroof", "Apple CarPlay/Android Auto"],
-    rating: 4.5,
-    reviews: 95,
-    insuranceIncluded: true,
-    ecoFriendly: false,
-    mileage: "22,000 miles",
-    fuelPolicy: "Full-to-Full",
-    pickupLocations: ["Airport", "West End Branch", "One-Way to City B (Demo)"],
-    licenseRequired: "Standard Driver's License, Min Age 25",
-  },
-  {
-    id: 3,
-    name: "Mercedes-Benz Sprinter",
-    type: "Van",
-    year: 2023,
-    seats: 12,
-    transmission: "Automatic",
-    pricePerDay: 150,
-    pricePerHour: 30,
-    pricePerWeek: 950,
-    image: "https://placehold.co/600x400.png?text=Sprinter+Van",
-    dataAiHint: "van vehicle",
-    features: ["High Roof", "Ample Cargo Space", "Comfortable for Groups", "Rear AC"],
-    rating: 4.9,
-    reviews: 70,
-    insuranceIncluded: false,
-    ecoFriendly: false,
-    mileage: "8,000 miles",
-    fuelPolicy: "Like-for-Like",
-    pickupLocations: ["Business Park Depot", "Custom Location Delivery (Demo)"],
-    licenseRequired: "Standard Driver's License, Min Age 25, Commercial Endorsement (Demo if applicable)",
-  }
-];
-
+import { carListings } from '@/lib/mock-data';
+import Link from 'next/link';
 
 export default function CarRentPage() {
   const [includeDriver, setIncludeDriver] = useState(false);
@@ -198,12 +130,15 @@ export default function CarRentPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {carListings.map((car) => (
               <Card key={car.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-                <div className="relative w-full h-56">
+                <Link href={`/car-rent/${car.id}`} className="block relative w-full h-56 group">
                   <Image src={car.image} alt={car.name} layout="fill" objectFit="cover" data-ai-hint={car.dataAiHint} />
                    {car.ecoFriendly && <Badge variant="secondary" className="absolute top-2 right-2 bg-green-500 text-white border-green-600">Eco-Friendly</Badge>}
-                </div>
+                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                       <span className="text-white font-bold">View Details</span>
+                   </div>
+                </Link>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-xl font-semibold">{car.name}</CardTitle>
+                  <CardTitle className="text-xl font-semibold hover:text-primary"><Link href={`/car-rent/${car.id}`}>{car.name}</Link></CardTitle>
                   <CardDescription className="text-sm text-muted-foreground">{car.year} &bull; {car.type} &bull; {car.mileage}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow space-y-3">
