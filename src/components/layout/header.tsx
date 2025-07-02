@@ -53,9 +53,12 @@ export default function Header() {
         <div className="container flex h-16 items-center justify-between gap-4">
           
           {/* Desktop Layout */}
-          <div className="hidden md:flex flex-1 items-center justify-between">
-            {/* Left Group: Logo & Nav */}
-            <div className="flex items-center gap-6">
+          <div className="hidden md:flex flex-1 items-center">
+            {/* Left Spacer */}
+            <div className="flex-1"></div>
+
+            {/* Centered Group: Logo & Nav */}
+            <div className="flex items-center justify-center gap-6">
               <Link href="/" className="text-3xl font-extrabold text-primary">RoamFree</Link>
               <nav className="flex items-center gap-1">
                 {mainNavItems.map((item) => (
@@ -73,9 +76,9 @@ export default function Header() {
                 ))}
               </nav>
             </div>
-
+            
             {/* Right: Icons & Profile */}
-            <div className="flex items-center gap-1">
+            <div className="flex flex-1 items-center justify-end gap-1">
               <Tooltip>
                 <TooltipTrigger asChild><Button variant="ghost" size="icon" onClick={() => toast({title: "Notifications (Demo)", description:"No new notifications."})}><Bell className="h-5 w-5" /></Button></TooltipTrigger>
                 <TooltipContent><p>Notifications</p></TooltipContent>
