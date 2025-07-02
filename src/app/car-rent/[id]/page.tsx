@@ -1,3 +1,4 @@
+
 // src/app/car-rent/[id]/page.tsx
 'use client';
 
@@ -5,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Gauge, DollarSign, MapPin, CheckCircle, TvIcon, Settings, FileText, User, Share2, Heart, AlertTriangle, Users, Car as CarIcon, Star, KeyRound } from 'lucide-react';
+import { CalendarDays, Gauge, DollarSign, MapPin, CheckCircle, TvIcon, Settings, FileText, User, Share2, Heart, AlertTriangle, Users, Car as CarIcon, Star, KeyRound, ShieldCheck } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
