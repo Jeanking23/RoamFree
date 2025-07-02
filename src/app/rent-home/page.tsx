@@ -1,7 +1,8 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { ClipboardList, HomeIcon, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Search, Bed, Bath, Smile, TvIcon, FileText, CheckCircle, School, Building, Leaf, ShieldCheck, Users } from 'lucide-react';
+import { ClipboardList, HomeIcon, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Search, Bed, Bath, Smile, TvIcon, FileText, CheckCircle, School, Building, Leaf, ShieldCheck, Users, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -222,9 +223,18 @@ export default function RentHomePage() {
                                             <CardTitle className="text-md hover:text-primary"><Link href={`/rent-home/${prop.id}`}>{prop.name}</Link></CardTitle>
                                             <CardDescription className="text-primary font-semibold text-base">${(prop.price ?? prop.pricePerNight).toLocaleString()}{prop.price ? '/month' : '/night'}</CardDescription>
                                         </CardHeader>
-                                        <CardContent className="p-3 pt-0 space-y-1 text-sm flex-grow">
-                                            <p className="text-muted-foreground flex items-center gap-1"><MapPin className="h-4 w-4 "/>{prop.location}</p>
-                                            <p className="text-muted-foreground flex items-center gap-1"><Bed className="h-4 w-4 "/>{prop.bedrooms} Beds <Bath className="inline h-4 w-4 ml-2 mr-1"/>{prop.bathrooms} Baths</p>
+                                        <CardContent className="p-3 pt-0 space-y-2 text-sm flex-grow">
+                                            <p className="text-muted-foreground flex items-center gap-1 truncate"><MapPin className="h-4 w-4 flex-shrink-0"/>{prop.location}</p>
+                                            <div className="text-xs text-muted-foreground flex items-center flex-wrap gap-x-3">
+                                                <span><Bed className="inline h-3 w-3 mr-1"/>{prop.bedrooms} Beds</span>
+                                                <span><Bath className="inline h-3 w-3 mr-1"/>{prop.bathrooms} Baths</span>
+                                                <span><Maximize className="inline h-3 w-3 mr-1"/>{prop.sizeSqft}</span>
+                                            </div>
+                                            <div className="flex items-center pt-1">
+                                                <Star className="h-4 w-4 text-yellow-400 fill-yellow-400 mr-1" />
+                                                <span className="text-sm font-semibold">{prop.rating}</span>
+                                                <span className="text-xs text-muted-foreground ml-1">({prop.reviewsCount} reviews)</span>
+                                            </div>
                                         </CardContent>
                                         <CardFooter className="p-2 border-t bg-muted/30">
                                             <Button asChild variant="default" size="sm" className="w-full">
@@ -258,8 +268,16 @@ export default function RentHomePage() {
                             </CardHeader>
                             <CardContent className="space-y-2 flex-grow">
                                 <p className="text-sm text-muted-foreground"><MapPin className="inline h-4 w-4 mr-1"/>{prop.location}</p>
-                                <p className="text-sm text-muted-foreground"><ClipboardList className="inline h-4 w-4 mr-1"/>Type: {prop.category}</p>
-                                <p className="text-sm text-muted-foreground"><Bed className="inline h-4 w-4 mr-1"/>Bedrooms: {prop.bedrooms}</p>
+                                <div className="text-sm text-muted-foreground flex items-center justify-between">
+                                  <span><Bed className="inline h-4 w-4 mr-1"/>{prop.bedrooms} Beds</span>
+                                  <span><Bath className="inline h-4 w-4 mr-1"/>{prop.bathrooms} Baths</span>
+                                  <span><Maximize className="inline h-4 w-4 mr-1"/>{prop.sizeSqft}</span>
+                                </div>
+                                <div className="flex items-center pt-1">
+                                    <Star className="h-4 w-4 text-yellow-400 fill-yellow-400 mr-1" />
+                                    <span className="text-sm font-semibold">{prop.rating}</span>
+                                    <span className="text-xs text-muted-foreground ml-1">({prop.reviewsCount} reviews)</span>
+                                </div>
                             </CardContent>
                             <CardFooter className="flex flex-col gap-2 pt-4 border-t">
                                 <Button asChild className="w-full"><Link href={`/rent-home/${prop.id}`}>View Details & Apply</Link></Button>

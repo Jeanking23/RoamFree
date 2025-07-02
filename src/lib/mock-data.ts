@@ -1,3 +1,4 @@
+
 // src/lib/mock-data.ts
 
 export interface StayPhoto {
@@ -361,6 +362,8 @@ export const mockRentalProperties: MockStay[] = [
     category: "Apartment", 
     type: "Rental",
     bedrooms: 1, 
+    bathrooms: 1,
+    sizeSqft: "900 sqft",
     amenities: ["Gym", "Pool", "In-unit Laundry"], 
     image: "https://placehold.co/600x400.png?text=Downtown+Loft", 
     dataAiHint: "loft apartment", 
@@ -371,8 +374,8 @@ export const mockRentalProperties: MockStay[] = [
     utilitiesIncluded: "Water, Trash", 
     isEcoFriendly: true,
     description: "A stylish and modern loft apartment in the heart of downtown. Features high ceilings, large windows, and access to building amenities like a gym and pool. Perfect for urban living.",
-    rating: 4.7, // Added for consistency
-    reviewsCount: 55, // Added
+    rating: 4.7,
+    reviewsCount: 55,
     photos: [
         { id: "p1r1", src: "https://placehold.co/800x600.png?text=Loft+Living", alt: "Loft living area", dataAiHint: "loft interior" },
         { id: "p2r1", src: "https://placehold.co/400x300.png?text=Loft+Kitchen", alt: "Loft kitchen", dataAiHint: "modern kitchen" },
@@ -388,6 +391,8 @@ export const mockRentalProperties: MockStay[] = [
     category: "House", 
     type: "Rental",
     bedrooms: 3, 
+    bathrooms: 2,
+    sizeSqft: "1800 sqft",
     amenities: ["Yard", "Garage", "Pet-friendly"], 
     image: "https://placehold.co/600x400.png?text=Suburban+House", 
     dataAiHint: "family house suburban", 
@@ -398,8 +403,8 @@ export const mockRentalProperties: MockStay[] = [
     utilitiesIncluded: "None", 
     isEcoFriendly: false,
     description: "Spacious family home in a quiet suburban neighborhood. Large backyard, two-car garage, and pet-friendly policy. Close to parks and good schools.",
-    rating: 4.5, // Added
-    reviewsCount: 30, // Added
+    rating: 4.5,
+    reviewsCount: 30,
     photos: [ { id: "p1r2", src: "https://placehold.co/800x600.png?text=Family+House+Exterior", alt: "Family house exterior", dataAiHint: "suburban house" } ],
     host: { name: "Sarah Miller", avatar: "https://placehold.co/100x100.png?text=SM", dataAiHint: "woman portrait" }
   },
@@ -412,6 +417,8 @@ export const mockRentalProperties: MockStay[] = [
     category: "Townhouse", 
     type: "Rental",
     bedrooms: 2, 
+    bathrooms: 2.5,
+    sizeSqft: "1500 sqft",
     amenities: ["Rooftop Deck", "Smart Home"], 
     image: "https://placehold.co/600x400.png?text=Modern+Townhouse", 
     dataAiHint: "modern townhouse", 
@@ -422,8 +429,8 @@ export const mockRentalProperties: MockStay[] = [
     utilitiesIncluded: "Internet", 
     isEcoFriendly: true,
     description: "Contemporary townhouse with a private rooftop deck and smart home features. Two bedrooms, open-plan living, and close to city amenities.",
-    rating: 4.6, // Added
-    reviewsCount: 42, // Added
+    rating: 4.6,
+    reviewsCount: 42,
     photos: [ { id: "p1r3", src: "https://placehold.co/800x600.png?text=Townhouse+Rooftop", alt: "Townhouse rooftop deck", dataAiHint: "rooftop deck city" } ],
     host: { name: "Tech Homes LLC", avatar: "https://placehold.co/100x100.png?text=TH", dataAiHint: "company logo" }
   },
