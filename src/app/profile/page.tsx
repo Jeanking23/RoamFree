@@ -297,7 +297,7 @@ export default function ProfilePage() {
                    <p className="text-xs text-muted-foreground">Blockchain-based verification for property ownership proof is a future feature.</p>
                 </CardContent>
                  <CardFooter className="border-t px-6 py-4">
-                   <p className="text-xs text-muted-foreground">Last login: Today at {lastLoginTime} (Simulated)</p>
+                   <p className="text-xs text-muted-foreground">Last login: Today at <span suppressHydrationWarning>{lastLoginTime}</span> (Simulated)</p>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -339,4 +339,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-    
