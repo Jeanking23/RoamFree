@@ -45,6 +45,19 @@ const navTranslations: Record<string, Record<string, string>> = {
   'Buy Car': { 'en-US': 'Buy Car', 'es-ES': 'Comprar Coche', 'fr-FR': 'Acheter Voiture' },
 };
 
+const sosTranslations = {
+  sosTitle: {
+    'en-US': 'SOS Activated (Demo)',
+    'es-ES': 'SOS Activado (Demo)',
+    'fr-FR': 'SOS Activé (Démo)',
+  },
+  sosDescription: {
+    'en-US': 'Emergency services are being contacted. This is a simulation.',
+    'es-ES': 'Se está contactando a los servicios de emergencia. Esto es una simulación.',
+    'fr-FR': "Les services d'urgence sont en cours de contact. Ceci est une simulation.",
+  }
+};
+
 
 function LanguageCurrencySelector({ isMobile = false }) {
   const [open, setOpen] = useState(false);
@@ -143,10 +156,14 @@ export default function Header() {
   const pathname = usePathname();
   const { language } = useLocale();
 
+  const t = (key: keyof typeof sosTranslations) => {
+    return sosTranslations[key][language.code as keyof typeof sosTranslations[keyof typeof sosTranslations]] || sosTranslations[key]['en-US'];
+  };
+
   const handleSosClick = () => {
     toast({
-      title: "SOS Activated (Demo)",
-      description: "Emergency services are being contacted. This is a simulation.",
+      title: t('sosTitle'),
+      description: t('sosDescription'),
       variant: "destructive",
       duration: 10000,
     });

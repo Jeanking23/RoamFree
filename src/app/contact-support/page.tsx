@@ -23,6 +23,7 @@ import { useState } from "react";
 import { getSupportChatbotResponseAction } from "../actions"; 
 import type { SupportChatbotOutput } from "@/ai/flows/support-chatbot-flow"; 
 import { toast } from "@/hooks/use-toast";
+import { useLocale } from "@/context/locale-provider";
 
 const contactSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters."),
@@ -38,7 +39,26 @@ const chatbotSchema = z.object({
 });
 type ChatbotFormValues = z.infer<typeof chatbotSchema>;
 
+const translations = {
+  sosTitle: {
+    'en-US': 'SOS Activated (Demo)',
+    'es-ES': 'SOS Activado (Demo)',
+    'fr-FR': 'SOS Activé (Démo)',
+  },
+  sosDescription: {
+    'en-US': 'Emergency services are being contacted. This is a simulation. If this were a real emergency, appropriate actions would be taken.',
+    'es-ES': 'Se está contactando a los servicios de emergencia. Esto es una simulación. Si fuera una emergencia real, se tomarían las acciones apropiadas.',
+    'fr-FR': "Les services d'urgence sont en cours de contact. Ceci est une simulation. S'il s'agissait d'une véritable urgence, des mesures appropriées seraient prises.",
+  }
+};
+
 export default function ContactSupportPage() {
+  const { language } = useLocale();
+
+  const t = (key: keyof typeof translations) => {
+    return translations[key][language.code as keyof typeof translations[keyof typeof translations]] || translations[key]['en-US'];
+  };
+
   const contactForm = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: { fullName: "", email: "", subject: "", message: "" },
@@ -78,8 +98,8 @@ export default function ContactSupportPage() {
 
   const handleSosClick = () => {
     toast({
-      title: "SOS Activated (Demo)",
-      description: "Emergency services are being contacted. This is a simulation. If this were a real emergency, appropriate actions would be taken.",
+      title: t('sosTitle'),
+      description: t('sosDescription'),
       variant: "destructive",
       duration: 10000, 
     });

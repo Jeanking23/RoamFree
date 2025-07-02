@@ -58,12 +58,51 @@ const mockDeals = [
   { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://placehold.co/400x250.png", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", filter: { propertyType: "RENTAL", priceMax: 100 } },
 ];
 
+const translations = {
+  notificationTitle: {
+    'en-US': 'Enable Notifications?',
+    'es-ES': '¿Activar Notificaciones?',
+    'fr-FR': 'Activer les notifications ?',
+  },
+  notificationDescription: {
+    'en-US': "Get alerts for exclusive stay deals and price drops near you!",
+    'es-ES': '¡Recibe alertas de ofertas exclusivas de estancias y bajadas de precios cerca de ti!',
+    'fr-FR': 'Recevez des alertes pour des offres de séjour exclusives et des baisses de prix près de chez vous !',
+  },
+  enable: { 'en-US': 'Enable', 'es-ES': 'Activar', 'fr-FR': 'Activer' },
+  later: { 'en-US': 'Later', 'es-ES': 'Más tarde', 'fr-FR': 'Plus tard' },
+  enabledToast: {
+    'en-US': 'Notifications Enabled (Demo)',
+    'es-ES': 'Notificaciones Activadas (Demo)',
+    'fr-FR': 'Notifications Activées (Démo)'
+  },
+  enabledToastDesc: {
+    'en-US': "You'll now receive exclusive deals!",
+    'es-ES': '¡Ahora recibirás ofertas exclusivas!',
+    'fr-FR': 'Vous recevrez maintenant des offres exclusives !'
+  },
+  declinedToast: {
+    'en-US': 'Notifications Declined (Demo)',
+    'es-ES': 'Notificaciones Rechazadas (Demo)',
+    'fr-FR': 'Notifications Refusées (Démo)'
+  },
+  declinedToastDesc: {
+    'en-US': 'You can enable them later in settings.',
+    'es-ES': 'Puedes activarlas más tarde en la configuración.',
+    'fr-FR': 'Vous pourrez les activer plus tard dans les paramètres.'
+  }
+};
+
 
 export default function HomePage() {
   const router = useRouter();
-  const { currency } = useLocale();
+  const { currency, language } = useLocale();
   const featuredStays = allMockStays.slice(0, 6);
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
+
+  const t = (key: keyof typeof translations) => {
+    return translations[key][language.code as keyof typeof translations[keyof typeof translations]] || translations[key]['en-US'];
+  };
 
   useEffect(() => {
     // This effect runs only on the client, after hydration
@@ -92,9 +131,9 @@ export default function HomePage() {
   
   const handleNotificationPrompt = (enable: boolean) => {
     if (enable) {
-      toast({ title: "Notifications Enabled (Demo)", description: "You'll now receive exclusive deals!" });
+      toast({ title: t('enabledToast'), description: t('enabledToastDesc') });
     } else {
-      toast({ title: "Notifications Declined (Demo)", description: "You can enable them later in settings." });
+      toast({ title: t('declinedToast'), description: t('declinedToastDesc') });
     }
     if (typeof window !== 'undefined') localStorage.setItem('notificationPromptDismissed', 'true');
     setShowNotificationPrompt(false);
@@ -368,14 +407,14 @@ export default function HomePage() {
         <div className="fixed bottom-20 right-5 z-50 md:bottom-5">
           <Card className="w-80 shadow-xl border-primary/50 bg-card">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2"><Bell className="h-5 w-5 text-primary"/>Enable Notifications?</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-2"><Bell className="h-5 w-5 text-primary"/>{t('notificationTitle')}</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              <p>Get alerts for exclusive stay deals and price drops near you!</p>
+              <p>{t('notificationDescription')}</p>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-              <Button variant="ghost" size="sm" onClick={() => handleNotificationPrompt(false)}>Later</Button>
-              <Button size="sm" onClick={() => handleNotificationPrompt(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">Enable</Button>
+              <Button variant="ghost" size="sm" onClick={() => handleNotificationPrompt(false)}>{t('later')}</Button>
+              <Button size="sm" onClick={() => handleNotificationPrompt(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">{t('enable')}</Button>
             </CardFooter>
           </Card>
         </div>

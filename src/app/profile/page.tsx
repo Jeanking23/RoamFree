@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
+import { useLocale } from '@/context/locale-provider';
 
 // Mock data - replace with actual data fetching
 const mockUser = {
@@ -29,7 +30,7 @@ const mockUser = {
     pricingAlerts: true,
     receivePushNotifications: true, // New
   },
-  walletBalance: 75.50, 
+  walletBalance: 75.50, // Base balance in USD
   driverLicenseUploaded: false, // New
 };
 
@@ -51,8 +52,40 @@ const mockSavedDrivers = [
     { id: "drv002", name: "Maria S.", vehicle: "Honda CR-V", rating: 4.9, lastTrip: "2024-03-20"},
 ];
 
+const translations = {
+  // Main titles
+  myProfile: { 'en-US': 'My Profile & Account', 'es-ES': 'Mi Perfil y Cuenta', 'fr-FR': 'Mon Profil et Compte' },
+  manageInfo: { 'en-US': 'Manage your personal information, preferences, bookings, security, and wallet.', 'es-ES': 'Gestiona tu información personal, preferencias, reservas, seguridad y monedero.', 'fr-FR': 'Gérez vos informations personnelles, préférences, réservations, sécurité et portefeuille.' },
+  // Tabs
+  profile: { 'en-US': 'Profile', 'es-ES': 'Perfil', 'fr-FR': 'Profil' },
+  history: { 'en-US': 'History', 'es-ES': 'Historial', 'fr-FR': 'Historique' },
+  preferences: { 'en-US': 'Preferences', 'es-ES': 'Preferencias', 'fr-FR': 'Préférences' },
+  security: { 'en-US': 'Security', 'es-ES': 'Seguridad', 'fr-FR': 'Sécurité' },
+  wallet: { 'en-US': 'Wallet', 'es-ES': 'Monedero', 'fr-FR': 'Portefeuille' },
+  // Profile tab
+  personalInfo: { 'en-US': 'Personal Information', 'es-ES': 'Información Personal', 'fr-FR': 'Informations Personnelles' },
+  viewAndUpdate: { 'en-US': 'View and update your personal details.', 'es-ES': 'Ver y actualizar tus datos personales.', 'fr-FR': 'Voir et mettre à jour vos informations personnelles.' },
+  fullName: { 'en-US': 'Full Name', 'es-ES': 'Nombre Completo', 'fr-FR': 'Nom Complet' },
+  emailAddress: { 'en-US': 'Email Address', 'es-ES': 'Dirección de Email', 'fr-FR': 'Adresse E-mail' },
+  joinedDate: { 'en-US': 'Joined RoamFree', 'es-ES': 'Miembro desde', 'fr-FR': 'Membre depuis' },
+  driversLicense: { 'en-US': "Driver's License (for Car Rentals)", 'es-ES': 'Licencia de Conducir (para Alquiler de Coches)', 'fr-FR': "Permis de Conduire (pour Location de Voiture)" },
+  uploadLicense: { 'en-US': "Upload License (Demo)", 'es-ES': 'Subir Licencia (Demo)', 'fr-FR': 'Télécharger le Permis (Démo)' },
+  saveChanges: { 'en-US': 'Save Changes', 'es-ES': 'Guardar Cambios', 'fr-FR': 'Enregistrer les Modifications' },
+  // Wallet tab
+  myWallet: { 'en-US': 'My RoamFree Wallet', 'es-ES': 'Mi Monedero RoamFree', 'fr-FR': 'Mon Portefeuille RoamFree' },
+  manageFunds: { 'en-US': 'Manage your funds for seamless payments across the platform. Buy Now, Pay Later options (e.g. Klarna, Afterpay) available for select services (Demo).', 'es-ES': 'Gestiona tus fondos para pagos fluidos en toda la plataforma. Opciones de Compra Ahora, Paga Después (ej. Klarna, Afterpay) disponibles para servicios seleccionados (Demo).', 'fr-FR': 'Gérez vos fonds pour des paiements fluides sur toute la plateforme. Options Achetez Maintenant, Payez Plus Tard (ex. Klarna, Afterpay) disponibles pour certains services (Démo).' },
+  currentBalance: { 'en-US': 'Current Balance', 'es-ES': 'Saldo Actual', 'fr-FR': 'Solde Actuel' },
+  topUpWallet: { 'en-US': 'Top Up Wallet (Demo)', 'es-ES': 'Recargar Monedero (Demo)', 'fr-FR': 'Recharger le Portefeuille (Démo)' },
+};
+
+
 export default function ProfilePage() {
+  const { language, currency } = useLocale();
   const [lastLoginTime, setLastLoginTime] = useState('');
+
+  const t = (key: keyof typeof translations) => {
+    return translations[key][language.code as keyof typeof translations[keyof typeof translations]] || translations[key]['en-US'];
+  };
 
   useEffect(() => {
     // Set time only on the client-side after mounting to prevent hydration mismatch
@@ -83,61 +116,64 @@ export default function ProfilePage() {
     toast({ title: "Upload Driver's License (Demo)", description: "Opening file upload for driver's license. This is for car rental verification."});
   };
 
+  const walletBalanceInUSD = mockUser.walletBalance;
+  const convertedBalance = walletBalanceInUSD * currency.rate;
+
   return (
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
         <CardHeader className="bg-primary/10">
           <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
             <UserCircle className="h-10 w-10" />
-            My Profile &amp; Account
+            {t('myProfile')}
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Manage your personal information, preferences, bookings, security, and wallet.
+            {t('manageInfo')}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0 md:p-6">
           <Tabs defaultValue="profile" className="w-full">
             <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5 mb-6 p-1 h-auto">
-              <TabsTrigger value="profile" className="py-2"><UserCircle className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Profile</TabsTrigger>
-              <TabsTrigger value="history" className="py-2"><History className="h-5 w-5 mr-2 md:hidden lg:inline-block" />History</TabsTrigger>
-              <TabsTrigger value="preferences" className="py-2"><Settings className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Preferences</TabsTrigger>
-              <TabsTrigger value="security" className="py-2"><ShieldCheck className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Security</TabsTrigger>
-              <TabsTrigger value="wallet" className="py-2"><CreditCard className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Wallet</TabsTrigger>
+              <TabsTrigger value="profile" className="py-2"><UserCircle className="h-5 w-5 mr-2 md:hidden lg:inline-block" />{t('profile')}</TabsTrigger>
+              <TabsTrigger value="history" className="py-2"><History className="h-5 w-5 mr-2 md:hidden lg:inline-block" />{t('history')}</TabsTrigger>
+              <TabsTrigger value="preferences" className="py-2"><Settings className="h-5 w-5 mr-2 md:hidden lg:inline-block" />{t('preferences')}</TabsTrigger>
+              <TabsTrigger value="security" className="py-2"><ShieldCheck className="h-5 w-5 mr-2 md:hidden lg:inline-block" />{t('security')}</TabsTrigger>
+              <TabsTrigger value="wallet" className="py-2"><CreditCard className="h-5 w-5 mr-2 md:hidden lg:inline-block" />{t('wallet')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="profile" className="p-4 md:p-0">
               <Card>
                 <CardHeader>
-                  <CardTitle>Personal Information</CardTitle>
-                  <CardDescription>View and update your personal details.</CardDescription>
+                  <CardTitle>{t('personalInfo')}</CardTitle>
+                  <CardDescription>{t('viewAndUpdate')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="name">{t('fullName')}</Label>
                     <Input id="name" defaultValue={mockUser.name} />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="email">{t('emailAddress')}</Label>
                     <Input id="email" type="email" defaultValue={mockUser.email} readOnly />
                      <p className="text-xs text-muted-foreground mt-1">Email cannot be changed here.</p>
                   </div>
                   <div>
-                    <Label htmlFor="joinDate">Joined RoamFree</Label>
+                    <Label htmlFor="joinDate">{t('joinedDate')}</Label>
                     <Input id="joinDate" defaultValue={new Date(mockUser.joinDate).toLocaleDateString()} readOnly />
                   </div>
                    <div className="pt-2">
-                    <Label htmlFor="driverLicense">Driver's License (for Car Rentals)</Label>
+                    <Label htmlFor="driverLicense">{t('driversLicense')}</Label>
                     {mockUser.driverLicenseUploaded ? (
                         <p className="text-sm text-green-600 flex items-center"><ShieldCheck className="h-4 w-4 mr-1"/>License on File (Demo)</p>
                     ) : (
                         <Button variant="outline" size="sm" onClick={handleUploadLicense} className="mt-1">
-                            <FileUp className="mr-2 h-4 w-4"/> Upload License (Demo)
+                            <FileUp className="mr-2 h-4 w-4"/> {t('uploadLicense')}
                         </Button>
                     )}
                   </div>
                 </CardContent>
                 <CardFooter className="border-t px-6 py-4">
-                   <Button onClick={() => handleSaveChanges("personal information")}>Save Changes</Button>
+                   <Button onClick={() => handleSaveChanges("personal information")}>{t('saveChanges')}</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -305,16 +341,16 @@ export default function ProfilePage() {
             <TabsContent value="wallet" className="p-4 md:p-0">
               <Card>
                 <CardHeader>
-                  <CardTitle>My RoamFree Wallet</CardTitle>
-                  <CardDescription>Manage your funds for seamless payments across the platform. Buy Now, Pay Later options (e.g. Klarna, Afterpay) available for select services (Demo).</CardDescription>
+                  <CardTitle>{t('myWallet')}</CardTitle>
+                  <CardDescription>{t('manageFunds')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="p-4 border rounded-md bg-muted/50">
-                    <Label>Current Balance</Label>
-                    <p className="text-3xl font-bold text-primary">${mockUser.walletBalance.toFixed(2)}</p>
+                    <Label>{t('currentBalance')}</Label>
+                    <p className="text-3xl font-bold text-primary">{currency.symbol}{convertedBalance.toFixed(2)}</p>
                   </div>
                   <Button onClick={handleTopUpWallet} className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-                    <CreditCard className="mr-2 h-4 w-4"/> Top Up Wallet (Demo)
+                    <CreditCard className="mr-2 h-4 w-4"/> {t('topUpWallet')}
                   </Button>
                   <div>
                     <h4 className="font-medium mt-4">Wallet Features (Demo / Coming Soon)</h4>
