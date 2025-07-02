@@ -15,6 +15,7 @@ import type { AccommodationSearchFormValues } from '@/components/search/accommod
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
+import { useLocale } from '@/context/locale-provider';
 
 const mockPropertyTypes = [
   { name: "Hotel", icon: Building, image: "https://placehold.co/400x300.png", dataAiHint: "hotel building", filterType: "HOTEL" },
@@ -60,6 +61,7 @@ const mockDeals = [
 
 export default function HomePage() {
   const router = useRouter();
+  const { currency } = useLocale();
   const featuredStays = allMockStays.slice(0, 6);
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
@@ -175,59 +177,62 @@ export default function HomePage() {
             </Button>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredStays.map((stay) => (
-              <Card key={stay.id} className="overflow-hidden flex flex-col group rounded-lg">
-                <Link href={`/stays/${stay.id}`} className="block">
-                  <div className="relative w-full h-56 overflow-hidden rounded-t-lg">
-                    <Image
-                      src={stay.image}
-                      alt={stay.name}
-                      layout="fill"
-                      objectFit="cover"
-                      data-ai-hint={stay.dataAiHint}
-                      className="group-hover:scale-105 transition-transform duration-300 ease-in-out"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                     <Badge variant={stay.isEcoFriendly ? "default" : "secondary"} className={`absolute top-2 right-2 ${stay.isEcoFriendly ? 'bg-green-600 border-green-700 text-white' : 'bg-card/80 text-card-foreground/90 border-border'}`}>
-                      {stay.isEcoFriendly && <Leaf className="mr-1 h-3 w-3" />}
-                      {stay.category}
-                    </Badge>
-                  </div>
-                </Link>
-                <CardHeader className="pb-2 pt-3">
-                  <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors duration-300">
-                    <Link href={`/stays/${stay.id}`}>{stay.name}</Link>
-                  </CardTitle>
-                  <CardDescription className="flex items-center text-xs pt-0.5">
-                    <MapPin className="h-3.5 w-3.5 mr-1 text-muted-foreground" /> {stay.location}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow py-2">
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-xl font-bold text-primary">
-                      ${stay.pricePerNight}
-                      <span className="text-xs font-normal text-muted-foreground"> / night</span>
-                    </p>
-                    {stay.rating && (
-                      <div className="flex items-center gap-1 text-md">
-                        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                        <span className="font-semibold text-foreground">{stay.rating}</span>
+            {featuredStays.map((stay) => {
+              const convertedPrice = stay.pricePerNight * currency.rate;
+              return (
+                <Card key={stay.id} className="overflow-hidden flex flex-col group rounded-lg">
+                  <Link href={`/stays/${stay.id}`} className="block">
+                    <div className="relative w-full h-56 overflow-hidden rounded-t-lg">
+                      <Image
+                        src={stay.image}
+                        alt={stay.name}
+                        layout="fill"
+                        objectFit="cover"
+                        data-ai-hint={stay.dataAiHint}
+                        className="group-hover:scale-105 transition-transform duration-300 ease-in-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                      <Badge variant={stay.isEcoFriendly ? "default" : "secondary"} className={`absolute top-2 right-2 ${stay.isEcoFriendly ? 'bg-green-600 border-green-700 text-white' : 'bg-card/80 text-card-foreground/90 border-border'}`}>
+                        {stay.isEcoFriendly && <Leaf className="mr-1 h-3 w-3" />}
+                        {stay.category}
+                      </Badge>
+                    </div>
+                  </Link>
+                  <CardHeader className="pb-2 pt-3">
+                    <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors duration-300">
+                      <Link href={`/stays/${stay.id}`}>{stay.name}</Link>
+                    </CardTitle>
+                    <CardDescription className="flex items-center text-xs pt-0.5">
+                      <MapPin className="h-3.5 w-3.5 mr-1 text-muted-foreground" /> {stay.location}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-grow py-2">
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-xl font-bold text-primary">
+                        {currency.symbol}{convertedPrice.toFixed(2)}
+                        <span className="text-xs font-normal text-muted-foreground"> / night</span>
+                      </p>
+                      {stay.rating && (
+                        <div className="flex items-center gap-1 text-md">
+                          <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                          <span className="font-semibold text-foreground">{stay.rating}</span>
+                        </div>
+                      )}
+                    </div>
+                    {stay.moods && stay.moods.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {stay.moods.map(mood => <Badge key={mood} variant="outline" className="text-xs px-1.5 py-0.5">{mood}</Badge>)}
                       </div>
                     )}
-                  </div>
-                  {stay.moods && stay.moods.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {stay.moods.map(mood => <Badge key={mood} variant="outline" className="text-xs px-1.5 py-0.5">{mood}</Badge>)}
-                    </div>
-                  )}
-                </CardContent>
-                <CardFooter className="p-3 bg-muted/30 rounded-b-lg">
-                  <Button asChild className="w-full bg-accent hover:bg-accent/80 text-accent-foreground font-medium py-2.5 text-sm rounded-md shadow-sm hover:shadow-md transition-all">
-                    <Link href={`/stays/${stay.id}`}>View Details</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
+                  </CardContent>
+                  <CardFooter className="p-3 bg-muted/30 rounded-b-lg">
+                    <Button asChild className="w-full bg-accent hover:bg-accent/80 text-accent-foreground font-medium py-2.5 text-sm rounded-md shadow-sm hover:shadow-md transition-all">
+                      <Link href={`/stays/${stay.id}`}>View Details</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              )
+            })}
           </div>
       </section>
 
@@ -258,23 +263,26 @@ export default function HomePage() {
           Trending Near You (Demo Location)
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {mockTrendingDestinations.map(dest => (
-            <Card key={dest.id} className="overflow-hidden group rounded-lg cursor-pointer" onClick={() => handleFilterAndNavigate(dest.filter as any)}>
-              <div className="relative h-48 w-full">
-                 <Image src={dest.image} alt={dest.name} layout="fill" objectFit="cover" data-ai-hint={dest.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
-                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                 <div className="absolute bottom-0 left-0 p-3 text-white">
-                    <h3 className="font-semibold text-lg">{dest.name}</h3>
-                 </div>
-              </div>
-              <CardContent className="p-3">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Starts from <strong className="text-primary">${dest.price}</strong></span>
-                  <span className="flex items-center gap-1"><Star className="h-4 w-4 text-yellow-400 fill-yellow-400"/> {dest.rating}</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {mockTrendingDestinations.map(dest => {
+              const convertedPrice = parseFloat(dest.price) * currency.rate;
+              return (
+                <Card key={dest.id} className="overflow-hidden group rounded-lg cursor-pointer" onClick={() => handleFilterAndNavigate(dest.filter as any)}>
+                  <div className="relative h-48 w-full">
+                    <Image src={dest.image} alt={dest.name} layout="fill" objectFit="cover" data-ai-hint={dest.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 p-3 text-white">
+                        <h3 className="font-semibold text-lg">{dest.name}</h3>
+                    </div>
+                  </div>
+                  <CardContent className="p-3">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">Starts from <strong className="text-primary">{currency.symbol}{convertedPrice.toFixed(0)}</strong></span>
+                      <span className="flex items-center gap-1"><Star className="h-4 w-4 text-yellow-400 fill-yellow-400"/> {dest.rating}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+          })}
         </div>
       </section>
       

@@ -16,11 +16,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { languages, currencies, type Language, type Currency } from '@/lib/locales';
 import { cn } from '@/lib/utils';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLocale } from '@/context/locale-provider';
 
 
 // Main navigation items for desktop view
@@ -34,21 +35,30 @@ const mainNavItems = [
   { href: '/cars-for-sale', label: 'Buy Car', icon: CarFront },
 ];
 
+const navTranslations: Record<string, Record<string, string>> = {
+  'Stays': { 'en-US': 'Stays', 'es-ES': 'Estancias', 'fr-FR': 'Séjours' },
+  'Transport': { 'en-US': 'Transport', 'es-ES': 'Transporte', 'fr-FR': 'Transport' },
+  'Car Rent': { 'en-US': 'Car Rent', 'es-ES': 'Alquiler de Coches', 'fr-FR': 'Location Voiture' },
+  'Attractions': { 'en-US': 'Attractions', 'es-ES': 'Atracciones', 'fr-FR': 'Attractions' },
+  'Rent Home': { 'en-US': 'Rent Home', 'es-ES': 'Alquilar Casa', 'fr-FR': 'Louer Maison' },
+  'Buy Property': { 'en-US': 'Buy Property', 'es-ES': 'Comprar Propiedad', 'fr-FR': 'Acheter Propriété' },
+  'Buy Car': { 'en-US': 'Buy Car', 'es-ES': 'Comprar Coche', 'fr-FR': 'Acheter Voiture' },
+};
+
 
 function LanguageCurrencySelector({ isMobile = false }) {
   const [open, setOpen] = useState(false);
-  const [selectedLang, setSelectedLang] = useState<Language>(languages[0]);
-  const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currencies[0]);
+  const { language, setLanguage, currency, setCurrency } = useLocale();
 
-  const handleLangSelect = (lang: Language) => {
-    setSelectedLang(lang);
+  const handleLangSelect = useCallback((lang: Language) => {
+    setLanguage(lang);
     toast({ title: "Language Updated", description: `Language set to ${lang.name}.` });
-  };
-  
-  const handleCurrencySelect = (currency: Currency) => {
-    setSelectedCurrency(currency);
+  }, [setLanguage]);
+
+  const handleCurrencySelect = useCallback((currency: Currency) => {
+    setCurrency(currency);
     toast({ title: "Currency Updated", description: `Currency set to ${currency.name} (${currency.code}).` });
-  };
+  }, [setCurrency]);
 
 
   return (
@@ -58,7 +68,7 @@ function LanguageCurrencySelector({ isMobile = false }) {
           <PopoverTrigger asChild>
             <Button variant="ghost" size={isMobile ? "default" : "icon"} className={cn(!isMobile && 'px-3', "flex items-center gap-2")}>
               <Globe className="h-5 w-5" />
-              {!isMobile && <span className="text-xs">{selectedLang.code.split('-')[0].toUpperCase()} / {selectedCurrency.code}</span>}
+              {!isMobile && <span className="text-xs">{language.code.split('-')[0].toUpperCase()} / {currency.code}</span>}
               {isMobile && <span className="text-sm">Language & Currency</span>}
             </Button>
           </PopoverTrigger>
@@ -90,7 +100,7 @@ function LanguageCurrencySelector({ isMobile = false }) {
                         setOpen(false);
                       }}
                     >
-                      <Check className={cn("mr-2 h-4 w-4", selectedLang.code === lang.code ? "opacity-100" : "opacity-0")} />
+                      <Check className={cn("mr-2 h-4 w-4", language.code === lang.code ? "opacity-100" : "opacity-0")} />
                       {lang.nativeName}
                     </CommandItem>
                   ))}
@@ -104,18 +114,18 @@ function LanguageCurrencySelector({ isMobile = false }) {
               <CommandList>
                 <CommandEmpty>No results found.</CommandEmpty>
                 <CommandGroup>
-                  {currencies.map((currency) => (
+                  {currencies.map((curr) => (
                     <CommandItem
-                      key={currency.code}
-                      value={currency.name}
+                      key={curr.code}
+                      value={curr.name}
                       onSelect={() => {
-                        handleCurrencySelect(currency);
+                        handleCurrencySelect(curr);
                         setOpen(false);
                       }}
                     >
-                      <Check className={cn("mr-2 h-4 w-4", selectedCurrency.code === currency.code ? "opacity-100" : "opacity-0")} />
-                      <span className="font-mono text-xs w-10">{currency.code}</span>
-                      <span>{currency.name} ({currency.symbol})</span>
+                      <Check className={cn("mr-2 h-4 w-4", currency.code === curr.code ? "opacity-100" : "opacity-0")} />
+                      <span className="font-mono text-xs w-10">{curr.code}</span>
+                      <span>{curr.name} ({curr.symbol})</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -131,6 +141,7 @@ function LanguageCurrencySelector({ isMobile = false }) {
 
 export default function Header() {
   const pathname = usePathname();
+  const { language } = useLocale();
 
   const handleSosClick = () => {
     toast({
@@ -162,19 +173,22 @@ export default function Header() {
             <div className="flex items-center justify-center gap-6">
               <Link href="/" className="text-3xl font-extrabold text-primary">RoamFree</Link>
               <nav className="flex items-center gap-1">
-                {mainNavItems.map((item) => (
-                  <Tooltip key={item.label}>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" asChild className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary ${isLinkActive(item.href) ? 'text-primary' : 'text-muted-foreground'}`}>
-                        <Link href={item.href} className="flex items-center gap-2">
-                          <item.icon className="h-4 w-4" />
-                          {item.label}
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent><p>Explore {item.label}</p></TooltipContent>
-                  </Tooltip>
-                ))}
+                {mainNavItems.map((item) => {
+                  const translatedLabel = navTranslations[item.label]?.[language.code] || item.label;
+                  return (
+                    <Tooltip key={item.label}>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" asChild className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary ${isLinkActive(item.href) ? 'text-primary' : 'text-muted-foreground'}`}>
+                          <Link href={item.href} className="flex items-center gap-2">
+                            <item.icon className="h-4 w-4" />
+                            {translatedLabel}
+                          </Link>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent><p>Explore {translatedLabel}</p></TooltipContent>
+                    </Tooltip>
+                  )
+                })}
               </nav>
             </div>
             
@@ -246,12 +260,15 @@ export default function Header() {
               <SheetContent side="left">
                     <Link href="/" className="text-3xl font-extrabold text-primary mb-8 block">RoamFree</Link>
                     <nav className="flex flex-col gap-4">
-                      {mainNavItems.map((item) => (
-                        <Link key={item.label} href={item.href} className={`flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted ${isLinkActive(item.href) ? 'bg-muted font-semibold' : ''}`}>
-                            <item.icon className="h-5 w-5 text-primary" />
-                            <span className="text-lg">{item.label}</span>
-                        </Link>
-                      ))}
+                      {mainNavItems.map((item) => {
+                        const translatedLabel = navTranslations[item.label]?.[language.code] || item.label;
+                        return (
+                          <Link key={item.label} href={item.href} className={`flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted ${isLinkActive(item.href) ? 'bg-muted font-semibold' : ''}`}>
+                              <item.icon className="h-5 w-5 text-primary" />
+                              <span className="text-lg">{translatedLabel}</span>
+                          </Link>
+                        )
+                      })}
                       <Separator className="my-2" />
                         <Link href="/bus-transportation" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Bus className="h-5 w-5 text-primary" /><span className="text-lg">Bus Tickets</span></Link>
                         <Link href="/courier-delivery" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Truck className="h-5 w-5 text-primary" /><span className="text-lg">Courier</span></Link>
