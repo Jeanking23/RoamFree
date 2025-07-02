@@ -46,8 +46,8 @@ const accommodationSearchSchema = z.object({
 export type AccommodationSearchFormValues = z.infer<typeof accommodationSearchSchema>;
 
 interface AccommodationSearchFormProps {
-  onSearch: (values: AccommodationSearchFormValues) => void; // Keep for in-page filtering
-  isResultsPage?: boolean; // To differentiate behavior
+  onSearch: (values: AccommodationSearchFormValues) => void;
+  isResultsPage?: boolean;
 }
 
 

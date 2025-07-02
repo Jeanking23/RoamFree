@@ -8,12 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { BedDouble, MapPin, Star, Search, Leaf, Sparkles, Home as HomeIcon, Building, Waves, MountainSnow, Users, DollarSign, Heart, User, Tag, Zap, Gift, CalendarDays, BarChart3, Eye, TvIcon, Layers, Plane, Contact, ShieldCheck, MessageSquare, Video, CircleDot, SquareDot, LocateFixed, CheckCircle, Landmark, Bell } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { allMockStays, type MockStay } from '@/lib/mock-data';
 import type { AccommodationSearchFormValues } from '@/components/search/accommodation-search-form';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
+import { useRouter } from 'next/navigation';
 
 const mockPropertyTypes = [
   { name: "Hotel", icon: Building, image: "https://placehold.co/400x300.png", dataAiHint: "hotel building", filterType: "HOTEL" },
@@ -37,9 +38,9 @@ const mockTrendingDestinations = [
 ];
 
 const mockVibes = [
-  { name: "Adventure", icon: MountainSnow, filter: { mood: "Adventurous" } },
-  { name: "Relaxation", icon: Waves, filter: { mood: "Peaceful" } },
-  { name: "Romantic", icon: Heart, filter: { mood: "Romantic" } },
+  { name: "Adventure", icon: MountainSnow, filter: { mood: "ADVENTUROUS" } },
+  { name: "Relaxation", icon: Waves, filter: { mood: "PEACEFUL" } },
+  { name: "Romantic", icon: Heart, filter: { mood: "ROMANTIC" } },
   { name: "Family-Friendly", icon: Users, filter: { propertyType: "RENTAL" } }, 
   { name: "Budget-Friendly", icon: DollarSign, filter: { priceMax: 100 } },
 ];
@@ -51,16 +52,15 @@ const mockNearbyGems = [
 ];
 
 const mockDeals = [
-  { id: "deal1", title: "Up to 30% off Resorts", image: "https://placehold.co/400x250.png", dataAiHint: "resort pool", urgency: 75, urgencyText: "75% Claimed!", filter: { propertyType: "HOTEL", discount: true } },
-  { id: "deal2", title: "Last-minute Apartment Deals - Save 20%", image: "https://placehold.co/400x250.png", dataAiHint: "apartment city", urgency: 3, urgencyText: "Only 3 left!", filter: { propertyType: "RENTAL", discount: true } },
-  { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://placehold.co/400x250.png", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", filter: { propertyType: "RENTAL", priceMax: 100, discount: true } },
+  { id: "deal1", title: "Up to 30% off Resorts", image: "https://placehold.co/400x250.png", dataAiHint: "resort pool", urgency: 75, urgencyText: "75% Claimed!", filter: { propertyType: "HOTEL" } },
+  { id: "deal2", title: "Last-minute Apartment Deals - Save 20%", image: "https://placehold.co/400x250.png", dataAiHint: "apartment city", urgency: 3, urgencyText: "Only 3 left!", filter: { propertyType: "RENTAL" } },
+  { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://placehold.co/400x250.png", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", filter: { propertyType: "RENTAL", priceMax: 100 } },
 ];
 
 
 export default function HomePage() {
-  const [displayedStays, setDisplayedStays] = useState<MockStay[]>(allMockStays.slice(0, 6));
-  const [noResults, setNoResults] = useState(false);
-  const [activeFiltersSummary, setActiveFiltersSummary] = useState<string>("Featured Stays");
+  const router = useRouter();
+  const featuredStays = allMockStays.slice(0, 6);
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
   useEffect(() => {
@@ -77,70 +77,15 @@ export default function HomePage() {
   }, []);
 
 
-  // This function handles IN-PAGE filtering for quick discovery links (e.g. browse by type, vibe)
-  const handleInPageFilter = useCallback((filters: Partial<AccommodationSearchFormValues & { discount?: boolean, priceMax?: number }>) => {
-    setNoResults(false);
-    let currentSummary = "Search Results";
-
-    if (filters.propertyType && filters.propertyType !== "ANY" && Object.keys(filters).length === 1) {
-        currentSummary = `${filters.propertyType.charAt(0).toUpperCase() + filters.propertyType.slice(1).toLowerCase()}s`;
-    } else if (filters.mood && filters.mood !== "ANY" && Object.keys(filters).length === 1 && !filters.propertyType && !filters.destination) {
-        currentSummary = `Stays with a ${filters.mood} Vibe`;
-    } else if (filters.destination && Object.keys(filters).length <= (filters.propertyType && filters.propertyType !== "ANY" ? 2 : 1) && !filters.mood ) {
-        currentSummary = `Stays in ${filters.destination}`;
-        if(filters.propertyType && filters.propertyType !== "ANY") currentSummary += ` (${filters.propertyType.charAt(0).toUpperCase() + filters.propertyType.slice(1).toLowerCase()}s)`;
-    } else if (filters.discount) {
-        currentSummary = "Special Deals";
-        if(filters.propertyType && filters.propertyType !== "ANY") currentSummary += ` on ${filters.propertyType.toLowerCase()}s`;
-    } else if (Object.keys(filters).length > 0) {
-        let parts = [];
-        if(filters.destination) parts.push(`in ${filters.destination}`);
-        if(filters.propertyType && filters.propertyType !== "ANY") parts.push(filters.propertyType.toLowerCase());
-        if(filters.mood && filters.mood !== "ANY") parts.push(`${filters.mood.toLowerCase()} vibe`);
-        if(filters.priceMax) parts.push(`under $${filters.priceMax}`);
-        if(filters.ecoFriendly) parts.push("eco-friendly");
-        if(filters.wheelchairAccessible) parts.push("accessible");
-        currentSummary = parts.length > 0 ? `Filtered Stays: ${parts.join(', ')}` : "Search Results";
-    }
-
-
-    let results = allMockStays.filter(stay => {
-      let matches = true;
-      if (filters.destination && stay.location) matches = matches && stay.location.toLowerCase().includes(filters.destination.toLowerCase());
-      const totalGuests = (filters.adults || 0) + (filters.children || 0);
-      if (filters.adults && stay.maxGuests && totalGuests > stay.maxGuests) matches = false;
-      if (filters.propertyType && filters.propertyType !== "ANY") matches = matches && stay.type === filters.propertyType;
-      if (filters.mood && filters.mood !== "ANY" && stay.moods) matches = matches && stay.moods.includes(filters.mood as "Peaceful" | "Romantic" | "Adventurous");
-      if (filters.wheelchairAccessible && !stay.isWheelchairAccessible) matches = false;
-      if (filters.ecoFriendly && !stay.isEcoFriendly) matches = false;
-      if (filters.priceMax && stay.pricePerNight > filters.priceMax) matches = false;
-      if (filters.discount && filters.propertyType && filters.propertyType !== "ANY") {
-        matches = matches && stay.type === filters.propertyType;
-      }
-      return matches;
-    });
-
-    if (results.length === 0) {
-      setNoResults(true);
-      currentSummary = "No Stays Found Matching Your Criteria";
-    }
-    setDisplayedStays(results.slice(0, 12)); 
-    setActiveFiltersSummary(currentSummary);
-    
-    const staysSection = document.getElementById('stays-section');
-    if (staysSection) staysSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    if(Object.keys(filters).length > 0 || results.length === 0) {
-        toast({title: "Filter Applied", description: `${results.length} stays found for "${currentSummary}".`});
-    }
-  }, []);
-  
-  const resetAndShowAllStays = () => {
-    setDisplayedStays(allMockStays.slice(0, 12)); 
-    setNoResults(false);
-    setActiveFiltersSummary("All Available Stays");
-    const staysSection = document.getElementById('stays-section');
-    if (staysSection) staysSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const handleFilterAndNavigate = (filters: Partial<AccommodationSearchFormValues & { priceMax?: number }>) => {
+    const queryParams = new URLSearchParams();
+    if (filters.destination) queryParams.set('destination', filters.destination);
+    if (filters.propertyType && filters.propertyType !== 'ANY') queryParams.set('propertyType', filters.propertyType);
+    if (filters.mood && filters.mood !== 'ANY') queryParams.set('mood', filters.mood);
+    if (filters.priceMax) queryParams.set('priceMax', filters.priceMax.toString());
+    if (filters.ecoFriendly) queryParams.set('ecoFriendly', 'true');
+    if (filters.wheelchairAccessible) queryParams.set('wheelchairAccessible', 'true');
+    router.push(`/stays/search?${queryParams.toString()}`);
   };
   
   const handleNotificationPrompt = (enable: boolean) => {
@@ -166,7 +111,6 @@ export default function HomePage() {
             Discover amazing places to stay for your next adventure, from cozy cabins to luxury villas.
           </p>
           <div className="max-w-4xl mx-auto bg-card p-3 md:p-4 rounded-xl shadow-lg border">
-            {/* The onSearch prop for AccommodationSearchForm is now for navigating to a new page */}
             <AccommodationSearchForm onSearch={() => { /* This prop is for navigating, handled by the form itself */ }} />
           </div>
         </div>
@@ -204,7 +148,7 @@ export default function HomePage() {
             <Card 
               key={prop.name} 
               className="overflow-hidden cursor-pointer group rounded-lg"
-              onClick={() => handleInPageFilter({ propertyType: prop.filterType as "HOTEL" | "RENTAL" | "ANY" })}
+              onClick={() => handleFilterAndNavigate({ propertyType: prop.filterType as "HOTEL" | "RENTAL" | "ANY" })}
             >
               <div className="relative h-32 sm:h-40 w-full overflow-hidden rounded-t-lg">
                 <Image src={prop.image} alt={prop.name} layout="fill" objectFit="cover" data-ai-hint={prop.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
@@ -219,27 +163,19 @@ export default function HomePage() {
         </div>
       </section>
       
-      {/* Featured Stays Section - This is where results will be displayed by in-page filters */}
+      {/* Featured Stays Section */}
       <section id="stays-section" className="container mx-auto px-4">
         <div className="flex flex-col sm:flex-row items-baseline justify-between mb-8">
           <h2 className="text-2xl md:text-3xl font-headline font-semibold text-foreground flex items-center mb-3 sm:mb-0">
             <BedDouble className="mr-3 h-7 w-7 text-primary" />
-            {activeFiltersSummary}
+            Featured Stays
           </h2>
-           <Button variant="link" asChild className="text-primary hover:text-primary/80 text-md" onClick={resetAndShowAllStays}>
-              <Link href="#stays-section">View All Stays &rarr;</Link>
+           <Button variant="link" asChild className="text-primary hover:text-primary/80 text-md">
+              <Link href="/stays/search">View All Stays &rarr;</Link>
             </Button>
         </div>
-        {noResults ? (
-          <div className="text-center py-12 bg-muted/50 rounded-lg shadow-sm">
-            <Search className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
-            <p className="text-xl font-semibold text-foreground mb-2">No Stays Found</p>
-            <p className="text-muted-foreground mb-4">Try adjusting your search filters or view all available stays.</p>
-            <Button onClick={resetAndShowAllStays} size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">Clear Search & View All</Button>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedStays.map((stay) => (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredStays.map((stay) => (
               <Card key={stay.id} className="overflow-hidden flex flex-col group rounded-lg">
                 <Link href={`/stays/${stay.id}`} className="block">
                   <div className="relative w-full h-56 overflow-hidden rounded-t-lg">
@@ -293,7 +229,6 @@ export default function HomePage() {
               </Card>
             ))}
           </div>
-        )}
       </section>
 
       {/* Your Recent Searches */}
@@ -308,7 +243,7 @@ export default function HomePage() {
               key={search.id} 
               variant="outline" 
               className="bg-muted/50 hover:bg-muted border-border hover:border-primary/50 text-foreground hover:text-primary"
-              onClick={() => handleInPageFilter(search.filter as any)}
+              onClick={() => handleFilterAndNavigate(search.filter as any)}
             >
               {search.term}
             </Button>
@@ -324,7 +259,7 @@ export default function HomePage() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {mockTrendingDestinations.map(dest => (
-            <Card key={dest.id} className="overflow-hidden group rounded-lg cursor-pointer" onClick={() => handleInPageFilter(dest.filter as any)}>
+            <Card key={dest.id} className="overflow-hidden group rounded-lg cursor-pointer" onClick={() => handleFilterAndNavigate(dest.filter as any)}>
               <div className="relative h-48 w-full">
                  <Image src={dest.image} alt={dest.name} layout="fill" objectFit="cover" data-ai-hint={dest.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -358,7 +293,7 @@ export default function HomePage() {
               variant="outline" 
               size="lg" 
               className="bg-card hover:bg-accent/20 hover:border-accent text-foreground hover:text-accent-foreground shadow-sm border-border min-w-[150px] py-6 flex-col items-center h-auto group"
-              onClick={() => handleInPageFilter(vibe.filter as any)}
+              onClick={() => handleFilterAndNavigate(vibe.filter as any)}
             >
               <vibe.icon className="h-7 w-7 mb-1.5 text-primary group-hover:text-accent transition-colors" />
               {vibe.name}
@@ -403,7 +338,7 @@ export default function HomePage() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {mockDeals.map(deal => (
-            <Card key={deal.id} className="overflow-hidden group rounded-lg cursor-pointer" onClick={() => handleInPageFilter(deal.filter as any)}>
+            <Card key={deal.id} className="overflow-hidden group rounded-lg cursor-pointer" onClick={() => handleFilterAndNavigate(deal.filter as any)}>
                <div className="relative h-40 w-full">
                  <Image src={deal.image} alt={deal.title} layout="fill" objectFit="cover" data-ai-hint={deal.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10"></div>

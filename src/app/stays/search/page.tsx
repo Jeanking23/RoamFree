@@ -34,6 +34,7 @@ function SearchResultsDisplay() {
     const mood = params.get('mood') as AccommodationSearchFormValues['mood'];
     const wheelchairAccessible = params.get('wheelchairAccessible') === 'true';
     const ecoFriendly = params.get('ecoFriendly') === 'true';
+    const priceMax = params.get('priceMax') ? parseInt(params.get('priceMax') as string, 10) : undefined;
 
     let summaryParts = [];
     if (destination) summaryParts.push(`in ${destination}`);
@@ -42,6 +43,7 @@ function SearchResultsDisplay() {
     if (mood && mood !== "ANY") summaryParts.push(`with a ${mood.toLowerCase()} vibe`);
     if (wheelchairAccessible) summaryParts.push("accessible");
     if (ecoFriendly) summaryParts.push("eco-friendly");
+    if (priceMax) summaryParts.push(`under $${priceMax}`);
     
     setSearchCriteriaSummary(summaryParts.length > 0 ? `Stays ${summaryParts.join(', ')}` : "All Stays");
 
@@ -56,6 +58,7 @@ function SearchResultsDisplay() {
       if (mood && mood !== "ANY" && stay.moods) matches = matches && stay.moods.includes(mood);
       if (wheelchairAccessible && !stay.isWheelchairAccessible) matches = false;
       if (ecoFriendly && !stay.isEcoFriendly) matches = false;
+      if (priceMax && stay.pricePerNight > priceMax) matches = false;
       // Date filtering would be more complex, involving parsing dateFrom and dateTo and checking availability.
       // For this mock, we'll skip date filtering on the results page.
       return matches;
@@ -107,7 +110,7 @@ function SearchResultsDisplay() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <AccommodationSearchForm onSearch={handleNewSearch} />
+          <AccommodationSearchForm onSearch={handleNewSearch} isResultsPage={true} />
         </CardContent>
       </Card>
 
