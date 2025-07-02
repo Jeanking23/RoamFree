@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -16,7 +15,8 @@ import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
-import { mockRentalProperties } from '@/lib/mock-data'; // Import mock data
+import { mockRentalProperties } from '@/lib/mock-data';
+import PropertiesMapPlaceholder from '@/components/map/properties-map-placeholder';
 
 const rentalSearchSchema = z.object({
   location: z.string().optional(),
@@ -30,7 +30,8 @@ const rentalSearchSchema = z.object({
 type RentalSearchFormValues = z.infer<typeof rentalSearchSchema>;
 
 export default function RentHomePage() {
-  const [rentals, setRentals] = useState(mockRentalProperties); // Use imported data
+  const [rentals, setRentals] = useState(mockRentalProperties);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
   const rentalSearchForm = useForm<RentalSearchFormValues>({
     resolver: zodResolver(rentalSearchSchema),
@@ -63,6 +64,7 @@ export default function RentHomePage() {
         return matches;
     });
     setRentals(filteredRentals);
+    setSearchPerformed(true);
     toast({ title: "Search Submitted", description: `Found ${filteredRentals.length} rentals.` });
   }
 
@@ -198,59 +200,76 @@ export default function RentHomePage() {
               </Form>
             </CardContent>
           </Card>
-
-          <h3 className="text-2xl font-semibold text-foreground mb-4 mt-8">Available Rentals</h3>
-          {rentals.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {rentals.map(prop => (
-                <Card key={prop.id} className="overflow-hidden flex flex-col">
-                  <Link href={`/rent-home/${prop.id}`}>
-                    <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-48 object-cover" data-ai-hint={prop.dataAiHint}/>
-                  </Link>
-                  <CardHeader>
-                    <CardTitle><Link href={`/rent-home/${prop.id}`}>{prop.name}</Link></CardTitle>
-                    <CardDescription className="text-primary font-semibold text-lg">${(prop.price ?? prop.pricePerNight).toLocaleString()}{prop.price ? '/month' : '/night'}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-2 flex-grow">
-                    <p className="text-sm text-muted-foreground"><MapPin className="inline h-4 w-4 mr-1"/>{prop.location}</p>
-                    <p className="text-sm text-muted-foreground"><ClipboardList className="inline h-4 w-4 mr-1"/>Type: {prop.category}</p>
-                    <p className="text-sm text-muted-foreground"><Bed className="inline h-4 w-4 mr-1"/>Bedrooms: {prop.bedrooms}</p>
-                    <p className="text-sm text-muted-foreground"><Smile className="inline h-4 w-4 mr-1"/>Amenities: {Array.isArray(prop.amenities) ? prop.amenities.join(', ') : prop.amenities}</p>
-                    {prop.isEcoFriendly && <p className="text-sm text-green-600 flex items-center"><Leaf className="inline h-4 w-4 mr-1"/>Eco-Friendly Property</p>}
-                    <Separator className="my-2"/>
-                    <h4 className="text-xs font-semibold text-muted-foreground">Neighborhood (Demo):</h4>
-                    <p className="text-xs text-muted-foreground"><CheckCircle className="inline h-3 w-3 mr-1 text-green-500"/>Walkability: {prop.walkabilityScore}/100</p>
-                    <p className="text-xs text-muted-foreground"><School className="inline h-3 w-3 mr-1 text-blue-500"/>Schools: {prop.nearbySchools}</p>
-                     <h4 className="text-xs font-semibold text-muted-foreground mt-1">Utilities (Demo):</h4>
-                    <p className="text-xs text-muted-foreground">Included: {prop.utilitiesIncluded}</p>
-                    <p className="text-xs text-muted-foreground">Optional Add-ons: Cleaning, Maintenance (Demo)</p>
-                  </CardContent>
-                  <CardFooter className="flex flex-col gap-2 pt-4 border-t">
-                    <div className="grid grid-cols-2 gap-2 w-full">
-                        <Button variant="outline" size="sm" onClick={() => handleVirtualWalkthrough(prop.name)}><TvIcon className="mr-2 h-4 w-4"/>Virtual Tour</Button>
-                        <Button variant="outline" size="sm" onClick={() => handleViewFloorPlan(prop.name)}><Layers className="mr-2 h-4 w-4"/>3D Floorplan</Button>
+          
+          {searchPerformed ? (
+            <div className="mt-8">
+                <h3 className="text-2xl font-semibold text-foreground mb-4">
+                    {rentals.length > 0 ? `Found ${rentals.length} Rentals` : 'No Rentals Found'}
+                </h3>
+                {rentals.length > 0 ? (
+                    <div className="grid lg:grid-cols-2 gap-6 items-start">
+                        <div className="lg:sticky lg:top-24 h-[600px] lg:h-[calc(100vh-8rem)]">
+                            <PropertiesMapPlaceholder rentals={rentals} />
+                        </div>
+                        <div className="space-y-4 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">
+                            {rentals.map(prop => (
+                                <Card key={prop.id} className="overflow-hidden flex flex-row shadow-md hover:shadow-lg transition-shadow">
+                                    <Link href={`/rent-home/${prop.id}`} className="block w-1/3 flex-shrink-0 relative">
+                                        <Image src={prop.image} alt={prop.name} layout="fill" objectFit="cover" data-ai-hint={prop.dataAiHint}/>
+                                    </Link>
+                                    <div className="flex flex-col flex-grow">
+                                        <CardHeader className="p-3">
+                                            <CardTitle className="text-md hover:text-primary"><Link href={`/rent-home/${prop.id}`}>{prop.name}</Link></CardTitle>
+                                            <CardDescription className="text-primary font-semibold text-base">${(prop.price ?? prop.pricePerNight).toLocaleString()}{prop.price ? '/month' : '/night'}</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-0 space-y-1 text-sm flex-grow">
+                                            <p className="text-muted-foreground flex items-center gap-1"><MapPin className="h-4 w-4 "/>{prop.location}</p>
+                                            <p className="text-muted-foreground flex items-center gap-1"><Bed className="h-4 w-4 "/>{prop.bedrooms} Beds <Bath className="inline h-4 w-4 ml-2 mr-1"/>{prop.bathrooms} Baths</p>
+                                        </CardContent>
+                                        <CardFooter className="p-2 border-t bg-muted/30">
+                                            <Button asChild variant="default" size="sm" className="w-full">
+                                                <Link href={`/rent-home/${prop.id}`}>View Details</Link>
+                                            </Button>
+                                        </CardFooter>
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
                     </div>
-                    <Button variant="default" size="sm" className="w-full" onClick={() => handleScheduleTour(prop.name)}>
-                      <CalendarDays className="mr-2 h-4 w-4" /> Schedule In-Person Tour
-                    </Button>
-                     <Button variant="secondary" size="sm" className="w-full" onClick={() => handleLeaseManagement(prop.name)}>
-                      <FileText className="mr-2 h-4 w-4" /> Lease & Payments (Demo)
-                    </Button>
-                    <Button variant="link" size="sm" onClick={() => handleContactAgent(prop.name)}>
-                      <Phone className="mr-2 h-4 w-4" /> Contact Agent/Owner
-                    </Button>
-                    <p className="text-xs text-muted-foreground text-center mt-1">Secure Escrow Payment & Digital Lease Signing (Demo)</p>
-                  </CardFooter>
-                </Card>
-              ))}
+                ) : (
+                    <div className="mt-8 py-12 bg-muted/50 rounded-md flex flex-col items-center justify-center">
+                        <p className="text-xl font-semibold text-foreground">No matching rentals found.</p>
+                        <p className="text-muted-foreground mt-2">Try adjusting your search filters.</p>
+                    </div>
+                )}
             </div>
           ) : (
-             <div className="mt-8 py-12 bg-muted/50 rounded-md flex flex-col items-center justify-center">
-                <p className="text-xl font-semibold text-foreground">No matching rentals found.</p>
-                <p className="text-muted-foreground mt-2">Try adjusting your search filters.</p>
-            </div>
+            <>
+                <h3 className="text-2xl font-semibold text-foreground mb-4 mt-8">Featured Rentals</h3>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {rentals.map(prop => (
+                        <Card key={prop.id} className="overflow-hidden flex flex-col">
+                            <Link href={`/rent-home/${prop.id}`}>
+                                <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-48 object-cover" data-ai-hint={prop.dataAiHint}/>
+                            </Link>
+                            <CardHeader>
+                                <CardTitle><Link href={`/rent-home/${prop.id}`}>{prop.name}</Link></CardTitle>
+                                <CardDescription className="text-primary font-semibold text-lg">${(prop.price ?? prop.pricePerNight).toLocaleString()}{prop.price ? '/month' : '/night'}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-2 flex-grow">
+                                <p className="text-sm text-muted-foreground"><MapPin className="inline h-4 w-4 mr-1"/>{prop.location}</p>
+                                <p className="text-sm text-muted-foreground"><ClipboardList className="inline h-4 w-4 mr-1"/>Type: {prop.category}</p>
+                                <p className="text-sm text-muted-foreground"><Bed className="inline h-4 w-4 mr-1"/>Bedrooms: {prop.bedrooms}</p>
+                            </CardContent>
+                            <CardFooter className="flex flex-col gap-2 pt-4 border-t">
+                                <Button asChild className="w-full"><Link href={`/rent-home/${prop.id}`}>View Details & Apply</Link></Button>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
+            </>
           )}
-          
+
           <div className="mt-8 p-4 border rounded-md bg-muted/30">
             <h4 className="font-semibold text-foreground mb-2">Tenant & Landlord Features (Demo):</h4>
             <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
