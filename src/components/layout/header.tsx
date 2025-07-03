@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   BedDouble, Car, KeyRound, Landmark, Home, ClipboardList, HelpCircle, Building,
   UserCircle, LayoutDashboard, Heart, Award, MessageSquare, ShieldAlert, Search, Bell,
-  CalendarCheck2, Globe, MapPin, LogOut, Menu, Users, Phone, CarFront, Bus, Truck, Check
+  CalendarCheck2, Globe, MapPin, LogOut, Menu, Users, Phone, CarFront, Bus, Truck, Check, CircleDot, SquareDot
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -76,10 +76,9 @@ function LanguageCurrencySelector({ isMobile = false }) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size={isMobile ? "default" : "icon"} className={cn(isMobile && 'w-full justify-start', "flex items-center gap-2")}>
+        <Button variant="ghost" size="icon" className="h-9 w-9">
           <Globe className="h-5 w-5" />
-          {isMobile && <span className="text-sm">Language & Currency</span>}
-          {!isMobile && <span className="sr-only">Select Language & Currency</span>}
+          <span className="sr-only">Select Language & Currency</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80" align="end">
@@ -171,16 +170,11 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors hover:bg-background/75">
       <div className="container flex h-16 items-center justify-between gap-4">
         
         {/* Desktop Layout */}
-        <div className="hidden md:flex flex-1 items-center">
-          {/* Left Spacer */}
-          <div className="flex-1"></div>
-
-          {/* Centered Group: Logo & Nav */}
-          <div className="flex items-center justify-center gap-6">
+        <div className="hidden md:flex flex-1 items-center gap-6">
             <Link href="/" className="text-3xl font-extrabold text-primary">RoamFree</Link>
             <nav className="flex items-center gap-1">
               {mainNavItems.map((item) => {
@@ -195,19 +189,17 @@ export default function Header() {
                 )
               })}
             </nav>
-          </div>
-          
-          {/* Right: Icons & Profile */}
-          <div className="flex flex-1 items-center justify-end gap-1">
+        </div>
+        <div className="hidden md:flex flex-1 items-center justify-end gap-2">
             <LanguageCurrencySelector />
             
-            <Button variant="ghost" size="icon" onClick={() => toast({title: "Notifications (Demo)", description:"No new notifications."})}><Bell className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => toast({title: "Notifications (Demo)", description:"No new notifications."})}><Bell className="h-5 w-5" /></Button>
 
-            <Button variant="ghost" size="icon" onClick={() => toast({title: "Messages (Demo)", description:"No new messages."})}><MessageSquare className="h-5 w-5"/></Button>
+            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => toast({title: "Messages (Demo)", description:"No new messages."})}><MessageSquare className="h-5 w-5"/></Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative rounded-full">
+                <Button variant="ghost" size="icon" className="h-9 w-9 relative rounded-full">
                   <Avatar className="h-9 w-9">
                     <AvatarImage src="https://placehold.co/100x100.png" alt="User Avatar" data-ai-hint="person avatar"/>
                     <AvatarFallback>U</AvatarFallback>
@@ -231,8 +223,7 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}><ShieldAlert className="h-5 w-5" /></Button>
-          </div>
+            <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 h-9 w-9" aria-label="SOS Emergency" onClick={handleSosClick}><ShieldAlert className="h-5 w-5" /></Button>
         </div>
         
         {/* Mobile Layout */}
@@ -258,7 +249,12 @@ export default function Header() {
                       <Link href="/courier-delivery" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Truck className="h-5 w-5 text-primary" /><span className="text-lg">Courier</span></Link>
                     <Separator className="my-2"/>
                       <div className="px-0">
-                          <LanguageCurrencySelector isMobile={true} />
+                          <Button variant="ghost" className='w-full justify-start flex items-center gap-2 p-2 h-auto text-base' onClick={() => {
+                              const popoverTrigger = document.querySelector('#desktop-lang-currency-selector');
+                              if(popoverTrigger) (popoverTrigger as HTMLElement).click();
+                           }}>
+                            <Globe className="h-5 w-5 text-primary" />Language & Currency
+                          </Button>
                       </div>
                     <Separator className="my-2"/>
                       <Link href="/community-forum-demo" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Users className="h-5 w-5 text-primary" /><span className="text-lg">Forum</span></Link>
@@ -276,7 +272,9 @@ export default function Header() {
               <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}><ShieldAlert className="h-5 w-5" /></Button>
           </div>
         </div>
-
+         <div id="desktop-lang-currency-selector" className="hidden">
+            <LanguageCurrencySelector />
+        </div>
       </div>
     </header>
   );
