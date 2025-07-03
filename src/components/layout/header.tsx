@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   BedDouble, Car, KeyRound, Landmark, Home, ClipboardList, HelpCircle, Building,
   UserCircle, LayoutDashboard, Heart, Award, MessageSquare, ShieldAlert, Search, Bell,
-  CalendarCheck2, Globe, MapPin, LogOut, Menu, Users, Phone, CarFront, Bus, Truck, Check, CircleDot, SquareDot
+  CalendarCheck2, Globe, MapPin, LogOut, Menu, Users, Phone, CarFront, Bus, Truck, Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -170,27 +170,29 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors hover:bg-background/75">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors hover:bg-background/80 supports-[backdrop-filter]:hover:bg-background/50">
       <div className="container flex h-16 items-center justify-between gap-4">
         
         {/* Desktop Layout */}
-        <div className="hidden md:flex flex-1 items-center gap-6">
-            <Link href="/" className="text-3xl font-extrabold text-primary">RoamFree</Link>
-            <nav className="flex items-center gap-1">
-              {mainNavItems.map((item) => {
-                const translatedLabel = navTranslations[item.label]?.[language.code] || item.label;
-                return (
-                  <Button key={item.label} variant="ghost" asChild className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary ${isLinkActive(item.href) ? 'text-primary' : 'text-muted-foreground'}`}>
-                    <Link href={item.href} className="flex items-center gap-2">
-                      <item.icon className="h-4 w-4" />
-                      {translatedLabel}
-                    </Link>
-                  </Button>
-                )
-              })}
-            </nav>
+        <div className="hidden md:flex flex-1 items-center justify-center">
+            <div className="flex items-center gap-6">
+                 <Link href="/" className="text-3xl font-extrabold text-primary">RoamFree</Link>
+                <nav className="flex items-center gap-1">
+                {mainNavItems.map((item) => {
+                    const translatedLabel = navTranslations[item.label]?.[language.code] || item.label;
+                    return (
+                    <Button key={item.label} variant="ghost" asChild className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary ${isLinkActive(item.href) ? 'text-primary' : 'text-muted-foreground'}`}>
+                        <Link href={item.href} className="flex items-center gap-2">
+                        <item.icon className="h-4 w-4" />
+                        {translatedLabel}
+                        </Link>
+                    </Button>
+                    )
+                })}
+                </nav>
+            </div>
         </div>
-        <div className="hidden md:flex flex-1 items-center justify-end gap-2">
+        <div className="hidden md:flex flex-none items-center justify-end gap-1">
             <LanguageCurrencySelector />
             
             <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => toast({title: "Notifications (Demo)", description:"No new notifications."})}><Bell className="h-5 w-5" /></Button>
