@@ -5,7 +5,7 @@ import AccommodationSearchForm from '@/components/search/accommodation-search-fo
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BedDouble, MapPin, Star, Search, Leaf, Sparkles, Home as HomeIcon, Building, Waves, MountainSnow, Users, DollarSign, Heart, User, Tag, Zap, Gift, CalendarDays, BarChart3, Eye, TvIcon, Layers, Plane, Contact, ShieldCheck, MessageSquare, Video, CircleDot, SquareDot, LocateFixed, CheckCircle, Landmark, Bell } from 'lucide-react';
+import { BedDouble, MapPin, Star, Search, Leaf, Sparkles, Home as HomeIcon, Building, Waves, MountainSnow, Users, DollarSign, Heart, User, Tag, Zap, Gift, CalendarDays, BarChart3, Eye, TvIcon, Layers, Plane, Contact, ShieldCheck, MessageSquare, Video, LocateFixed, CheckCircle, Landmark, Bell } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
