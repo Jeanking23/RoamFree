@@ -15,7 +15,6 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { allMockStays, type MockStay, type Host, type StayPhoto } from '@/lib/mock-data';
 import { addDays, differenceInDays } from 'date-fns';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 // Mock data for nearby attractions (can be dynamic based on currentStay.location in a real app)
 const mockNearbyAttractions = [
@@ -179,28 +178,12 @@ export default function AccommodationProfilePage() {
               </div>
             </div>
             <div className="flex items-center gap-2 mt-2 md:mt-0 self-start">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" onClick={handleToggleFavorite} aria-label={isFavorited ? "Remove from wishlist" : "Add to wishlist"}>
-                      <Heart className={`h-6 w-6 ${isFavorited ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{isFavorited ? "Remove from wishlist" : "Add to wishlist"}</p>
-                  </TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" onClick={handleShare} aria-label="Share">
-                      <Share2 className="h-6 w-6 text-muted-foreground" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Share</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Button variant="ghost" size="icon" onClick={handleToggleFavorite} aria-label={isFavorited ? "Remove from wishlist" : "Add to wishlist"}>
+                <Heart className={`h-6 w-6 ${isFavorited ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={handleShare} aria-label="Share">
+                <Share2 className="h-6 w-6 text-muted-foreground" />
+              </Button>
             </div>
           </div>
         </CardHeader>
