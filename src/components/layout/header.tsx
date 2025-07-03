@@ -76,7 +76,7 @@ function LanguageCurrencySelector({ isMobile = false }) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground group-hover:text-foreground/90">
+        <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground">
           <Globe className="h-5 w-5" />
           <span className="sr-only">Select Language & Currency</span>
         </Button>
@@ -170,7 +170,7 @@ export default function Header() {
   };
 
   return (
-    <header className="group sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors hover:bg-[rgba(211,211,211,0.1)]">
+    <header className="group sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors">
       <div className="container flex h-16 items-center justify-between gap-4">
         
         {/* Desktop Layout */}
@@ -181,7 +181,7 @@ export default function Header() {
                 {mainNavItems.map((item) => {
                     const translatedLabel = navTranslations[item.label]?.[language.code] || item.label;
                     return (
-                    <Button key={item.label} variant="ghost" asChild className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary ${isLinkActive(item.href) ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground/90'}`}>
+                    <Button key={item.label} variant="ghost" asChild className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary ${isLinkActive(item.href) ? 'text-primary' : 'text-muted-foreground'}`}>
                         <Link href={item.href} className="flex items-center gap-2">
                         <item.icon className="h-4 w-4" />
                         {translatedLabel}
@@ -195,9 +195,9 @@ export default function Header() {
         <div className="hidden md:flex flex-none items-center justify-end gap-1">
             <LanguageCurrencySelector />
             
-            <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground group-hover:text-foreground/90" onClick={() => toast({title: "Notifications (Demo)", description:"No new notifications."})}><Bell className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={() => toast({title: "Notifications (Demo)", description:"No new notifications."})}><Bell className="h-5 w-5" /></Button>
 
-            <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground group-hover:text-foreground/90" onClick={() => toast({title: "Messages (Demo)", description:"No new messages."})}><MessageSquare className="h-5 w-5"/></Button>
+            <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={() => toast({title: "Messages (Demo)", description:"No new messages."})}><MessageSquare className="h-5 w-5"/></Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
