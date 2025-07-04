@@ -181,7 +181,16 @@ export default function Header() {
                 {mainNavItems.map((item) => {
                     const translatedLabel = navTranslations[item.label]?.[language.code] || item.label;
                     return (
-                    <Button key={item.label} variant="ghost" asChild className={`px-3 py-2 text-sm font-medium transition-colors rounded-md hover:text-primary ${isLinkActive(item.href) ? 'text-primary' : 'text-muted-foreground'}`}>
+                    <Button
+                      key={item.label}
+                      asChild
+                      className={cn(
+                        "px-3 py-2 text-sm font-medium transition-colors rounded-md hover:bg-white/10",
+                        isLinkActive(item.href)
+                          ? "bg-white/10 text-primary"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
                         <Link href={item.href} className="flex items-center gap-2">
                         <item.icon className="h-4 w-4" />
                         {translatedLabel}
