@@ -359,8 +359,8 @@ export default function HomePage() {
         </p>
         <div className="flex gap-6 overflow-x-auto pb-4 sm:grid sm:grid-cols-3 sm:overflow-x-visible no-scrollbar">
           {mockNearbyGems.map(gem => (
-            <Link key={gem.id} href={gem.link} passHref className="w-[80vw] sm:w-full flex-shrink-0">
-              <Card className="overflow-hidden group rounded-lg cursor-pointer h-full">
+            <Link key={gem.id} href={gem.link} passHref>
+              <Card className="overflow-hidden group rounded-lg cursor-pointer h-full w-[80vw] sm:w-full flex-shrink-0">
                 <div className="relative h-56 w-full">
                   <Image src={gem.image} alt={gem.name} layout="fill" objectFit="cover" data-ai-hint={gem.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
