@@ -184,11 +184,11 @@ export default function HomePage() {
           <HomeIcon className="mr-3 h-7 w-7 text-primary" />
           Browse by Property Type
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <div className="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-5 md:overflow-x-visible no-scrollbar">
           {mockPropertyTypes.map(prop => (
             <Card 
               key={prop.name} 
-              className="overflow-hidden cursor-pointer group rounded-lg"
+              className="overflow-hidden cursor-pointer group rounded-lg min-w-[45vw] sm:min-w-[30vw] md:min-w-0 flex-shrink-0"
               onClick={() => handleFilterAndNavigate({ propertyType: prop.filterType as "HOTEL" | "RENTAL" | "ANY" })}
             >
               <div className="relative h-32 sm:h-40 w-full overflow-hidden rounded-t-lg">
@@ -215,11 +215,11 @@ export default function HomePage() {
               <Link href="/stays/search">View All Stays &rarr;</Link>
             </Button>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-x-visible no-scrollbar">
             {featuredStays.map((stay) => {
               const convertedPrice = stay.pricePerNight * currency.rate;
               return (
-                <Card key={stay.id} className="overflow-hidden flex flex-col group rounded-lg">
+                <Card key={stay.id} className="overflow-hidden flex flex-col group rounded-lg w-[80vw] sm:w-[45vw] md:w-full flex-shrink-0">
                   <Link href={`/stays/${stay.id}`} className="block">
                     <div className="relative w-full h-56 overflow-hidden rounded-t-lg">
                       <Image
@@ -301,11 +301,11 @@ export default function HomePage() {
           <Sparkles className="mr-3 h-7 w-7 text-primary" />
           Trending Near You (Demo Location)
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="flex gap-6 overflow-x-auto pb-4 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-x-visible no-scrollbar">
           {mockTrendingDestinations.map(dest => {
               const convertedPrice = parseFloat(dest.price) * currency.rate;
               return (
-                <Card key={dest.id} className="overflow-hidden group rounded-lg cursor-pointer" onClick={() => handleFilterAndNavigate(dest.filter as any)}>
+                <Card key={dest.id} className="overflow-hidden group rounded-lg cursor-pointer w-[70vw] sm:w-full flex-shrink-0" onClick={() => handleFilterAndNavigate(dest.filter as any)}>
                   <div className="relative h-48 w-full">
                     <Image src={dest.image} alt={dest.name} layout="fill" objectFit="cover" data-ai-hint={dest.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -357,10 +357,10 @@ export default function HomePage() {
         <p className="text-muted-foreground mb-6 text-center">
           You don’t have to go far for your next trip.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="flex gap-6 overflow-x-auto pb-4 sm:grid sm:grid-cols-3 sm:overflow-x-visible no-scrollbar">
           {mockNearbyGems.map(gem => (
-            <Link key={gem.id} href={gem.link} passHref>
-              <Card className="overflow-hidden group rounded-lg cursor-pointer">
+            <Link key={gem.id} href={gem.link} passHref className="w-[80vw] sm:w-full flex-shrink-0">
+              <Card className="overflow-hidden group rounded-lg cursor-pointer h-full">
                 <div className="relative h-56 w-full">
                   <Image src={gem.image} alt={gem.name} layout="fill" objectFit="cover" data-ai-hint={gem.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
@@ -383,9 +383,9 @@ export default function HomePage() {
         <p className="text-muted-foreground mb-6 text-center">
           Travel more, spend less — discover discounts based on your preferences.
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:overflow-x-visible no-scrollbar">
           {mockDeals.map(deal => (
-            <Card key={deal.id} className="overflow-hidden group rounded-lg cursor-pointer" onClick={() => handleFilterAndNavigate(deal.filter as any)}>
+            <Card key={deal.id} className="overflow-hidden group rounded-lg cursor-pointer w-[80vw] md:w-full flex-shrink-0" onClick={() => handleFilterAndNavigate(deal.filter as any)}>
                <div className="relative h-40 w-full">
                  <Image src={deal.image} alt={deal.title} layout="fill" objectFit="cover" data-ai-hint={deal.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10"></div>

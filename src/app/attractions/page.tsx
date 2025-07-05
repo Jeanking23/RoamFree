@@ -103,9 +103,9 @@ export default function AttractionsPage() {
           </div>
 
           {filteredAttractions.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-x-visible no-scrollbar">
               {filteredAttractions.map(attraction => (
-                <Card key={attraction.id} className="flex flex-col overflow-hidden">
+                <Card key={attraction.id} className="flex flex-col overflow-hidden w-[80vw] sm:w-[45vw] md:w-full flex-shrink-0">
                   <Link href={`/attractions/${attraction.id}`} className="block relative w-full h-48 group">
                     <Image src={attraction.image} alt={attraction.name} layout="fill" objectFit="cover" data-ai-hint={attraction.dataAiHint} />
                      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">

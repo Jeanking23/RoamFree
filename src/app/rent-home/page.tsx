@@ -256,9 +256,9 @@ export default function RentHomePage() {
           ) : (
             <>
                 <h3 className="text-2xl font-semibold text-foreground mb-4 mt-8">Featured Rentals</h3>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-x-visible no-scrollbar">
                     {rentals.map(prop => (
-                        <Card key={prop.id} className="overflow-hidden flex flex-col">
+                        <Card key={prop.id} className="overflow-hidden flex flex-col w-[80vw] sm:w-[45vw] md:w-full flex-shrink-0">
                             <Link href={`/rent-home/${prop.id}`}>
                                 <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-48 object-cover" data-ai-hint={prop.dataAiHint}/>
                             </Link>
