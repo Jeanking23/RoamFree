@@ -49,10 +49,10 @@ const footerSections = [
   {
     title: 'About',
     links: [
-      { label: 'About RoamFree', href: '#!', isDemo: true },
-      { label: 'Our Mission', href: '#!', isDemo: true },
-      { label: 'Careers', href: '#!', isDemo: true },
-      { label: 'Press & Media', href: '#!', isDemo: true },
+      { label: 'About RoamFree', href: '/about' },
+      { label: 'Our Mission', href: '/our-mission' },
+      { label: 'Careers', href: '/careers' },
+      { label: 'Press & Media', href: '/press-media' },
     ]
   }
 ];
@@ -74,7 +74,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-muted/50 border-t pt-12 pb-8 mt-16 text-muted-foreground">
+    <footer className="bg-muted/50 border-t pt-12 pb-24 md:pb-8 mt-16 text-muted-foreground">
       <div className="container mx-auto px-4">
         {/* Desktop and Tablet View */}
         <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-5 gap-8">
