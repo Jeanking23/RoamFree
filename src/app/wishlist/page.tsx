@@ -75,7 +75,7 @@ export default function WishlistPage() {
                 {wishlist.map(item => (
                   <Card key={item.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
                      <Link href={item.link} className="block relative w-full h-56 group">
-                        <Image src={item.image} alt={item.name} layout="fill" objectFit="cover" data-ai-hint={item.dataAiHint} />
+                        <Image src={item.image} alt={item.name} fill className="object-cover" data-ai-hint={item.dataAiHint} />
                         <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                             <Search className="h-12 w-12 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
                         </div>
@@ -126,5 +126,3 @@ export default function WishlistPage() {
     </div>
   );
 }
-
-    

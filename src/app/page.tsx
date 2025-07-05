@@ -192,7 +192,7 @@ export default function HomePage() {
               onClick={() => handleFilterAndNavigate({ propertyType: prop.filterType as "HOTEL" | "RENTAL" | "ANY" })}
             >
               <div className="relative h-32 sm:h-40 w-full overflow-hidden rounded-t-lg">
-                <Image src={prop.image} alt={prop.name} layout="fill" objectFit="cover" data-ai-hint={prop.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
+                <Image src={prop.image} alt={prop.name} fill data-ai-hint={prop.dataAiHint} className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
               </div>
               <CardContent className="p-3 text-center bg-card rounded-b-lg">
@@ -225,10 +225,9 @@ export default function HomePage() {
                       <Image
                         src={stay.image}
                         alt={stay.name}
-                        layout="fill"
-                        objectFit="cover"
+                        fill
                         data-ai-hint={stay.dataAiHint}
-                        className="group-hover:scale-105 transition-transform duration-300 ease-in-out"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                       <Badge variant={stay.isEcoFriendly ? "default" : "secondary"} className={`absolute top-2 right-2 ${stay.isEcoFriendly ? 'bg-green-600 border-green-700 text-white' : 'bg-card/80 text-card-foreground/90 border-border'}`}>
@@ -307,7 +306,7 @@ export default function HomePage() {
               return (
                 <Card key={dest.id} className="overflow-hidden group rounded-lg cursor-pointer w-[70vw] sm:w-full flex-shrink-0" onClick={() => handleFilterAndNavigate(dest.filter as any)}>
                   <div className="relative h-48 w-full">
-                    <Image src={dest.image} alt={dest.name} layout="fill" objectFit="cover" data-ai-hint={dest.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
+                    <Image src={dest.image} alt={dest.name} fill data-ai-hint={dest.dataAiHint} className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     <div className="absolute bottom-0 left-0 p-3 text-white">
                         <h3 className="font-semibold text-lg">{dest.name}</h3>
@@ -362,7 +361,7 @@ export default function HomePage() {
             <Link key={gem.id} href={gem.link} passHref>
               <Card className="overflow-hidden group rounded-lg cursor-pointer h-full w-[80vw] sm:w-full flex-shrink-0">
                 <div className="relative h-56 w-full">
-                  <Image src={gem.image} alt={gem.name} layout="fill" objectFit="cover" data-ai-hint={gem.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
+                  <Image src={gem.image} alt={gem.name} fill data-ai-hint={gem.dataAiHint} className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 </div>
                 <CardContent className="p-4">
@@ -387,7 +386,7 @@ export default function HomePage() {
           {mockDeals.map(deal => (
             <Card key={deal.id} className="overflow-hidden group rounded-lg cursor-pointer w-[80vw] md:w-full flex-shrink-0" onClick={() => handleFilterAndNavigate(deal.filter as any)}>
                <div className="relative h-40 w-full">
-                 <Image src={deal.image} alt={deal.title} layout="fill" objectFit="cover" data-ai-hint={deal.dataAiHint} className="group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
+                 <Image src={deal.image} alt={deal.title} fill data-ai-hint={deal.dataAiHint} className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"/>
                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10"></div>
                  <div className="absolute bottom-0 left-0 p-4">
                     <h3 className="font-bold text-xl text-white">{deal.title}</h3>

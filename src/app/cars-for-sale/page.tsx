@@ -95,7 +95,7 @@ export default function CarsForSalePage() {
               {filteredCars.map(car => (
                 <Card key={car.id} className="flex flex-col overflow-hidden w-[85vw] sm:w-[50vw] md:w-full flex-shrink-0">
                   <Link href={`/cars-for-sale/${car.id}`} className="block relative w-full h-48 group">
-                    <Image src={car.image} alt={car.name} layout="fill" objectFit="cover" data-ai-hint={car.dataAiHint}/>
+                    <Image src={car.image} alt={car.name} fill className="object-cover" data-ai-hint={car.dataAiHint}/>
                      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                         <Search className="h-10 w-10 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
                     </div>

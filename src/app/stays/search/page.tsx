@@ -133,10 +133,9 @@ function SearchResultsDisplay() {
                     <Image
                       src={stay.image}
                       alt={stay.name}
-                      layout="fill"
-                      objectFit="cover"
+                      fill
                       data-ai-hint={stay.dataAiHint}
-                      className="group-hover:scale-105 transition-transform duration-300 ease-in-out"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                      <Badge variant={stay.isEcoFriendly ? "default" : "secondary"} className={`absolute top-2 right-2 ${stay.isEcoFriendly ? 'bg-green-600 border-green-700 text-white' : 'bg-card/80 text-card-foreground/90 border-border'}`}>

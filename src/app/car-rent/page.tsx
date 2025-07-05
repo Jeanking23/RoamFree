@@ -131,7 +131,7 @@ export default function CarRentPage() {
             {carListings.map((car) => (
               <Card key={car.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 w-[85vw] sm:w-[50vw] md:w-full flex-shrink-0">
                 <Link href={`/car-rent/${car.id}`} className="block relative w-full h-56 group">
-                  <Image src={car.image} alt={car.name} layout="fill" objectFit="cover" data-ai-hint={car.dataAiHint} />
+                  <Image src={car.image} alt={car.name} fill className="object-cover" data-ai-hint={car.dataAiHint} />
                    {car.ecoFriendly && <Badge variant="secondary" className="absolute top-2 right-2 bg-green-500 text-white border-green-600">Eco-Friendly</Badge>}
                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                        <span className="text-white font-bold">View Details</span>
@@ -197,4 +197,3 @@ export default function CarRentPage() {
     </div>
   );
 }
-    

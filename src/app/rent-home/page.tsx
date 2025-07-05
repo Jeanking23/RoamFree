@@ -216,7 +216,7 @@ export default function RentHomePage() {
                             {rentals.map(prop => (
                                 <Card key={prop.id} className="overflow-hidden flex flex-row shadow-md hover:shadow-lg transition-shadow">
                                     <Link href={`/rent-home/${prop.id}`} className="block w-1/3 flex-shrink-0 relative">
-                                        <Image src={prop.image} alt={prop.name} layout="fill" objectFit="cover" data-ai-hint={prop.dataAiHint}/>
+                                        <Image src={prop.image} alt={prop.name} fill className="object-cover" data-ai-hint={prop.dataAiHint}/>
                                     </Link>
                                     <div className="flex flex-col flex-grow">
                                         <CardHeader className="p-3">
@@ -259,8 +259,8 @@ export default function RentHomePage() {
                 <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-x-visible no-scrollbar">
                     {rentals.map(prop => (
                         <Card key={prop.id} className="overflow-hidden flex flex-col w-[80vw] sm:w-[45vw] md:w-full flex-shrink-0">
-                            <Link href={`/rent-home/${prop.id}`}>
-                                <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-48 object-cover" data-ai-hint={prop.dataAiHint}/>
+                            <Link href={`/rent-home/${prop.id}`} className="block relative w-full h-48">
+                                <Image src={prop.image} alt={prop.name} fill className="object-cover" data-ai-hint={prop.dataAiHint}/>
                             </Link>
                             <CardHeader>
                                 <CardTitle><Link href={`/rent-home/${prop.id}`}>{prop.name}</Link></CardTitle>

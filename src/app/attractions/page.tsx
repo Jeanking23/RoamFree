@@ -107,7 +107,7 @@ export default function AttractionsPage() {
               {filteredAttractions.map(attraction => (
                 <Card key={attraction.id} className="flex flex-col overflow-hidden w-[80vw] sm:w-[45vw] md:w-full flex-shrink-0">
                   <Link href={`/attractions/${attraction.id}`} className="block relative w-full h-48 group">
-                    <Image src={attraction.image} alt={attraction.name} layout="fill" objectFit="cover" data-ai-hint={attraction.dataAiHint} />
+                    <Image src={attraction.image} alt={attraction.name} fill className="object-cover" data-ai-hint={attraction.dataAiHint} />
                      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                         <Eye className="h-10 w-10 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
                     </div>

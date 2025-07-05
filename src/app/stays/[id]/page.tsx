@@ -191,11 +191,11 @@ export default function AccommodationProfilePage() {
         <CardContent className="px-0 md:px-6 pt-0">
            <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2 md:max-h-[500px] overflow-hidden rounded-md">
             <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer" onClick={() => currentImage && setCurrentImage(displayPhotos[0])}>
-              {currentImage && <Image src={currentImage.src} alt={currentImage.alt} layout="fill" objectFit="cover" className="rounded-l-md" data-ai-hint={currentImage.dataAiHint} />}
+              {currentImage && <Image src={currentImage.src} alt={currentImage.alt} fill className="object-cover rounded-l-md" data-ai-hint={currentImage.dataAiHint} />}
             </div>
             {displayPhotos.slice(1, 5).map((photo, index) => (
               <div key={photo.id} className={`relative aspect-[4/3] md:aspect-auto cursor-pointer ${index > 1 ? 'hidden md:block' : ''}`} onClick={() => setCurrentImage(photo)}>
-                <Image src={photo.src} alt={photo.alt} layout="fill" objectFit="cover" className={index === 1 ? "md:rounded-tr-md" : index === 3 ? "md:rounded-br-md" : ""} data-ai-hint={photo.dataAiHint} />
+                <Image src={photo.src} alt={photo.alt} fill className={`object-cover ${index === 1 ? "md:rounded-tr-md" : index === 3 ? "md:rounded-br-md" : ""}`} data-ai-hint={photo.dataAiHint} />
               </div>
             ))}
           </div>
@@ -271,11 +271,11 @@ export default function AccommodationProfilePage() {
             </div>
             <div>
               <h3 className="text-2xl font-semibold my-4">Nearby Attractions (Demo)</h3>
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-2 md:overflow-x-visible no-scrollbar">
                 {mockNearbyAttractions.map(attraction => (
-                  <Card key={attraction.id} className="overflow-hidden">
+                  <Card key={attraction.id} className="overflow-hidden w-[70vw] sm:w-[50vw] md:w-full flex-shrink-0">
                     <Link href={`/attractions/${attraction.id}`} className="block relative w-full h-32 group">
-                        <Image src={attraction.image} alt={attraction.name} layout="fill" objectFit="cover" data-ai-hint={attraction.dataAiHint}/>
+                        <Image src={attraction.image} alt={attraction.name} fill className="object-cover" data-ai-hint={attraction.dataAiHint}/>
                          <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                             <LandmarkIcon className="h-8 w-8 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
                         </div>

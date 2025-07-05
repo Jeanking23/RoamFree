@@ -101,11 +101,11 @@ export default function CarRentalDetailsPage() {
           {/* Image Gallery */}
           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2 md:max-h-[500px] overflow-hidden rounded-md">
             <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto">
-              {currentImage && <Image src={currentImage.src} alt={currentImage.alt} layout="fill" objectFit="cover" className="rounded-l-md" data-ai-hint={currentImage.dataAiHint} />}
+              {currentImage && <Image src={currentImage.src} alt={currentImage.alt} fill className="object-cover rounded-l-md" data-ai-hint={currentImage.dataAiHint} />}
             </div>
             {car.photos.slice(1, 5).map((photo, index) => (
               <div key={photo.id} className={`relative aspect-[4/3] md:aspect-auto cursor-pointer ${index > 1 ? 'hidden md:block' : ''}`} onClick={() => setCurrentImage(photo)}>
-                <Image src={photo.src} alt={photo.alt} layout="fill" objectFit="cover" className={index === 1 ? "md:rounded-tr-md" : index === 3 ? "md:rounded-br-md" : ""} data-ai-hint={photo.dataAiHint} />
+                <Image src={photo.src} alt={photo.alt} fill className={`object-cover ${index === 1 ? "md:rounded-tr-md" : index === 3 ? "md:rounded-br-md" : ""}`} data-ai-hint={photo.dataAiHint} />
               </div>
             ))}
           </div>
