@@ -1,13 +1,53 @@
 // src/app/corporate-solutions-demo/page.tsx
 'use client';
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Users, BarChart2, Ticket, Building, Percent, FileText, Lock, Calendar } from 'lucide-react';
-import Link from 'next/link';
+import { Briefcase, Users, BarChart2, Ticket, Building, Percent, FileText, Lock, Calendar, Send, Mail, Phone, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const corporateInquirySchema = z.object({
+  companyName: z.string().min(2, "Company name is required."),
+  contactName: z.string().min(2, "Contact name is required."),
+  contactEmail: z.string().email("Please enter a valid email."),
+  contactPhone: z.string().optional(),
+  serviceOfInterest: z.enum(["GROUP_BOOKINGS", "REPORTING", "LONG_TERM_STAYS", "ALL"]),
+  message: z.string().min(10, "Please provide a brief message.").max(500),
+});
+
+type CorporateInquiryFormValues = z.infer<typeof corporateInquirySchema>;
+
+const features = [
+  { icon: Users, title: "Simplified Group Bookings", description: "Easily book accommodations, transport, and activities for your entire team. Group discounts available." },
+  { icon: BarChart2, title: "Comprehensive Reporting", description: "Track expenses, manage budgets, and generate detailed travel reports with our intuitive dashboard." },
+  { icon: Percent, title: "Corporate Discounts", description: "Access exclusive rates and benefits for your company's travel needs." },
+  { icon: FileText, title: "Centralized Billing", description: "Streamline payments with a single monthly invoice for all your company's travel." },
+  { icon: Lock, title: "Custom Travel Policies", description: "Enforce company travel rules with customizable booking policies and approval workflows." },
+  { icon: Calendar, title: "Team Travel Calendars", description: "Coordinate schedules and manage group itineraries with a shared team calendar." },
+];
 
 export default function CorporateSolutionsDemoPage() {
+    const form = useForm<CorporateInquiryFormValues>({
+        resolver: zodResolver(corporateInquirySchema),
+        defaultValues: { serviceOfInterest: "ALL" }
+    });
+
+    function onSubmit(data: CorporateInquiryFormValues) {
+        console.log("Corporate Inquiry:", data);
+        toast({
+            title: "Inquiry Submitted (Demo)",
+            description: "Thank you for your interest! Our sales team will contact you shortly."
+        });
+        form.reset();
+    }
+
   return (
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
@@ -17,55 +57,67 @@ export default function CorporateSolutionsDemoPage() {
             RoamFree for Business (Demo)
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Streamline your corporate travel and accommodation needs with our tailored solutions.
+            Streamline your corporate travel and accommodation needs with our tailored, all-in-one solutions.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Users className="h-6 w-6 text-accent"/>Simplified Group Bookings</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">Easily book accommodations, transport, and activities for your entire team. Group discounts available.</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><BarChart2 className="h-6 w-6 text-accent"/>Comprehensive Reporting</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">Track expenses, manage budgets, and generate detailed travel reports with our intuitive dashboard.</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Percent className="h-6 w-6 text-accent"/>Corporate Discounts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">Access exclusive rates and benefits for your company's travel needs.</p>
-              </CardContent>
-            </Card>
-          </div>
+            <section className="mb-12">
+                <h2 className="text-2xl font-semibold text-center mb-6">Our Business Features</h2>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {features.map(feature => (
+                        <Card key={feature.title}>
+                            <CardHeader className="pb-4">
+                                <feature.icon className="h-8 w-8 text-primary mb-2" />
+                                <CardTitle>{feature.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-sm text-muted-foreground">{feature.description}</p>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </section>
           
-          <div className="text-center space-y-4">
-            <h3 className="text-2xl font-semibold">Interested in RoamFree for your Business?</h3>
-            <p className="text-muted-foreground">Contact our sales team to learn more about our corporate accounts and how we can help manage your business travel efficiently.</p>
-            <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => toast({title: 'Contact Sales (Demo)', description: "Opening a contact form or direct email to our sales team."})}>
-              Contact Sales (Demo)
-            </Button>
-          </div>
-
-          <div className="mt-12 border-t pt-8">
-            <h4 className="text-xl font-semibold mb-4 text-center">Upcoming Features for Business Accounts:</h4>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-muted-foreground max-w-2xl mx-auto">
-              <li className="flex items-start gap-2"><FileText className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />Centralized billing and invoicing.</li>
-              <li className="flex items-start gap-2"><Lock className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />Customizable travel policies and approval workflows.</li>
-              <li className="flex items-start gap-2"><Briefcase className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />Dedicated account management.</li>
-              <li className="flex items-start gap-2"><BarChart2 className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />Integration with expense management systems.</li>
-              <li className="flex items-start gap-2"><Calendar className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />Team travel calendars and group itinerary planning.</li>
-            </ul>
-          </div>
+            <Card className="bg-muted/50 border">
+                <CardHeader className="text-center">
+                    <CardTitle className="text-2xl">Request a Demo or Consultation</CardTitle>
+                    <CardDescription>Contact our sales team to learn more about our corporate accounts.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-xl mx-auto space-y-6">
+                            <div className="grid sm:grid-cols-2 gap-4">
+                                <FormField control={form.control} name="companyName" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Building className="h-4 w-4"/>Company Name</FormLabel><FormControl><Input placeholder="Your Company Inc." {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                                <FormField control={form.control} name="contactName" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><User className="h-4 w-4"/>Contact Name</FormLabel><FormControl><Input placeholder="John Doe" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                                <FormField control={form.control} name="contactEmail" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Mail className="h-4 w-4"/>Email</FormLabel><FormControl><Input type="email" placeholder="you@company.com" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                                <FormField control={form.control} name="contactPhone" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Phone className="h-4 w-4"/>Phone (Optional)</FormLabel><FormControl><Input type="tel" placeholder="+1 555-123-4567" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                            </div>
+                            <FormField
+                                control={form.control} name="serviceOfInterest"
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Primary Service of Interest</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue placeholder="Select a service" /></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="GROUP_BOOKINGS">Group Bookings</SelectItem>
+                                        <SelectItem value="REPORTING">Reporting & Dashboards</SelectItem>
+                                        <SelectItem value="LONG_TERM_STAYS">Long-term Corporate Stays</SelectItem>
+                                        <SelectItem value="ALL">All Services / General Inquiry</SelectItem>
+                                    </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                            <FormField control={form.control} name="message" render={({ field }) => (<FormItem><FormLabel>Your Message</FormLabel><FormControl><Textarea placeholder="Tell us about your company's travel needs..." {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                            <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+                                <Send className="mr-2 h-4 w-4"/> Submit Inquiry
+                            </Button>
+                        </form>
+                    </Form>
+                </CardContent>
+            </Card>
         </CardContent>
       </Card>
     </div>

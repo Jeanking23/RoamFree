@@ -5,67 +5,42 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Star, MapPin, Ticket, MessageSquare, Share2, Heart, AlertTriangle, Clock, Users, ExternalLink, Camera, Users2, Wifi, Moon, Sun, CloudSun, Calendar, Info, Landmark as LandmarkIcon, BadgeCheck, Percent, Ear } from 'lucide-react';
+import { CalendarDays, Star, MapPin, Ticket, MessageSquare, Share2, Heart, AlertTriangle, Clock, Users, ExternalLink, Camera, Users2, Wifi, Moon, Sun, CloudSun, Calendar, Info, Landmark as LandmarkIcon, BadgeCheck, Percent, Ear, X, ThumbsUp } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-
-// Mock data - in a real app, you'd fetch this based on params.id
-const mockAttractionDetails = {
-  id: "attr1",
-  name: "City Museum of Art",
-  category: "Culture",
-  location: "123 Art Avenue, Downtown Cityville",
-  rating: 4.7,
-  reviewsCount: 320,
-  description: "Explore a vast collection of modern and classical art spanning centuries. The City Museum of Art offers engaging exhibits, workshops, and guided tours. A must-visit for art enthusiasts and curious minds alike.",
-  openingHours: "Tue-Sun: 10:00 AM - 6:00 PM (Closed Mondays)",
-  ticketPrice: "$25 (Adults), $15 (Students/Seniors), Free (Children under 12)",
-  amenities: ["Cafe", "Gift Shop", "Wheelchair Accessible", "Guided Tours", "Restrooms", "Family Areas"],
-  photos: [
-    { id: "p1", src: "https://placehold.co/800x600.png", alt: "Museum main exhibit hall", dataAiHint: "museum exhibit" },
-    { id: "p2", src: "https://placehold.co/400x300.png", alt: "Museum sculpture garden", dataAiHint: "sculpture garden" },
-    { id: "p3", src: "https://placehold.co/400x300.png", alt: "Museum exterior facade", dataAiHint: "museum building" },
-    { id: "p4", src: "https://placehold.co/400x300.png", alt: "Interactive display for kids", dataAiHint: "interactive museum" },
-  ],
-  userReviews: [
-    { id: "r1", user: "Chris P.", rating: 5, comment: "Incredible collection and beautifully curated. Spent the whole afternoon here!", date: "2024-04-10" },
-    { id: "r2", user: "Jordan B.", rating: 4, comment: "Great museum, very informative. Some sections were a bit crowded.", date: "2024-03-22" },
-  ],
-  website: "https://examplemuseum.com", 
-  expectedCrowdLevel: "Moderate",
-  contactInfo: "info@examplemuseum.com / +1-555-ART-MUSEUM",
-  liveStatus: "Open", // New
-  maintenanceNote: "The East Wing will be closed for renovations from July 1st.", // New
-};
+import { mockAttractionDetails, type MockAttraction } from '@/lib/mock-data';
+import { cn } from '@/lib/utils';
 
 export default function AttractionProfilePage() {
   const params = useParams();
   const router = useRouter();
+  const [attraction, setAttraction] = useState<MockAttraction | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
-  const [currentImage, setCurrentImage] = useState(mockAttractionDetails.photos[0]);
+  const [currentImage, setCurrentImage] = useState(attraction?.photos[0] || null);
+  const [isArViewActive, setIsArViewActive] = useState(false);
+  const [isAudioGuideActive, setIsAudioGuideActive] = useState(false);
   
-  // In a real app, fetch data based on params.id
-  // For now, we use mockAttractionDetails regardless of ID.
-   useEffect(() => {
-    // This is just to simulate fetching data based on ID, or if ID doesn't match mock
-    if (params.id !== mockAttractionDetails.id) {
-        // console.warn("Displaying mock data for 'City Museum of Art' as ID doesn't match or is generic.");
+  useEffect(() => {
+    // In a real app, fetch data based on params.id
+    // For now, we use mockAttractionDetails regardless of ID.
+    if (params.id) {
+       setAttraction(mockAttractionDetails);
+       setCurrentImage(mockAttractionDetails.photos[0]);
     }
-    setCurrentImage(mockAttractionDetails.photos[0]);
   }, [params.id]);
 
 
   const handleBookTickets = () => {
-    toast({ title: "Book Tickets (Demo)", description: `Proceeding to ticket booking for ${mockAttractionDetails.name}. QR code ticketing would be simulated here.` });
+    toast({ title: "Book Tickets (Demo)", description: `Proceeding to ticket booking for ${attraction?.name}. QR code ticketing would be simulated here.` });
   };
   
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: mockAttractionDetails.name,
-        text: `Check out this cool attraction: ${mockAttractionDetails.name}`,
+        title: attraction?.name,
+        text: `Check out this cool attraction: ${attraction?.name}`,
         url: window.location.href,
       }).then(() => toast({ title: "Shared successfully!"}))
         .catch(error => console.error('Error sharing:', error));
@@ -78,16 +53,10 @@ export default function AttractionProfilePage() {
     setIsFavorited(!isFavorited);
     toast({ title: isFavorited ? "Removed from Wishlist" : "Added to Wishlist" });
   };
-   const handleArView = () => {
-    toast({ title: "Augmented Reality View (Demo)", description: "Starting AR guide. Overlaying historical facts and directions onto your camera view." });
-  };
-  const handleAudioGuide = () => {
-    toast({ title: "Audio Guide (Demo)", description: "Playing audio guide for Exhibit Hall A. Synced to your location via GPS."});
-  }
 
 
-  if (!mockAttractionDetails) { 
-    return <div>Loading attraction details...</div>; 
+  if (!attraction) { 
+    return <div className="text-center py-10">Loading attraction details...</div>; 
   }
 
   const getCrowdLevelIcon = (level: string) => {
@@ -105,16 +74,17 @@ export default function AttractionProfilePage() {
   }
 
   return (
+    <>
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
         <CardHeader className="pb-4">
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-2">
             <div>
-              <CardTitle className="text-3xl md:text-4xl font-headline text-primary">{mockAttractionDetails.name}</CardTitle>
+              <CardTitle className="text-3xl md:text-4xl font-headline text-primary">{attraction.name}</CardTitle>
               <div className="flex items-center gap-2 text-muted-foreground mt-1">
-                <MapPin className="h-5 w-5" /> <span>{mockAttractionDetails.location}</span>
+                <MapPin className="h-5 w-5" /> <span>{attraction.location}</span>
                 <Separator orientation="vertical" className="h-5" />
-                <Star className="h-5 w-5 text-yellow-400" /> <span>{mockAttractionDetails.rating} ({mockAttractionDetails.reviewsCount} reviews)</span>
+                <Star className="h-5 w-5 text-yellow-400" /> <span>{attraction.rating} ({attraction.reviewsCount} reviews)</span>
               </div>
             </div>
             <div className="flex items-center gap-2 mt-2 md:mt-0">
@@ -130,23 +100,23 @@ export default function AttractionProfilePage() {
 
         <CardContent className="px-0 md:px-6 pt-0">
           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2 md:max-h-[500px] overflow-hidden rounded-md">
-            <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer" onClick={() => setCurrentImage(mockAttractionDetails.photos[0])}>
-              <Image src={currentImage.src} alt={currentImage.alt} fill className="object-cover rounded-l-md" data-ai-hint={currentImage.dataAiHint} />
+            <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer" onClick={() => setCurrentImage(attraction.photos[0])}>
+              {currentImage && <Image src={currentImage.src} alt={currentImage.alt} fill className="object-cover rounded-l-md" data-ai-hint={currentImage.dataAiHint} />}
             </div>
-            {mockAttractionDetails.photos.slice(1, 5).map((photo, index) => (
+            {attraction.photos.slice(1, 5).map((photo, index) => (
               <div key={photo.id} className={`relative aspect-[4/3] md:aspect-auto cursor-pointer ${index > 1 ? 'hidden md:block' : ''}`} onClick={() => setCurrentImage(photo)}>
                 <Image src={photo.src} alt={photo.alt} fill className={`object-cover ${index === 1 ? "md:rounded-tr-md" : index === 3 ? "md:rounded-br-md" : ""}`} data-ai-hint={photo.dataAiHint} />
               </div>
             ))}
           </div>
            <div className="mt-2 flex gap-2 overflow-x-auto p-2 md:hidden">
-             {mockAttractionDetails.photos.map(photo => (
-                 <Image key={photo.id} src={photo.src} alt={photo.alt} width={80} height={60} className={`rounded object-cover cursor-pointer ${currentImage.id === photo.id ? 'ring-2 ring-primary' : ''}`} onClick={() => setCurrentImage(photo)} data-ai-hint={photo.dataAiHint}/>
+             {attraction.photos.map(photo => (
+                 <Image key={photo.id} src={photo.src} alt={photo.alt} width={80} height={60} className={`rounded object-cover cursor-pointer ${currentImage?.id === photo.id ? 'ring-2 ring-primary' : ''}`} onClick={() => setCurrentImage(photo)} data-ai-hint={photo.dataAiHint}/>
              ))}
           </div>
-           <div className="text-center mt-2">
-             <Button variant="outline" onClick={handleArView}><Camera className="mr-2 h-4 w-4" /> Try AR Guide (Demo)</Button>
-             <Button variant="outline" onClick={handleAudioGuide} className="ml-2"><Ear className="mr-2 h-4 w-4" /> Start Audio Guide (Demo)</Button>
+           <div className="text-center mt-2 flex justify-center gap-2">
+             <Button variant="outline" onClick={() => setIsArViewActive(true)}><Camera className="mr-2 h-4 w-4" /> Try AR Guide (Demo)</Button>
+             <Button variant="outline" onClick={() => setIsAudioGuideActive(true)} className="ml-2"><Ear className="mr-2 h-4 w-4" /> Start Audio Guide (Demo)</Button>
            </div>
         </CardContent>
         
@@ -155,25 +125,25 @@ export default function AttractionProfilePage() {
         <CardContent className="grid md:grid-cols-3 gap-8">
           <div className="md:col-span-2 space-y-6">
             <div>
-              <h3 className="text-2xl font-semibold mb-2">About {mockAttractionDetails.name}</h3>
-              <p className="text-muted-foreground whitespace-pre-line">{mockAttractionDetails.description}</p>
+              <h3 className="text-2xl font-semibold mb-2">About {attraction.name}</h3>
+              <p className="text-muted-foreground whitespace-pre-line">{attraction.description}</p>
             </div>
              <div>
               <h3 className="text-xl font-semibold mb-2">Details</h3>
-               <p className={`text-sm font-bold ${getLiveStatusColor(mockAttractionDetails.liveStatus)}`}>Live Status: {mockAttractionDetails.liveStatus}</p>
-              <p className="text-sm text-muted-foreground"><strong><Clock className="inline h-4 w-4 mr-1"/>Opening Hours:</strong> {mockAttractionDetails.openingHours}</p>
-              <p className="text-sm text-muted-foreground"><strong><Ticket className="inline h-4 w-4 mr-1"/>Ticket Price:</strong> {mockAttractionDetails.ticketPrice}</p>
-              <p className="text-sm text-muted-foreground"><strong>{getCrowdLevelIcon(mockAttractionDetails.expectedCrowdLevel)}Expected Crowd:</strong> {mockAttractionDetails.expectedCrowdLevel}</p>
-              <p className="text-sm text-muted-foreground"><strong><MessageSquare className="inline h-4 w-4 mr-1"/>Contact:</strong> {mockAttractionDetails.contactInfo}</p>
-              {mockAttractionDetails.website && 
-                <p className="text-sm text-muted-foreground"><strong><ExternalLink className="inline h-4 w-4 mr-1"/>Website:</strong> <a href={mockAttractionDetails.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{mockAttractionDetails.website}</a></p>
+               <p className={`text-sm font-bold ${getLiveStatusColor(attraction.liveStatus)}`}>Live Status: {attraction.liveStatus}</p>
+              <p className="text-sm text-muted-foreground"><strong><Clock className="inline h-4 w-4 mr-1"/>Opening Hours:</strong> {attraction.openingHours}</p>
+              <p className="text-sm text-muted-foreground"><strong><Ticket className="inline h-4 w-4 mr-1"/>Ticket Price:</strong> {attraction.ticketPrice}</p>
+              <p className="text-sm text-muted-foreground"><strong>{getCrowdLevelIcon(attraction.expectedCrowdLevel)}Expected Crowd:</strong> {attraction.expectedCrowdLevel}</p>
+              <p className="text-sm text-muted-foreground"><strong><MessageSquare className="inline h-4 w-4 mr-1"/>Contact:</strong> {attraction.contactInfo}</p>
+              {attraction.website && 
+                <p className="text-sm text-muted-foreground"><strong><ExternalLink className="inline h-4 w-4 mr-1"/>Website:</strong> <a href={attraction.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{attraction.website}</a></p>
               }
-               {mockAttractionDetails.maintenanceNote && <p className="text-sm text-orange-500 mt-1"><strong><Info className="inline h-4 w-4 mr-1"/>Note:</strong> {mockAttractionDetails.maintenanceNote}</p>}
+               {attraction.maintenanceNote && <p className="text-sm text-orange-500 mt-1"><strong><Info className="inline h-4 w-4 mr-1"/>Note:</strong> {attraction.maintenanceNote}</p>}
             </div>
             <div>
               <h3 className="text-xl font-semibold mb-3">Amenities/Features</h3>
               <div className="flex flex-wrap gap-2">
-                {mockAttractionDetails.amenities.map(amenity => (
+                {attraction.amenities.map(amenity => (
                   <Badge key={amenity} variant="secondary">{amenity}</Badge>
                 ))}
               </div>
@@ -181,11 +151,14 @@ export default function AttractionProfilePage() {
             <div>
               <h3 className="text-xl font-semibold mb-3">Visitor Photo Gallery (Demo)</h3>
               <div className="grid grid-cols-3 gap-2">
-                 {mockAttractionDetails.photos.slice(1,4).map((photo, i) => (
+                 {attraction.visitorPhotos.map((photo, i) => (
                     <Image key={`gallery-${i}`} src={photo.src} alt={photo.alt} width={150} height={100} className="rounded-md object-cover" data-ai-hint={photo.dataAiHint}/>
                  ))}
               </div>
-               <p className="text-xs text-muted-foreground mt-1">Curated photos from visitors.</p>
+               <div className="flex items-center gap-2 mt-2">
+                <Button variant="outline" size="sm" onClick={() => toast({title: "Liked!", description:"Thanks for your feedback."})}><ThumbsUp className="h-4 w-4 mr-1"/> Like Gallery</Button>
+                <Button variant="link" size="sm" onClick={() => toast({title: "Upload Photos (Demo)", description:"Photo upload feature coming soon."})}>+ Add Your Photos</Button>
+               </div>
             </div>
           </div>
 
@@ -209,11 +182,13 @@ export default function AttractionProfilePage() {
                 <CardHeader>
                     <CardTitle className="text-xl flex items-center gap-2"><Percent className="h-5 w-5"/>Deals & Combos (Demo)</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <ul className="list-disc list-inside text-sm text-muted-foreground">
-                        <li>Family Pass (2 Adults, 2 Kids) - Save 15%</li>
-                        <li>Museum + Lunch Combo - $40</li>
-                    </ul>
+                <CardContent className="space-y-3">
+                  {attraction.deals.map(deal => (
+                    <div key={deal.id} className="p-2 border-l-4 border-accent bg-accent/10 rounded-r-md">
+                      <p className="font-semibold">{deal.title}</p>
+                      <p className="text-xs text-muted-foreground">{deal.description}</p>
+                    </div>
+                  ))}
                 </CardContent>
             </Card>
           </div>
@@ -222,9 +197,9 @@ export default function AttractionProfilePage() {
         <Separator className="my-6" />
 
         <CardContent>
-          <h3 className="text-2xl font-semibold mb-4">Visitor Reviews ({mockAttractionDetails.reviewsCount})</h3>
+          <h3 className="text-2xl font-semibold mb-4">Visitor Reviews ({attraction.reviewsCount})</h3>
           <div className="space-y-6">
-            {mockAttractionDetails.userReviews.map(review => (
+            {attraction.userReviews.map(review => (
               <Card key={review.id} className="bg-muted/30">
                 <CardHeader className="flex flex-row justify-between items-center pb-2">
                   <div className="flex items-center gap-2">
@@ -255,13 +230,11 @@ export default function AttractionProfilePage() {
                 </CardHeader>
                 <CardContent>
                     <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                        <li>"Go early to avoid crowds, especially on weekends."</li>
-                        <li>"The audio guide is worth it for a richer experience."</li>
-                        <li>"Check out the special exhibit on the second floor!"</li>
+                      {attraction.topTips.map((tip, i) => <li key={i}>{tip}</li>)}
                     </ul>
                 </CardContent>
             </Card>
-            <Button variant="outline">Show all {mockAttractionDetails.reviewsCount} reviews</Button>
+            <Button variant="outline">Show all {attraction.reviewsCount} reviews</Button>
           </div>
         </CardContent>
         <CardFooter className="border-t pt-6">
@@ -272,5 +245,42 @@ export default function AttractionProfilePage() {
         </CardFooter>
       </Card>
     </div>
+
+    {/* AR View Overlay */}
+    <div className={cn("fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300", isArViewActive ? "opacity-100" : "opacity-0 pointer-events-none")}>
+      <Card className="w-11/12 max-w-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            AR Guide (Demo)
+            <Button variant="ghost" size="icon" onClick={() => setIsArViewActive(false)}><X className="h-5 w-5"/></Button>
+          </CardTitle>
+          <CardDescription>This is a simulation of the Augmented Reality guide.</CardDescription>
+        </CardHeader>
+        <CardContent className="text-center">
+            <Camera className="h-24 w-24 mx-auto text-muted-foreground mb-4"/>
+            <p className="font-semibold">Point your camera at an exhibit</p>
+            <p className="text-sm text-muted-foreground">Information will be overlaid on your screen.</p>
+        </CardContent>
+      </Card>
+    </div>
+
+    {/* Audio Guide Overlay */}
+    <div className={cn("fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300", isAudioGuideActive ? "opacity-100" : "opacity-0 pointer-events-none")}>
+        <Card className="w-11/12 max-w-md">
+         <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+                Audio Guide (Demo)
+                <Button variant="ghost" size="icon" onClick={() => setIsAudioGuideActive(false)}><X className="h-5 w-5"/></Button>
+            </CardTitle>
+            <CardDescription>This is a simulation of the Audio guide.</CardDescription>
+         </CardHeader>
+         <CardContent className="text-center">
+            <Ear className="h-24 w-24 mx-auto text-muted-foreground mb-4"/>
+            <p className="font-semibold">Playing: Exhibit Hall A - The Renaissance</p>
+            <p className="text-sm text-muted-foreground">Your guide will automatically continue as you move through the museum.</p>
+        </CardContent>
+        </Card>
+    </div>
+    </>
   );
 }

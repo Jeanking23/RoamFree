@@ -1,4 +1,3 @@
-
 // src/lib/mock-data.ts
 
 export interface StayPhoto {
@@ -33,8 +32,9 @@ export interface Policies {
 export interface NeighborhoodInsights {
   walkabilityScore: number;
   crimeRate: string;
-  nearbySchools: string;
-  publicTransport: string;
+  schools: { name: string; rating: string; type: string }[];
+  publicTransport: { type: string; line: string; stopDistance: string }[];
+  description: string;
 }
 
 export interface MockStay {
@@ -74,7 +74,7 @@ export interface MockStay {
   marketTrend?: string;
   utilitiesIncluded?: string;
   walkabilityScore?: number;
-  nearbySchools?: string;
+  nearbySchools?: string; // simplified version for some mocks
   price?: number; // For total price in sales
 }
 
@@ -103,6 +103,29 @@ export interface CarListing {
   description?: string;
 }
 
+export interface MockAttraction {
+  id: string;
+  name: string;
+  category: string;
+  location: string;
+  rating: number;
+  reviewsCount: number;
+  description: string;
+  openingHours: string;
+  ticketPrice: string;
+  amenities: string[];
+  photos: StayPhoto[];
+  userReviews: GuestReview[];
+  website: string; 
+  expectedCrowdLevel: string;
+  contactInfo: string;
+  liveStatus: string;
+  maintenanceNote: string;
+  deals: { id: string; title: string; description: string }[];
+  visitorPhotos: StayPhoto[];
+  topTips: string[];
+}
+
 
 export const allMockStays: MockStay[] = [
   {
@@ -110,7 +133,7 @@ export const allMockStays: MockStay[] = [
     name: "Sunny Beachfront Villa",
     location: "Bali, Indonesia",
     pricePerNight: 250,
-    image: "https://placehold.co/600x400.png?text=Beach+Villa+Bali",
+    image: "https://placehold.co/600x400.png",
     dataAiHint: "beach villa bali",
     rating: 4.8,
     category: "Villa",
@@ -125,25 +148,25 @@ export const allMockStays: MockStay[] = [
     description: "Experience ultimate luxury in this stunning beachfront villa in Bali. Offering breathtaking ocean views, a private infinity pool, and direct beach access. Perfect for families or romantic getaways. Features 4 bedrooms, 5 bathrooms, a gourmet kitchen, and expansive outdoor living spaces.",
     amenities: ["Private Pool", "Beachfront", "WiFi", "Air Conditioning", "Full Kitchen", "Free Parking", "Daily Housekeeping"],
     photos: [
-      { id: "p1s1", src: "https://placehold.co/800x600.png?text=Bali+Villa+View", alt: "Bali villa ocean view", dataAiHint: "luxury villa ocean" },
-      { id: "p2s1", src: "https://placehold.co/400x300.png?text=Bali+Pool", alt: "Infinity pool Bali", dataAiHint: "infinity pool" },
-      { id: "p3s1", src: "https://placehold.co/400x300.png?text=Bali+Bedroom", alt: "Master bedroom Bali", dataAiHint: "luxury bedroom" },
-      { id: "p4s1", src: "https://placehold.co/400x300.png?text=Bali+Living", alt: "Living area Bali", dataAiHint: "modern living" },
+      { id: "p1s1", src: "https://placehold.co/800x600.png", alt: "Bali villa ocean view", dataAiHint: "luxury villa ocean" },
+      { id: "p2s1", src: "https://placehold.co/400x300.png", alt: "Infinity pool Bali", dataAiHint: "infinity pool" },
+      { id: "p3s1", src: "https://placehold.co/400x300.png", alt: "Master bedroom Bali", dataAiHint: "luxury bedroom" },
+      { id: "p4s1", src: "https://placehold.co/400x300.png", alt: "Living area Bali", dataAiHint: "modern living" },
     ],
-    host: { name: "Wayan S.", avatar: "https://placehold.co/100x100.png?text=WS", dataAiHint: "man portrait" },
+    host: { name: "Wayan S.", avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
     guestReviews: [
-      { id: "gr1s1", user: "John K.", rating: 5, comment: "Paradise found! Amazing villa and host.", date: "2024-05-10", avatar: "https://placehold.co/40x40.png?text=JK", dataAiHintAvatar: "person avatar" },
-      { id: "gr2s1", user: "Sarah L.", rating: 4, comment: "Beautiful, but a bit far from town.", date: "2024-04-22", avatar: "https://placehold.co/40x40.png?text=SL", dataAiHintAvatar: "person avatar"},
+      { id: "gr1s1", user: "John K.", rating: 5, comment: "Paradise found! Amazing villa and host.", date: "2024-05-10", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar" },
+      { id: "gr2s1", user: "Sarah L.", rating: 4, comment: "Beautiful, but a bit far from town.", date: "2024-04-22", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar"},
     ],
     policies: { checkIn: "After 3:00 PM", checkOut: "Before 11:00 AM", cancellation: "Flexible - Free cancellation up to 7 days before check-in." },
-    neighborhoodInsights: { walkabilityScore: 70, crimeRate: "Very Low", nearbySchools: "Green School Bali (15 min drive)", publicTransport: "Scooter rental recommended" }
+    neighborhoodInsights: { walkabilityScore: 70, crimeRate: "Very Low", schools: [{name: 'Green School Bali', rating: '4.8/5', type: 'International'}], publicTransport: [{type:'Scooter', line: 'Rental', stopDistance: 'Recommended'}], description: 'A quiet, upscale area known for its beautiful beaches and yoga retreats. Limited public transport, so scooter or car rental is advised.' }
   },
   {
     id: "stay2",
     name: "Cozy Mountain Cabin",
     location: "Aspen, Colorado",
     pricePerNight: 180,
-    image: "https://placehold.co/600x400.png?text=Aspen+Cabin",
+    image: "https://placehold.co/600x400.png",
     dataAiHint: "mountain cabin snow",
     rating: 4.9,
     category: "Cabin",
@@ -158,22 +181,22 @@ export const allMockStays: MockStay[] = [
     description: "A charming and cozy cabin nestled in the Aspen mountains. Features a fireplace, hot tub, and stunning forest views. Ideal for ski trips or summer hiking.",
     amenities: ["Hot Tub", "Fireplace", "WiFi", "Kitchenette", "Ski-in/Ski-out Access (nearby)"],
      photos: [
-      { id: "p1s2", src: "https://placehold.co/800x600.png?text=Cabin+Exterior", alt: "Cabin exterior in snow", dataAiHint: "cabin snow" },
-      { id: "p2s2", src: "https://placehold.co/400x300.png?text=Cabin+Interior", alt: "Cozy cabin interior with fireplace", dataAiHint: "cabin fireplace" },
+      { id: "p1s2", src: "https://placehold.co/800x600.png", alt: "Cabin exterior in snow", dataAiHint: "cabin snow" },
+      { id: "p2s2", src: "https://placehold.co/400x300.png", alt: "Cozy cabin interior with fireplace", dataAiHint: "cabin fireplace" },
     ],
-    host: { name: "Mike R.", avatar: "https://placehold.co/100x100.png?text=MR", dataAiHint: "man portrait" },
+    host: { name: "Mike R.", avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
     guestReviews: [
-      { id: "gr1s2", user: "Linda P.", rating: 5, comment: "Perfect cabin getaway! So cozy and beautiful.", date: "2024-02-10", avatar: "https://placehold.co/40x40.png?text=LP", dataAiHintAvatar: "person avatar"},
+      { id: "gr1s2", user: "Linda P.", rating: 5, comment: "Perfect cabin getaway! So cozy and beautiful.", date: "2024-02-10", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar"},
     ],
     policies: { checkIn: "After 4:00 PM", checkOut: "Before 10:00 AM", cancellation: "Strict - 50% refund up to 1 week prior to arrival." },
-    neighborhoodInsights: { walkabilityScore: 30, crimeRate: "Very Low", nearbySchools: "Aspen Elementary (10 min drive)", publicTransport: "Car essential" }
+    neighborhoodInsights: { walkabilityScore: 30, crimeRate: "Very Low", schools: [{name: 'Aspen Elementary', rating: 'N/A', type: 'Public'}], publicTransport: [{type:'Bus', line: 'Route 3', stopDistance: '1 mile'}], description: 'Secluded and quiet, perfect for nature lovers. A car is essential for getting around and accessing town amenities.' }
   },
   {
     id: "stay3",
     name: "Urban Chic Hotel Room",
     location: "Paris, France",
     pricePerNight: 150,
-    image: "https://placehold.co/600x400.png?text=Paris+Hotel",
+    image: "https://placehold.co/600x400.png",
     dataAiHint: "modern hotel room paris",
     rating: 4.7,
     category: "Hotel Room",
@@ -186,22 +209,22 @@ export const allMockStays: MockStay[] = [
     description: "Stylish hotel room in the heart of Paris, close to major attractions. Features a comfortable king bed, city views, and daily breakfast.",
     amenities: ["Daily Breakfast", "Concierge", "WiFi", "Air Conditioning", "Ensuite Bathroom"],
     photos: [
-      { id: "p1s3", src: "https://placehold.co/800x600.png?text=Paris+Hotel+Room", alt: "Paris hotel room view", dataAiHint: "hotel room paris" },
-      { id: "p2s3", src: "https://placehold.co/400x300.png?text=Hotel+Lobby", alt: "Hotel lobby Paris", dataAiHint: "hotel lobby chic" },
+      { id: "p1s3", src: "https://placehold.co/800x600.png", alt: "Paris hotel room view", dataAiHint: "hotel room paris" },
+      { id: "p2s3", src: "https://placehold.co/400x300.png", alt: "Hotel lobby Paris", dataAiHint: "hotel lobby chic" },
     ],
-    host: { name: "Hotel Le Grand", avatar: "https://placehold.co/100x100.png?text=LG", dataAiHint: "hotel logo" },
+    host: { name: "Hotel Le Grand", avatar: "https://placehold.co/100x100.png", dataAiHint: "hotel logo" },
     guestReviews: [
-      { id: "gr1s3", user: "David B.", rating: 5, comment: "Fantastic location and lovely hotel. Staff were excellent.", date: "2024-05-01", avatar: "https://placehold.co/40x40.png?text=DB", dataAiHintAvatar: "person avatar"},
+      { id: "gr1s3", user: "David B.", rating: 5, comment: "Fantastic location and lovely hotel. Staff were excellent.", date: "2024-05-01", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar"},
     ],
      policies: { checkIn: "After 2:00 PM", checkOut: "Before 12:00 PM", cancellation: "Free cancellation up to 24 hours before check-in." },
-    neighborhoodInsights: { walkabilityScore: 98, crimeRate: "Low", nearbySchools: "Sorbonne University (walking distance)", publicTransport: "Metro station 100m" }
+    neighborhoodInsights: { walkabilityScore: 98, crimeRate: "Low", schools: [{name:'Sorbonne University', rating:'World-class', type:'University'}], publicTransport: [{type:'Metro', line:'Line 4', stopDistance:'100m'}], description: 'Vibrant, historic neighborhood bustling with cafes, shops, and museums. Everything is accessible on foot.' }
   },
   {
     id: "stay4",
     name: "Riverside Lodge Escape",
     location: "Scottish Highlands",
     pricePerNight: 220,
-    image: "https://placehold.co/600x400.png?text=Highlands+Lodge",
+    image: "https://placehold.co/600x400.png",
     dataAiHint: "river lodge scotland",
     rating: 4.6,
     category: "Lodge",
@@ -214,18 +237,18 @@ export const allMockStays: MockStay[] = [
     reviewsCount: 95,
     description: "A beautiful lodge by the river in the Scottish Highlands. Perfect for fishing, hiking, and relaxing in nature. Offers 3 bedrooms and a cozy fireplace.",
     amenities: ["River Access", "Fishing Gear (rental)", "WiFi", "Full Kitchen", "Log Burner"],
-    photos: [ { id: "p1s4", src: "https://placehold.co/800x600.png?text=Lodge+Exterior+Highlands", alt: "Lodge exterior", dataAiHint: "lodge highlands river" } ],
-    host: { name: "Angus McTavish", avatar: "https://placehold.co/100x100.png?text=AM", dataAiHint: "man portrait" },
-    guestReviews: [ { id: "gr1s4", user: "Emily R.", rating: 5, comment: "Stunning location, very peaceful.", date: "2024-03-20", avatar: "https://placehold.co/40x40.png?text=ER", dataAiHintAvatar: "person avatar"} ],
+    photos: [ { id: "p1s4", src: "https://placehold.co/800x600.png", alt: "Lodge exterior", dataAiHint: "lodge highlands river" } ],
+    host: { name: "Angus McTavish", avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
+    guestReviews: [ { id: "gr1s4", user: "Emily R.", rating: 5, comment: "Stunning location, very peaceful.", date: "2024-03-20", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar"} ],
     policies: { checkIn: "After 4:00 PM", checkOut: "Before 10:00 AM", cancellation: "Moderate - Full refund 14 days prior." },
-    neighborhoodInsights: { walkabilityScore: 20, crimeRate: "Very Low", nearbySchools: "Village School (5 miles)", publicTransport: "Car necessary" }
+    neighborhoodInsights: { walkabilityScore: 20, crimeRate: "Very Low", schools: [{name: 'Village School', rating: 'N/A', type:'Primary'}], publicTransport: [{type:'Bus', line: 'Regional', stopDistance:'5 miles'}], description: 'Remote and wild, offering unparalleled access to nature. A vehicle is essential.' }
   },
   {
     id: "stay5",
     name: "Desert Oasis Hotel",
     location: "Sedona, Arizona",
     pricePerNight: 300,
-    image: "https://placehold.co/600x400.png?text=Sedona+Hotel",
+    image: "https://placehold.co/600x400.png",
     dataAiHint: "desert hotel arizona",
     rating: 4.8,
     category: "Hotel",
@@ -235,18 +258,18 @@ export const allMockStays: MockStay[] = [
     reviewsCount: 210,
     description: "Luxury hotel offering stunning red rock views, spa services, and gourmet dining. Perfect for a rejuvenating escape.",
     amenities: ["Spa", "Pool", "Restaurant", "WiFi", "Air Conditioning", "Fitness Center"],
-    photos: [ { id: "p1s5", src: "https://placehold.co/800x600.png?text=Sedona+Hotel+View", alt: "Sedona hotel with view", dataAiHint: "hotel desert view" } ],
-    host: { name: "Enchantment Resort", avatar: "https://placehold.co/100x100.png?text=ER", dataAiHint: "resort logo" },
-    guestReviews: [ { id: "gr1s5", user: "Michael C.", rating: 5, comment: "Unforgettable views and top-notch service.", date: "2024-04-15", avatar: "https://placehold.co/40x40.png?text=MC", dataAiHintAvatar: "person avatar"} ],
+    photos: [ { id: "p1s5", src: "https://placehold.co/800x600.png", alt: "Sedona hotel with view", dataAiHint: "hotel desert view" } ],
+    host: { name: "Enchantment Resort", avatar: "https://placehold.co/100x100.png", dataAiHint: "resort logo" },
+    guestReviews: [ { id: "gr1s5", user: "Michael C.", rating: 5, comment: "Unforgettable views and top-notch service.", date: "2024-04-15", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar"} ],
     policies: { checkIn: "After 3:00 PM", checkOut: "Before 11:00 AM", cancellation: "Free cancellation up to 48 hours before check-in." },
-    neighborhoodInsights: { walkabilityScore: 60, crimeRate: "Low", nearbySchools: "Sedona Red Rock High (nearby)", publicTransport: "Local shuttle available" }
+    neighborhoodInsights: { walkabilityScore: 60, crimeRate: "Low", schools: [{name: 'Sedona Red Rock High', rating: 'Good', type: 'Public'}], publicTransport: [{type: 'Shuttle', line: 'Local', stopDistance: 'On-site'}], description: 'Located near popular trailheads and art galleries. A local shuttle service provides easy access to town.' }
   },
   {
     id: "stay6",
     name: "Historic City Center Flat",
     location: "Rome, Italy",
     pricePerNight: 120,
-    image: "https://placehold.co/600x400.png?text=Rome+Flat",
+    image: "https://placehold.co/600x400.png",
     dataAiHint: "historic building rome",
     rating: 4.5,
     category: "Flat",
@@ -259,11 +282,11 @@ export const allMockStays: MockStay[] = [
     reviewsCount: 155,
     description: "Charming flat in a historic building, steps away from ancient Roman landmarks. Features one bedroom, a small kitchen, and traditional decor.",
     amenities: ["Central Location", "WiFi", "Kitchenette", "Air Conditioning"],
-    photos: [ { id: "p1s6", src: "https://placehold.co/800x600.png?text=Rome+Flat+Interior", alt: "Rome flat interior", dataAiHint: "apartment rome interior" } ],
-    host: { name: "Marco Rossi", avatar: "https://placehold.co/100x100.png?text=MR", dataAiHint: "man portrait" },
-    guestReviews: [ { id: "gr1s6", user: "Jessica B.", rating: 4, comment: "Amazing location for sightseeing!", date: "2024-03-05", avatar: "https://placehold.co/40x40.png?text=JB", dataAiHintAvatar: "person avatar"} ],
+    photos: [ { id: "p1s6", src: "https://placehold.co/800x600.png", alt: "Rome flat interior", dataAiHint: "apartment rome interior" } ],
+    host: { name: "Marco Rossi", avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
+    guestReviews: [ { id: "gr1s6", user: "Jessica B.", rating: 4, comment: "Amazing location for sightseeing!", date: "2024-03-05", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar"} ],
     policies: { checkIn: "After 2:00 PM", checkOut: "Before 10:00 AM", cancellation: "Non-refundable." },
-    neighborhoodInsights: { walkabilityScore: 99, crimeRate: "Medium", nearbySchools: "N/A", publicTransport: "Excellent (Metro, Bus)" }
+    neighborhoodInsights: { walkabilityScore: 99, crimeRate: "Medium", schools: [], publicTransport: [{type:'Metro', line:'Line A', stopDistance:'200m'}, {type:'Bus', line:'Multiple', stopDistance:'50m'}], description: 'Immerse yourself in history. Steps from the Colosseum and Roman Forum. Can be noisy due to central location.' }
   }
 ];
 
@@ -278,7 +301,7 @@ export const carListings: CarListing[] = [
     pricePerDay: 55,
     pricePerHour: 10,
     pricePerWeek: 350,
-    image: "https://placehold.co/600x400.png?text=Camry+Hybrid",
+    image: "https://placehold.co/600x400.png",
     photos: [
       { id: "car1p1", src: "https://placehold.co/800x600.png", alt: "Camry front view", dataAiHint: "sedan front" },
       { id: "car1p2", src: "https://placehold.co/400x300.png", alt: "Camry interior", dataAiHint: "car dashboard" },
@@ -306,7 +329,7 @@ export const carListings: CarListing[] = [
     pricePerDay: 85,
     pricePerHour: 18,
     pricePerWeek: 550,
-    image: "https://placehold.co/600x400.png?text=Ford+Explorer",
+    image: "https://placehold.co/600x400.png",
     photos: [
       { id: "car2p1", src: "https://placehold.co/800x600.png", alt: "Explorer front view", dataAiHint: "suv front" },
       { id: "car2p2", src: "https://placehold.co/400x300.png", alt: "Explorer interior with third row", dataAiHint: "suv interior seats" },
@@ -333,7 +356,7 @@ export const carListings: CarListing[] = [
     pricePerDay: 150,
     pricePerHour: 30,
     pricePerWeek: 950,
-    image: "https://placehold.co/600x400.png?text=Sprinter+Van",
+    image: "https://placehold.co/600x400.png",
      photos: [
       { id: "car3p1", src: "https://placehold.co/800x600.png", alt: "Sprinter van exterior", dataAiHint: "white van" },
       { id: "car3p2", src: "https://placehold.co/400x300.png", alt: "Sprinter van interior seating", dataAiHint: "van interior" },
@@ -365,22 +388,20 @@ export const mockRentalProperties: MockStay[] = [
     bathrooms: 1,
     sizeSqft: "900 sqft",
     amenities: ["Gym", "Pool", "In-unit Laundry"], 
-    image: "https://placehold.co/600x400.png?text=Downtown+Loft", 
+    image: "https://placehold.co/600x400.png", 
     dataAiHint: "loft apartment", 
     virtualTourLink: "#", 
     floorPlanLink: "#", 
-    walkabilityScore: 95, 
-    nearbySchools: "City High, Downtown Elementary", 
-    utilitiesIncluded: "Water, Trash", 
     isEcoFriendly: true,
     description: "A stylish and modern loft apartment in the heart of downtown. Features high ceilings, large windows, and access to building amenities like a gym and pool. Perfect for urban living.",
     rating: 4.7,
     reviewsCount: 55,
     photos: [
-        { id: "p1r1", src: "https://placehold.co/800x600.png?text=Loft+Living", alt: "Loft living area", dataAiHint: "loft interior" },
-        { id: "p2r1", src: "https://placehold.co/400x300.png?text=Loft+Kitchen", alt: "Loft kitchen", dataAiHint: "modern kitchen" },
+        { id: "p1r1", src: "https://placehold.co/800x600.png", alt: "Loft living area", dataAiHint: "loft interior" },
+        { id: "p2r1", src: "https://placehold.co/400x300.png", alt: "Loft kitchen", dataAiHint: "modern kitchen" },
     ],
-    host: { name: "Urban Living Inc.", avatar: "https://placehold.co/100x100.png?text=UL", dataAiHint: "company logo" }
+    host: { name: "Urban Living Inc.", avatar: "https://placehold.co/100x100.png", dataAiHint: "company logo" },
+    neighborhoodInsights: { walkabilityScore: 95, crimeRate: "Low", schools: [{name: 'City High', rating: '4/5', type: 'Public'}, {name: 'Downtown Elementary', rating: '5/5', type: 'Public'}], publicTransport: [{type:'Subway', line: 'Blue Line', stopDistance: '2 blocks'}, {type:'Bus', line: 'C-3', stopDistance:'1 block'}], description: 'A vibrant urban neighborhood with easy access to restaurants, theaters, and parks. Highly walkable and excellent public transport links.' }
   },
   { 
     id: "rent2", 
@@ -394,19 +415,17 @@ export const mockRentalProperties: MockStay[] = [
     bathrooms: 2,
     sizeSqft: "1800 sqft",
     amenities: ["Yard", "Garage", "Pet-friendly"], 
-    image: "https://placehold.co/600x400.png?text=Suburban+House", 
+    image: "https://placehold.co/600x400.png", 
     dataAiHint: "family house suburban", 
     virtualTourLink: "#", 
     floorPlanLink: "#", 
-    walkabilityScore: 70, 
-    nearbySchools: "Greenwood High, Meadowbrook Elementary", 
-    utilitiesIncluded: "None", 
     isEcoFriendly: false,
     description: "Spacious family home in a quiet suburban neighborhood. Large backyard, two-car garage, and pet-friendly policy. Close to parks and good schools.",
     rating: 4.5,
     reviewsCount: 30,
-    photos: [ { id: "p1r2", src: "https://placehold.co/800x600.png?text=Family+House+Exterior", alt: "Family house exterior", dataAiHint: "suburban house" } ],
-    host: { name: "Sarah Miller", avatar: "https://placehold.co/100x100.png?text=SM", dataAiHint: "woman portrait" }
+    photos: [ { id: "p1r2", src: "https://placehold.co/800x600.png", alt: "Family house exterior", dataAiHint: "suburban house" } ],
+    host: { name: "Sarah Miller", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman portrait" },
+    neighborhoodInsights: { walkabilityScore: 70, crimeRate: "Very Low", schools: [{name: 'Greenwood High', rating: '5/5', type: 'Public'}, {name: 'Meadowbrook Elementary', rating: '4/5', type: 'Public'}], publicTransport: [{type:'Bus', line: 'S-12', stopDistance:'0.5 miles'}], description: 'A peaceful, family-friendly area known for its excellent schools and community parks. Car recommended for commuting.' }
   },
   { 
     id: "rent3", 
@@ -420,19 +439,17 @@ export const mockRentalProperties: MockStay[] = [
     bathrooms: 2.5,
     sizeSqft: "1500 sqft",
     amenities: ["Rooftop Deck", "Smart Home"], 
-    image: "https://placehold.co/600x400.png?text=Modern+Townhouse", 
+    image: "https://placehold.co/600x400.png", 
     dataAiHint: "modern townhouse", 
     virtualTourLink: "#", 
     floorPlanLink: "#", 
-    walkabilityScore: 85, 
-    nearbySchools: "Northwood Academy", 
-    utilitiesIncluded: "Internet", 
     isEcoFriendly: true,
     description: "Contemporary townhouse with a private rooftop deck and smart home features. Two bedrooms, open-plan living, and close to city amenities.",
     rating: 4.6,
     reviewsCount: 42,
-    photos: [ { id: "p1r3", src: "https://placehold.co/800x600.png?text=Townhouse+Rooftop", alt: "Townhouse rooftop deck", dataAiHint: "rooftop deck city" } ],
-    host: { name: "Tech Homes LLC", avatar: "https://placehold.co/100x100.png?text=TH", dataAiHint: "company logo" }
+    photos: [ { id: "p1r3", src: "https://placehold.co/800x600.png", alt: "Townhouse rooftop deck", dataAiHint: "rooftop deck city" } ],
+    host: { name: "Tech Homes LLC", avatar: "https://placehold.co/100x100.png", dataAiHint: "company logo" },
+    neighborhoodInsights: { walkabilityScore: 85, crimeRate: "Low", schools: [{name: 'Northwood Academy', rating: '4.5/5', type: 'Charter'}], publicTransport: [{type:'Light Rail', line: 'Green', stopDistance:'5 min walk'}], description: 'An up-and-coming district with a mix of residential and commercial spaces. Great for young professionals.' }
   },
 ];
 
@@ -448,7 +465,7 @@ export const mockSaleProperties: MockStay[] = [
     category: "House",
     sizeSqft: "2200 sqft", 
     zoning: "Residential", 
-    image: "https://placehold.co/600x400.png?text=Family+Home", 
+    image: "https://placehold.co/600x400.png", 
     dataAiHint: "family house", 
     status: "Verified", 
     lastSalePrice: 280000, 
@@ -458,8 +475,8 @@ export const mockSaleProperties: MockStay[] = [
     bathrooms: 2.5,
     rating: 4.8, // Added for consistency if needed
     amenities: ["Backyard", "Garage", "Updated Kitchen"],
-    photos: [ { id: "p1sa1", src: "https://placehold.co/800x600.png?text=Sale+Home+Exterior", alt: "Sale home exterior", dataAiHint: "house exterior sale" } ],
-    host: { name: "Real Estate Pro", avatar: "https://placehold.co/100x100.png?text=RE", dataAiHint: "agent portrait" }
+    photos: [ { id: "p1sa1", src: "https://placehold.co/800x600.png", alt: "Sale home exterior", dataAiHint: "house exterior sale" } ],
+    host: { name: "Real Estate Pro", avatar: "https://placehold.co/100x100.png", dataAiHint: "agent portrait" }
   },
   { 
     id: "sale2", 
@@ -472,7 +489,7 @@ export const mockSaleProperties: MockStay[] = [
     category: "Land",
     sizeAcres: "2 acres", 
     zoning: "Commercial", 
-    image: "https://placehold.co/600x400.png?text=Commercial+Land", 
+    image: "https://placehold.co/600x400.png", 
     dataAiHint: "empty lot", 
     status: "Title Deed Uploaded", 
     lastSalePrice: 950000, 
@@ -480,8 +497,8 @@ export const mockSaleProperties: MockStay[] = [
     description: "An exceptional opportunity to acquire 2 acres of prime commercial land in the bustling Downtown Core. High traffic area with excellent development potential for retail, office, or mixed-use projects.",
     rating: 4.5, // Added
     amenities: ["Road Frontage", "Utilities Nearby"],
-    photos: [ { id: "p1sa2", src: "https://placehold.co/800x600.png?text=Land+Plot+Aerial", alt: "Land plot aerial view", dataAiHint: "land aerial" } ],
-    host: { name: "Land Investments Co.", avatar: "https://placehold.co/100x100.png?text=LI", dataAiHint: "company logo" }
+    photos: [ { id: "p1sa2", src: "https://placehold.co/800x600.png", alt: "Land plot aerial view", dataAiHint: "land aerial" } ],
+    host: { name: "Land Investments Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "company logo" }
   },
   { 
     id: "sale3", 
@@ -494,7 +511,7 @@ export const mockSaleProperties: MockStay[] = [
     category: "Apartment",
     sizeSqft: "1200 sqft", 
     zoning: "Residential", 
-    image: "https://placehold.co/600x400.png?text=Modern+Apartment", 
+    image: "https://placehold.co/600x400.png", 
     dataAiHint: "apartment building", 
     status: "Leasehold", 
     lastSalePrice: 400000, 
@@ -504,10 +521,57 @@ export const mockSaleProperties: MockStay[] = [
     bathrooms: 2,
     rating: 4.9, // Added
     amenities: ["City Views", "Fitness Center", "Concierge"],
-    photos: [ { id: "p1sa3", src: "https://placehold.co/800x600.png?text=Apartment+Sale+Interior", alt: "Apartment sale interior", dataAiHint: "modern apartment interior" } ],
-    host: { name: "City Living Sales", avatar: "https://placehold.co/100x100.png?text=CS", dataAiHint: "agent portrait" }
+    photos: [ { id: "p1sa3", src: "https://placehold.co/800x600.png", alt: "Apartment sale interior", dataAiHint: "modern apartment interior" } ],
+    host: { name: "City Living Sales", avatar: "https://placehold.co/100x100.png", dataAiHint: "agent portrait" }
   },
 ];
+
+
+// Moved from attractions/[id]/page.tsx
+export const mockAttractionDetails: MockAttraction = {
+  id: "attr1",
+  name: "City Museum of Art",
+  category: "Culture",
+  location: "123 Art Avenue, Downtown Cityville",
+  rating: 4.7,
+  reviewsCount: 320,
+  description: "Explore a vast collection of modern and classical art spanning centuries. The City Museum of Art offers engaging exhibits, workshops, and guided tours. A must-visit for art enthusiasts and curious minds alike.",
+  openingHours: "Tue-Sun: 10:00 AM - 6:00 PM (Closed Mondays)",
+  ticketPrice: "$25 (Adults), $15 (Students/Seniors), Free (Children under 12)",
+  amenities: ["Cafe", "Gift Shop", "Wheelchair Accessible", "Guided Tours", "Restrooms", "Family Areas"],
+  photos: [
+    { id: "p1", src: "https://placehold.co/800x600.png", alt: "Museum main exhibit hall", dataAiHint: "museum exhibit" },
+    { id: "p2", src: "https://placehold.co/400x300.png", alt: "Museum sculpture garden", dataAiHint: "sculpture garden" },
+    { id: "p3", src: "https://placehold.co/400x300.png", alt: "Museum exterior facade", dataAiHint: "museum building" },
+    { id: "p4", src: "https://placehold.co/400x300.png", alt: "Interactive display for kids", dataAiHint: "interactive museum" },
+  ],
+  userReviews: [
+    { id: "r1", user: "Chris P.", rating: 5, comment: "Incredible collection and beautifully curated. Spent the whole afternoon here!", date: "2024-04-10" },
+    { id: "r2", user: "Jordan B.", rating: 4, comment: "Great museum, very informative. Some sections were a bit crowded.", date: "2024-03-22" },
+  ],
+  website: "https://examplemuseum.com", 
+  expectedCrowdLevel: "Moderate",
+  contactInfo: "info@examplemuseum.com / +1-555-ART-MUSEUM",
+  liveStatus: "Open",
+  maintenanceNote: "The East Wing will be closed for renovations from July 1st.",
+  deals: [
+    { id: "deal1", title: "Family Pass", description: "Save 15% on 2 Adults and 2 Children tickets." },
+    { id: "deal2", title: "Museum + Lunch Combo", description: "Get a ticket and a pre-fixe lunch at our cafe for only $40." },
+    { id: "deal3", title: "Student Tuesday", description: "50% off adult admission every Tuesday with a valid student ID." },
+  ],
+  visitorPhotos: [
+    { id: "vp1", src: "https://placehold.co/400x300.png", alt: "Visitor taking a selfie with a painting", dataAiHint: "museum selfie" },
+    { id: "vp2", src: "https://placehold.co/400x300.png", alt: "Visitor admiring a sculpture", dataAiHint: "person art" },
+    { id: "vp3", src: "https://placehold.co/400x300.png", alt: "A child interacting with an exhibit", dataAiHint: "child museum" },
+  ],
+  topTips: [
+      "Go early on a weekday to avoid the biggest crowds.",
+      "The audio guide is highly recommended for a richer experience.",
+      "Don't miss the special exhibit on the second floor – it changes seasonally!",
+      "The cafe has surprisingly good coffee and pastries.",
+  ]
+};
+
 
 // You might want to combine or ensure IDs are unique if using allMockStays as a single source
 // For now, I'll keep them separate but the detail pages will need to know which list to pull from.
