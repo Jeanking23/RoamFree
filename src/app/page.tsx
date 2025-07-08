@@ -393,7 +393,7 @@ export default function HomePage() {
                  </div>
               </div>
               <CardContent className="p-4">
-                <Progress value={deal.urgency} className="h-2 mb-2 [&>div]:bg-accent" />
+                <Progress value={deal.urgency} className="h-2 mb-2" />
                 <p className="text-sm font-medium text-accent-foreground text-center">{deal.urgencyText}</p>
               </CardContent>
             </Card>
