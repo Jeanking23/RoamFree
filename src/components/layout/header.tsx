@@ -150,7 +150,8 @@ export default function Header() {
   const { language } = useLocale();
 
   const t = (key: keyof typeof sosTranslations) => {
-    return sosTranslations[key][language.code as keyof typeof sosTranslations[keyof typeof sosTranslations]] || sosTranslations[key]['en-US'];
+    const langCode = sosTranslations[key][language.code as keyof typeof sosTranslations[keyof typeof sosTranslations]];
+    return langCode || sosTranslations[key]['en-US'];
   };
 
   const handleSosClick = () => {

@@ -101,7 +101,8 @@ export default function HomePage() {
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
   const t = (key: keyof typeof translations) => {
-    return translations[key][language.code as keyof typeof translations[keyof typeof translations]] || translations[key]['en-US'];
+    const langCode = language.code as keyof typeof translations[keyof typeof translations];
+    return translations[key][langCode] || translations[key]['en-US'];
   };
 
   useEffect(() => {
