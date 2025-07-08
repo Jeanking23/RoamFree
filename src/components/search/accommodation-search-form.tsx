@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -192,8 +191,8 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                     variant="outline"
                     className="w-full justify-start text-left font-normal flex items-center"
                   >
-                    <span>{`${adults} adult${adults !== 1 ? 's' : ''} · ${children} child${children !== 1 ? 'ren' : ''} · ${rooms} room${rooms !== 1 ? 's' : ''}`}</span>
-                    <ChevronsUpDown className="ml-auto h-4 w-4 opacity-50" />
+                    <span className="truncate">{`${adults} adult${adults !== 1 ? 's' : ''} · ${children} child${children !== 1 ? 'ren' : ''} · ${rooms} room${rooms !== 1 ? 's' : ''}`}</span>
+                    <ChevronsUpDown className="ml-auto h-4 w-4 opacity-50 shrink-0" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[300px] p-4" align="start">
@@ -333,4 +332,3 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
     </Form>
   );
 }
-    
