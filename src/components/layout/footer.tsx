@@ -16,7 +16,7 @@ const footerSections = [
       { label: 'Help Center', href: '/contact-support' },
       { label: 'Contact Us', href: '/contact-support' },
       { label: 'FAQs', href: '/faq' },
-      { label: 'Live Chat', href: '#!', isDemo: true },
+      { label: 'Live Chat', href: '/live-chat' },
     ]
   },
   {
