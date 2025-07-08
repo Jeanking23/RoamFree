@@ -6,7 +6,7 @@ import { Suspense, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
-import { Car, Bike, Shield, Users, User, Clock, ArrowLeft, Star } from 'lucide-react';
+import { Car, Bike, Shield, Users, User, Clock, ArrowLeft, Star, CarFront, PawPrint } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -20,6 +20,7 @@ const rideOptions = [
     { 
         id: 'uberx',
         name: 'RoamFree Standard', 
+        icon: Car,
         capacity: 4, 
         eta: '4 mins away', 
         arrivalTime: '12:02 PM',
@@ -33,6 +34,7 @@ const rideOptions = [
     { 
         id: 'share',
         name: 'RoamFree Share', 
+        icon: Users,
         capacity: 1, 
         eta: '5 mins away', 
         arrivalTime: '12:03 PM',
@@ -46,6 +48,7 @@ const rideOptions = [
     { 
         id: 'uberxl',
         name: 'RoamFree XL', 
+        icon: CarFront,
         capacity: 6, 
         eta: '9 mins away', 
         arrivalTime: '12:06 PM',
@@ -59,6 +62,7 @@ const rideOptions = [
     { 
         id: 'comfort',
         name: 'RoamFree Comfort', 
+        icon: Star,
         capacity: 4, 
         eta: '4 mins away', 
         arrivalTime: '12:05 PM',
@@ -72,6 +76,7 @@ const rideOptions = [
      { 
         id: 'bike',
         name: 'RoamFree Moto', 
+        icon: Bike,
         capacity: 1, 
         eta: '2 mins away', 
         arrivalTime: '12:00 PM',
@@ -85,6 +90,7 @@ const rideOptions = [
     { 
         id: 'pet',
         name: 'RoamFree Pet', 
+        icon: PawPrint,
         capacity: 4, 
         eta: '6 mins away', 
         arrivalTime: '12:02 PM',
@@ -148,8 +154,11 @@ function RideSearchResults() {
                                         <Image src={ride.image} alt={ride.name} width={80} height={50} className="object-contain rounded-md bg-muted/50" data-ai-hint={ride.dataAiHint}/>
                                         <div className="flex-grow">
                                             <div className="flex justify-between items-start">
-                                                 <h4 className="font-bold text-base">{ride.name}</h4>
-                                                 <p className="font-semibold text-lg text-primary">${ride.price.toFixed(2)}</p>
+                                                <h4 className="font-bold text-base flex items-center gap-2">
+                                                    <ride.icon className="h-5 w-5 text-primary" />
+                                                    {ride.name}
+                                                </h4>
+                                                <p className="font-semibold text-lg text-primary">${ride.price.toFixed(2)}</p>
                                             </div>
                                             <div className="flex justify-between items-start">
                                                 <p className="text-xs text-muted-foreground flex items-center gap-2">
