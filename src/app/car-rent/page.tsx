@@ -6,7 +6,7 @@ import { KeyRound, Car, User, CheckCircle, CalendarDays, Users, Briefcase, Shiel
 import { Button } from '@/components/ui/button';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -15,18 +15,41 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { carListings } from '@/lib/mock-data';
 import Link from 'next/link';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import type { DateRange } from 'react-day-picker';
+import { addDays, format, differenceInDays } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 export default function CarRentPage() {
   const [includeDriver, setIncludeDriver] = useState(false);
   const [baggageAssistance, setBaggageAssistance] = useState(false);
-  const [rentalDuration, setRentalDuration] = useState("daily"); // hourly, daily, weekly
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [selectedInsurance, setSelectedInsurance] = useState("basic"); // basic, full
+  const [hasMounted, setHasMounted] = useState(false);
 
+  useEffect(() => {
+    // This prevents hydration errors by ensuring date state is only set on the client
+    setHasMounted(true);
+    setDateRange({
+      from: new Date(),
+      to: addDays(new Date(), 7),
+    });
+  }, []);
 
   const handleRentNow = (carName: string) => {
+    let durationString = '';
+    if (dateRange?.from && dateRange?.to) {
+        const days = differenceInDays(dateRange.to, dateRange.from);
+        if (days >= 0) { // Check for same day rental too
+            const displayDays = days === 0 ? 1 : days;
+            durationString = `from ${format(dateRange.from, 'PPP')} to ${format(dateRange.to, 'PPP')} (${displayDays} day${displayDays > 1 ? 's' : ''})`;
+        }
+    }
+
     toast({
       title: "Rental Initiated (Demo)",
-      description: `You've started the rental process for ${carName}. Duration: ${rentalDuration}. Insurance: ${selectedInsurance}. ${includeDriver ? 'Driver service requested.' : ''} ${baggageAssistance ? 'Baggage assistance requested.' : ''} Driver's license upload would be required here.`,
+      description: `You've started the rental process for ${carName}. ${durationString}. Insurance: ${selectedInsurance}. ${includeDriver ? 'Driver service requested.' : ''} ${baggageAssistance ? 'Baggage assistance requested.' : ''} Driver's license upload would be required here.`,
     });
   };
 
@@ -39,13 +62,9 @@ export default function CarRentPage() {
   };
 
   const getPrice = (car: typeof carListings[0]) => {
-    if (rentalDuration === "hourly") return car.pricePerHour;
-    if (rentalDuration === "weekly") return car.pricePerWeek;
     return car.pricePerDay;
   };
   const getPriceSuffix = () => {
-    if (rentalDuration === "hourly") return "/hour";
-    if (rentalDuration === "weekly") return "/week";
     return "/day";
   }
 
@@ -65,17 +84,44 @@ export default function CarRentPage() {
           <div className="mb-6 p-4 border rounded-md bg-muted/30 space-y-4">
             <div className="grid sm:grid-cols-2 gap-4 items-end">
                 <div>
-                    <Label htmlFor="rental-duration">Rental Duration</Label>
-                    <Select value={rentalDuration} onValueChange={setRentalDuration}>
-                        <SelectTrigger id="rental-duration">
-                            <SelectValue placeholder="Select duration" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="hourly">Hourly</SelectItem>
-                            <SelectItem value="daily">Daily</SelectItem>
-                            <SelectItem value="weekly">Weekly</SelectItem>
-                        </SelectContent>
-                    </Select>
+                  <Label htmlFor="rental-dates">Pickup &amp; Return Dates</Label>
+                   <Popover>
+                      <PopoverTrigger asChild>
+                          <Button
+                              id="rental-dates"
+                              variant={"outline"}
+                              className={cn(
+                                  "w-full justify-start text-left font-normal",
+                                  !dateRange && "text-muted-foreground"
+                              )}
+                          >
+                              <CalendarDays className="mr-2 h-4 w-4" />
+                              {hasMounted && dateRange?.from ? (
+                                  dateRange.to ? (
+                                      <>
+                                          {format(dateRange.from, "LLL dd, y")} -{" "}
+                                          {format(dateRange.to, "LLL dd, y")}
+                                      </>
+                                  ) : (
+                                      format(dateRange.from, "LLL dd, y")
+                                  )
+                              ) : (
+                                  <span>Pick a date range</span>
+                              )}
+                          </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                              initialFocus
+                              mode="range"
+                              defaultMonth={dateRange?.from}
+                              selected={dateRange}
+                              onSelect={setDateRange}
+                              numberOfMonths={2}
+                              disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                          />
+                      </PopoverContent>
+                  </Popover>
                 </div>
                  <div>
                     <Label htmlFor="insurance-options">Insurance Coverage (Demo)</Label>
