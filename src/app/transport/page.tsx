@@ -291,7 +291,27 @@ export default function TransportPage() {
         </CardContent>
       </Card>
       
-       <Separator className="my-8" />
+      <Separator className="my-8" />
+
+      <Card className="bg-accent/10 border-accent/30 shadow-md hover:shadow-lg transition-shadow">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-2xl font-headline text-accent-foreground flex items-center gap-2">
+            <Wand2 className="h-7 w-7 text-accent" />Still planning? Let our AI help.
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground mb-4">
+            Our AI Trip Planner can build a custom itinerary for you, including transport, stays, and activities.
+          </p>
+        </CardContent>
+        <CardFooter>
+          <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-sm hover:shadow-md transition-shadow" asChild>
+            <Link href="/ai-trip-planner">Start Planning with AI</Link>
+          </Button>
+        </CardFooter>
+      </Card>
+
+      <Separator className="my-8" />
        
         <div className="space-y-4">
             <h3 className="text-2xl font-semibold">Suggestions</h3>
@@ -299,7 +319,7 @@ export default function TransportPage() {
                 {suggestionItems.map((item) => (
                     <Card key={item.title} className="flex flex-col overflow-hidden shadow-md hover:shadow-lg transition-all">
                         <div className="relative h-40 w-full">
-                            <Image src={item.imageSrc} alt={item.title} layout="fill" objectFit="cover" data-ai-hint={item.dataAiHint} />
+                            <Image src={item.imageSrc} alt={item.title} fill className="object-cover" data-ai-hint={item.dataAiHint} />
                         </div>
                         <CardHeader>
                             <CardTitle>{item.title}</CardTitle>
@@ -316,26 +336,6 @@ export default function TransportPage() {
                 ))}
             </div>
         </div>
-
-      <Separator className="my-8" />
-
-        <Card className="bg-accent/10 border-accent/30 shadow-md hover:shadow-lg transition-shadow">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-2xl font-headline text-accent-foreground flex items-center gap-2">
-              <Wand2 className="h-7 w-7 text-accent" />Still planning? Let our AI help.
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              Our AI Trip Planner can build a custom itinerary for you, including transport, stays, and activities.
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-sm hover:shadow-md transition-shadow" asChild>
-              <Link href="/ai-trip-planner">Start Planning with AI</Link>
-            </Button>
-          </CardFooter>
-        </Card>
     </div>
   );
 }
