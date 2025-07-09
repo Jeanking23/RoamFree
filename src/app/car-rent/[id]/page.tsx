@@ -173,7 +173,7 @@ export default function CarRentalDetailsPage() {
                   </Select>
                 </div>
                 <p className="text-xs text-muted-foreground">Short-term & Long-term rental discounts available.</p>
-                <Button variant="accent" className="w-full text-lg py-3" onClick={handleRentNow}>
+                <Button variant="accent" size="lg" className="w-full" onClick={handleRentNow}>
                   <CalendarDays className="mr-2 h-5 w-5" /> Reserve Now (Demo)
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">You won't be charged yet. This is a demo.</p>

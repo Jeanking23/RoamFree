@@ -212,7 +212,7 @@ export default function SalePropertyProfilePage() {
                 <CardDescription>Contact agent to make an offer or schedule a viewing.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg py-3" onClick={handleMakeOffer}>
+                <Button variant="accent" size="lg" className="w-full" onClick={handleMakeOffer}>
                   <DollarSign className="mr-2 h-5 w-5" /> Make an Offer
                 </Button>
                 <Button variant="outline" className="w-full" onClick={handleScheduleTour}>

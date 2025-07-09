@@ -169,7 +169,7 @@ export default function AttractionProfilePage() {
                 <CardDescription>Book tickets and find directions.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                 <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg py-3" onClick={handleBookTickets}>
+                 <Button variant="accent" size="lg" className="w-full" onClick={handleBookTickets}>
                   <Ticket className="mr-2 h-5 w-5" /> Book Tickets (Demo)
                 </Button>
                 <Button variant="outline" className="w-full">
