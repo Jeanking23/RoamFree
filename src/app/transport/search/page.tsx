@@ -135,9 +135,17 @@ function RideSearchResults() {
             <Button variant="outline" onClick={() => router.back()} className="mb-4 lg:hidden">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Search
             </Button>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                {/* Left Column: Ride Options */}
-                <div className="lg:col-span-1 space-y-4">
+            <div className="flex flex-col lg:flex-row lg:gap-8">
+                
+                {/* Map: First on mobile, last on desktop */}
+                <div className="order-first lg:order-last lg:w-2/3">
+                    <div className="rounded-lg overflow-hidden h-80 lg:h-[calc(100vh-8rem)] lg:sticky lg:top-24">
+                        <InteractiveMapPlaceholder pickup={from} dropoff={to} />
+                    </div>
+                </div>
+
+                {/* Ride Options: Second on mobile, first on desktop */}
+                <div className="lg:w-1/3 space-y-4 mt-8 lg:mt-0">
                      <h1 className="text-3xl font-headline font-bold text-primary">Choose a ride</h1>
                      <p className="text-muted-foreground">Trip from <strong>{from}</strong> to <strong>{to}</strong>.</p>
                      
@@ -146,7 +154,7 @@ function RideSearchResults() {
                         <Label htmlFor="ride-for-other">Ride for someone else</Label>
                     </div>
 
-                    <div className="space-y-3 max-h-[calc(100vh-22rem)] overflow-y-auto pr-2">
+                    <div className="space-y-3 max-h-[calc(100vh-30rem)] lg:max-h-[calc(100vh-22rem)] overflow-y-auto pr-2">
                         {rideOptions.map((ride) => (
                              <Card 
                                 key={ride.id} 
@@ -194,11 +202,7 @@ function RideSearchResults() {
                     </div>
                     <Button onClick={handleConfirmRide} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg">Confirm {rideOptions.find(r => r.id === selectedRide)?.name}</Button>
                 </div>
-
-                {/* Right Column: Map */}
-                <div className="lg:col-span-2 rounded-lg overflow-hidden h-96 lg:h-[calc(100vh-8rem)] lg:sticky lg:top-24 hidden lg:block">
-                     <InteractiveMapPlaceholder pickup={from} dropoff={to} />
-                </div>
+                
             </div>
         </div>
     );
