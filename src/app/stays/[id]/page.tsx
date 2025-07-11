@@ -1,3 +1,4 @@
+
 // src/app/stays/[id]/page.tsx
 'use client';
 
@@ -255,11 +256,21 @@ export default function AccommodationProfilePage() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><HomeIconLucide className="h-5 w-5"/> Neighborhood Insights (Demo)</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2 text-sm">
+                    <CardContent className="space-y-3 text-sm">
                         <p><strong>Walkability Score:</strong> {currentStay.neighborhoodInsights.walkabilityScore}/100</p>
                         <p><strong>Crime Rate:</strong> {currentStay.neighborhoodInsights.crimeRate}</p>
-                        <p className="flex items-center gap-1"><School className="h-4 w-4"/><strong>Nearby Schools:</strong> {currentStay.neighborhoodInsights.nearbySchools}</p>
-                        <p className="flex items-center gap-1"><BuildingIconLucide className="h-4 w-4"/><strong>Public Transport:</strong> {currentStay.neighborhoodInsights.publicTransport}</p>
+                        <div>
+                            <h4 className="font-medium">Nearby Schools:</h4>
+                            <ul className="list-disc list-inside ml-4">
+                                {currentStay.neighborhoodInsights.schools.map((school, i) => <li key={i}>{school.name} ({school.type}) - Rating: {school.rating}</li>)}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-medium">Public Transport:</h4>
+                            <ul className="list-disc list-inside ml-4">
+                                {currentStay.neighborhoodInsights.publicTransport.map((pt, i) => <li key={i}>{pt.type} ({pt.line}) - Stop: {pt.stopDistance}</li>)}
+                            </ul>
+                        </div>
                     </CardContent>
                 </Card>
             )}
