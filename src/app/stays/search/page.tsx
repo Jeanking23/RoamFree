@@ -5,7 +5,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense, useCallback } from 'react';
 import AccommodationSearchForm, { type AccommodationSearchFormValues } from '@/components/search/accommodation-search-form';
-import { allMockStays, type MockStay } from '@/lib/mock-data';
+import type { MockStay } from '@/lib/mock-data';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BedDouble, MapPin, Star, Search, Leaf } from 'lucide-react';
@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { getAllStays } from '@/services/stays';
 
 function SearchResultsDisplay() {
   const searchParams = useSearchParams();
@@ -22,7 +23,7 @@ function SearchResultsDisplay() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchCriteriaSummary, setSearchCriteriaSummary] = useState<string>("Search Results");
 
-  const performSearch = useCallback((params: URLSearchParams) => {
+  const performSearch = useCallback(async (params: URLSearchParams) => {
     setIsLoading(true);
     const destination = params.get('destination');
     const dateFrom = params.get('dateFrom');
@@ -47,27 +48,39 @@ function SearchResultsDisplay() {
     
     setSearchCriteriaSummary(summaryParts.length > 0 ? `Stays ${summaryParts.join(', ')}` : "All Stays");
 
-    const results = allMockStays.filter(stay => {
-      let matches = true;
-      if (destination && stay.location) matches = matches && stay.location.toLowerCase().includes(destination.toLowerCase());
-      if (adults && stay.maxGuests) {
-        const totalGuests = adults + (children || 0);
-        matches = matches && totalGuests <= stay.maxGuests;
-      }
-      if (propertyType && propertyType !== "ANY") matches = matches && stay.type === propertyType;
-      if (mood && mood !== "ANY" && stay.moods) matches = matches && stay.moods.includes(mood);
-      if (wheelchairAccessible && !stay.isWheelchairAccessible) matches = false;
-      if (ecoFriendly && !stay.isEcoFriendly) matches = false;
-      if (priceMax && stay.pricePerNight > priceMax) matches = false;
-      // Date filtering would be more complex, involving parsing dateFrom and dateTo and checking availability.
-      // For this mock, we'll skip date filtering on the results page.
-      return matches;
-    });
+    try {
+      const allStays = await getAllStays();
+      const results = allStays.filter(stay => {
+        let matches = true;
+        if (destination && stay.location) matches = matches && stay.location.toLowerCase().includes(destination.toLowerCase());
+        if (adults && stay.maxGuests) {
+          const totalGuests = adults + (children || 0);
+          matches = matches && totalGuests <= stay.maxGuests;
+        }
+        if (propertyType && propertyType !== "ANY") matches = matches && stay.type === propertyType;
+        if (mood && mood !== "ANY" && stay.moods) matches = matches && stay.moods.includes(mood);
+        if (wheelchairAccessible && !stay.isWheelchairAccessible) matches = false;
+        if (ecoFriendly && !stay.isEcoFriendly) matches = false;
+        if (priceMax && stay.pricePerNight > priceMax) matches = false;
+        // Date filtering would be more complex, involving parsing dateFrom and dateTo and checking availability.
+        // For this mock, we'll skip date filtering on the results page.
+        return matches;
+      });
 
-    setFilteredStays(results);
-    setIsLoading(false);
-    if (params.toString()) { // Only toast if actual search params were provided
-        toast({ title: "Search Complete", description: `Found ${results.length} stays matching your criteria.` });
+      setFilteredStays(results);
+      if (params.toString()) { // Only toast if actual search params were provided
+          toast({ title: "Search Complete", description: `Found ${results.length} stays matching your criteria.` });
+      }
+    } catch (error) {
+       console.error("Failed to perform search:", error);
+       toast({
+          title: "Search Failed",
+          description: "Could not fetch stay data. Please try again later.",
+          variant: "destructive",
+       });
+       setFilteredStays([]);
+    } finally {
+        setIsLoading(false);
     }
   }, []);
 
