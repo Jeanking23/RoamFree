@@ -14,8 +14,10 @@ import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { allMockStays, type MockStay, type Host, type StayPhoto } from '@/lib/mock-data';
+import { getStayById } from '@/services/stays';
+import { type MockStay, type Host, type StayPhoto } from '@/lib/mock-data';
 import { addDays, differenceInDays } from 'date-fns';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Mock data for nearby attractions (can be dynamic based on currentStay.location in a real app)
 const mockNearbyAttractions = [
@@ -46,21 +48,29 @@ export default function AccommodationProfilePage() {
   }, []); // Empty dependency array ensures this runs only once on mount
 
   useEffect(() => {
-    if (params.id) {
-      const stayId = Array.isArray(params.id) ? params.id[0] : params.id;
-      const foundStay = allMockStays.find(s => s.id === stayId);
-      if (foundStay) {
-        setCurrentStay(foundStay);
-        if (foundStay.photos && foundStay.photos.length > 0) {
-          setCurrentImage(foundStay.photos[0]);
-        } else {
-           setCurrentImage({id: 'placeholder', src: foundStay.image, alt: foundStay.name, dataAiHint: foundStay.dataAiHint});
+    async function fetchStay() {
+      if (params.id) {
+        const stayId = Array.isArray(params.id) ? params.id[0] : params.id;
+        try {
+          const foundStay = await getStayById(stayId);
+          setCurrentStay(foundStay);
+          if (foundStay) {
+            if (foundStay.photos && foundStay.photos.length > 0) {
+              setCurrentImage(foundStay.photos[0]);
+            } else {
+               setCurrentImage({id: 'placeholder', src: foundStay.image, alt: foundStay.name, dataAiHint: foundStay.dataAiHint});
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch stay:", error);
+          toast({ variant: "destructive", title: "Error", description: "Could not load accommodation details." });
+          setCurrentStay(null); // Set to null on error
         }
-      } else {
-        setCurrentStay(null); // Not found
       }
     }
+    fetchStay();
   }, [params.id]);
+
 
   useEffect(() => {
     if (currentStay && checkInDate && checkOutDate && checkOutDate > checkInDate) {
@@ -149,7 +159,27 @@ export default function AccommodationProfilePage() {
   };
 
   if (currentStay === undefined) {
-    return <div className="container mx-auto px-4 py-8 text-center">Loading accommodation details...</div>; 
+    return (
+      <div className="space-y-8">
+        <Card className="shadow-lg rounded-lg overflow-hidden">
+          <CardHeader className="pb-4"><Skeleton className="h-10 w-3/4" /></CardHeader>
+          <CardContent className="px-0 md:px-6 pt-0">
+             <Skeleton className="h-[500px] w-full rounded-md" />
+          </CardContent>
+          <Separator className="my-6" />
+          <CardContent className="grid md:grid-cols-3 gap-8">
+            <div className="md:col-span-2 space-y-6">
+              <Skeleton className="h-8 w-1/2" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-24 w-full" />
+            </div>
+            <div className="md:col-span-1 space-y-6">
+              <Skeleton className="h-64 w-full" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
   if (currentStay === null) {
     return (
