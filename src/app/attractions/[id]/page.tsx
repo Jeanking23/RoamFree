@@ -203,9 +203,7 @@ export default function AttractionProfilePage() {
               <Card key={review.id} className="bg-muted/30">
                 <CardHeader className="flex flex-row justify-between items-center pb-2">
                   <div className="flex items-center gap-2">
-                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold">
-                        {review.user.substring(0,1)}
-                    </div>
+                     <Image src={review.avatar || `https://placehold.co/40x40.png?text=${review.user.substring(0,1)}`} alt={review.user} width={40} height={40} className="rounded-full" data-ai-hint={review.dataAiHintAvatar || "person avatar"} />
                     <div>
                       <p className="font-semibold">{review.user}</p>
                       <div className="flex items-center">

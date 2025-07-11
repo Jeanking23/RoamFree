@@ -547,8 +547,8 @@ export const mockAttractionDetails: MockAttraction = {
     { id: "p4", src: "https://placehold.co/400x300.png", alt: "Interactive display for kids", dataAiHint: "interactive museum" },
   ],
   userReviews: [
-    { id: "r1", user: "Chris P.", rating: 5, comment: "Incredible collection and beautifully curated. Spent the whole afternoon here!", date: "2024-04-10" },
-    { id: "r2", user: "Jordan B.", rating: 4, comment: "Great museum, very informative. Some sections were a bit crowded.", date: "2024-03-22" },
+    { id: "r1", user: "Chris P.", rating: 5, comment: "Incredible collection and beautifully curated. Spent the whole afternoon here!", date: "2024-04-10", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar" },
+    { id: "r2", user: "Jordan B.", rating: 4, comment: "Great museum, very informative. Some sections were a bit crowded.", date: "2024-03-22", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar" },
   ],
   website: "https://examplemuseum.com", 
   expectedCrowdLevel: "Moderate",
@@ -586,5 +586,3 @@ export function findRentalPropertyById(id: string): MockStay | undefined {
 export function findSalePropertyById(id: string): MockStay | undefined {
   return mockSaleProperties.find(property => property.id === id);
 }
-
-    

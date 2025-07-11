@@ -1,4 +1,3 @@
-
 // src/app/stays/[id]/page.tsx
 'use client';
 
