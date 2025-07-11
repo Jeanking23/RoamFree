@@ -19,7 +19,7 @@ export default function SalePropertyProfilePage() {
   const router = useRouter();
   const [property, setProperty] = useState<MockStay | null | undefined>(undefined);
   const [isFavorited, setIsFavorited] = useState(false);
-  const [currentImage, setCurrentImage] = useState<{ src: string; alt: string; dataAiHint: string } | null>(null);
+  const [currentImage, setCurrentImage] = useState<{ id: string; src: string; alt: string; dataAiHint: string } | null>(null);
 
   useEffect(() => {
     if (params.id) {
@@ -68,9 +68,9 @@ export default function SalePropertyProfilePage() {
     }
   };
   
-  const handleMediaTool = (toolName: string) => {
-    if (!property) return;
-    toast({ title: `${toolName} (Demo)`, description: `Showing ${toolName.toLowerCase()} for ${property.name}.` });
+  const handleMediaTool = (toolName: string, propertyName?: string) => {
+    if (!propertyName) return;
+    toast({ title: `${toolName} (Demo)`, description: `Showing ${toolName.toLowerCase()} for ${propertyName}.` });
   };
 
 
@@ -262,3 +262,5 @@ export default function SalePropertyProfilePage() {
     </div>
   );
 }
+
+    

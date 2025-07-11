@@ -1,3 +1,4 @@
+
 // src/app/rent-home/[id]/page.tsx
 'use client';
 
@@ -24,7 +25,7 @@ export default function RentalPropertyProfilePage() {
   const router = useRouter();
   const [property, setProperty] = useState<MockStay | null | undefined>(undefined);
   const [isFavorited, setIsFavorited] = useState(false);
-  const [currentImage, setCurrentImage] = useState<{ src: string; alt: string; dataAiHint: string } | null>(null);
+  const [currentImage, setCurrentImage] = useState<{ id: string; src: string; alt: string; dataAiHint: string } | null>(null);
   
   const [tourDate, setTourDate] = useState<Date | undefined>(new Date());
   const [selectedTime, setSelectedTime] = useState<string>('');
@@ -311,3 +312,5 @@ export default function RentalPropertyProfilePage() {
     </div>
   );
 }
+
+    

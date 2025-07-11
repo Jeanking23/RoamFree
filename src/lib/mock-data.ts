@@ -1,3 +1,4 @@
+
 // src/lib/mock-data.ts
 
 export interface StayPhoto {
@@ -585,3 +586,5 @@ export function findRentalPropertyById(id: string): MockStay | undefined {
 export function findSalePropertyById(id: string): MockStay | undefined {
   return mockSaleProperties.find(property => property.id === id);
 }
+
+    

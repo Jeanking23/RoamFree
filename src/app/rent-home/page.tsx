@@ -44,7 +44,7 @@ export default function RentHomePage() {
     // Filter logic based on form data
     const filteredRentals = mockRentalProperties.filter(rental => {
         let matches = true;
-        if (data.location && !rental.location.toLowerCase().includes(data.location.toLowerCase())) {
+        if (data.location && rental.location && !rental.location.toLowerCase().includes(data.location.toLowerCase())) {
             matches = false;
         }
         if (data.minPrice && rental.price && rental.price < data.minPrice) {
@@ -305,3 +305,5 @@ export default function RentHomePage() {
     </div>
   );
 }
+
+    

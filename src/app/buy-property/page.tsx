@@ -76,7 +76,7 @@ export default function BuyPropertyPage() {
     console.log("Property Search Filters:", data);
     const filteredProperties = mockSaleProperties.filter(prop => {
         let matches = true;
-        if (data.location && !prop.location.toLowerCase().includes(data.location.toLowerCase())) matches = false;
+        if (data.location && prop.location && !prop.location.toLowerCase().includes(data.location.toLowerCase())) matches = false;
         if (data.minPrice && prop.price && prop.price < data.minPrice) matches = false;
         if (data.maxPrice && prop.price && prop.price > data.maxPrice) matches = false;
         if (data.propertyType !== "ANY" && prop.propertyType?.toLowerCase() !== data.propertyType?.toLowerCase()) matches = false;
@@ -252,4 +252,6 @@ export default function BuyPropertyPage() {
     </div>
   );
 }
+    
+
     
