@@ -1,5 +1,6 @@
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, MarkerF as Marker } from '@react-google-maps/api';
 import { Map, MapPin } from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
 
 interface InteractiveMapPlaceholderProps {
   pickup?: string;
@@ -11,12 +12,7 @@ const containerStyle = {
   height: '100%',
 };
 
-const center = {
-  lat: 39.8283, // Center of the US
-  lng: -98.5795
-};
-
-const libraries: ("places" | "maps")[] = ['places', 'maps'];
+const libraries: ("places" | "maps" | "geocoding")[] = ['places', 'maps', 'geocoding'];
 
 export default function InteractiveMapPlaceholder({ pickup, dropoff }: InteractiveMapPlaceholderProps) {
     const { isLoaded, loadError } = useJsApiLoader({
@@ -24,6 +20,61 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
         libraries,
     });
+
+    const [pickupCoords, setPickupCoords] = useState<google.maps.LatLngLiteral | null>(null);
+    const [dropoffCoords, setDropoffCoords] = useState<google.maps.LatLngLiteral | null>(null);
+
+    const geocodeAddress = (address: string, setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>) => {
+        if (!window.google || !address) {
+            setter(null);
+            return;
+        }
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ address }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+                setter({
+                    lat: results[0].geometry.location.lat(),
+                    lng: results[0].geometry.location.lng(),
+                });
+            } else {
+                console.error(`Geocode was not successful for the following reason: ${status}`);
+                setter(null);
+            }
+        });
+    };
+
+    useEffect(() => {
+        if (isLoaded && pickup) {
+            geocodeAddress(pickup, setPickupCoords);
+        } else {
+            setPickupCoords(null);
+        }
+    }, [pickup, isLoaded]);
+
+    useEffect(() => {
+        if (isLoaded && dropoff) {
+            geocodeAddress(dropoff, setDropoffCoords);
+        } else {
+            setDropoffCoords(null);
+        }
+    }, [dropoff, isLoaded]);
+
+    const mapCenter = useMemo(() => {
+        if (pickupCoords) return pickupCoords;
+        if (dropoffCoords) return dropoffCoords;
+        return { lat: 39.8283, lng: -98.5795 };
+    }, [pickupCoords, dropoffCoords]);
+
+    const mapBounds = useMemo(() => {
+        if (pickupCoords && dropoffCoords) {
+            const bounds = new window.google.maps.LatLngBounds();
+            bounds.extend(pickupCoords);
+            bounds.extend(dropoffCoords);
+            return bounds;
+        }
+        return undefined;
+    }, [pickupCoords, dropoffCoords]);
+
 
     const renderMap = () => {
         if (loadError) {
@@ -37,12 +88,20 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
         return (
             <GoogleMap
                 mapContainerStyle={containerStyle}
-                center={center}
-                zoom={4}
+                center={mapCenter}
+                zoom={pickupCoords || dropoffCoords ? 12 : 4}
+                options={{
+                    disableDefaultUI: true,
+                    zoomControl: true,
+                }}
+                onLoad={map => {
+                    if (mapBounds) {
+                        map.fitBounds(mapBounds, 100);
+                    }
+                }}
             >
-                {/* Add markers, directions, etc. here later */}
-                <Marker position={{ lat: 40.7128, lng: -74.0060 }} label="P" title={pickup || "Pickup"}/>
-                <Marker position={{ lat: 34.0522, lng: -118.2437 }} label="D" title={dropoff || "Dropoff"}/>
+                {pickupCoords && <Marker position={pickupCoords} label="P" title={pickup || "Pickup"} />}
+                {dropoffCoords && <Marker position={dropoffCoords} label="D" title={dropoff || "Dropoff"} />}
             </GoogleMap>
         );
     };

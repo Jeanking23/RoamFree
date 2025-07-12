@@ -1,3 +1,4 @@
+
 // src/app/transport/page.tsx
 'use client';
 
@@ -71,11 +72,12 @@ const suggestionItems = [
     },
 ];
 
-const libraries: ("places" | "maps")[] = ['places', 'maps'];
+const libraries: ("places" | "maps" | "geocoding")[] = ['places', 'maps', 'geocoding'];
 
 const LocationInput = ({
     value,
     onChange,
+    onValueChange,
     placeholder,
     onLoad,
     onPlaceChanged,
@@ -83,6 +85,7 @@ const LocationInput = ({
 }: {
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onValueChange: (value: string) => void; // For programmatic changes
     placeholder: string;
     onLoad: (autocomplete: google.maps.places.Autocomplete) => void;
     onPlaceChanged: () => void;
@@ -99,6 +102,37 @@ const LocationInput = ({
             title: `${action} (Demo)`,
             description: `This would ${action.toLowerCase()}. This is a placeholder.`
         });
+    };
+
+    const handleUseCurrentLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const geocoder = new window.google.maps.Geocoder();
+                    const latLng = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    };
+                    geocoder.geocode({ location: latLng }, (results, status) => {
+                        if (status === "OK") {
+                            if (results && results[0]) {
+                                onValueChange(results[0].formatted_address);
+                                toast({ title: "Location Updated", description: "Pickup location set to your current address." });
+                            } else {
+                                toast({ title: "Error", description: "No results found for your location.", variant: "destructive" });
+                            }
+                        } else {
+                            toast({ title: "Geocoder Error", description: `Geocoder failed due to: ${status}`, variant: "destructive" });
+                        }
+                    });
+                },
+                (error) => {
+                    toast({ title: "Geolocation Error", description: `Error: ${error.message}`, variant: "destructive" });
+                }
+            );
+        } else {
+             toast({ title: "Geolocation not supported", description: "Your browser does not support geolocation.", variant: "destructive" });
+        }
     };
 
     return (
@@ -133,7 +167,7 @@ const LocationInput = ({
                         </div>
                     </Button>
                     <Separator />
-                     <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleActionClick('Allow location access')}>
+                     <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={handleUseCurrentLocation}>
                         <LocateFixed className="h-5 w-5 bg-primary text-primary-foreground p-1 rounded-full" />
                         <div>
                             <p className="font-semibold text-sm">Allow location access</p>
@@ -251,6 +285,7 @@ export default function TransportPage() {
                      <LocationInput
                         value={pickupLocation}
                         onChange={(e) => setPickupLocation(e.target.value)}
+                        onValueChange={setPickupLocation}
                         placeholder="Enter pickup location"
                         onLoad={(autocomplete) => { pickupAutocompleteRef.current = autocomplete; }}
                         onPlaceChanged={handlePickupPlaceChanged}
@@ -259,6 +294,7 @@ export default function TransportPage() {
                     <LocationInput
                         value={dropoffLocation}
                         onChange={(e) => setDropoffLocation(e.target.value)}
+                        onValueChange={setDropoffLocation}
                         placeholder="Enter destination"
                         onLoad={(autocomplete) => { dropoffAutocompleteRef.current = autocomplete; }}
                         onPlaceChanged={handleDropoffPlaceChanged}
