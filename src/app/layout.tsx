@@ -6,6 +6,7 @@ import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import BottomNavBar from '@/components/layout/bottom-nav-bar';
 import { LocaleProvider } from '@/context/locale-provider';
+import { GoogleMapsProvider } from '@/context/google-maps-provider';
 
 export const metadata: Metadata = {
   title: 'RoamFree',
@@ -26,6 +27,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning={true}>
+        <GoogleMapsProvider>
           <LocaleProvider>
             <div className="relative flex min-h-screen flex-col">
               <Header />
@@ -37,6 +39,7 @@ export default function RootLayout({
             </div>
             <Toaster />
           </LocaleProvider>
+        </GoogleMapsProvider>
       </body>
     </html>
   );

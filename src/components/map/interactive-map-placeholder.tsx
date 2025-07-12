@@ -1,6 +1,7 @@
-import { GoogleMap, useJsApiLoader, MarkerF as Marker, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
+import { GoogleMap, MarkerF as Marker, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
 import { Map, MapPin } from 'lucide-react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useGoogleMaps } from '@/context/google-maps-provider';
 
 interface InteractiveMapPlaceholderProps {
   pickup?: string;
@@ -13,14 +14,8 @@ const containerStyle = {
   height: '100%',
 };
 
-const libraries: ("places" | "maps" | "geocoding")[] = ['places', 'maps', 'geocoding'];
-
 export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }: InteractiveMapPlaceholderProps) {
-    const { isLoaded, loadError } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-        libraries,
-    });
+    const { isLoaded, loadError } = useGoogleMaps();
 
     const [pickupCoords, setPickupCoords] = useState<google.maps.LatLngLiteral | null>(null);
     const [dropoffCoords, setDropoffCoords] = useState<google.maps.LatLngLiteral | null>(null);

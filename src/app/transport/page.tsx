@@ -17,7 +17,7 @@ import InteractiveMapPlaceholder from '@/components/map/interactive-map-placehol
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { useJsApiLoader } from '@react-google-maps/api';
+import { useGoogleMaps } from '@/context/google-maps-provider';
 import { getSavedPlacesAction, addSavedPlaceAction } from '@/app/actions';
 import type { SavedPlace } from '@/services/places';
 import { Label } from '@/components/ui/label';
@@ -75,25 +75,22 @@ const suggestionItems = [
     },
 ];
 
-const libraries: ("places" | "maps" | "geocoding")[] = ['places', 'maps', 'geocoding'];
-
 
 // LocationInput component using Popover and Command (cmdk)
 interface LocationInputProps {
   value: string;
   onValueChange: (value: string) => void;
   placeholder: string;
-  isLoaded: boolean; // Receive isLoaded state from parent
 }
 
-function LocationInput({ value, onValueChange, placeholder, isLoaded }: LocationInputProps) {
+function LocationInput({ value, onValueChange, placeholder }: LocationInputProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
-
+  const { isLoaded } = useGoogleMaps();
 
   useEffect(() => {
     if (isLoaded && !autocompleteService.current) {
@@ -262,12 +259,6 @@ export default function TransportPage() {
     const [time, setTime] = useState('');
     const mapRef = useRef<google.maps.Map | null>(null);
 
-    // Consolidated loader hook
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-        libraries,
-    });
-
     useEffect(() => {
         const now = new Date();
         setDate(now);
@@ -337,13 +328,11 @@ export default function TransportPage() {
                             value={pickupLocation}
                             onValueChange={setPickupLocation}
                             placeholder="Pickup location"
-                            isLoaded={isLoaded}
                         />
                         <LocationInput
                             value={dropoffLocation}
                             onValueChange={setDropoffLocation}
                             placeholder="Destination"
-                            isLoaded={isLoaded}
                         />
                    
                     <div className="grid grid-cols-2 gap-2">
