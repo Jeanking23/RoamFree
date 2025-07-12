@@ -206,10 +206,10 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded }: Location
           <CommandList>
             <CommandEmpty>{isLoadingPlaces ? 'Loading places...' : 'No results found.'}</CommandEmpty>
             <CommandGroup>
-                <CommandItem onSelect={handleAllowLocation}>
+                <CommandItem onSelect={handleAllowLocation} className="cursor-pointer">
                     <LocateFixed className="mr-2 h-4 w-4" /> Allow location access
                 </CommandItem>
-                <CommandItem onSelect={handleSetOnMap}>
+                <CommandItem onSelect={handleSetOnMap} className="cursor-pointer">
                     <MapIcon className="mr-2 h-4 w-4" /> Set location on map
                 </CommandItem>
             </CommandGroup>
@@ -218,7 +218,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded }: Location
                 <CommandSeparator />
                 <CommandGroup heading="Saved Places">
                   {savedPlaces.map((place) => (
-                    <CommandItem key={place.id} onSelect={() => handleSelect(place.address)}>
+                    <CommandItem key={place.id} onSelect={() => handleSelect(place.address)} className="cursor-pointer">
                       <Star className="mr-2 h-4 w-4" />
                       {place.name}
                     </CommandItem>
@@ -232,6 +232,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded }: Location
                 <CommandItem
                   key={prediction.place_id}
                   onSelect={() => handleSelect(prediction.description)}
+                  className="cursor-pointer"
                 >
                   <MapPin className="mr-2 h-4 w-4" />
                   {prediction.description}
