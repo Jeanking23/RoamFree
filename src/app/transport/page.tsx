@@ -5,7 +5,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Wand2, Home, Briefcase, Plus, ArrowLeft, Building, Users } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Wand2, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
@@ -17,10 +17,11 @@ import InteractiveMapPlaceholder from '@/components/map/interactive-map-placehol
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { Autocomplete, useJsApiLoader } from '@react-google-maps/api';
+import { useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api';
 import { getSavedPlacesAction, addSavedPlaceAction } from '@/app/actions';
 import type { SavedPlace } from '@/services/places';
 import { Label } from '@/components/ui/label';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 
 const serviceCategories = [
   { name: 'Ride', icon: Car, link: '#ride-booking' },
@@ -77,23 +78,30 @@ const suggestionItems = [
 const libraries: ("places" | "maps" | "geocoding")[] = ['places', 'maps', 'geocoding'];
 
 
-// LocationInput component with Popover
+// LocationInput component using Popover and Command (cmdk)
 interface LocationInputProps {
   value: string;
-  onLocationSelect: (location: string) => void;
+  onValueChange: (value: string) => void;
   placeholder: string;
-  mapRef: React.MutableRefObject<google.maps.Map | null>;
 }
 
-function LocationInput({ value, onLocationSelect, placeholder, mapRef }: LocationInputProps) {
+function LocationInput({ value, onValueChange, placeholder }: LocationInputProps) {
   const [open, setOpen] = useState(false);
-  const [popoverView, setPopoverView] = useState<'main' | 'saved_places' | 'add_place'>('main');
+  const [inputValue, setInputValue] = useState(value);
+  const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+  const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
-  const [newPlaceName, setNewPlaceName] = useState('');
-  const [newPlaceAddress, setNewPlaceAddress] = useState('');
+  useEffect(() => {
+    if (window.google && window.google.maps && window.google.maps.places) {
+      autocompleteService.current = new window.google.maps.places.AutocompleteService();
+    }
+  }, []);
+
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
 
   const fetchPlaces = useCallback(async () => {
     setIsLoadingPlaces(true);
@@ -107,9 +115,32 @@ function LocationInput({ value, onLocationSelect, placeholder, mapRef }: Locatio
     setIsLoadingPlaces(false);
   }, []);
 
-  const handleSavedPlacesClick = () => {
-    fetchPlaces();
-    setPopoverView('saved_places');
+  useEffect(() => {
+    if (open) {
+      fetchPlaces();
+    }
+  }, [open, fetchPlaces]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setInputValue(query);
+    if (autocompleteService.current && query) {
+      autocompleteService.current.getPlacePredictions({ input: query }, (predictions, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+          setSuggestions(predictions);
+        } else {
+          setSuggestions([]);
+        }
+      });
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSelect = (selectedValue: string) => {
+    onValueChange(selectedValue);
+    setInputValue(selectedValue);
+    setOpen(false);
   };
   
   const handleAllowLocation = () => {
@@ -123,9 +154,8 @@ function LocationInput({ value, onLocationSelect, placeholder, mapRef }: Locatio
           };
           geocoder.geocode({ location: latLng }, (results, status) => {
             if (status === 'OK' && results && results[0]) {
-              onLocationSelect(results[0].formatted_address);
+              handleSelect(results[0].formatted_address);
               toast({ title: "Location set!", description: "Your current location has been set." });
-              setOpen(false);
             } else {
               toast({ title: 'Error', description: 'Could not get address from your location.', variant: 'destructive' });
             }
@@ -139,137 +169,64 @@ function LocationInput({ value, onLocationSelect, placeholder, mapRef }: Locatio
       toast({ title: 'Not Supported', description: 'Geolocation is not supported by your browser.', variant: 'destructive' });
     }
   };
-
-  const handleSetOnMap = () => {
-    if (mapRef.current) {
-        const center = mapRef.current.getCenter();
-        if (center) {
-            const geocoder = new window.google.maps.Geocoder();
-            geocoder.geocode({ location: center }, (results, status) => {
-                if (status === 'OK' && results && results[0]) {
-                    onLocationSelect(results[0].formatted_address);
-                    toast({ title: 'Location set from map' });
-                    setOpen(false);
-                } else {
-                     toast({ title: 'Error', description: 'Could not get address from map center.', variant: 'destructive' });
-                }
-            });
-        }
-    } else {
-         toast({ title: 'Map not ready', description: 'Please wait for the map to load.', variant: 'destructive' });
-    }
-  };
-
-  const onAutocompleteLoad = (autocomplete: google.maps.places.Autocomplete) => {
-    autocompleteRef.current = autocomplete;
-  };
-
-  const onPlaceChanged = () => {
-    if (autocompleteRef.current) {
-      const place = autocompleteRef.current.getPlace();
-      if (place && place.formatted_address) {
-        onLocationSelect(place.formatted_address);
-        setOpen(false);
-      }
-    }
-  };
-
-  const handleAddNewPlace = async () => {
-    if (!newPlaceName || !newPlaceAddress) {
-        toast({ title: 'Missing fields', description: 'Please provide both name and address.', variant: 'destructive' });
-        return;
-    }
-    const result = await addSavedPlaceAction({ name: newPlaceName, address: newPlaceAddress });
-    if ('error' in result) {
-        toast({ title: 'Error saving place', description: result.error, variant: 'destructive' });
-    } else {
-        toast({ title: 'Place Saved!', description: `${newPlaceName} has been added to your saved places.` });
-        setNewPlaceName('');
-        setNewPlaceAddress('');
-        handleSavedPlacesClick(); // Refresh list and go back
-    }
-  };
-
-
+  
   return (
-    <Popover open={open} onOpenChange={(isOpen) => {
-        setOpen(isOpen);
-        if (!isOpen) setPopoverView('main');
-    }}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div className="relative w-full">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
+        <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between h-auto py-2 px-3"
+        >
+            <div className="flex items-center">
+                <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className={cn("truncate", !value && "text-muted-foreground")}>
+                    {value || placeholder}
+                </span>
             </div>
-            <Input
-              placeholder={placeholder}
-              value={value}
-              readOnly
-              className="pl-10 cursor-pointer"
-            />
-        </div>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0">
-        {popoverView === 'main' && (
-            <div className="p-2 space-y-1">
-                <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={handleSavedPlacesClick}><Building className="h-5 w-5 text-primary"/>Saved places</Button>
-                <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={handleAllowLocation}>
-                    <LocateFixed className="h-5 w-5 text-primary"/>
-                    <div className="text-left">
-                        <p>Allow location access</p>
-                        <p className="text-xs text-muted-foreground font-normal">It provides your pickup address</p>
-                    </div>
-                </Button>
-                <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={handleSetOnMap}><Compass className="h-5 w-5 text-primary"/>Set location on map</Button>
-                <Separator className="my-2" />
-                <div className="p-2">
-                    <Autocomplete onLoad={onAutocompleteLoad} onPlaceChanged={onPlaceChanged}>
-                        <Input placeholder={placeholder} className="w-full"/>
-                    </Autocomplete>
-                </div>
-            </div>
-        )}
-        {popoverView === 'saved_places' && (
-            <div className="p-2">
-                <Button variant="ghost" onClick={() => setPopoverView('main')} className="mb-2"><ArrowLeft className="h-4 w-4 mr-2"/>Back</Button>
-                {isLoadingPlaces ? <p>Loading...</p> : (
-                    <div className="space-y-1">
-                        {savedPlaces.map(place => (
-                            <Button key={place.id} variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => { onLocationSelect(place.address); setOpen(false); }}>
-                                {place.name.toLowerCase() === 'home' ? <Home className="h-5 w-5 text-primary"/> : place.name.toLowerCase() === 'work' ? <Briefcase className="h-5 w-5 text-primary"/> : <Star className="h-5 w-5 text-primary"/>}
-                                <div className="text-left">
-                                    <p>{place.name}</p>
-                                    <p className="text-xs text-muted-foreground font-normal truncate">{place.address}</p>
-                                </div>
-                            </Button>
-                        ))}
-                    </div>
-                )}
-                <Separator className="my-2"/>
-                <Button variant="ghost" className="w-full justify-start gap-3 h-auto text-sm text-primary" onClick={() => setPopoverView('add_place')}>
-                    <Plus className="h-4 w-4 mr-2"/> Add new place
-                </Button>
-            </div>
-        )}
-        {popoverView === 'add_place' && (
-            <div className="p-4 space-y-4">
-                 <Button variant="ghost" size="sm" onClick={() => setPopoverView('saved_places')} className="mb-2 px-1 h-auto"><ArrowLeft className="h-4 w-4 mr-2"/>Back to saved places</Button>
-                 <div>
-                    <Label htmlFor="place-name">Name (e.g., Home, Gym)</Label>
-                    <Input id="place-name" value={newPlaceName} onChange={(e) => setNewPlaceName(e.target.value)} />
-                 </div>
-                 <div>
-                    <Label htmlFor="place-address">Address</Label>
-                    <Input id="place-address" value={newPlaceAddress} onChange={(e) => setNewPlaceAddress(e.target.value)} />
-                 </div>
-                 <Button onClick={handleAddNewPlace} className="w-full">Save Place</Button>
-            </div>
-        )}
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder="Search for a location..."
+            value={inputValue}
+            onInput={handleInputChange}
+          />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup>
+                {savedPlaces.map((place) => (
+                    <CommandItem key={place.id} onSelect={() => handleSelect(place.address)}>
+                        {place.name.toLowerCase() === 'home' ? <Home className="h-4 w-4 mr-2"/> : place.name.toLowerCase() === 'work' ? <Briefcase className="h-4 w-4 mr-2"/> : <Star className="h-4 w-4 mr-2"/>}
+                        {place.name}
+                    </CommandItem>
+                ))}
+                 <CommandItem onSelect={handleAllowLocation}>
+                    <LocateFixed className="mr-2 h-4 w-4" />
+                    Use current location
+                </CommandItem>
+            </CommandGroup>
+            {suggestions.length > 0 && <Separator />}
+            <CommandGroup heading="Suggestions">
+              {suggestions.map((prediction) => (
+                <CommandItem
+                  key={prediction.place_id}
+                  onSelect={() => handleSelect(prediction.description)}
+                >
+                  <MapPin className="mr-2 h-4 w-4" />
+                  {prediction.description}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
       </PopoverContent>
     </Popover>
   );
 }
-
 
 
 export default function TransportPage() {
@@ -350,22 +307,20 @@ export default function TransportPage() {
             <div className="space-y-4">
                 <h3 className="text-2xl font-semibold">Book a Ride</h3>
                 <div className="space-y-4">
-                    {isLoaded && (
+                    {isLoaded ? (
                         <>
                             <LocationInput
                                 value={pickupLocation}
-                                onLocationSelect={setPickupLocation}
+                                onValueChange={setPickupLocation}
                                 placeholder="Pickup location"
-                                mapRef={mapRef}
                             />
                             <LocationInput
                                 value={dropoffLocation}
-                                onLocationSelect={setDropoffLocation}
+                                onValueChange={setDropoffLocation}
                                 placeholder="Destination"
-                                mapRef={mapRef}
                             />
                         </>
-                    )}
+                    ) : <p>Loading map services...</p>}
                    
                     <div className="grid grid-cols-2 gap-2">
                          <Popover>
