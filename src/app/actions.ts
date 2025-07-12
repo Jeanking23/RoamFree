@@ -4,6 +4,8 @@
 import { recommendPoi, type RecommendPoiInput, type RecommendPoiOutput } from "@/ai/flows/poi-recommendation";
 import { planTrip, type AiTripPlanInput, type AiTripPlanOutput } from "@/ai/flows/trip-planner-flow";
 import { getSupportChatResponse, type SupportChatbotInput, type SupportChatbotOutput } from "@/ai/flows/support-chatbot-flow";
+import { getSavedPlaces, addSavedPlace } from "@/services/places";
+import type { SavedPlace } from "@/services/places";
 
 export async function getPoiRecommendationsAction(input: RecommendPoiInput): Promise<RecommendPoiOutput | { error: string }> {
   try {
@@ -38,4 +40,27 @@ export async function getSupportChatbotResponseAction(input: SupportChatbotInput
   }
 }
 
-    
+export async function getSavedPlacesAction(): Promise<SavedPlace[] | { error: string }> {
+  try {
+    const places = await getSavedPlaces();
+    return places;
+  } catch (error) {
+    console.error("Error getting saved places:", error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    return { error: `Failed to fetch saved places: ${errorMessage}` };
+  }
+}
+
+export async function addSavedPlaceAction(place: Omit<SavedPlace, 'id'>): Promise<{ id: string } | { error: string }> {
+    if (!place.name || !place.address) {
+        return { error: "Name and address are required." };
+    }
+    try {
+        const placeId = await addSavedPlace(place);
+        return { id: placeId };
+    } catch (error) {
+        console.error("Error adding saved place:", error);
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+        return { error: `Failed to save place: ${errorMessage}` };
+    }
+}

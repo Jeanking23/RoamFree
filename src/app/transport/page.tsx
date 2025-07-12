@@ -10,7 +10,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
@@ -19,6 +19,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api';
 import { Label } from '@/components/ui/label';
+import { getSavedPlacesAction, addSavedPlaceAction } from '@/app/actions';
 
 const serviceCategories = [
   { name: 'Ride', icon: Car, link: '#ride-booking' },
@@ -74,6 +75,13 @@ const suggestionItems = [
 
 const libraries: ("places" | "maps" | "geocoding")[] = ['places', 'maps', 'geocoding'];
 
+interface SavedPlace {
+  id: string;
+  name: string;
+  address: string;
+  icon: React.ElementType;
+}
+
 const LocationInput = ({
     value,
     onChange,
@@ -100,11 +108,30 @@ const LocationInput = ({
     const [popoverView, setPopoverView] = useState<'main' | 'saved' | 'add'>('main');
     const [newPlaceName, setNewPlaceName] = useState('');
     const [newPlaceAddress, setNewPlaceAddress] = useState('');
+    const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
+    const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
 
-    const mockSavedPlaces = {
-      Home: '123 Home St, Hometown, USA',
-      Work: '456 Business Ave, Worktown, USA',
-    };
+    const fetchSavedPlaces = useCallback(async () => {
+        setIsLoadingPlaces(true);
+        const result = await getSavedPlacesAction();
+        if ("error" in result) {
+            toast({ title: 'Error fetching saved places', description: result.error, variant: 'destructive' });
+            setSavedPlaces([]);
+        } else {
+            const placesWithIcons = result.map(p => ({
+                ...p,
+                icon: p.name.toLowerCase() === 'home' ? Home : p.name.toLowerCase() === 'work' ? Briefcase : MapPin,
+            }));
+            setSavedPlaces(placesWithIcons);
+        }
+        setIsLoadingPlaces(false);
+    }, []);
+
+    useEffect(() => {
+      if (popoverView === 'saved') {
+        fetchSavedPlaces();
+      }
+    }, [popoverView, fetchSavedPlaces]);
 
     const handleActionClick = (action: string) => {
         toast({
@@ -113,18 +140,20 @@ const LocationInput = ({
         });
     };
     
-    const handleAddNewPlace = () => {
+    const handleAddNewPlace = async () => {
         if (!newPlaceName || !newPlaceAddress) {
             toast({ title: 'Missing Information', description: 'Please provide a name and address.', variant: 'destructive' });
             return;
         }
-        console.log(`Adding new place: ${newPlaceName} at ${newPlaceAddress}`);
-        toast({ title: 'Place Added (Demo)', description: `${newPlaceName} has been saved.` });
-        // In a real app, you'd save this to a user's profile.
-        // For the demo, we just reset the form and go back.
-        setNewPlaceName('');
-        setNewPlaceAddress('');
-        setPopoverView('saved');
+        const result = await addSavedPlaceAction({ name: newPlaceName, address: newPlaceAddress });
+        if ("error" in result) {
+            toast({ title: 'Error saving place', description: result.error, variant: 'destructive' });
+        } else {
+            toast({ title: 'Place Added', description: `${newPlaceName} has been saved.` });
+            setNewPlaceName('');
+            setNewPlaceAddress('');
+            setPopoverView('saved');
+        }
     };
 
     const handleUseCurrentLocation = () => {
@@ -162,8 +191,8 @@ const LocationInput = ({
         }
     };
     
-    const handleSelectSavedPlace = (place: string) => {
-        onValueChange(place);
+    const handleSelectSavedPlace = (placeAddress: string) => {
+        onValueChange(placeAddress);
         setPopoverView('main');
     };
 
@@ -221,20 +250,19 @@ const LocationInput = ({
                             <ArrowLeft className="h-4 w-4 mr-1"/> Back to options
                         </Button>
                         <Separator />
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleSelectSavedPlace(mockSavedPlaces.Home)}>
-                           <Home className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
-                           <div>
-                                <p className="font-semibold text-sm">Home</p>
-                                <p className="text-xs text-muted-foreground text-left">{mockSavedPlaces.Home}</p>
-                           </div>
-                        </Button>
-                         <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleSelectSavedPlace(mockSavedPlaces.Work)}>
-                           <Briefcase className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
-                           <div>
-                                <p className="font-semibold text-sm">Work</p>
-                                <p className="text-xs text-muted-foreground text-left">{mockSavedPlaces.Work}</p>
-                           </div>
-                        </Button>
+                        {isLoadingPlaces && <p className="text-sm text-muted-foreground p-2">Loading saved places...</p>}
+                        {!isLoadingPlaces && savedPlaces.map((place) => (
+                           <Button key={place.id} variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleSelectSavedPlace(place.address)}>
+                                <place.icon className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
+                                <div>
+                                    <p className="font-semibold text-sm text-left">{place.name}</p>
+                                    <p className="text-xs text-muted-foreground text-left">{place.address}</p>
+                                </div>
+                            </Button>
+                        ))}
+                         {!isLoadingPlaces && savedPlaces.length === 0 && (
+                            <p className="text-sm text-muted-foreground p-2 text-center">No saved places yet.</p>
+                        )}
                         <Separator />
                          <Button variant="ghost" className="w-full justify-start gap-3 h-auto text-sm text-primary" onClick={() => setPopoverView('add')}>
                             + Add new place
