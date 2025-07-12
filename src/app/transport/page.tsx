@@ -83,16 +83,20 @@ interface LocationInputProps {
   value: string;
   onValueChange: (value: string) => void;
   placeholder: string;
-  isLoaded: boolean;
 }
 
-function LocationInput({ value, onValueChange, placeholder, isLoaded }: LocationInputProps) {
+function LocationInput({ value, onValueChange, placeholder }: LocationInputProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    libraries: ['places', 'geocoding'],
+  });
 
   useEffect(() => {
     if (isLoaded && !autocompleteService.current) {
@@ -170,6 +174,14 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded }: Location
       }
     );
   };
+
+  const handleSetOnMap = () => {
+    toast({
+      title: "Set on Map (Demo)",
+      description: "This would open an interactive map to pin a location."
+    });
+    setOpen(false);
+  };
   
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -199,16 +211,17 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded }: Location
           <CommandList>
             <CommandEmpty>{isLoadingPlaces ? 'Loading places...' : 'No results found.'}</CommandEmpty>
             <CommandGroup>
-                <CommandItem onSelect={() => {
-                  setOpen(false);
-                  handleAllowLocation();
-                }}>
-                    <LocateFixed className="mr-2 h-4 w-4" />
-                    Use current location
+                <CommandItem onSelect={fetchPlaces}>
+                  <Star className="mr-2 h-4 w-4" /> Saved places
                 </CommandItem>
-                <CommandItem onSelect={() => toast({title: "Set on Map (Demo)", description: "This would open a map to select a location."})}>
-                    <MapIcon className="mr-2 h-4 w-4" />
-                    Set location on map
+                <CommandItem onSelect={() => {
+                  handleAllowLocation();
+                  setOpen(false);
+                }}>
+                    <LocateFixed className="mr-2 h-4 w-4" /> Allow location access
+                </CommandItem>
+                <CommandItem onSelect={handleSetOnMap}>
+                    <MapIcon className="mr-2 h-4 w-4" /> Set location on map
                 </CommandItem>
             </CommandGroup>
             {savedPlaces.length > 0 && (
@@ -217,7 +230,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded }: Location
                 <CommandGroup heading="Saved Places">
                   {savedPlaces.map((place) => (
                     <CommandItem key={place.id} onSelect={() => handleSelect(place.address)}>
-                      <Star className="mr-2 h-4 w-4" />
+                      <Home className="mr-2 h-4 w-4" />
                       {place.name}
                     </CommandItem>
                   ))}
@@ -251,12 +264,6 @@ export default function TransportPage() {
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [time, setTime] = useState('');
     const mapRef = useRef<google.maps.Map | null>(null);
-
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-        libraries,
-    });
 
     useEffect(() => {
         const now = new Date();
@@ -322,22 +329,17 @@ export default function TransportPage() {
             <div className="space-y-4">
                 <h3 className="text-2xl font-semibold">Book a Ride</h3>
                 <div className="space-y-4">
-                    {isLoaded ? (
-                        <>
-                            <LocationInput
-                                value={pickupLocation}
-                                onValueChange={setPickupLocation}
-                                placeholder="Pickup location"
-                                isLoaded={isLoaded}
-                            />
-                            <LocationInput
-                                value={dropoffLocation}
-                                onValueChange={setDropoffLocation}
-                                placeholder="Destination"
-                                isLoaded={isLoaded}
-                            />
-                        </>
-                    ) : <p>Loading map services...</p>}
+                    
+                        <LocationInput
+                            value={pickupLocation}
+                            onValueChange={setPickupLocation}
+                            placeholder="Pickup location"
+                        />
+                        <LocationInput
+                            value={dropoffLocation}
+                            onValueChange={setDropoffLocation}
+                            placeholder="Destination"
+                        />
                    
                     <div className="grid grid-cols-2 gap-2">
                          <Popover>
