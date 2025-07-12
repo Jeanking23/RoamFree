@@ -23,6 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast"; 
 import { useState } from "react";
 import Image from "next/image";
+import { Label } from "@/components/ui/label";
 
 const propertySchema = z.object({
   propertyName: z.string().min(3, "Property name must be at least 3 characters."),
@@ -250,7 +251,7 @@ export default function ListPropertyPage() {
                 <div className="mt-4">
                   <Label>Photo Preview:</Label>
                   <div className="mt-2 relative w-full h-64 rounded-lg overflow-hidden border">
-                     <Image src={photoPreview} alt="Property preview" layout="fill" objectFit="cover" />
+                     <Image src={photoPreview} alt="Property preview" fill objectFit="cover" />
                   </div>
                 </div>
               )}
