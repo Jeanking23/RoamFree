@@ -1,4 +1,4 @@
-import { GoogleMap, useJsApiLoader, MarkerF as Marker } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, MarkerF as Marker, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
 import { Map, MapPin } from 'lucide-react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 
@@ -24,6 +24,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
 
     const [pickupCoords, setPickupCoords] = useState<google.maps.LatLngLiteral | null>(null);
     const [dropoffCoords, setDropoffCoords] = useState<google.maps.LatLngLiteral | null>(null);
+    const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
 
     const geocodeAddress = useCallback((address: string, setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>) => {
         if (!window.google || !address) {
@@ -59,22 +60,23 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
             setDropoffCoords(null);
         }
     }, [dropoff, isLoaded, geocodeAddress]);
-
+    
     const mapCenter = useMemo(() => {
         if (pickupCoords) return pickupCoords;
         if (dropoffCoords) return dropoffCoords;
         return { lat: 39.8283, lng: -98.5795 };
     }, [pickupCoords, dropoffCoords]);
 
-    const mapBounds = useMemo(() => {
-        if (isLoaded && pickupCoords && dropoffCoords) {
-            const bounds = new window.google.maps.LatLngBounds();
-            bounds.extend(pickupCoords);
-            bounds.extend(dropoffCoords);
-            return bounds;
+    const handleDirectionsResponse = (
+        response: google.maps.DirectionsResult | null,
+        status: google.maps.DirectionsStatus
+    ) => {
+        if (status === 'OK' && response) {
+            setDirections(response);
+        } else {
+            console.error(`Directions request failed due to ${status}`);
         }
-        return undefined;
-    }, [isLoaded, pickupCoords, dropoffCoords]);
+    };
 
 
     const renderMap = () => {
@@ -97,13 +99,35 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 }}
                 onLoad={map => {
                     if (onMapLoad) onMapLoad(map);
-                    if (mapBounds) {
-                        map.fitBounds(mapBounds, 100);
-                    }
                 }}
             >
-                {pickupCoords && <Marker position={pickupCoords} label="P" title={pickup || "Pickup"} />}
-                {dropoffCoords && <Marker position={dropoffCoords} label="D" title={dropoff || "Dropoff"} />}
+                {pickupCoords && !dropoffCoords && <Marker position={pickupCoords} />}
+                {!pickupCoords && dropoffCoords && <Marker position={dropoffCoords} />}
+                
+                {pickupCoords && dropoffCoords && (
+                    <DirectionsService
+                        options={{
+                            destination: dropoffCoords,
+                            origin: pickupCoords,
+                            travelMode: google.maps.TravelMode.DRIVING,
+                        }}
+                        callback={handleDirectionsResponse}
+                    />
+                )}
+                
+                {directions && (
+                     <DirectionsRenderer
+                        options={{
+                            directions,
+                            suppressMarkers: false, // Set to false to show default A/B markers
+                            polylineOptions: {
+                                strokeColor: "#64B5F6", // RoamFree primary color
+                                strokeWeight: 5,
+                            },
+                        }}
+                    />
+                )}
+
             </GoogleMap>
         );
     };
