@@ -220,23 +220,6 @@ const LocationInput = ({
             <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2">
                  {popoverView === 'main' && (
                     <div className="space-y-1">
-                         {isLoaded ? (
-                            <Autocomplete
-                                onLoad={onAutocompleteLoad}
-                                onPlaceChanged={onPlaceChanged}
-                                options={{ fields: ["formatted_address", "geometry", "name"], types: ["address"] }}
-                            >
-                                <Input
-                                    ref={inputRef}
-                                    placeholder={placeholder}
-                                    className="w-full"
-                                    defaultValue={value}
-                                />
-                            </Autocomplete>
-                        ) : (
-                            <Input placeholder="Loading map..." className="w-full" disabled />
-                        )}
-                        <Separator/>
                         <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => setPopoverView('saved')}>
                             <Star className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
                             <div>
@@ -257,6 +240,23 @@ const LocationInput = ({
                                 <p className="font-semibold text-sm">Set location on map</p>
                             </div>
                         </Button>
+                        <Separator/>
+                         {isLoaded ? (
+                            <Autocomplete
+                                onLoad={onAutocompleteLoad}
+                                onPlaceChanged={onPlaceChanged}
+                                options={{ fields: ["formatted_address", "geometry", "name"], types: ["address"] }}
+                            >
+                                <Input
+                                    ref={inputRef}
+                                    placeholder={placeholder}
+                                    className="w-full"
+                                    defaultValue={value}
+                                />
+                            </Autocomplete>
+                        ) : (
+                            <Input placeholder="Loading map..." className="w-full" disabled />
+                        )}
                     </div>
                  )}
                  {popoverView === 'saved' && (
