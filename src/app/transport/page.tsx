@@ -17,7 +17,7 @@ import InteractiveMapPlaceholder from '@/components/map/interactive-map-placehol
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api';
+import { useJsApiLoader } from '@react-google-maps/api';
 import { getSavedPlacesAction, addSavedPlaceAction } from '@/app/actions';
 import type { SavedPlace } from '@/services/places';
 import { Label } from '@/components/ui/label';
@@ -89,15 +89,20 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
-  const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
+  const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    libraries: ['places', 'geocoding'],
+  });
 
   useEffect(() => {
-    if (window.google && window.google.maps && window.google.maps.places) {
+    if (isLoaded && !autocompleteService.current) {
       autocompleteService.current = new window.google.maps.places.AutocompleteService();
     }
-  }, []);
+  }, [isLoaded]);
 
   useEffect(() => {
     setInputValue(value);
@@ -144,30 +149,31 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
   };
   
   const handleAllowLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const geocoder = new window.google.maps.Geocoder();
-          const latLng = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          geocoder.geocode({ location: latLng }, (results, status) => {
-            if (status === 'OK' && results && results[0]) {
-              handleSelect(results[0].formatted_address);
-              toast({ title: "Location set!", description: "Your current location has been set." });
-            } else {
-              toast({ title: 'Error', description: 'Could not get address from your location.', variant: 'destructive' });
-            }
-          });
-        },
-        () => {
-          toast({ title: 'Permission Denied', description: 'Could not access your location.', variant: 'destructive' });
-        }
-      );
-    } else {
+    if (!navigator.geolocation) {
       toast({ title: 'Not Supported', description: 'Geolocation is not supported by your browser.', variant: 'destructive' });
+      return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const geocoder = new window.google.maps.Geocoder();
+        const latLng = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        geocoder.geocode({ location: latLng }, (results, status) => {
+          if (status === 'OK' && results && results[0]) {
+            handleSelect(results[0].formatted_address);
+            toast({ title: "Location set!", description: "Your current location has been set as the address." });
+          } else {
+            toast({ title: 'Error', description: 'Could not get address from your location.', variant: 'destructive' });
+          }
+        });
+      },
+      () => {
+        toast({ title: 'Permission Denied', description: 'Could not access your location.', variant: 'destructive' });
+      }
+    );
   };
   
   return (
@@ -196,26 +202,30 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
             onInput={handleInputChange}
           />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>{isLoadingPlaces ? 'Loading places...' : 'No results found.'}</CommandEmpty>
             <CommandGroup>
-                <CommandItem onSelect={() => {
-                    // This is a placeholder for a more complex sub-menu or modal
-                    toast({title: "Saved Places (Demo)", description: "This would show your list of saved places."});
-                }}>
-                    <Star className="mr-2 h-4 w-4" />
-                    Saved places
-                </CommandItem>
-                 <CommandItem onSelect={handleAllowLocation}>
+                <CommandItem onSelect={handleAllowLocation}>
                     <LocateFixed className="mr-2 h-4 w-4" />
                     Allow location access
                 </CommandItem>
-                <CommandItem onSelect={() => {
-                     toast({title: "Set on Map (Demo)", description: "This would open a map to select a location."});
-                }}>
+                <CommandItem onSelect={() => toast({title: "Set on Map (Demo)", description: "This would open a map to select a location."})}>
                     <MapIcon className="mr-2 h-4 w-4" />
                     Set location on map
                 </CommandItem>
             </CommandGroup>
+            {savedPlaces.length > 0 && (
+              <>
+                <CommandSeparator />
+                <CommandGroup heading="Saved Places">
+                  {savedPlaces.map((place) => (
+                    <CommandItem key={place.id} onSelect={() => handleSelect(place.address)}>
+                      <Star className="mr-2 h-4 w-4" />
+                      {place.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </>
+            )}
             {suggestions.length > 0 && <CommandSeparator />}
             <CommandGroup heading="Suggestions">
               {suggestions.map((prediction) => (
