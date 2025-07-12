@@ -224,7 +224,7 @@ function LocationInput({ value, onLocationSelect, placeholder, mapRef }: Locatio
                 <Separator className="my-2" />
                 <div className="p-2">
                     <Autocomplete onLoad={onAutocompleteLoad} onPlaceChanged={onPlaceChanged}>
-                        <Input placeholder="Enter a location" className="w-full"/>
+                        <Input placeholder={placeholder} className="w-full"/>
                     </Autocomplete>
                 </div>
             </div>
