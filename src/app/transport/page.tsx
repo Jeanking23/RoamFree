@@ -5,7 +5,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, CircleDot, Square, Wand2, LocateFixed, Compass, Home, Briefcase, Plus, ArrowLeft } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, CircleDot, Square, LocateFixed, Compass, Home, Briefcase, Plus, ArrowLeft, Star, Wand2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
@@ -184,31 +184,37 @@ const LocationInput = ({ value, onValueChange, placeholder, icon, isLoaded, onSe
             </PopoverTrigger>
             <PopoverContent className="w-80 p-0">
                 {view === 'main' && (
-                     <div className="space-y-1 p-2">
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={handleViewSavedPlaces}>
-                            <Home className="h-5 w-5 text-primary" />
-                            <div>
+                    <div className="flex flex-col">
+                        <div className="p-4 space-y-4">
+                            <Button variant="outline" className="w-full justify-start gap-3 h-auto rounded-full" onClick={handleViewSavedPlaces}>
+                                <Star className="h-5 w-5 text-primary" />
                                 <p className="font-semibold text-left">Saved places</p>
-                            </div>
-                        </Button>
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={handleAllowLocationAccess}>
-                            <LocateFixed className="h-5 w-5 text-primary" />
-                            <div>
-                                <p className="font-semibold text-left">Allow location access</p>
-                                <p className="text-xs text-muted-foreground text-left">It provides your pickup address</p>
-                            </div>
-                        </Button>
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => { onSetLocationFromMap(); setPopoverOpen(false); }}>
-                            <Compass className="h-5 w-5 text-primary" />
-                             <div>
-                                <p className="font-semibold text-left">Set location on map</p>
-                            </div>
-                        </Button>
-                        <Separator className="my-2" />
+                            </Button>
+                            <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={handleAllowLocationAccess}>
+                                <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                                    <LocateFixed className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-left">Allow location access</p>
+                                    <p className="text-xs text-muted-foreground text-left">It provides your pickup address</p>
+                                </div>
+                            </Button>
+                            <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => { onSetLocationFromMap(); setPopoverOpen(false); }}>
+                                <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                                     <Compass className="h-5 w-5 text-primary" />
+                                </div>
+                                 <div>
+                                    <p className="font-semibold text-left">Set location on map</p>
+                                </div>
+                            </Button>
+                        </div>
+                        <Separator />
                         {isLoaded && (
-                            <Autocomplete onLoad={onAutocompleteLoad} onPlaceChanged={onPlaceChanged} options={{ fields: ["formatted_address", "name", "geometry"], types: ["address"] }}>
-                                <Input placeholder="Enter address..." className="w-full" />
-                            </Autocomplete>
+                            <div className="p-4">
+                                <Autocomplete onLoad={onAutocompleteLoad} onPlaceChanged={onPlaceChanged} options={{ fields: ["formatted_address", "name", "geometry"], types: ["address"] }}>
+                                    <Input placeholder={placeholder} className="w-full" />
+                                </Autocomplete>
+                            </div>
                         )}
                     </div>
                 )}
@@ -216,7 +222,7 @@ const LocationInput = ({ value, onValueChange, placeholder, icon, isLoaded, onSe
                     <div className="space-y-1 p-2">
                         <Button variant="ghost" className="w-full justify-start" onClick={() => setView('main')}><ArrowLeft className="mr-2 h-4 w-4"/> Back</Button>
                         <Separator />
-                        {isLoadingPlaces ? <p>Loading...</p> : savedPlaces.map(place => (
+                        {isLoadingPlaces ? <p className="p-2 text-sm">Loading...</p> : savedPlaces.map(place => (
                              <Button key={place.id} variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => { onValueChange(place.address); setPopoverOpen(false); }}>
                                 {place.name.toLowerCase() === 'home' ? <Home className="h-5 w-5 text-primary"/> : place.name.toLowerCase() === 'work' ? <Briefcase className="h-5 w-5 text-primary"/> : <MapPin className="h-5 w-5 text-primary"/>}
                                 <div>
