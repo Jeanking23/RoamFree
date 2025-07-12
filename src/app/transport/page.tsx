@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Bike, Shield, ShoppingBag, Utensils, Star, LocateFixed, Clock, CalendarDays, CircleDot, Square, Users, Package, Wand2, Home, Briefcase, History, Check, CalendarCheck } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Bike, Shield, ShoppingBag, Utensils, Star, LocateFixed, Clock, CalendarDays, CircleDot, Square, Users, Package, Wand2, Home, Briefcase, History, Check, CalendarCheck, Map } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api';
+import { Label } from '@/components/ui/label';
 
 const serviceCategories = [
   { name: 'Ride', icon: Car, link: '#ride-booking' },
@@ -71,6 +72,85 @@ const suggestionItems = [
 ];
 
 const libraries: ("places" | "maps")[] = ['places', 'maps'];
+
+const LocationInput = ({
+    value,
+    onChange,
+    placeholder,
+    onLoad,
+    onPlaceChanged,
+    icon,
+}: {
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    placeholder: string;
+    onLoad: (autocomplete: google.maps.places.Autocomplete) => void;
+    onPlaceChanged: () => void;
+    icon: React.ReactNode;
+}) => {
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+        libraries,
+    });
+    
+    const handleActionClick = (action: string) => {
+        toast({
+            title: `${action} (Demo)`,
+            description: `This would ${action.toLowerCase()}. This is a placeholder.`
+        });
+    };
+
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <div className="relative">
+                    {icon}
+                    {isLoaded ? (
+                        <Autocomplete
+                            onLoad={onLoad}
+                            onPlaceChanged={onPlaceChanged}
+                            options={{ fields: ["formatted_address", "geometry", "name"], types: ["address"] }}
+                        >
+                            <Input
+                                placeholder={placeholder}
+                                value={value}
+                                onChange={onChange}
+                                className="pl-10"
+                            />
+                        </Autocomplete>
+                    ) : (
+                        <Input placeholder="Loading map..." className="pl-10" disabled />
+                    )}
+                </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2">
+                <div className="space-y-1">
+                    <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleActionClick('Add Saved Place')}>
+                        <Star className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
+                        <div>
+                            <p className="font-semibold text-sm">Saved places</p>
+                        </div>
+                    </Button>
+                    <Separator />
+                     <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleActionClick('Allow location access')}>
+                        <LocateFixed className="h-5 w-5 bg-primary text-primary-foreground p-1 rounded-full" />
+                        <div>
+                            <p className="font-semibold text-sm">Allow location access</p>
+                            <p className="text-xs text-muted-foreground text-left">It provides your pickup address</p>
+                        </div>
+                    </Button>
+                     <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleActionClick('Set location on map')}>
+                        <MapPin className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
+                        <div>
+                            <p className="font-semibold text-sm">Set location on map</p>
+                        </div>
+                    </Button>
+                </div>
+            </PopoverContent>
+        </Popover>
+    );
+};
 
 
 export default function TransportPage() {
@@ -133,15 +213,6 @@ export default function TransportPage() {
         }
     };
 
-  const handleSuggestionClick = (field: 'pickup' | 'dropoff', address: string) => {
-    if (field === 'pickup') {
-      setPickupLocation(address);
-    } else {
-      setDropoffLocation(address);
-    }
-    toast({ title: "Location Set (Demo)", description: `${address} has been set.` });
-  };
-
 
   return (
     <div className="space-y-8">
@@ -177,78 +248,22 @@ export default function TransportPage() {
             <div className="space-y-4">
                 <h3 className="text-2xl font-semibold">Book a Ride</h3>
                 <div className="space-y-4">
-                    {isLoaded ? (
-                        <>
-                             <Autocomplete
-                                onLoad={(autocomplete) => { pickupAutocompleteRef.current = autocomplete; }}
-                                onPlaceChanged={handlePickupPlaceChanged}
-                                options={{ fields: ["formatted_address", "geometry", "name"], types: ["address"] }}
-                            >
-                                <div className="relative">
-                                    <CircleDot className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input 
-                                        placeholder="Enter pickup location" 
-                                        value={pickupLocation}
-                                        onChange={(e) => setPickupLocation(e.target.value)}
-                                        className="pl-10"
-                                    />
-                                </div>
-                            </Autocomplete>
-                            <Autocomplete
-                                onLoad={(autocomplete) => { dropoffAutocompleteRef.current = autocomplete; }}
-                                onPlaceChanged={handleDropoffPlaceChanged}
-                                options={{ fields: ["formatted_address", "geometry", "name"], types: ["address"] }}
-                            >
-                               <div className="relative">
-                                    <Square className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input 
-                                        placeholder="Enter destination"
-                                        value={dropoffLocation}
-                                        onChange={(e) => setDropoffLocation(e.target.value)}
-                                        className="pl-10"
-                                    />
-                                </div>
-                            </Autocomplete>
-                        </>
-                    ) : (
-                         <>
-                            <div className="relative">
-                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                <Input placeholder="Loading map..." className="pl-10" disabled/>
-                            </div>
-                             <div className="relative">
-                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                <Input placeholder="Loading map..." className="pl-10" disabled/>
-                            </div>
-                         </>
-                    )}
-
-                    <div className="border-t pt-4 space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">Saved Places</p>
-                        <Button variant="ghost" className="w-full justify-start gap-3" onClick={() => handleSuggestionClick('dropoff', '123 Home St, Hometown, USA')}>
-                            <Home className="h-4 w-4 text-primary" />
-                            <div>
-                                <p className="font-semibold text-left">Home</p>
-                                <p className="text-xs text-muted-foreground text-left">123 Home St, Hometown, USA</p>
-                            </div>
-                        </Button>
-                        <Button variant="ghost" className="w-full justify-start gap-3" onClick={() => handleSuggestionClick('dropoff', '456 Business Ave, Worktown, USA')}>
-                            <Briefcase className="h-4 w-4 text-primary" />
-                            <div>
-                                <p className="font-semibold text-left">Work</p>
-                                <p className="text-xs text-muted-foreground text-left">456 Business Ave, Worktown, USA</p>
-                            </div>
-                        </Button>
-                         <Button variant="ghost" className="w-full justify-start gap-3" onClick={() => toast({title: "Showing Recent Locations (Demo)"})}>
-                            <History className="h-4 w-4 text-primary" />
-                            <div>
-                                <p className="font-semibold text-left">Recent Locations</p>
-                                <p className="text-xs text-muted-foreground text-left">View your recent trips</p>
-                            </div>
-                        </Button>
-                    </div>
-
-                    
+                     <LocationInput
+                        value={pickupLocation}
+                        onChange={(e) => setPickupLocation(e.target.value)}
+                        placeholder="Enter pickup location"
+                        onLoad={(autocomplete) => { pickupAutocompleteRef.current = autocomplete; }}
+                        onPlaceChanged={handlePickupPlaceChanged}
+                        icon={<CircleDot className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />}
+                    />
+                    <LocationInput
+                        value={dropoffLocation}
+                        onChange={(e) => setDropoffLocation(e.target.value)}
+                        placeholder="Enter destination"
+                        onLoad={(autocomplete) => { dropoffAutocompleteRef.current = autocomplete; }}
+                        onPlaceChanged={handleDropoffPlaceChanged}
+                        icon={<Square className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />}
+                    />
                     <div className="grid grid-cols-2 gap-2">
                          <Popover>
                             <PopoverTrigger asChild>
