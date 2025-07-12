@@ -90,6 +90,7 @@ const LocationInput = ({
     onLoad,
     onPlaceChanged,
     icon,
+    onSetLocationOnMap
 }: {
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -98,6 +99,7 @@ const LocationInput = ({
     onLoad: (autocomplete: google.maps.places.Autocomplete) => void;
     onPlaceChanged: () => void;
     icon: React.ReactNode;
+    onSetLocationOnMap: () => void;
 }) => {
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
@@ -133,13 +135,6 @@ const LocationInput = ({
       }
     }, [popoverView, fetchSavedPlaces]);
 
-    const handleActionClick = (action: string) => {
-        toast({
-            title: `${action} (Demo)`,
-            description: `This would ${action.toLowerCase()}. This is a placeholder.`
-        });
-    };
-    
     const handleAddNewPlace = async () => {
         if (!newPlaceName || !newPlaceAddress) {
             toast({ title: 'Missing Information', description: 'Please provide a name and address.', variant: 'destructive' });
@@ -236,7 +231,7 @@ const LocationInput = ({
                                 <p className="text-xs text-muted-foreground text-left">It provides your pickup address</p>
                             </div>
                         </Button>
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleActionClick('Set location on map')}>
+                        <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={onSetLocationOnMap}>
                             <MapPin className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
                             <div>
                                 <p className="font-semibold text-sm">Set location on map</p>
@@ -303,6 +298,7 @@ export default function TransportPage() {
     const [dropoffLocation, setDropoffLocation] = useState('');
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [time, setTime] = useState('');
+    const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
 
     const pickupAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
     const dropoffAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -356,6 +352,36 @@ export default function TransportPage() {
             }
         }
     };
+    
+    const setLocationFromMap = (setter: (address: string) => void) => {
+        if (!mapInstance) {
+            toast({ title: "Map not ready", description: "The map is still initializing.", variant: "destructive"});
+            return;
+        }
+        if (!window.google) {
+            toast({ title: "Map not ready", description: "Google Maps script is still loading.", variant: "destructive" });
+            return;
+        }
+        const center = mapInstance.getCenter();
+        if (!center) {
+            toast({ title: "Map center not available", variant: "destructive"});
+            return;
+        }
+
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ location: center }, (results, status) => {
+            if (status === "OK") {
+                if (results && results[0]) {
+                    setter(results[0].formatted_address);
+                    toast({ title: "Location Updated", description: "Location set from map center." });
+                } else {
+                    toast({ title: "Error", description: "No results found for this map location.", variant: "destructive" });
+                }
+            } else {
+                toast({ title: "Geocoder Error", description: `Geocoder failed due to: ${status}`, variant: "destructive" });
+            }
+        });
+    }
 
 
   return (
@@ -386,7 +412,7 @@ export default function TransportPage() {
 
           <div id="ride-booking" className="grid lg:grid-cols-2 gap-8 items-start">
             <div className="hidden lg:block rounded-lg overflow-hidden h-96 lg:h-[32rem] sticky top-24">
-                <InteractiveMapPlaceholder pickup={pickupLocation} dropoff={dropoffLocation} />
+                <InteractiveMapPlaceholder pickup={pickupLocation} dropoff={dropoffLocation} onMapLoad={setMapInstance}/>
             </div>
 
             <div className="space-y-4">
@@ -400,6 +426,7 @@ export default function TransportPage() {
                         onLoad={(autocomplete) => { pickupAutocompleteRef.current = autocomplete; }}
                         onPlaceChanged={handlePickupPlaceChanged}
                         icon={<CircleDot className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />}
+                        onSetLocationOnMap={() => setLocationFromMap(setPickupLocation)}
                     />
                     <LocationInput
                         value={dropoffLocation}
@@ -409,6 +436,7 @@ export default function TransportPage() {
                         onLoad={(autocomplete) => { dropoffAutocompleteRef.current = autocomplete; }}
                         onPlaceChanged={handleDropoffPlaceChanged}
                         icon={<Square className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />}
+                        onSetLocationOnMap={() => setLocationFromMap(setDropoffLocation)}
                     />
                     <div className="grid grid-cols-2 gap-2">
                          <Popover>

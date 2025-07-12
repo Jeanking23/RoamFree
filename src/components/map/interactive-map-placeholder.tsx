@@ -1,10 +1,11 @@
 import { GoogleMap, useJsApiLoader, MarkerF as Marker } from '@react-google-maps/api';
 import { Map, MapPin } from 'lucide-react';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 
 interface InteractiveMapPlaceholderProps {
   pickup?: string;
   dropoff?: string;
+  onMapLoad?: (map: google.maps.Map) => void;
 }
 
 const containerStyle = {
@@ -14,7 +15,7 @@ const containerStyle = {
 
 const libraries: ("places" | "maps" | "geocoding")[] = ['places', 'maps', 'geocoding'];
 
-export default function InteractiveMapPlaceholder({ pickup, dropoff }: InteractiveMapPlaceholderProps) {
+export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }: InteractiveMapPlaceholderProps) {
     const { isLoaded, loadError } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -24,7 +25,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
     const [pickupCoords, setPickupCoords] = useState<google.maps.LatLngLiteral | null>(null);
     const [dropoffCoords, setDropoffCoords] = useState<google.maps.LatLngLiteral | null>(null);
 
-    const geocodeAddress = (address: string, setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>) => {
+    const geocodeAddress = useCallback((address: string, setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>) => {
         if (!window.google || !address) {
             setter(null);
             return;
@@ -41,7 +42,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
                 setter(null);
             }
         });
-    };
+    }, []);
 
     useEffect(() => {
         if (isLoaded && pickup) {
@@ -49,7 +50,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
         } else {
             setPickupCoords(null);
         }
-    }, [pickup, isLoaded]);
+    }, [pickup, isLoaded, geocodeAddress]);
 
     useEffect(() => {
         if (isLoaded && dropoff) {
@@ -57,7 +58,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
         } else {
             setDropoffCoords(null);
         }
-    }, [dropoff, isLoaded]);
+    }, [dropoff, isLoaded, geocodeAddress]);
 
     const mapCenter = useMemo(() => {
         if (pickupCoords) return pickupCoords;
@@ -66,14 +67,14 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
     }, [pickupCoords, dropoffCoords]);
 
     const mapBounds = useMemo(() => {
-        if (pickupCoords && dropoffCoords) {
+        if (isLoaded && pickupCoords && dropoffCoords) {
             const bounds = new window.google.maps.LatLngBounds();
             bounds.extend(pickupCoords);
             bounds.extend(dropoffCoords);
             return bounds;
         }
         return undefined;
-    }, [pickupCoords, dropoffCoords]);
+    }, [isLoaded, pickupCoords, dropoffCoords]);
 
 
     const renderMap = () => {
@@ -95,6 +96,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
                     zoomControl: true,
                 }}
                 onLoad={map => {
+                    if (onMapLoad) onMapLoad(map);
                     if (mapBounds) {
                         map.fitBounds(mapBounds, 100);
                     }
