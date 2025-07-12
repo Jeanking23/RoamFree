@@ -116,10 +116,10 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType }
   }, []);
 
   useEffect(() => {
-    if (open && savedPlaces.length === 0) {
+    if (open) {
       fetchPlaces();
     }
-  }, [open, savedPlaces, fetchPlaces]);
+  }, [open, fetchPlaces]);
 
   const handleInputChange = (term: string) => {
     setInputValue(term);
@@ -266,6 +266,8 @@ export default function TransportPage() {
     const router = useRouter();
     const [pickupLocation, setPickupLocation] = useState('');
     const [dropoffLocation, setDropoffLocation] = useState('');
+    const [date, setDate] = useState<Date | undefined>(new Date());
+    const [time, setTime] = useState('10:00');
     const mapRef = useRef<google.maps.Map | null>(null);
     const { isLoaded } = useGoogleMaps();
 
@@ -282,9 +284,8 @@ export default function TransportPage() {
         const query = new URLSearchParams({
             from: pickupLocation,
             to: dropoffLocation,
-            // Hardcoding date and time as they are removed from the UI for this design
-            date: new Date().toISOString(),
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+            date: date ? date.toISOString() : new Date().toISOString(),
+            time: time,
         });
 
         router.push(`/transport/search?${query.toString()}`);
@@ -343,6 +344,42 @@ export default function TransportPage() {
                             placeholder="Destination"
                             isLoaded={isLoaded}
                             iconType="dropoff"
+                        />
+                    </div>
+                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <Label>Date</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !date && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarDays className="mr-2 h-4 w-4" />
+                                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                    mode="single"
+                                    selected={date}
+                                    onSelect={setDate}
+                                    disabled={(d) => d < new Date(new Date().setHours(0,0,0,0))}
+                                    initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    <div>
+                         <Label>Time</Label>
+                         <Input
+                            type="time"
+                            value={time}
+                            onChange={(e) => setTime(e.target.value)}
                         />
                     </div>
                 </div>
