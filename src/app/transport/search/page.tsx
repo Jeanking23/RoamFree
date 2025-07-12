@@ -28,9 +28,9 @@ function RideSearchResults() {
          const ride = rideOptions.find(r => r.id === selectedRide);
         toast({
             title: `Confirming ${ride?.name} Ride`,
-            description: `Booking ride from ${from} to ${to}. Proceeding to confirmation...`,
+            description: `Proceeding to payment for ride from ${from} to ${to}. Using default payment method via RoamFree Wallet.`,
         });
-        // In a real app, navigate to a booking confirmation page
+        // In a real app, this would trigger the payment processing flow and navigate to a confirmation/tracking page.
     }
 
     return (
