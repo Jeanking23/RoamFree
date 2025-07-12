@@ -10,36 +10,20 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
+import { Autocomplete, useJsApiLoader } from '@react-google-maps/api';
 
 const serviceCategories = [
   { name: 'Ride', icon: Car, link: '#ride-booking' },
   { name: 'Bus Tickets', icon: Bus, link: '/bus-transportation' },
   { name: 'Rental Car', icon: CarFront, link: '/car-rent' },
   { name: 'Flights', icon: Plane, link: '/flights' },
-];
-
-const destinationSuggestions = [
-    { name: "Philadelphia International Airport (PHL)", address: "8000 Essington Ave, Philadelphia, PA" },
-    { name: "William H. Gray III 30th Street Amtrak Station", address: "2955 Market St, Philadelphia, PA" },
-    { name: "Grand Museum of Art", address: "789 Museum Ave, Cityville" },
-    { name: "Philadelphia Museum of Art", address: "2600 Benjamin Franklin Pkwy, Philadelphia, PA" },
-    { name: "Philadelphia City Hall", address: "1400 John F Kennedy Blvd, Philadelphia, PA" },
-    { name: "Reading Terminal Market", address: "51 N 12th St, Philadelphia, PA" },
-];
-
-const savedPlaces = [
-    { name: "Your location", address: "123 Main St, Cityville (GPS)", icon: LocateFixed },
-    { name: "Home", address: "123 Suburbia Lane, Newark, DE", icon: Home },
-    { name: "Work", address: "456 Business Park, Wilmington, DE", icon: Briefcase },
-    { name: "7244 Alexandra Dr, Newark, DE", address: "7244 Alexandra Dr, Newark, DE", icon: History }
 ];
 
 const suggestionItems = [
@@ -87,6 +71,8 @@ const suggestionItems = [
     },
 ];
 
+const libraries: "places"[] = ['places'];
+
 
 export default function TransportPage() {
     const router = useRouter();
@@ -94,12 +80,15 @@ export default function TransportPage() {
     const [dropoffLocation, setDropoffLocation] = useState('');
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [time, setTime] = useState('');
-    
-    const [isPickupPopoverOpen, setIsPickupPopoverOpen] = useState(false);
-    const [isDropoffPopoverOpen, setIsDropoffPopoverOpen] = useState(false);
 
-    const [pickupQuery, setPickupQuery] = useState('');
-    const [dropoffQuery, setDropoffQuery] = useState('');
+    const pickupAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+    const dropoffAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script-transport',
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+        libraries,
+    });
 
     useEffect(() => {
         const now = new Date();
@@ -127,15 +116,23 @@ export default function TransportPage() {
         router.push(`/transport/search?${query.toString()}`);
     };
 
-    const filteredPickupSuggestions = pickupQuery ? destinationSuggestions.filter(d => 
-        d.name.toLowerCase().includes(pickupQuery.toLowerCase()) || 
-        d.address.toLowerCase().includes(pickupQuery.toLowerCase())
-    ) : destinationSuggestions;
+    const handlePickupPlaceChanged = () => {
+        if (pickupAutocompleteRef.current) {
+            const place = pickupAutocompleteRef.current.getPlace();
+            if (place && place.formatted_address) {
+                setPickupLocation(place.formatted_address);
+            }
+        }
+    };
     
-    const filteredDropoffSuggestions = dropoffQuery ? destinationSuggestions.filter(d => 
-        d.name.toLowerCase().includes(dropoffQuery.toLowerCase()) || 
-        d.address.toLowerCase().includes(dropoffQuery.toLowerCase())
-    ) : destinationSuggestions;
+    const handleDropoffPlaceChanged = () => {
+        if (dropoffAutocompleteRef.current) {
+            const place = dropoffAutocompleteRef.current.getPlace();
+            if (place && place.formatted_address) {
+                setDropoffLocation(place.formatted_address);
+            }
+        }
+    };
 
   return (
     <div className="space-y-8">
@@ -171,99 +168,51 @@ export default function TransportPage() {
             <div className="space-y-4">
                 <h3 className="text-2xl font-semibold">Book a Ride</h3>
                 <div className="max-w-md space-y-4">
-                     <Popover open={isPickupPopoverOpen} onOpenChange={setIsPickupPopoverOpen}>
-                        <PopoverTrigger asChild>
-                             <div className="relative">
-                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                <Input 
-                                    placeholder="Pickup location" 
-                                    value={pickupLocation}
-                                    onChange={(e) => {
-                                        setPickupLocation(e.target.value);
-                                        setPickupQuery(e.target.value);
-                                    }}
-                                    className="pl-10"
-                                />
-                            </div>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                           <Command shouldFilter={false}>
-                                <CommandInput placeholder="Search pickup location..." value={pickupQuery} onValueChange={setPickupQuery}/>
-                                <CommandList>
-                                    <CommandEmpty>No results found.</CommandEmpty>
-                                     <CommandGroup heading="Saved places">
-                                        {savedPlaces.map((place) => (
-                                            <CommandItem key={place.name} onSelect={() => {
-                                                setPickupLocation(place.address);
-                                                setPickupQuery(place.address);
-                                                setIsPickupPopoverOpen(false);
-                                            }}>
-                                                <place.icon className="mr-2 h-4 w-4" />
-                                                <span>{place.name}</span>
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                    <CommandGroup heading="Suggestions">
-                                        {filteredPickupSuggestions.map((suggestion) => (
-                                             <CommandItem key={suggestion.name} onSelect={() => {
-                                                const fullAddress = `${suggestion.name}, ${suggestion.address}`;
-                                                setPickupLocation(fullAddress);
-                                                setPickupQuery(fullAddress);
-                                                setIsPickupPopoverOpen(false);
-                                            }}>
-                                                <MapPin className="mr-2 h-4 w-4" />
-                                                <div>
-                                                   <p>{suggestion.name}</p>
-                                                   <p className="text-xs text-muted-foreground">{suggestion.address}</p>
-                                                </div>
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                </CommandList>
-                           </Command>
-                        </PopoverContent>
-                    </Popover>
+                    {isLoaded && (
+                        <>
+                             <Autocomplete
+                                onLoad={(autocomplete) => { pickupAutocompleteRef.current = autocomplete; }}
+                                onPlaceChanged={handlePickupPlaceChanged}
+                                options={{ fields: ["formatted_address", "geometry", "name"], types: ["address"] }}
+                            >
+                                <div className="relative">
+                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                    <Input 
+                                        placeholder="Pickup location" 
+                                        onChange={(e) => setPickupLocation(e.target.value)}
+                                        className="pl-10"
+                                    />
+                                </div>
+                            </Autocomplete>
+                            <Autocomplete
+                                onLoad={(autocomplete) => { dropoffAutocompleteRef.current = autocomplete; }}
+                                onPlaceChanged={handleDropoffPlaceChanged}
+                                options={{ fields: ["formatted_address", "geometry", "name"], types: ["address"] }}
+                            >
+                               <div className="relative">
+                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                    <Input 
+                                        placeholder="Dropoff location"
+                                        onChange={(e) => setDropoffLocation(e.target.value)}
+                                        className="pl-10"
+                                    />
+                                </div>
+                            </Autocomplete>
+                        </>
+                    )}
 
-                    <Popover open={isDropoffPopoverOpen} onOpenChange={setIsDropoffPopoverOpen}>
-                        <PopoverTrigger asChild>
+                    {!isLoaded && (
+                         <>
+                            <div className="relative">
+                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                <Input placeholder="Loading map..." className="pl-10" disabled/>
+                            </div>
                              <div className="relative">
                                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                <Input 
-                                    placeholder="Dropoff location" 
-                                    value={dropoffLocation}
-                                    onChange={(e) => {
-                                        setDropoffLocation(e.target.value);
-                                        setDropoffQuery(e.target.value);
-                                    }}
-                                    className="pl-10"
-                                />
+                                <Input placeholder="Loading map..." className="pl-10" disabled/>
                             </div>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                           <Command shouldFilter={false}>
-                                <CommandInput placeholder="Search dropoff location..." value={dropoffQuery} onValueChange={setDropoffQuery}/>
-                                <CommandList>
-                                    <CommandEmpty>No results found.</CommandEmpty>
-                                    <CommandGroup heading="Suggestions">
-                                        {filteredDropoffSuggestions.map((suggestion) => (
-                                             <CommandItem key={suggestion.name} onSelect={() => {
-                                                const fullAddress = `${suggestion.name}, ${suggestion.address}`;
-                                                setDropoffLocation(fullAddress);
-                                                setDropoffQuery(fullAddress);
-                                                setIsDropoffPopoverOpen(false);
-                                            }}>
-                                                <MapPin className="mr-2 h-4 w-4" />
-                                                <div>
-                                                   <p>{suggestion.name}</p>
-                                                   <p className="text-xs text-muted-foreground">{suggestion.address}</p>
-                                                </div>
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                </CommandList>
-                           </Command>
-                        </PopoverContent>
-                    </Popover>
+                         </>
+                    )}
                     
                     <div className="grid grid-cols-2 gap-2">
                          <Popover>
