@@ -83,20 +83,16 @@ interface LocationInputProps {
   value: string;
   onValueChange: (value: string) => void;
   placeholder: string;
+  isLoaded: boolean;
 }
 
-function LocationInput({ value, onValueChange, placeholder }: LocationInputProps) {
+function LocationInput({ value, onValueChange, placeholder, isLoaded }: LocationInputProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
-
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: ['places', 'geocoding'],
-  });
 
   useEffect(() => {
     if (isLoaded && !autocompleteService.current) {
@@ -126,11 +122,10 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
     }
   }, [open, fetchPlaces]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setInputValue(query);
-    if (autocompleteService.current && query) {
-      autocompleteService.current.getPlacePredictions({ input: query }, (predictions, status) => {
+  const handleInputChange = (term: string) => {
+    setInputValue(term);
+    if (autocompleteService.current && term) {
+      autocompleteService.current.getPlacePredictions({ input: term }, (predictions, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
           setSuggestions(predictions);
         } else {
@@ -197,16 +192,19 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="Search for a location..."
+            placeholder={placeholder}
             value={inputValue}
-            onInput={handleInputChange}
+            onValueChange={handleInputChange}
           />
           <CommandList>
             <CommandEmpty>{isLoadingPlaces ? 'Loading places...' : 'No results found.'}</CommandEmpty>
             <CommandGroup>
-                <CommandItem onSelect={handleAllowLocation}>
+                <CommandItem onSelect={() => {
+                  setOpen(false);
+                  handleAllowLocation();
+                }}>
                     <LocateFixed className="mr-2 h-4 w-4" />
-                    Allow location access
+                    Use current location
                 </CommandItem>
                 <CommandItem onSelect={() => toast({title: "Set on Map (Demo)", description: "This would open a map to select a location."})}>
                     <MapIcon className="mr-2 h-4 w-4" />
@@ -330,11 +328,13 @@ export default function TransportPage() {
                                 value={pickupLocation}
                                 onValueChange={setPickupLocation}
                                 placeholder="Pickup location"
+                                isLoaded={isLoaded}
                             />
                             <LocationInput
                                 value={dropoffLocation}
                                 onValueChange={setDropoffLocation}
                                 placeholder="Destination"
+                                isLoaded={isLoaded}
                             />
                         </>
                     ) : <p>Loading map services...</p>}
