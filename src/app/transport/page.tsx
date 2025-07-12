@@ -5,12 +5,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, CircleDot, Square } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, CircleDot, Square, Wand2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api';
+import { getSavedPlaces, addSavedPlace, type SavedPlace } from '@/services/places';
 
 const serviceCategories = [
   { name: 'Ride', icon: Car, link: '#ride-booking' },
@@ -71,7 +72,7 @@ const suggestionItems = [
     },
 ];
 
-const libraries: ("places")[] = ['places'];
+const libraries: ("places" | "maps" | "geocoding")[] = ['places', 'maps', 'geocoding'];
 
 interface LocationInputProps {
     value: string;
