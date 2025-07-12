@@ -133,6 +133,22 @@ export default function TransportPage() {
         }
     };
 
+  const handleSuggestionClick = (field: 'pickup' | 'dropoff', address: string) => {
+    if (field === 'pickup') {
+      setPickupLocation(address);
+    } else {
+      setDropoffLocation(address);
+    }
+    toast({ title: "Location Set (Demo)", description: `${address} has been set.` });
+  };
+
+  const handleUseCurrentLocation = () => {
+    // In a real app, you would use navigator.geolocation
+    toast({ title: "Using Current Location (Demo)", description: "Your current location has been set as pickup." });
+    setPickupLocation("123 Main Street, Anytown, USA (Current Location)");
+  };
+
+
   return (
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
@@ -160,13 +176,13 @@ export default function TransportPage() {
           <Separator className="my-8" />
 
           <div id="ride-booking" className="grid lg:grid-cols-2 gap-8 items-start">
-            <div className="hidden lg:block rounded-lg overflow-hidden h-96 sticky top-24">
+            <div className="hidden lg:block rounded-lg overflow-hidden h-96 lg:h-[32rem] sticky top-24">
                 <InteractiveMapPlaceholder pickup={pickupLocation} dropoff={dropoffLocation} />
             </div>
 
             <div className="space-y-4">
                 <h3 className="text-2xl font-semibold">Book a Ride</h3>
-                <div className="max-w-md space-y-4">
+                <div className="space-y-4">
                     {isLoaded && (
                         <>
                              <Autocomplete
@@ -175,9 +191,10 @@ export default function TransportPage() {
                                 options={{ fields: ["formatted_address", "geometry", "name"], types: ["address"] }}
                             >
                                 <div className="relative">
-                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                    <CircleDot className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input 
-                                        placeholder="Pickup location" 
+                                        placeholder="Enter pickup location" 
+                                        value={pickupLocation}
                                         onChange={(e) => setPickupLocation(e.target.value)}
                                         className="pl-10"
                                     />
@@ -189,9 +206,10 @@ export default function TransportPage() {
                                 options={{ fields: ["formatted_address", "geometry", "name"], types: ["address"] }}
                             >
                                <div className="relative">
-                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                    <Square className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input 
-                                        placeholder="Dropoff location"
+                                        placeholder="Enter destination"
+                                        value={dropoffLocation}
                                         onChange={(e) => setDropoffLocation(e.target.value)}
                                         className="pl-10"
                                     />
@@ -212,6 +230,14 @@ export default function TransportPage() {
                             </div>
                          </>
                     )}
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                        <Button variant="outline" size="sm" onClick={handleUseCurrentLocation}><LocateFixed className="mr-2 h-4 w-4" /> Use current location</Button>
+                        <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('pickup', '123 Home St, Hometown, USA')}><Home className="mr-2 h-4 w-4" /> Home</Button>
+                        <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('pickup', '456 Business Ave, Worktown, USA')}><Briefcase className="mr-2 h-4 w-4" /> Work</Button>
+                         <Button variant="outline" size="sm" onClick={() => toast({title: "Select from Map (Demo)", description: "Please click on the map to set location."})}><MapPin className="mr-2 h-4 w-4" /> Set on map</Button>
+                    </div>
+
                     
                     <div className="grid grid-cols-2 gap-2">
                          <Popover>
