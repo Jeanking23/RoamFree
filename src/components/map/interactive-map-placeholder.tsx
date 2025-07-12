@@ -16,13 +16,10 @@ const center = {
   lng: -98.5795
 };
 
-const libraries: ("places" | "maps")[] = ['places', 'maps'];
-
 export default function InteractiveMapPlaceholder({ pickup, dropoff }: InteractiveMapPlaceholderProps) {
     const { isLoaded, loadError } = useJsApiLoader({
-        id: 'google-map-script-transport', // Use a consistent ID across the app
+        id: 'google-map-script',
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-        libraries, // Load all necessary libraries
     });
 
     const renderMap = () => {

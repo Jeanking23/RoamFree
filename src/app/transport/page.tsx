@@ -1,4 +1,3 @@
-
 // src/app/transport/page.tsx
 'use client';
 
@@ -71,7 +70,7 @@ const suggestionItems = [
     },
 ];
 
-const libraries: ("places" | "maps")[] = ['places', 'maps'];
+const libraries: ("places")[] = ['places'];
 
 
 export default function TransportPage() {
