@@ -5,7 +5,6 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 interface InteractiveMapPlaceholderProps {
   pickup?: string;
   dropoff?: string;
-  onMapLoad?: (map: google.maps.Map) => void;
 }
 
 const containerStyle = {
@@ -15,7 +14,7 @@ const containerStyle = {
 
 const libraries: ("places" | "maps" | "geocoding")[] = ['places', 'maps', 'geocoding'];
 
-export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }: InteractiveMapPlaceholderProps) {
+export default function InteractiveMapPlaceholder({ pickup, dropoff }: InteractiveMapPlaceholderProps) {
     const { isLoaded, loadError } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -96,9 +95,6 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 options={{
                     disableDefaultUI: true,
                     zoomControl: true,
-                }}
-                onLoad={map => {
-                    if (onMapLoad) onMapLoad(map);
                 }}
             >
                 {pickupCoords && !dropoffCoords && <Marker position={pickupCoords} />}

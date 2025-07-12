@@ -1,4 +1,3 @@
-
 // src/app/transport/page.tsx
 'use client';
 
@@ -127,8 +126,7 @@ export default function TransportPage() {
     const [dropoffLocation, setDropoffLocation] = useState('');
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [time, setTime] = useState('');
-    const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
-
+    
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -190,7 +188,7 @@ export default function TransportPage() {
 
           <div id="ride-booking" className="grid lg:grid-cols-2 gap-8 items-start">
             <div className="hidden lg:block rounded-lg overflow-hidden h-96 lg:h-[32rem] sticky top-24">
-                <InteractiveMapPlaceholder pickup={pickupLocation} dropoff={dropoffLocation} onMapLoad={setMapInstance}/>
+                <InteractiveMapPlaceholder pickup={pickupLocation} dropoff={dropoffLocation} />
             </div>
 
             <div className="space-y-4">
