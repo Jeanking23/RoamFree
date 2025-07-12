@@ -5,7 +5,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown, Wand2, Map as MapIcon, Navigation } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown, Wand2, Map as MapIcon, Navigation, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
@@ -22,6 +22,8 @@ import { getSavedPlacesAction, addSavedPlaceAction } from '@/app/actions';
 import type { SavedPlace } from '@/services/places';
 import { Label } from '@/components/ui/label';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+
 
 const serviceCategories = [
   { name: 'Ride', icon: Car, link: '#ride-booking' },
@@ -83,15 +85,22 @@ interface LocationInputProps {
   placeholder: string;
   isLoaded: boolean;
   iconType: 'pickup' | 'dropoff';
+  onMapSelectRequest: () => google.maps.MapsEventListener | null;
 }
 
-function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType }: LocationInputProps) {
+function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, onMapSelectRequest }: LocationInputProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
+
+  // For adding a new saved place
+  const [isAddPlaceDialogOpen, setIsAddPlaceDialogOpen] = useState(false);
+  const [newPlaceName, setNewPlaceName] = useState("");
+  const [newPlaceAddress, setNewPlaceAddress] = useState("");
+
 
   useEffect(() => {
     if (isLoaded && !autocompleteService.current) {
@@ -170,20 +179,39 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType }
       }
     );
   };
-
+  
   const handleSetOnMap = () => {
     toast({
-      title: "Set location on map",
-      description: "Please click a location on the map to set your pin. This is a demo interaction."
+      title: "Select on Map",
+      description: "Please click a location on the map to set your pin.",
     });
     setOpen(false);
+    onMapSelectRequest();
   };
   
+  const handleAddNewPlace = async () => {
+    if (!newPlaceName || !newPlaceAddress) {
+        toast({ title: "Missing Information", description: "Please provide a name and address.", variant: "destructive" });
+        return;
+    }
+    const result = await addSavedPlaceAction({ name: newPlaceName, address: newPlaceAddress });
+    if ('error' in result) {
+        toast({ title: "Error", description: result.error, variant: "destructive" });
+    } else {
+        toast({ title: "Success", description: `Saved "${newPlaceName}" to your places.` });
+        setIsAddPlaceDialogOpen(false);
+        setNewPlaceName("");
+        setNewPlaceAddress("");
+        fetchPlaces(); // Refresh the list
+    }
+  };
+
   const icon = iconType === 'pickup' 
     ? <div className="w-2.5 h-2.5 bg-foreground rounded-full" />
     : <div className="w-2.5 h-2.5 bg-foreground" />;
 
   return (
+    <>
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
@@ -229,6 +257,12 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType }
                                     </CommandItem>
                                     ))}
                                 </CommandGroup>
+                                <CommandSeparator />
+                                <CommandGroup>
+                                    <CommandItem onSelect={() => setIsAddPlaceDialogOpen(true)} className="cursor-pointer">
+                                        <Plus className="mr-2 h-4 w-4" /> Add new place
+                                    </CommandItem>
+                                </CommandGroup>
                             </CommandList>
                         </Command>
                     </PopoverContent>
@@ -258,6 +292,29 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType }
         </Command>
       </PopoverContent>
     </Popover>
+     <Dialog open={isAddPlaceDialogOpen} onOpenChange={setIsAddPlaceDialogOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Add a New Saved Place</DialogTitle>
+                <DialogDescription>Save an address for quick access later.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="placeName">Name</Label>
+                    <Input id="placeName" placeholder="e.g., Home, Work" value={newPlaceName} onChange={(e) => setNewPlaceName(e.target.value)} />
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="placeAddress">Address</Label>
+                    <Input id="placeAddress" placeholder="Enter the full address" value={newPlaceAddress} onChange={(e) => setNewPlaceAddress(e.target.value)} />
+                </div>
+            </div>
+            <DialogFooter>
+                <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                <Button type="button" onClick={handleAddNewPlace}>Save Place</Button>
+            </DialogFooter>
+        </DialogContent>
+     </Dialog>
+    </>
   );
 }
 
@@ -270,6 +327,7 @@ export default function TransportPage() {
     const [time, setTime] = useState('10:00');
     const mapRef = useRef<google.maps.Map | null>(null);
     const { isLoaded } = useGoogleMaps();
+    const mapClickListener = useRef<google.maps.MapsEventListener | null>(null);
 
     const handleSearch = () => {
         if (!pickupLocation || !dropoffLocation) {
@@ -290,6 +348,42 @@ export default function TransportPage() {
 
         router.push(`/transport/search?${query.toString()}`);
     };
+    
+    const setLocationFromMapClick = useCallback((latLng: google.maps.LatLng, field: 'pickup' | 'dropoff') => {
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ location: latLng }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+                const address = results[0].formatted_address;
+                if (field === 'pickup') {
+                    setPickupLocation(address);
+                } else {
+                    setDropoffLocation(address);
+                }
+                toast({ title: "Location Set", description: `Set ${field} location from map.` });
+            } else {
+                toast({ title: 'Error', description: 'Could not get address from map location.', variant: 'destructive' });
+            }
+        });
+    }, []);
+
+    const setupMapClickListener = useCallback((fieldToSet: 'pickup' | 'dropoff') => {
+        if (mapClickListener.current) {
+            mapClickListener.current.remove();
+        }
+        if (mapRef.current) {
+            mapClickListener.current = mapRef.current.addListener('click', (e: google.maps.MapMouseEvent) => {
+                if (e.latLng) {
+                    setLocationFromMapClick(e.latLng, fieldToSet);
+                }
+                if (mapClickListener.current) {
+                    mapClickListener.current.remove();
+                    mapClickListener.current = null;
+                }
+            });
+        }
+        return mapClickListener.current;
+    }, [setLocationFromMapClick]);
+
 
   return (
     <div className="space-y-8">
@@ -337,6 +431,7 @@ export default function TransportPage() {
                             placeholder="Pickup location"
                             isLoaded={isLoaded}
                             iconType="pickup"
+                            onMapSelectRequest={() => setupMapClickListener('pickup')}
                         />
                         <LocationInput
                             value={dropoffLocation}
@@ -344,6 +439,7 @@ export default function TransportPage() {
                             placeholder="Destination"
                             isLoaded={isLoaded}
                             iconType="dropoff"
+                             onMapSelectRequest={() => setupMapClickListener('dropoff')}
                         />
                     </div>
                 </div>
