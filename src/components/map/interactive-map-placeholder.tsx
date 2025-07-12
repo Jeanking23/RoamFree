@@ -1,4 +1,4 @@
-import { GoogleMap, MarkerF as Marker, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
+import { GoogleMap, MarkerF as Marker, DirectionsService, DirectionsRenderer, InfoWindowF as InfoWindow } from '@react-google-maps/api';
 import { Map, MapPin } from 'lucide-react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useGoogleMaps } from '@/context/google-maps-provider';
@@ -20,6 +20,8 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
     const [pickupCoords, setPickupCoords] = useState<google.maps.LatLngLiteral | null>(null);
     const [dropoffCoords, setDropoffCoords] = useState<google.maps.LatLngLiteral | null>(null);
     const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+    const [activeInfoWindow, setActiveInfoWindow] = useState<'pickup' | 'dropoff' | 'both' | null>('both');
+
 
     const geocodeAddress = useCallback((address: string, setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>) => {
         if (!window.google || !address) {
@@ -59,6 +61,9 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
     useEffect(() => {
         if (!pickupCoords || !dropoffCoords) {
             setDirections(null);
+            setActiveInfoWindow(null);
+        } else {
+            setActiveInfoWindow('both');
         }
     }, [pickupCoords, dropoffCoords]);
 
@@ -100,10 +105,31 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 }}
                 onLoad={onMapLoad}
             >
-                {pickupCoords && !dropoffCoords && <Marker position={pickupCoords} />}
-                {!pickupCoords && dropoffCoords && <Marker position={dropoffCoords} />}
+                {pickupCoords && (
+                    <Marker position={pickupCoords}>
+                        {(activeInfoWindow === 'both' || activeInfoWindow === 'pickup') && pickup && (
+                            <InfoWindow position={pickupCoords}>
+                                <div className="p-1 text-xs font-semibold">
+                                    <p><strong>Pickup:</strong> {pickup}</p>
+                                </div>
+                            </InfoWindow>
+                        )}
+                    </Marker>
+                )}
+
+                {dropoffCoords && (
+                    <Marker position={dropoffCoords}>
+                        {(activeInfoWindow === 'both' || activeInfoWindow === 'dropoff') && dropoff && (
+                            <InfoWindow position={dropoffCoords}>
+                                <div className="p-1 text-xs font-semibold">
+                                    <p><strong>Destination:</strong> {dropoff}</p>
+                                </div>
+                            </InfoWindow>
+                        )}
+                    </Marker>
+                )}
                 
-                {pickupCoords && dropoffCoords && (
+                {pickupCoords && dropoffCoords && !directions && (
                     <DirectionsService
                         options={{
                             destination: dropoffCoords,
@@ -118,9 +144,9 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                      <DirectionsRenderer
                         options={{
                             directions,
-                            suppressMarkers: false, // Set to false to show default A/B markers
+                            suppressMarkers: true,
                             polylineOptions: {
-                                strokeColor: "#1D4ED8", // A blue color from primary
+                                strokeColor: "#1D4ED8",
                                 strokeWeight: 5,
                             },
                         }}
