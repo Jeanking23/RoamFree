@@ -156,6 +156,8 @@ const LocationInput = ({
             if (place && place.formatted_address) {
                 onValueChange(place.formatted_address);
                 setOpen(false); // Close popover on selection
+            } else {
+                 toast({ title: "Invalid selection", description: "Please select a valid address from the suggestions.", variant: "destructive" });
             }
         }
     };
@@ -251,7 +253,6 @@ const LocationInput = ({
                                     ref={inputRef}
                                     placeholder={placeholder}
                                     className="w-full"
-                                    defaultValue={value}
                                 />
                             </Autocomplete>
                         ) : (
