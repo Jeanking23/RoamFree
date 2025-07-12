@@ -173,8 +173,8 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType }
 
   const handleSetOnMap = () => {
     toast({
-      title: "Set on Map (Coming Soon)",
-      description: "This feature will open an interactive map to pin a location."
+      title: "Set location on map",
+      description: "Please click a location on the map to set your pin. This is a demo interaction."
     });
     setOpen(false);
   };
@@ -203,7 +203,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType }
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="Search for a location..."
+            placeholder={placeholder}
             value={inputValue}
             onValueChange={handleInputChange}
           />
@@ -225,7 +225,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType }
                                 <CommandGroup>
                                     {savedPlaces.map((place) => (
                                     <CommandItem key={place.id} onSelect={() => handleSelect(place.address)} className="cursor-pointer">
-                                        {place.name}
+                                        <Home className="mr-2 h-4 w-4" />{place.name}
                                     </CommandItem>
                                     ))}
                                 </CommandGroup>
