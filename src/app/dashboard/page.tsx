@@ -52,10 +52,10 @@ export default function DashboardPage() {
         <CardHeader className="bg-primary/10">
           <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
             <LayoutDashboard className="h-10 w-10" />
-            Owner Dashboard
+            Dashboard
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Manage your property, car rentals, land, and car for sale listings. Track performance and utilize host/seller tools.
+            Manage your property, car rentals, and sale listings. Track performance and utilize host/seller tools.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0 md:p-6">
