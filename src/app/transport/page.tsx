@@ -142,12 +142,6 @@ export default function TransportPage() {
     toast({ title: "Location Set (Demo)", description: `${address} has been set.` });
   };
 
-  const handleUseCurrentLocation = () => {
-    // In a real app, you would use navigator.geolocation
-    toast({ title: "Using Current Location (Demo)", description: "Your current location has been set as pickup." });
-    setPickupLocation("123 Main Street, Anytown, USA (Current Location)");
-  };
-
 
   return (
     <div className="space-y-8">
@@ -183,7 +177,7 @@ export default function TransportPage() {
             <div className="space-y-4">
                 <h3 className="text-2xl font-semibold">Book a Ride</h3>
                 <div className="space-y-4">
-                    {isLoaded && (
+                    {isLoaded ? (
                         <>
                              <Autocomplete
                                 onLoad={(autocomplete) => { pickupAutocompleteRef.current = autocomplete; }}
@@ -216,9 +210,7 @@ export default function TransportPage() {
                                 </div>
                             </Autocomplete>
                         </>
-                    )}
-
-                    {!isLoaded && (
+                    ) : (
                          <>
                             <div className="relative">
                                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -231,11 +223,29 @@ export default function TransportPage() {
                          </>
                     )}
 
-                    <div className="flex flex-wrap gap-2 pt-1">
-                        <Button variant="outline" size="sm" onClick={handleUseCurrentLocation}><LocateFixed className="mr-2 h-4 w-4" /> Use current location</Button>
-                        <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('pickup', '123 Home St, Hometown, USA')}><Home className="mr-2 h-4 w-4" /> Home</Button>
-                        <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('pickup', '456 Business Ave, Worktown, USA')}><Briefcase className="mr-2 h-4 w-4" /> Work</Button>
-                         <Button variant="outline" size="sm" onClick={() => toast({title: "Select from Map (Demo)", description: "Please click on the map to set location."})}><MapPin className="mr-2 h-4 w-4" /> Set on map</Button>
+                    <div className="border-t pt-4 space-y-2">
+                        <p className="text-sm font-medium text-muted-foreground">Saved Places</p>
+                        <Button variant="ghost" className="w-full justify-start gap-3" onClick={() => handleSuggestionClick('dropoff', '123 Home St, Hometown, USA')}>
+                            <Home className="h-4 w-4 text-primary" />
+                            <div>
+                                <p className="font-semibold text-left">Home</p>
+                                <p className="text-xs text-muted-foreground text-left">123 Home St, Hometown, USA</p>
+                            </div>
+                        </Button>
+                        <Button variant="ghost" className="w-full justify-start gap-3" onClick={() => handleSuggestionClick('dropoff', '456 Business Ave, Worktown, USA')}>
+                            <Briefcase className="h-4 w-4 text-primary" />
+                            <div>
+                                <p className="font-semibold text-left">Work</p>
+                                <p className="text-xs text-muted-foreground text-left">456 Business Ave, Worktown, USA</p>
+                            </div>
+                        </Button>
+                         <Button variant="ghost" className="w-full justify-start gap-3" onClick={() => toast({title: "Showing Recent Locations (Demo)"})}>
+                            <History className="h-4 w-4 text-primary" />
+                            <div>
+                                <p className="font-semibold text-left">Recent Locations</p>
+                                <p className="text-xs text-muted-foreground text-left">View your recent trips</p>
+                            </div>
+                        </Button>
                     </div>
 
                     
