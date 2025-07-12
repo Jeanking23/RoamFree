@@ -81,16 +81,16 @@ interface LocationInputProps {
   value: string;
   onValueChange: (value: string) => void;
   placeholder: string;
+  isLoaded: boolean;
 }
 
-function LocationInput({ value, onValueChange, placeholder }: LocationInputProps) {
+function LocationInput({ value, onValueChange, placeholder, isLoaded }: LocationInputProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
-  const { isLoaded } = useGoogleMaps();
 
   useEffect(() => {
     if (isLoaded && !autocompleteService.current) {
@@ -115,10 +115,10 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
   }, []);
 
   useEffect(() => {
-    if (open) {
+    if (open && savedPlaces.length === 0) {
       fetchPlaces();
     }
-  }, [open, fetchPlaces]);
+  }, [open, savedPlaces, fetchPlaces]);
 
   const handleInputChange = (term: string) => {
     setInputValue(term);
@@ -139,6 +139,7 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
     onValueChange(selectedValue);
     setInputValue(selectedValue);
     setOpen(false);
+    setSuggestions([]);
   };
   
   const handleAllowLocation = () => {
@@ -171,8 +172,8 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
 
   const handleSetOnMap = () => {
     toast({
-      title: "Set on Map (Demo)",
-      description: "This would open an interactive map to pin a location."
+      title: "Set on Map (Coming Soon)",
+      description: "This feature will open an interactive map to pin a location."
     });
     setOpen(false);
   };
@@ -205,13 +206,7 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
           <CommandList>
             <CommandEmpty>{isLoadingPlaces ? 'Loading places...' : 'No results found.'}</CommandEmpty>
             <CommandGroup>
-                <CommandItem onSelect={fetchPlaces}>
-                  <Star className="mr-2 h-4 w-4" /> Saved places
-                </CommandItem>
-                <CommandItem onSelect={() => {
-                  handleAllowLocation();
-                  setOpen(false);
-                }}>
+                <CommandItem onSelect={handleAllowLocation}>
                     <LocateFixed className="mr-2 h-4 w-4" /> Allow location access
                 </CommandItem>
                 <CommandItem onSelect={handleSetOnMap}>
@@ -224,7 +219,7 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
                 <CommandGroup heading="Saved Places">
                   {savedPlaces.map((place) => (
                     <CommandItem key={place.id} onSelect={() => handleSelect(place.address)}>
-                      <Home className="mr-2 h-4 w-4" />
+                      <Star className="mr-2 h-4 w-4" />
                       {place.name}
                     </CommandItem>
                   ))}
@@ -258,6 +253,7 @@ export default function TransportPage() {
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [time, setTime] = useState('');
     const mapRef = useRef<google.maps.Map | null>(null);
+    const { isLoaded } = useGoogleMaps();
 
     useEffect(() => {
         const now = new Date();
@@ -328,11 +324,13 @@ export default function TransportPage() {
                             value={pickupLocation}
                             onValueChange={setPickupLocation}
                             placeholder="Pickup location"
+                            isLoaded={isLoaded}
                         />
                         <LocationInput
                             value={dropoffLocation}
                             onValueChange={setDropoffLocation}
                             placeholder="Destination"
+                            isLoaded={isLoaded}
                         />
                    
                     <div className="grid grid-cols-2 gap-2">
