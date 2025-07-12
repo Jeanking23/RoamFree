@@ -1,11 +1,10 @@
-
 // src/app/transport/page.tsx
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, CircleDot, Square, LocateFixed, Compass, Home, Briefcase, Plus, ArrowLeft, Star, Wand2 } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Wand2, Home, Briefcase, Plus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
@@ -80,12 +79,11 @@ interface LocationInputProps {
     value: string;
     onValueChange: (value: string) => void;
     placeholder: string;
-    icon: React.ReactNode;
     isLoaded: boolean;
     onSetLocationFromMap: () => void;
 }
 
-const LocationInput = ({ value, onValueChange, placeholder, icon, isLoaded, onSetLocationFromMap }: LocationInputProps) => {
+const LocationInput = ({ value, onValueChange, placeholder, isLoaded, onSetLocationFromMap }: LocationInputProps) => {
     const [popoverOpen, setPopoverOpen] = useState(false);
     const [view, setView] = useState<'main' | 'saved-places' | 'add-place'>('main');
     const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
@@ -153,11 +151,11 @@ const LocationInput = ({ value, onValueChange, placeholder, icon, isLoaded, onSe
         }
     };
     
-    const onAutocompleteLoad = (autocomplete: google.maps.places.Autocomplete) => {
+    const onAutocompleteLoad = useCallback((autocomplete: google.maps.places.Autocomplete) => {
         autocompleteRef.current = autocomplete;
-    };
+    }, []);
     
-    const onPlaceChanged = () => {
+    const onPlaceChanged = useCallback(() => {
         if (autocompleteRef.current) {
             const place = autocompleteRef.current.getPlace();
             if (place && place.formatted_address) {
@@ -165,14 +163,14 @@ const LocationInput = ({ value, onValueChange, placeholder, icon, isLoaded, onSe
                 setPopoverOpen(false);
             }
         }
-    };
+    }, [onValueChange, setPopoverOpen]);
 
     return (
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <PopoverTrigger asChild>
                 <div className="relative w-full" onClick={handleOpenPopover}>
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        {icon}
+                        <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                     </div>
                     <Input
                         placeholder={placeholder}
@@ -186,9 +184,11 @@ const LocationInput = ({ value, onValueChange, placeholder, icon, isLoaded, onSe
                 {view === 'main' && (
                     <div className="flex flex-col">
                         <div className="p-4 space-y-4">
-                            <Button variant="outline" className="w-full justify-start gap-3 h-auto rounded-full" onClick={handleViewSavedPlaces}>
+                            <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={handleViewSavedPlaces}>
                                 <Star className="h-5 w-5 text-primary" />
-                                <p className="font-semibold text-left">Saved places</p>
+                                <div>
+                                    <p className="font-semibold text-left">Saved places</p>
+                                </div>
                             </Button>
                             <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={handleAllowLocationAccess}>
                                 <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
@@ -359,7 +359,6 @@ export default function TransportPage() {
                         value={pickupLocation}
                         onValueChange={setPickupLocation}
                         placeholder="Pickup location"
-                        icon={<CircleDot className="h-4 w-4 text-muted-foreground mt-0.5" />}
                         isLoaded={isLoaded}
                         onSetLocationFromMap={() => handleSetLocationFromMap('pickup')}
                     />
@@ -367,7 +366,6 @@ export default function TransportPage() {
                         value={dropoffLocation}
                         onValueChange={setDropoffLocation}
                         placeholder="Destination"
-                        icon={<Square className="h-4 w-4 text-muted-foreground mt-0.5" />}
                         isLoaded={isLoaded}
                         onSetLocationFromMap={() => handleSetLocationFromMap('dropoff')}
                     />
