@@ -83,9 +83,10 @@ interface LocationInputProps {
   value: string;
   onValueChange: (value: string) => void;
   placeholder: string;
+  isLoaded: boolean; // Receive isLoaded state from parent
 }
 
-function LocationInput({ value, onValueChange, placeholder }: LocationInputProps) {
+function LocationInput({ value, onValueChange, placeholder, isLoaded }: LocationInputProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
@@ -93,10 +94,6 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
 
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: ['places', 'geocoding'],
-  });
 
   useEffect(() => {
     if (isLoaded && !autocompleteService.current) {
@@ -265,6 +262,12 @@ export default function TransportPage() {
     const [time, setTime] = useState('');
     const mapRef = useRef<google.maps.Map | null>(null);
 
+    // Consolidated loader hook
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+        libraries,
+    });
+
     useEffect(() => {
         const now = new Date();
         setDate(now);
@@ -334,11 +337,13 @@ export default function TransportPage() {
                             value={pickupLocation}
                             onValueChange={setPickupLocation}
                             placeholder="Pickup location"
+                            isLoaded={isLoaded}
                         />
                         <LocationInput
                             value={dropoffLocation}
                             onValueChange={setDropoffLocation}
                             placeholder="Destination"
+                            isLoaded={isLoaded}
                         />
                    
                     <div className="grid grid-cols-2 gap-2">
