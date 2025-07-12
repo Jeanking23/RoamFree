@@ -2,7 +2,7 @@
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Building, DollarSign, Bed, Bath, Phone, Mail, MapPin, Image as ImageIcon, CalendarCheck2, FileText, ShieldCheck, Users } from "lucide-react";
+import { Building, DollarSign, Bed, Bath, Phone, Mail, MapPin, Image as ImageIcon, CalendarCheck2, FileText, ShieldCheck, Users, Sparkles, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox"; 
 import { toast } from "@/hooks/use-toast"; 
 import { useState } from "react";
@@ -38,6 +38,7 @@ const propertySchema = z.object({
   sizeAcres: z.coerce.number().positive("Size must be positive").optional(), // For land
   zoning: z.string().optional(), // For land/property sale
   description: z.string().min(20, "Description must be at least 20 characters.").max(1000),
+  features: z.array(z.object({ value: z.string() })).optional(),
   contactEmail: z.string().email("Invalid email address."),
   contactPhone: z.string().min(7, "Phone number seems too short.").optional(),
   photos: z.string().optional().describe("Placeholder for photo upload URLs or identifiers"),
@@ -54,6 +55,7 @@ type PropertyFormValues = z.infer<typeof propertySchema>;
 export default function ListPropertyPage() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
+  const [featureInput, setFeatureInput] = useState("");
 
   const form = useForm<PropertyFormValues>({
     resolver: zodResolver(propertySchema),
@@ -67,6 +69,7 @@ export default function ListPropertyPage() {
       bedrooms: 1,
       bathrooms: 1,
       description: "",
+      features: [],
       contactEmail: "",
       contactPhone: "",
       photos: "",
@@ -78,8 +81,14 @@ export default function ListPropertyPage() {
       enableTenantScreening: false,
     },
   });
+  
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "features",
+  });
 
   const listingType = form.watch("listingType");
+  const propertyType = form.watch("propertyType");
 
   const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -106,6 +115,13 @@ export default function ListPropertyPage() {
     setPhotoPreview(null);
     setPhotoDataUrl(null);
   }
+  
+  const handleAddFeature = () => {
+    if (featureInput.trim() !== "") {
+      append({ value: featureInput.trim() });
+      setFeatureInput("");
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -224,7 +240,7 @@ export default function ListPropertyPage() {
                  />
               </div>
 
-              {form.watch("propertyType") !== "LAND" && (
+              {propertyType !== "LAND" && propertyType !== "ATTRACTION" && propertyType !== "EVENT_CENTER" && (
                 <div className="grid md:grid-cols-3 gap-6">
                     <FormField control={form.control} name="bedrooms" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Bed className="h-4 w-4 text-primary" />Bedrooms</FormLabel><FormControl><Input type="number" placeholder="e.g., 3" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="bathrooms" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Bath className="h-4 w-4 text-primary" />Bathrooms</FormLabel><FormControl><Input type="number" placeholder="e.g., 2" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -232,7 +248,7 @@ export default function ListPropertyPage() {
                 </div>
               )}
 
-              {form.watch("propertyType") === "LAND" && (
+              {propertyType === "LAND" && (
                  <div className="grid md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="sizeAcres" render={({ field }) => (<FormItem><FormLabel>Size (Acres)</FormLabel><FormControl><Input type="number" step="0.01" placeholder="e.g., 2.5" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="zoning" render={({ field }) => (<FormItem><FormLabel>Zoning</FormLabel><FormControl><Input placeholder="e.g., Residential, Commercial" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -241,6 +257,36 @@ export default function ListPropertyPage() {
 
 
               <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Property Description</FormLabel><FormControl><Textarea placeholder="Detailed description of your property, amenities, nearby attractions, etc." rows={6} {...field} /></FormControl><FormDescription>Provide as much detail as possible to attract buyers/renters.</FormDescription><FormMessage /></FormItem>)} />
+              
+              {(propertyType === "ATTRACTION" || propertyType === "EVENT_CENTER") && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-xl flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary"/>Features & Amenities</CardTitle>
+                        <CardDescription>Add custom features for your {propertyType === "ATTRACTION" ? "Attraction" : "Event Center"}.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex gap-2">
+                            <Input
+                                value={featureInput}
+                                onChange={(e) => setFeatureInput(e.target.value)}
+                                placeholder="e.g., Stage Available or Guided Tours"
+                                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddFeature(); } }}
+                            />
+                            <Button type="button" onClick={handleAddFeature}>Add Feature</Button>
+                        </div>
+                        <div className="mt-4 space-y-2">
+                            {fields.map((field, index) => (
+                                <div key={field.id} className="flex items-center justify-between p-2 bg-muted rounded-md">
+                                    <p>{field.value}</p>
+                                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+              )}
               
               <FormItem>
                 <FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-primary" />Property Photo</FormLabel>
@@ -253,7 +299,7 @@ export default function ListPropertyPage() {
                 <div className="mt-4">
                   <Label>Photo Preview:</Label>
                   <div className="mt-2 relative w-full h-64 rounded-lg overflow-hidden border">
-                     <Image src={photoPreview} alt="Property preview" fill objectFit="cover" />
+                     <Image src={photoPreview} alt="Property preview" fill style={{objectFit:"cover"}} />
                   </div>
                 </div>
               )}
