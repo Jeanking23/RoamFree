@@ -27,7 +27,7 @@ import { Label } from "@/components/ui/label";
 
 const propertySchema = z.object({
   propertyName: z.string().min(3, "Property name must be at least 3 characters."),
-  propertyType: z.enum(["APARTMENT", "HOUSE", "VILLA", "LAND", "OTHER"]),
+  propertyType: z.enum(["APARTMENT", "HOUSE", "VILLA", "LAND", "ATTRACTION", "EVENT_CENTER", "OTHER"]),
   listingType: z.enum(["RENT", "SALE"]).default("RENT"), // New: Rent or Sale
   location: z.string().min(5, "Location must be at least 5 characters."),
   price: z.coerce.number().positive("Price must be a positive number."),
@@ -166,6 +166,8 @@ export default function ListPropertyPage() {
                           <SelectItem value="HOUSE">House</SelectItem>
                           <SelectItem value="VILLA">Villa</SelectItem>
                           <SelectItem value="LAND">Land</SelectItem>
+                          <SelectItem value="ATTRACTION">Attraction</SelectItem>
+                          <SelectItem value="EVENT_CENTER">Event Center</SelectItem>
                           <SelectItem value="OTHER">Other</SelectItem>
                         </SelectContent>
                       </Select>
