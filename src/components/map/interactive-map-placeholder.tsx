@@ -5,6 +5,7 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 interface InteractiveMapPlaceholderProps {
   pickup?: string;
   dropoff?: string;
+  onMapLoad?: (map: google.maps.Map) => void;
 }
 
 const containerStyle = {
@@ -14,7 +15,7 @@ const containerStyle = {
 
 const libraries: ("places" | "maps" | "geocoding")[] = ['places', 'maps', 'geocoding'];
 
-export default function InteractiveMapPlaceholder({ pickup, dropoff }: InteractiveMapPlaceholderProps) {
+export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }: InteractiveMapPlaceholderProps) {
     const { isLoaded, loadError } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -60,6 +61,12 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
         }
     }, [dropoff, isLoaded, geocodeAddress]);
     
+    useEffect(() => {
+        if (!pickupCoords || !dropoffCoords) {
+            setDirections(null);
+        }
+    }, [pickupCoords, dropoffCoords]);
+
     const mapCenter = useMemo(() => {
         if (pickupCoords) return pickupCoords;
         if (dropoffCoords) return dropoffCoords;
@@ -96,6 +103,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
                     disableDefaultUI: true,
                     zoomControl: true,
                 }}
+                onLoad={onMapLoad}
             >
                 {pickupCoords && !dropoffCoords && <Marker position={pickupCoords} />}
                 {!pickupCoords && dropoffCoords && <Marker position={dropoffCoords} />}
@@ -117,7 +125,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
                             directions,
                             suppressMarkers: false, // Set to false to show default A/B markers
                             polylineOptions: {
-                                strokeColor: "#64B5F6", // RoamFree primary color
+                                strokeColor: "#1D4ED8", // A blue color from primary
                                 strokeWeight: 5,
                             },
                         }}
@@ -137,8 +145,8 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff }: Interacti
                 </h3>
                 {pickup && dropoff ? (
                     <div className="text-xs text-muted-foreground mt-1">
-                        <p>From: <strong>{pickup}</strong></p>
-                        <p>To: <strong>{dropoff}</strong></p>
+                        <p className="truncate">From: <strong>{pickup}</strong></p>
+                        <p className="truncate">To: <strong>{dropoff}</strong></p>
                     </div>
                 ) : (
                     <p className="text-sm text-muted-foreground mt-1">
