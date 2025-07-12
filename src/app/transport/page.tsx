@@ -5,7 +5,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Bike, Shield, ShoppingBag, Utensils, Star, LocateFixed, Clock, CalendarDays, CircleDot, Square, Users, Package, Wand2, Home, Briefcase, History, Check, CalendarCheck, Map } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Bike, Shield, ShoppingBag, Utensils, Star, LocateFixed, Clock, CalendarDays, CircleDot, Square, Users, Package, Wand2, Home, Briefcase, History, Check, CalendarCheck, Map, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
@@ -85,7 +85,7 @@ const LocationInput = ({
 }: {
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onValueChange: (value: string) => void; // For programmatic changes
+    onValueChange: (value: string) => void;
     placeholder: string;
     onLoad: (autocomplete: google.maps.places.Autocomplete) => void;
     onPlaceChanged: () => void;
@@ -97,6 +97,13 @@ const LocationInput = ({
         libraries,
     });
     
+    const [popoverView, setPopoverView] = useState<'main' | 'saved'>('main');
+
+    const mockSavedPlaces = {
+      Home: '123 Home St, Hometown, USA',
+      Work: '456 Business Ave, Worktown, USA',
+    };
+
     const handleActionClick = (action: string) => {
         toast({
             title: `${action} (Demo)`,
@@ -134,9 +141,14 @@ const LocationInput = ({
              toast({ title: "Geolocation not supported", description: "Your browser does not support geolocation.", variant: "destructive" });
         }
     };
+    
+    const handleSelectSavedPlace = (place: string) => {
+        onValueChange(place);
+        setPopoverView('main');
+    };
 
     return (
-        <Popover>
+        <Popover onOpenChange={() => setPopoverView('main')}>
             <PopoverTrigger asChild>
                 <div className="relative">
                     {icon}
@@ -159,28 +171,55 @@ const LocationInput = ({
                 </div>
             </PopoverTrigger>
             <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2">
-                <div className="space-y-1">
-                    <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleActionClick('Add Saved Place')}>
-                        <Star className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
-                        <div>
-                            <p className="font-semibold text-sm">Saved places</p>
-                        </div>
-                    </Button>
-                    <Separator />
-                     <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={handleUseCurrentLocation}>
-                        <LocateFixed className="h-5 w-5 bg-primary text-primary-foreground p-1 rounded-full" />
-                        <div>
-                            <p className="font-semibold text-sm">Allow location access</p>
-                            <p className="text-xs text-muted-foreground text-left">It provides your pickup address</p>
-                        </div>
-                    </Button>
-                     <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleActionClick('Set location on map')}>
-                        <MapPin className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
-                        <div>
-                            <p className="font-semibold text-sm">Set location on map</p>
-                        </div>
-                    </Button>
-                </div>
+                 {popoverView === 'main' ? (
+                    <div className="space-y-1">
+                        <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => setPopoverView('saved')}>
+                            <Star className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
+                            <div>
+                                <p className="font-semibold text-sm">Saved places</p>
+                            </div>
+                        </Button>
+                        <Separator />
+                        <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={handleUseCurrentLocation}>
+                            <LocateFixed className="h-5 w-5 bg-primary text-primary-foreground p-1 rounded-full" />
+                            <div>
+                                <p className="font-semibold text-sm">Allow location access</p>
+                                <p className="text-xs text-muted-foreground text-left">It provides your pickup address</p>
+                            </div>
+                        </Button>
+                        <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleActionClick('Set location on map')}>
+                            <MapPin className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
+                            <div>
+                                <p className="font-semibold text-sm">Set location on map</p>
+                            </div>
+                        </Button>
+                    </div>
+                 ) : (
+                    <div className="space-y-1">
+                        <Button variant="ghost" className="w-full justify-start gap-3 h-auto text-sm mb-1" onClick={() => setPopoverView('main')}>
+                            <ArrowLeft className="h-4 w-4 mr-1"/> Back to options
+                        </Button>
+                        <Separator />
+                        <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleSelectSavedPlace(mockSavedPlaces.Home)}>
+                           <Home className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
+                           <div>
+                                <p className="font-semibold text-sm">Home</p>
+                                <p className="text-xs text-muted-foreground text-left">{mockSavedPlaces.Home}</p>
+                           </div>
+                        </Button>
+                         <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => handleSelectSavedPlace(mockSavedPlaces.Work)}>
+                           <Briefcase className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
+                           <div>
+                                <p className="font-semibold text-sm">Work</p>
+                                <p className="text-xs text-muted-foreground text-left">{mockSavedPlaces.Work}</p>
+                           </div>
+                        </Button>
+                        <Separator />
+                         <Button variant="ghost" className="w-full justify-start gap-3 h-auto text-sm text-primary" onClick={() => handleActionClick('Add a new saved place')}>
+                            + Add new place
+                        </Button>
+                    </div>
+                 )}
             </PopoverContent>
         </Popover>
     );
