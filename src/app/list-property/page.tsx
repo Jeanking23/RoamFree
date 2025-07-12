@@ -21,6 +21,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Building, DollarSign, Bed, Bath, Phone, Mail, MapPin, Image as ImageIcon, CalendarCheck2, FileText, ShieldCheck, Users } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox"; 
 import { toast } from "@/hooks/use-toast"; 
+import { useState } from "react";
+import Image from "next/image";
 
 const propertySchema = z.object({
   propertyName: z.string().min(3, "Property name must be at least 3 characters."),
@@ -49,6 +51,9 @@ const propertySchema = z.object({
 type PropertyFormValues = z.infer<typeof propertySchema>;
 
 export default function ListPropertyPage() {
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
+
   const form = useForm<PropertyFormValues>({
     resolver: zodResolver(propertySchema),
     defaultValues: {
@@ -75,10 +80,30 @@ export default function ListPropertyPage() {
 
   const listingType = form.watch("listingType");
 
+  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setPhotoPreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoDataUrl(reader.result as string);
+        form.setValue("photos", reader.result as string, { shouldValidate: true });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPhotoPreview(null);
+      setPhotoDataUrl(null);
+      form.setValue("photos", undefined);
+    }
+  };
+
+
   function onSubmit(data: PropertyFormValues) {
     console.log("Property Listing Submitted:", data);
     toast({title: "Property Submitted (Demo)", description: "Your listing has been submitted for review."});
     form.reset();
+    setPhotoPreview(null);
+    setPhotoDataUrl(null);
   }
 
   return (
@@ -178,7 +203,11 @@ export default function ListPropertyPage() {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Price Is</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={(value) => {
+                                field.onChange(value);
+                                if (value === "PER_NIGHT" || value === "PER_MONTH") form.setValue("listingType", "RENT");
+                                if (value === "TOTAL") form.setValue("listingType", "SALE");
+                            }} value={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Select price type" /></SelectTrigger></FormControl>
                             <SelectContent>
                             {listingType === 'RENT' && <SelectItem value="PER_NIGHT">Per Night</SelectItem>}
@@ -209,7 +238,23 @@ export default function ListPropertyPage() {
 
 
               <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Property Description</FormLabel><FormControl><Textarea placeholder="Detailed description of your property, amenities, nearby attractions, etc." rows={6} {...field} /></FormControl><FormDescription>Provide as much detail as possible to attract buyers/renters.</FormDescription><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="photos" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-primary" />Property Photos (Demo)</FormLabel><FormControl><Input type="file" multiple disabled {...field} /></FormControl><FormDescription>Photo upload, virtual tour, and 3D floorplan upload functionality is a demo.</FormDescription><FormMessage /></FormItem>)} />
+              
+              <FormItem>
+                <FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-primary" />Property Photo</FormLabel>
+                <FormControl><Input type="file" accept="image/*" onChange={handlePhotoChange} /></FormControl>
+                <FormDescription>Upload a main photo for your listing. Virtual tour and 3D floorplan uploads coming soon.</FormDescription>
+                <FormMessage />
+              </FormItem>
+
+              {photoPreview && (
+                <div className="mt-4">
+                  <Label>Photo Preview:</Label>
+                  <div className="mt-2 relative w-full h-64 rounded-lg overflow-hidden border">
+                     <Image src={photoPreview} alt="Property preview" layout="fill" objectFit="cover" />
+                  </div>
+                </div>
+              )}
+
 
              {listingType === "RENT" && (
                 <Card>
@@ -254,4 +299,3 @@ export default function ListPropertyPage() {
     </div>
   );
 }
-    
