@@ -5,7 +5,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown, Wand2, Map as MapIcon } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown, Wand2, Map as MapIcon, Navigation } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
@@ -82,9 +82,10 @@ interface LocationInputProps {
   onValueChange: (value: string) => void;
   placeholder: string;
   isLoaded: boolean;
+  iconType: 'pickup' | 'dropoff';
 }
 
-function LocationInput({ value, onValueChange, placeholder, isLoaded }: LocationInputProps) {
+function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType }: LocationInputProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
@@ -178,6 +179,10 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded }: Location
     setOpen(false);
   };
   
+  const icon = iconType === 'pickup' 
+    ? <div className="w-2.5 h-2.5 bg-foreground rounded-full" />
+    : <div className="w-2.5 h-2.5 bg-foreground" />;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -185,27 +190,49 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded }: Location
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between h-auto py-2 px-3"
+            className="w-full justify-start h-auto py-3 px-4 text-left font-normal"
         >
-            <div className="flex items-center">
-                <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+            <div className="flex items-center gap-3">
+                {icon}
                 <span className={cn("truncate", !value && "text-muted-foreground")}>
                     {value || placeholder}
                 </span>
             </div>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder={placeholder}
+            placeholder="Search for a location..."
             value={inputValue}
             onValueChange={handleInputChange}
           />
           <CommandList>
             <CommandEmpty>{isLoadingPlaces ? 'Loading places...' : 'No results found.'}</CommandEmpty>
-            <CommandGroup>
+             <CommandGroup>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <CommandItem className="cursor-pointer">
+                            <Star className="mr-2 h-4 w-4" />
+                            <span>Saved places</span>
+                        </CommandItem>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                        <Command>
+                            <CommandInput placeholder="Search saved places..." />
+                            <CommandList>
+                                <CommandEmpty>No saved places found.</CommandEmpty>
+                                <CommandGroup>
+                                    {savedPlaces.map((place) => (
+                                    <CommandItem key={place.id} onSelect={() => handleSelect(place.address)} className="cursor-pointer">
+                                        {place.name}
+                                    </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </CommandList>
+                        </Command>
+                    </PopoverContent>
+                </Popover>
                 <CommandItem onSelect={handleAllowLocation} className="cursor-pointer">
                     <LocateFixed className="mr-2 h-4 w-4" /> Allow location access
                 </CommandItem>
@@ -213,19 +240,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded }: Location
                     <MapIcon className="mr-2 h-4 w-4" /> Set location on map
                 </CommandItem>
             </CommandGroup>
-            {savedPlaces.length > 0 && (
-              <>
-                <CommandSeparator />
-                <CommandGroup heading="Saved Places">
-                  {savedPlaces.map((place) => (
-                    <CommandItem key={place.id} onSelect={() => handleSelect(place.address)} className="cursor-pointer">
-                      <Star className="mr-2 h-4 w-4" />
-                      {place.name}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </>
-            )}
+            
             {suggestions.length > 0 && <CommandSeparator />}
             <CommandGroup heading="Suggestions">
               {suggestions.map((prediction) => (
@@ -251,16 +266,8 @@ export default function TransportPage() {
     const router = useRouter();
     const [pickupLocation, setPickupLocation] = useState('');
     const [dropoffLocation, setDropoffLocation] = useState('');
-    const [date, setDate] = useState<Date | undefined>(undefined);
-    const [time, setTime] = useState('');
     const mapRef = useRef<google.maps.Map | null>(null);
     const { isLoaded } = useGoogleMaps();
-
-    useEffect(() => {
-        const now = new Date();
-        setDate(now);
-        setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
-    }, []);
 
     const handleSearch = () => {
         if (!pickupLocation || !dropoffLocation) {
@@ -275,8 +282,9 @@ export default function TransportPage() {
         const query = new URLSearchParams({
             from: pickupLocation,
             to: dropoffLocation,
-            date: date?.toISOString() || new Date().toISOString(),
-            time: time,
+            // Hardcoding date and time as they are removed from the UI for this design
+            date: new Date().toISOString(),
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
         });
 
         router.push(`/transport/search?${query.toString()}`);
@@ -319,41 +327,32 @@ export default function TransportPage() {
 
             <div className="space-y-4">
                 <h3 className="text-2xl font-semibold">Book a Ride</h3>
-                <div className="space-y-4">
-                    
+                <div className="relative">
+                    <div className="absolute left-[23px] top-[18px] h-[calc(100%-36px)] w-px bg-muted-foreground"></div>
+                    <div className="space-y-2">
                         <LocationInput
                             value={pickupLocation}
                             onValueChange={setPickupLocation}
                             placeholder="Pickup location"
                             isLoaded={isLoaded}
+                            iconType="pickup"
                         />
                         <LocationInput
                             value={dropoffLocation}
                             onValueChange={setDropoffLocation}
                             placeholder="Destination"
                             isLoaded={isLoaded}
+                            iconType="dropoff"
                         />
-                   
-                    <div className="grid grid-cols-2 gap-2">
-                         <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" className={cn("justify-start text-left font-normal", !date && "text-muted-foreground")}>
-                                    <CalendarDays className="mr-2 h-4 w-4" />
-                                    {date ? format(date, "PPP") : <span>Today</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                                <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
-                            </PopoverContent>
-                        </Popover>
-                        <div className="relative">
-                           <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
-                           <Input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="pl-9"/>
-                        </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                        <Button className="w-full" onClick={handleSearch}><Search className="mr-2 h-4 w-4"/>Search Rides</Button>
-                    </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                    <Button className="w-full" onClick={handleSearch}>
+                        Search Rides
+                    </Button>
+                    <Button variant="secondary" onClick={handleSearch} className="flex-shrink-0">
+                         <Navigation className="h-5 w-5" />
+                    </Button>
                 </div>
             </div>
           </div>
