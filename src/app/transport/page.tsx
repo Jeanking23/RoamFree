@@ -97,7 +97,9 @@ const LocationInput = ({
         libraries,
     });
     
-    const [popoverView, setPopoverView] = useState<'main' | 'saved'>('main');
+    const [popoverView, setPopoverView] = useState<'main' | 'saved' | 'add'>('main');
+    const [newPlaceName, setNewPlaceName] = useState('');
+    const [newPlaceAddress, setNewPlaceAddress] = useState('');
 
     const mockSavedPlaces = {
       Home: '123 Home St, Hometown, USA',
@@ -110,11 +112,29 @@ const LocationInput = ({
             description: `This would ${action.toLowerCase()}. This is a placeholder.`
         });
     };
+    
+    const handleAddNewPlace = () => {
+        if (!newPlaceName || !newPlaceAddress) {
+            toast({ title: 'Missing Information', description: 'Please provide a name and address.', variant: 'destructive' });
+            return;
+        }
+        console.log(`Adding new place: ${newPlaceName} at ${newPlaceAddress}`);
+        toast({ title: 'Place Added (Demo)', description: `${newPlaceName} has been saved.` });
+        // In a real app, you'd save this to a user's profile.
+        // For the demo, we just reset the form and go back.
+        setNewPlaceName('');
+        setNewPlaceAddress('');
+        setPopoverView('saved');
+    };
 
     const handleUseCurrentLocation = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
+                    if (!window.google) {
+                        toast({ title: "Map not ready", description: "Google Maps script is still loading.", variant: "destructive" });
+                        return;
+                    }
                     const geocoder = new window.google.maps.Geocoder();
                     const latLng = {
                         lat: position.coords.latitude,
@@ -124,7 +144,7 @@ const LocationInput = ({
                         if (status === "OK") {
                             if (results && results[0]) {
                                 onValueChange(results[0].formatted_address);
-                                toast({ title: "Location Updated", description: "Pickup location set to your current address." });
+                                toast({ title: "Location Updated", description: "Location set to your current address." });
                             } else {
                                 toast({ title: "Error", description: "No results found for your location.", variant: "destructive" });
                             }
@@ -148,7 +168,7 @@ const LocationInput = ({
     };
 
     return (
-        <Popover onOpenChange={() => setPopoverView('main')}>
+        <Popover onOpenChange={(open) => { if(!open) setPopoverView('main')}}>
             <PopoverTrigger asChild>
                 <div className="relative">
                     {icon}
@@ -171,7 +191,7 @@ const LocationInput = ({
                 </div>
             </PopoverTrigger>
             <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2">
-                 {popoverView === 'main' ? (
+                 {popoverView === 'main' && (
                     <div className="space-y-1">
                         <Button variant="ghost" className="w-full justify-start gap-3 h-auto" onClick={() => setPopoverView('saved')}>
                             <Star className="h-5 w-5 bg-muted text-muted-foreground p-1 rounded-full" />
@@ -194,7 +214,8 @@ const LocationInput = ({
                             </div>
                         </Button>
                     </div>
-                 ) : (
+                 )}
+                 {popoverView === 'saved' && (
                     <div className="space-y-1">
                         <Button variant="ghost" className="w-full justify-start gap-3 h-auto text-sm mb-1" onClick={() => setPopoverView('main')}>
                             <ArrowLeft className="h-4 w-4 mr-1"/> Back to options
@@ -215,9 +236,31 @@ const LocationInput = ({
                            </div>
                         </Button>
                         <Separator />
-                         <Button variant="ghost" className="w-full justify-start gap-3 h-auto text-sm text-primary" onClick={() => handleActionClick('Add a new saved place')}>
+                         <Button variant="ghost" className="w-full justify-start gap-3 h-auto text-sm text-primary" onClick={() => setPopoverView('add')}>
                             + Add new place
                         </Button>
+                    </div>
+                 )}
+                 {popoverView === 'add' && (
+                    <div className="space-y-2">
+                         <Button variant="ghost" className="w-full justify-start gap-3 h-auto text-sm mb-1" onClick={() => setPopoverView('saved')}>
+                            <ArrowLeft className="h-4 w-4 mr-1"/> Back to Saved Places
+                        </Button>
+                        <Separator />
+                        <div className="p-2 space-y-3">
+                            <h4 className="font-semibold text-sm">Add a new place</h4>
+                             <Input 
+                                placeholder="Name (e.g., Gym)" 
+                                value={newPlaceName}
+                                onChange={(e) => setNewPlaceName(e.target.value)}
+                            />
+                             <Input 
+                                placeholder="Address" 
+                                value={newPlaceAddress}
+                                onChange={(e) => setNewPlaceAddress(e.target.value)}
+                            />
+                            <Button className="w-full" size="sm" onClick={handleAddNewPlace}>Save Place</Button>
+                        </div>
                     </div>
                  )}
             </PopoverContent>
