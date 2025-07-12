@@ -71,7 +71,7 @@ const suggestionItems = [
     },
 ];
 
-const libraries: "places"[] = ['places'];
+const libraries: ("places" | "maps")[] = ['places', 'maps'];
 
 
 export default function TransportPage() {
