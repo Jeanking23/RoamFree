@@ -1,3 +1,4 @@
+
 // src/app/transport/page.tsx
 'use client';
 
@@ -163,7 +164,7 @@ const LocationInput = ({ value, onValueChange, placeholder, isLoaded, onSetLocat
                 setPopoverOpen(false);
             }
         }
-    }, [onValueChange, setPopoverOpen]);
+    }, [onValueChange]);
 
     return (
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
