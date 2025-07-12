@@ -5,7 +5,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Wand2, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown, Wand2, Map as MapIcon } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
@@ -21,7 +21,7 @@ import { useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api';
 import { getSavedPlacesAction, addSavedPlaceAction } from '@/app/actions';
 import type { SavedPlace } from '@/services/places';
 import { Label } from '@/components/ui/label';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 
 const serviceCategories = [
   { name: 'Ride', icon: Car, link: '#ride-booking' },
@@ -198,18 +198,25 @@ function LocationInput({ value, onValueChange, placeholder }: LocationInputProps
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-                {savedPlaces.map((place) => (
-                    <CommandItem key={place.id} onSelect={() => handleSelect(place.address)}>
-                        {place.name.toLowerCase() === 'home' ? <Home className="h-4 w-4 mr-2"/> : place.name.toLowerCase() === 'work' ? <Briefcase className="h-4 w-4 mr-2"/> : <Star className="h-4 w-4 mr-2"/>}
-                        {place.name}
-                    </CommandItem>
-                ))}
+                <CommandItem onSelect={() => {
+                    // This is a placeholder for a more complex sub-menu or modal
+                    toast({title: "Saved Places (Demo)", description: "This would show your list of saved places."});
+                }}>
+                    <Star className="mr-2 h-4 w-4" />
+                    Saved places
+                </CommandItem>
                  <CommandItem onSelect={handleAllowLocation}>
                     <LocateFixed className="mr-2 h-4 w-4" />
-                    Use current location
+                    Allow location access
+                </CommandItem>
+                <CommandItem onSelect={() => {
+                     toast({title: "Set on Map (Demo)", description: "This would open a map to select a location."});
+                }}>
+                    <MapIcon className="mr-2 h-4 w-4" />
+                    Set location on map
                 </CommandItem>
             </CommandGroup>
-            {suggestions.length > 0 && <Separator />}
+            {suggestions.length > 0 && <CommandSeparator />}
             <CommandGroup heading="Suggestions">
               {suggestions.map((prediction) => (
                 <CommandItem
