@@ -11,7 +11,8 @@ import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import RideOptionCard, { MotorcycleIcon, rideOptions } from './ride-option-card';
+import RideOptionCard, { rideOptions } from './ride-option-card';
+import { Separator } from '@/components/ui/separator';
 
 function RideSearchResults() {
     const searchParams = useSearchParams();
@@ -32,6 +33,8 @@ function RideSearchResults() {
         });
         // In a real app, this would trigger the payment processing flow and navigate to a confirmation/tracking page.
     }
+
+    const selectedRideDetails = rideOptions.find(r => r.id === selectedRide);
 
     return (
         <div className="container mx-auto">
@@ -58,16 +61,25 @@ function RideSearchResults() {
                     </div>
 
                     <div className="space-y-3 max-h-[calc(100vh-30rem)] lg:max-h-[calc(100vh-22rem)] overflow-y-auto pr-2">
-                        {rideOptions.map((ride) => (
-                             <RideOptionCard
-                                key={ride.id}
-                                ride={ride}
-                                isSelected={selectedRide === ride.id}
-                                onSelect={handleRideSelection}
-                            />
+                        {rideOptions.map((ride, index) => (
+                             <>
+                               {index === 3 && (
+                                <div className="py-4">
+                                    <h2 className="text-xl font-bold">More ways to get there</h2>
+                                </div>
+                               )}
+                               <RideOptionCard
+                                   key={ride.id}
+                                   ride={ride}
+                                   isSelected={selectedRide === ride.id}
+                                   onSelect={handleRideSelection}
+                               />
+                             </>
                         ))}
                     </div>
-                    <Button onClick={handleConfirmRide} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg">Confirm {rideOptions.find(r => r.id === selectedRide)?.name}</Button>
+                    <Button onClick={handleConfirmRide} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg">
+                        Confirm {selectedRideDetails?.name}
+                    </Button>
                 </div>
                 
             </div>

@@ -6,113 +6,139 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Shield, Users, User, Clock, ArrowLeft, Star, PawPrint } from 'lucide-react';
+import React from 'react';
 
-export const MotorcycleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="M18.9,3.1c-0.6-0.3-1.3-0.1-1.7,0.4l-3.3,4.1H8.1l-3.3-4.1C4.4,2.9,3.7,2.8,3.1,3.1C2.5,3.4,2.3,4.1,2.6,4.7l3.7,4.7v5.8c0,0.5,0.4,1,1,1h1.5c0.5,0,1-0.4,1-1v-2.1h2.5v2.1c0,0.5,0.4,1,1,1H15c0.5,0,1-0.4,1-1v-5.8l3.7-4.7C20.2,4.1,19.5,3.4,18.9,3.1z M8.9,7.3h6.2L12,3.9L8.9,7.3z M7,21.8c-1.5,0-2.8-1.2-2.8-2.8s1.2-2.8,2.8-2.8s2.8,1.2,2.8,2.8S8.5,21.8,7,21.8z M17,21.8c-1.5,0-2.8-1.2-2.8-2.8s1.2-2.8,2.8-2.8s2.8,1.2,2.8,2.8S18.5,21.8,17,21.8z"/>
+// Custom SVG Icons to match the image style
+const CarStandardIcon = () => (
+    <svg width="90" height="60" viewBox="0 0 100 60">
+        <path d="M 85,30 A 15 15, 0, 0, 1, 70, 45 L 30, 45 A 15 15, 0, 0, 1, 15, 30 L 25,10 A 10 10, 0, 0, 1, 35, 5 L 65, 5 A 10 10, 0, 0, 1, 75, 10 Z" fill="#E0E0E0"/>
+        <path d="M 75, 10 L 65, 30 L 35, 30 L 25,10 Z" fill="#A455FF"/>
+        <ellipse cx="30" cy="45" rx="8" ry="8" fill="#505050"/>
+        <ellipse cx="70" cy="45" rx="8" ry="8" fill="#505050"/>
+        <path d="M 73, 12 L 65, 28 L 35, 28 L 27, 12 Z" fill="#C77DFF" />
+        <path d="M 28,15 L 36,28 L 45,28 L 40,15 Z" fill="#FFFFFF" opacity="0.8" />
+        <path d="M 72,15 L 64,28 L 55,28 L 60,15 Z" fill="#FFFFFF" opacity="0.8" />
+        <path d="M 84,29 A 14 14, 0, 0, 1, 70, 43 L 30, 43 A 14 14, 0, 0, 1, 16, 29 L 26,11 A 9 9, 0, 0, 1, 35, 7 L 65, 7 A 9 9, 0, 0, 1, 74, 11 Z" fill="none" stroke="#B0B0B0" stroke-width="1"/>
+    </svg>
+);
+const CarBlackIcon = () => (
+     <svg width="90" height="60" viewBox="0 0 100 60">
+        <path d="M 85,30 A 15 15, 0, 0, 1, 70, 45 L 30, 45 A 15 15, 0, 0, 1, 15, 30 L 25,10 A 10 10, 0, 0, 1, 35, 5 L 65, 5 A 10 10, 0, 0, 1, 75, 10 Z" fill="#333333"/>
+        <path d="M 75, 10 L 65, 30 L 35, 30 L 25,10 Z" fill="#111111"/>
+        <ellipse cx="30" cy="45" rx="8" ry="8" fill="#222222"/>
+        <ellipse cx="70" cy="45" rx="8" ry="8" fill="#222222"/>
+        <path d="M 73, 12 L 65, 28 L 35, 28 L 27, 12 Z" fill="#222222" />
+        <path d="M 28,15 L 36,28 L 45,28 L 40,15 Z" fill="#555555" opacity="0.8" />
+        <path d="M 72,15 L 64,28 L 55,28 L 60,15 Z" fill="#555555" opacity="0.8" />
+        <path d="M 84,29 A 14 14, 0, 0, 1, 70, 43 L 30, 43 A 14 14, 0, 0, 1, 16, 29 L 26,11 A 9 9, 0, 0, 1, 35, 7 L 65, 7 A 9 9, 0, 0, 1, 74, 11 Z" fill="none" stroke="#444444" stroke-width="1"/>
+    </svg>
+);
+const CarSuvIcon = () => (
+    <svg width="90" height="60" viewBox="0 0 100 60">
+        <path d="M 90,35 A 15 15, 0, 0, 1, 75, 50 L 25, 50 A 15 15, 0, 0, 1, 10, 35 L 15,20 L 25,10 A 10 10, 0, 0, 1, 35, 5 L 75, 5 A 10 10, 0, 0, 1, 85, 10 L 90,30 Z" fill="#333333"/>
+        <path d="M 85, 10 L 75, 35 L 50, 35 L 45,10 Z" fill="#111111"/>
+        <path d="M 45,10 L 25, 35 L 20, 35 L 25, 10 Z" fill="#111111"/>
+        <ellipse cx="30" cy="50" rx="8" ry="8" fill="#222222"/>
+        <ellipse cx="75" cy="50" rx="8" ry="8" fill="#222222"/>
+        <path d="M 83, 12 L 75, 33 L 50, 33 L 47, 12 Z" fill="#222222" />
+        <path d="M 45, 12 L 27, 33 L 22, 33 L 27, 12 Z" fill="#222222" />
+        <path d="M 48,15 L 50,33 L 60,33 L 58,15 Z" fill="#555555" opacity="0.8" />
+        <path d="M 82,15 L 74,33 L 64,33 L 68,15 Z" fill="#555555" opacity="0.8" />
     </svg>
 );
 
-const Car = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="m21.7-2.4-1-3.6c-.2-.7-.8-1.1-1.5-1.1h-14c-.7 0-1.3.5-1.5 1.1l-1 3.6c-.1.2-.1.5 0 .7.1.3.4.5.7.5h1.3c.5 0 .9-.3 1.1-.7l.9-3.2h11l.9 3.2c.2.4.6.7 1.1.7h1.3c.3 0 .6-.2.7-.5.1-.2.1-.5 0-.7zM4.3 9.4l.6-2.1h14.2l.6 2.1H4.3zM2.8 20.3c-.6.2-1 .7-1 1.3v1.6c0 .5.4.9.9.9h.9c.4 0 .8-.4.9-.8l.4-1.6H5c.4 0 .7-.3.8-.7l.6-2.2h-3c-.4 0-.7.3-.8.7l-.3 1.1zM21.2 20.3c-.1-.4-.4-.7-.8-.7h-3l.6 2.2c.1.4.4.7.8.7h.6l.4 1.6c.1.4.5.8.9.8h.9c.5 0 .9-.4.9-.9v-1.6c0-.6-.4-1.1-1-1.3zM4.9 14.1h14.2c.5 0 .9-.4.9-.9V9.6c0-.5-.4-.9-.9-.9H4.9c-.5 0-.9.4-.9.9v3.6c0 .5.4.9.9.9z"/>
-    </svg>
+const ClockIcon = () => (
+  <div className="absolute top-0 right-0 -mt-1 -mr-1 bg-primary text-primary-foreground rounded-full p-0.5">
+    <Clock className="h-3 w-3" />
+  </div>
 );
-
-const CarFront = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="M19,17h2c0.6,0,1-0.4,1-1v-3c0-0.9-0.7-1.7-1.5-1.9C18.7,10.6,16,10,16,10s-1.3-1.4-2.2-2.3c-0.5-0.4-1.1-0.7-1.8-0.7H5c-0.6,0-1.1,0.4-1.4,0.9l-1.4,2.9C2.1,11.5,2,11.7,2,12v4c0,0.6,0.4,1,1,1h2"/><path d="M12,10V7h1.8c0.4,0,0.9,0.1,1.2,0.3"/><path d="M5,10h1"/><circle cx="7" cy="17" r="2"/><path d="M9,17h6"/><circle cx="17" cy="17" r="2"/>
-    </svg>
+const SparklesIcon = () => (
+    <div className="absolute top-0 right-0 -mt-1 -mr-1 bg-primary text-primary-foreground rounded-full p-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3L9.5 8.5L4 11L9.5 13.5L12 19L14.5 13.5L20 11L14.5 8.5L12 3zM20 3L19 5M5 3L4 5"/></svg>
+    </div>
+);
+const PetIcon = () => (
+    <div className="absolute top-0 right-0 -mt-2 -mr-2 bg-primary text-primary-foreground rounded-full p-1">
+       <PawPrint className="h-4 w-4"/>
+    </div>
 );
 
 
 export const rideOptions = [
     { 
-        id: 'uberx',
-        name: 'RoamFree Standard', 
-        icon: Car,
+        id: 'standard',
+        name: 'Standard', 
+        icon: CarStandardIcon,
         capacity: 4, 
-        eta: '4 mins away', 
-        arrivalTime: '12:02 PM',
-        price: 23.15,
-        originalPrice: 28.94,
-        tags: ['20% off', 'Popular'],
-        image: 'https://placehold.co/100x60.png',
-        dataAiHint: 'white sedan',
-        description: 'Affordable, everyday rides'
+        eta: 'in 6 min', 
+        arrivalTime: '4:39 PM',
+        price: 32.84,
+        description: ''
     },
     { 
-        id: 'share',
-        name: 'RoamFree Share', 
-        icon: Users,
-        capacity: 1, 
-        eta: '5 mins away', 
-        arrivalTime: '12:03 PM',
-        price: 20.06,
-        originalPrice: 25.07,
-        tags: ['20% off', 'Eco-friendly'],
-        image: 'https://placehold.co/100x60.png',
-        dataAiHint: 'electric car',
-        description: 'Walk up to 3 min, one seat only'
-    },
-    { 
-        id: 'uberxl',
-        name: 'RoamFree XL', 
-        icon: CarFront,
-        capacity: 6, 
-        eta: '9 mins away', 
-        arrivalTime: '12:06 PM',
-        price: 32.77,
-        originalPrice: 40.96,
-        tags: ['20% off'],
-        image: 'https://placehold.co/100x60.png',
-        dataAiHint: 'minivan luggage',
-        description: 'Affordable rides for groups up to 6'
+        id: 'wait_save',
+        name: 'Wait & Save', 
+        icon: CarStandardIcon,
+        specialIcon: ClockIcon,
+        capacity: 4, 
+        eta: 'within 15 min',
+        arrivalTime: '4:39–4:48 PM',
+        price: 27.89,
+        description: ''
     },
     { 
         id: 'comfort',
-        name: 'RoamFree Comfort', 
-        icon: Star,
+        name: 'Extra Comfort', 
+        icon: CarStandardIcon,
+        specialIcon: SparklesIcon,
         capacity: 4, 
-        eta: '4 mins away', 
-        arrivalTime: '12:05 PM',
-        price: 29.83,
-        originalPrice: 37.29,
-        tags: ['Top-rated drivers'],
-        image: 'https://placehold.co/100x60.png',
-        dataAiHint: 'luxury sedan',
-        description: 'Newer cars with extra legroom'
+        eta: 'in 5 min', 
+        arrivalTime: '4:38 PM',
+        price: 39.53,
+        description: 'Roomier, cleaner & newer'
     },
-     { 
-        id: 'bike',
-        name: 'RoamFree Moto', 
-        icon: MotorcycleIcon,
-        capacity: 1, 
-        eta: '2 mins away', 
-        arrivalTime: '12:00 PM',
-        price: 15.50,
-        originalPrice: 18.00,
-        tags: ['Quickest'],
-        image: 'https://placehold.co/100x60.png',
-        dataAiHint: 'scooter transport',
-        description: 'Get there faster on a motorbike'
+    { 
+        id: 'xl',
+        name: 'XL', 
+        icon: CarSuvIcon,
+        capacity: 6, 
+        eta: 'in 9 min', 
+        arrivalTime: '4:42 PM',
+        price: 50.49,
+        description: 'Fits up to 6'
+    },
+    { 
+        id: 'black',
+        name: 'Black', 
+        icon: CarBlackIcon,
+        capacity: 4, 
+        eta: 'in 10 min', 
+        arrivalTime: '4:43 PM',
+        price: 71.68,
+        description: 'VIP style'
+    },
+    { 
+        id: 'black_suv',
+        name: 'Black SUV', 
+        icon: CarSuvIcon,
+        capacity: 6, 
+        eta: 'in 16 min', 
+        arrivalTime: '4:49 PM',
+        price: 89.13,
+        description: 'VIP style for up to 6'
     },
     { 
         id: 'pet',
-        name: 'RoamFree Pet', 
-        icon: PawPrint,
+        name: 'Pet', 
+        icon: CarStandardIcon,
+        specialIcon: PetIcon,
         capacity: 4, 
-        eta: '6 mins away', 
-        arrivalTime: '12:02 PM',
-        price: 26.35,
-        originalPrice: 32.94,
-        tags: ['Pet-friendly'],
-        image: 'https://placehold.co/100x60.png',
-        dataAiHint: 'sedan dog',
-        description: 'For you and your furry friend'
+        eta: 'in 6 min', 
+        arrivalTime: '4:39 PM',
+        price: 36.68,
+        description: 'Ride with your furry friend'
     },
 ];
-
 
 interface RideOptionCardProps {
   ride: typeof rideOptions[0];
@@ -121,46 +147,49 @@ interface RideOptionCardProps {
 }
 
 export default function RideOptionCard({ ride, isSelected, onSelect }: RideOptionCardProps) {
+  
+  const cardClasses = cn(
+    "hover:shadow-md cursor-pointer transition-all duration-200 border-2",
+    isSelected ? "border-primary bg-primary/5" : "bg-card border-transparent"
+  );
+  
+  const content = (
+    <>
+      <div className="relative w-[90px] h-[60px] flex-shrink-0">
+        <ride.icon />
+        {ride.specialIcon && <ride.specialIcon />}
+      </div>
+      <div className="flex-grow">
+        <div className="flex items-center gap-2">
+            <h4 className="font-bold text-lg">{ride.name}</h4>
+            <span className="text-sm text-muted-foreground flex items-center gap-1"><User/>{ride.capacity}</span>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          {ride.description ? `${ride.description} \u00B7 ${ride.eta}` : ride.eta}
+        </p>
+      </div>
+      <div className="text-right">
+        <p className="font-bold text-lg">${ride.price.toFixed(2)}</p>
+        <p className="text-sm text-muted-foreground">{ride.arrivalTime}</p>
+      </div>
+    </>
+  );
+
   return (
     <Card 
-        className={cn(
-            "hover:shadow-md cursor-pointer transition-all duration-200 border-2",
-            isSelected ? "border-primary bg-primary/5" : "bg-card"
-        )} 
+        className={cardClasses} 
         onClick={() => onSelect(ride.id)}
     >
-        <CardContent className="p-3">
-            <div className="flex items-center gap-4">
-                <Image src={ride.image} alt={ride.name} width={80} height={50} className="object-contain rounded-md bg-muted/50" data-ai-hint={ride.dataAiHint}/>
-                <div className="flex-grow">
-                    <div className="flex justify-between items-start">
-                        <h4 className="font-bold text-base flex items-center gap-2">
-                            <ride.icon className="h-5 w-5 text-primary" />
-                            {ride.name}
-                        </h4>
-                        <p className="font-semibold text-lg text-primary">${ride.price.toFixed(2)}</p>
-                    </div>
-                    <div className="flex justify-between items-start">
-                        <p className="text-xs text-muted-foreground flex items-center gap-2">
-                            <span className="flex items-center gap-1"><Users className="h-3 w-3"/>{ride.capacity}</span>
-                            <span>{ride.arrivalTime} dropoff</span>
-                        </p>
-                        {ride.originalPrice && <p className="text-sm text-muted-foreground line-through">${ride.originalPrice.toFixed(2)}</p>}
-                    </div>
-                    <div className="flex gap-1 mt-1">
-                        {ride.tags.map(tag => (
-                            <Badge key={tag} variant="secondary" className={cn(
-                                'text-xs px-1.5 py-0.5 font-semibold',
-                                tag.includes('off') && 'bg-green-600/20 text-green-300 border-green-600/30',
-                                tag === 'Popular' && 'bg-yellow-600/20 text-yellow-300 border-yellow-600/30',
-                                tag === 'Quickest' && 'bg-purple-600/20 text-purple-300 border-purple-600/30'
-                            )}>
-                                {tag}
-                            </Badge>
-                        ))}
+        <CardContent className={cn("p-3 flex items-center gap-4", isSelected ? "py-5" : "")}>
+            {isSelected ? (
+                <div className="flex flex-col w-full">
+                    <div className="flex items-center gap-4">
+                        {content}
                     </div>
                 </div>
-            </div>
+            ) : (
+                content
+            )}
         </CardContent>
     </Card>
   );
