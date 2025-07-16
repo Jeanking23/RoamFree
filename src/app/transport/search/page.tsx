@@ -4,15 +4,13 @@
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
-import { ArrowLeft, CarFront, PawPrint, Star, Users } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import RideOptionCard, { rideOptions } from './ride-option-card';
-import { Separator } from '@/components/ui/separator';
 
 function RideSearchResults() {
     const searchParams = useSearchParams();
@@ -38,59 +36,68 @@ function RideSearchResults() {
     
     // Split options for display logic
     const primaryOptions = rideOptions.slice(0, 3);
-    const secondaryOptions = rideOptions.slice(3);
+    const secondaryOptions = rideOptions.slice(3, 8); // Moto is now a primary option, this will get the rest
 
 
     return (
-        <div className="container mx-auto">
-            <Button variant="outline" onClick={() => router.back()} className="mb-4 lg:hidden">
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Search
-            </Button>
-            <div className="flex flex-col lg:flex-row lg:gap-8">
-                
-                {/* Map: First on mobile, last on desktop */}
-                <div className="order-first lg:order-last lg:w-2/3">
-                    <div className="rounded-lg overflow-hidden h-80 lg:h-[calc(100vh-8rem)] lg:sticky lg:top-24">
+        <div className="container mx-auto p-0 lg:p-4 h-[calc(100vh-4rem)] md:h-auto">
+             <div className="relative h-full w-full flex flex-col lg:flex-row lg:gap-8">
+                {/* Back Button for Mobile */}
+                <Button variant="ghost" onClick={() => router.back()} className="absolute top-4 left-4 z-10 lg:hidden bg-background/60 hover:bg-background/80 rounded-full h-10 w-10 p-0">
+                    <ArrowLeft className="h-5 w-5" />
+                    <span className="sr-only">Back</span>
+                </Button>
+
+                {/* Map Area */}
+                <div className="flex-grow h-1/2 lg:h-auto lg:w-2/3">
+                    <div className="rounded-lg overflow-hidden h-full lg:h-[calc(100vh-8rem)] lg:sticky lg:top-24">
                         <InteractiveMapPlaceholder pickup={from} dropoff={to} />
                     </div>
                 </div>
 
-                {/* Ride Options: Second on mobile, first on desktop */}
-                <div className="lg:w-1/3 space-y-4 mt-8 lg:mt-0">
-                     <h1 className="text-3xl font-headline font-bold text-primary">Choose a ride</h1>
-                     <p className="text-muted-foreground">Trip from <strong>{from}</strong> to <strong>{to}</strong>.</p>
-                     
-                     <div className="flex items-center space-x-2 py-2">
-                        <Switch id="ride-for-other" />
-                        <Label htmlFor="ride-for-other">Ride for someone else</Label>
+                {/* Ride Options Panel */}
+                 <div className="flex-shrink-0 lg:w-1/3 p-4 bg-background shadow-lg rounded-t-2xl lg:rounded-lg -mt-4 lg:mt-0 z-10 flex flex-col h-1/2 lg:h-auto">
+                     <div className='lg:space-y-4'>
+                         <h1 className="text-xl lg:text-3xl font-bold lg:font-headline lg:text-primary text-center lg:text-left">Choose a ride</h1>
+                         <p className="hidden lg:block text-muted-foreground">Trip from <strong>{from}</strong> to <strong>{to}</strong>.</p>
+                         
+                         <div className="hidden lg:flex items-center space-x-2 py-2">
+                            <Switch id="ride-for-other" />
+                            <Label htmlFor="ride-for-other">Ride for someone else</Label>
+                        </div>
+                     </div>
+
+                    <div className="flex-grow space-y-3 overflow-y-auto pr-2 mt-4 lg:mt-0">
+                        {/* Primary Options */}
+                         {primaryOptions.map((ride) => (
+                               <RideOptionCard
+                                   key={ride.id}
+                                   ride={ride}
+                                   isSelected={selectedRide === ride.id}
+                                   onSelect={handleRideSelection}
+                               />
+                        ))}
+                        
+                        {/* Secondary Options Divider (optional, good for UI clarity) */}
+                        {secondaryOptions.length > 0 && <div className="py-2 hidden"><h2 className="text-md font-bold">More ways to get there</h2></div>}
+                        
+                        {/* Secondary Options */}
+                        {secondaryOptions.map((ride) => (
+                               <RideOptionCard
+                                   key={ride.id}
+                                   ride={ride}
+                                   isSelected={selectedRide === ride.id}
+                                   onSelect={handleRideSelection}
+                               />
+                        ))}
                     </div>
 
-                    <div className="space-y-3 max-h-[calc(100vh-30rem)] lg:max-h-[calc(100vh-22rem)] overflow-y-auto pr-2">
-                         {primaryOptions.map((ride, index) => (
-                               <RideOptionCard
-                                   key={ride.id}
-                                   ride={ride}
-                                   isSelected={selectedRide === ride.id}
-                                   onSelect={handleRideSelection}
-                               />
-                        ))}
-                        <div className="py-4">
-                            <h2 className="text-xl font-bold">More ways to get there</h2>
-                        </div>
-                        {secondaryOptions.map((ride, index) => (
-                               <RideOptionCard
-                                   key={ride.id}
-                                   ride={ride}
-                                   isSelected={selectedRide === ride.id}
-                                   onSelect={handleRideSelection}
-                               />
-                        ))}
+                    <div className="mt-auto pt-2">
+                        <Button onClick={handleConfirmRide} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg">
+                            Confirm {selectedRideDetails?.name}
+                        </Button>
                     </div>
-                    <Button onClick={handleConfirmRide} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg">
-                        Confirm {selectedRideDetails?.name}
-                    </Button>
                 </div>
-                
             </div>
         </div>
     );
@@ -99,7 +106,7 @@ function RideSearchResults() {
 
 export default function RideSearchPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
             <RideSearchResults />
         </Suspense>
     );
