@@ -1,3 +1,4 @@
+
 // src/app/transport/page.tsx
 'use client';
 
@@ -96,7 +97,6 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
 
-  // For adding a new saved place
   const [isAddPlaceDialogOpen, setIsAddPlaceDialogOpen] = useState(false);
   const [newPlaceName, setNewPlaceName] = useState("");
   const [newPlaceAddress, setNewPlaceAddress] = useState("");
@@ -176,7 +176,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
         });
       },
       () => {
-        toast({ title: 'Permission Denied', description: 'Could not access your location.', variant: 'destructive' });
+        toast({ title: 'Permission Denied', description: 'Could not access your location. You can enable it in your browser settings.', variant: 'destructive' });
       }
     );
   };
@@ -203,7 +203,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
         setIsAddPlaceDialogOpen(false);
         setNewPlaceName("");
         setNewPlaceAddress("");
-        fetchPlaces(); // Refresh the list
+        fetchPlaces();
     }
   };
 
@@ -320,11 +320,11 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
             <AlertDialogHeader>
             <AlertDialogTitle>Use your current location?</AlertDialogTitle>
             <AlertDialogDescription>
-                To make it easier to set your location, RoamFree can use your device's current location. We will only use this once and won't track you.
+                To make it easier to set your location, RoamFree can use your device's current location. This helps us provide accurate pickup services and find drivers faster.
             </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>No Thanks</AlertDialogCancel>
             <AlertDialogAction onClick={proceedWithGeolocation}>Allow</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
