@@ -4,12 +4,19 @@ import { Map } from 'lucide-react';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useGoogleMaps } from '@/context/google-maps-provider';
 
+export interface AvailableVehicle {
+  id: string;
+  position: google.maps.LatLngLiteral;
+  type: 'car' | 'motorbike';
+}
+
 interface InteractiveMapPlaceholderProps {
   pickup?: string;
   dropoff?: string;
   onMapLoad?: (map: google.maps.Map) => void;
   setPickup?: (address: string) => void;
   setDropoff?: (address: string) => void;
+  availableVehicles?: AvailableVehicle[];
 }
 
 const containerStyle = {
@@ -17,7 +24,7 @@ const containerStyle = {
   height: '100%',
 };
 
-export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, setPickup, setDropoff }: InteractiveMapPlaceholderProps) {
+export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, setPickup, setDropoff, availableVehicles = [] }: InteractiveMapPlaceholderProps) {
     const { isLoaded, loadError } = useGoogleMaps();
 
     const [pickupCoords, setPickupCoords] = useState<google.maps.LatLngLiteral | null>(null);
@@ -158,6 +165,26 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
             scaledSize: new window.google.maps.Size(32, 32),
         };
 
+        const carIcon = {
+            path: 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z',
+            fillColor: '#000000',
+            fillOpacity: 1,
+            strokeWeight: 0,
+            rotation: 0,
+            scale: 1.2,
+            anchor: new google.maps.Point(12, 12),
+        };
+
+        const motorbikeIcon = {
+            path: 'M12.28 2.05c-.17-.03-.34-.05-.51-.05C8.95 2 6.71 4.24 6.71 7v1.08c0 .35.13.68.36.95L8.5 11h7l1.43-2.05c.23-.27.36-.6.36-.95V7c0-2.76-2.24-5-4.99-5-.17 0-.34.02-.52.05zM12 4c1.66 0 3 1.34 3 3v1H9V7c0-1.66 1.34-3 3-3zM5.12 12l-.74 2.6c-.1.35.03.73.33 1L6 17h12l1.29-1.4c.3-.27.43-.65.33-1L18.88 12H5.12zM6.5 20c-.83 0-1.5-.67-1.5-1.5S5.67 17 6.5 17s1.5.67 1.5 1.5S7.33 20 6.5 20zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z',
+            fillColor: '#000000',
+            fillOpacity: 1,
+            strokeWeight: 0,
+            rotation: 0,
+            scale: 1.2,
+            anchor: new google.maps.Point(12, 12),
+        };
+
         const getShortAddress = (fullAddress: string) => {
             return fullAddress.split(',')[0];
         };
@@ -165,9 +192,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
         const infoWindowOptions = {
             pixelOffset: new window.google.maps.Size(0, -40),
             disableAutoPan: true,
-            closeBox: false,
-            closeBoxURL: ``, 
-            infoBoxClearance: new google.maps.Size(1, 1)
+            closeButton: false, 
         };
 
 
@@ -242,6 +267,15 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
                         }}
                     />
                 )}
+
+                {availableVehicles.map(vehicle => (
+                    <Marker
+                        key={vehicle.id}
+                        position={vehicle.position}
+                        icon={vehicle.type === 'car' ? carIcon : motorbikeIcon}
+                        title={vehicle.type}
+                    />
+                ))}
 
             </GoogleMap>
         );

@@ -13,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
+import InteractiveMapPlaceholder, { type AvailableVehicle } from '@/components/map/interactive-map-placeholder';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
@@ -292,6 +292,15 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
   );
 }
 
+// Mock data for available vehicles. In a real app, this would come from an API.
+const mockVehicles: AvailableVehicle[] = [
+    { id: 'car1', type: 'car', position: { lat: 34.0522, lng: -118.2437 } },
+    { id: 'car2', type: 'car', position: { lat: 34.055, lng: -118.245 } },
+    { id: 'mb1', type: 'motorbike', position: { lat: 34.050, lng: -118.248 } },
+    { id: 'car3', type: 'car', position: { lat: 34.048, lng: -118.241 } },
+    { id: 'mb2', type: 'motorbike', position: { lat: 34.056, lng: -118.239 } },
+];
+
 
 export default function TransportPage() {
     const router = useRouter();
@@ -461,6 +470,7 @@ export default function TransportPage() {
                     setPickup={setPickupLocation}
                     setDropoff={setDropoffLocation}
                     onMapLoad={(map) => { mapRef.current = map; }}
+                    availableVehicles={mockVehicles}
                 />
             </div>
 
