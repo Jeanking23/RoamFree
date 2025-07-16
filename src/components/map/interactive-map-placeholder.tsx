@@ -14,13 +14,25 @@ const containerStyle = {
   height: '100%',
 };
 
+const customMapStyle = [
+  {
+    "featureType": "poi",
+    "stylers": [{ "visibility": "off" }]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.icon",
+    "stylers": [{ "visibility": "off" }]
+  },
+];
+
 export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }: InteractiveMapPlaceholderProps) {
     const { isLoaded, loadError } = useGoogleMaps();
 
     const [pickupCoords, setPickupCoords] = useState<google.maps.LatLngLiteral | null>(null);
     const [dropoffCoords, setDropoffCoords] = useState<google.maps.LatLngLiteral | null>(null);
     const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
-    const [activeInfoWindow, setActiveInfoWindow] = useState<'pickup' | 'dropoff' | 'both' | null>('both');
+    const [activeInfoWindow, setActiveInfoWindow] = useState<'pickup' | 'dropoff' | null>(null);
 
 
     const geocodeAddress = useCallback((address: string, setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>) => {
@@ -61,9 +73,6 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
     useEffect(() => {
         if (!pickupCoords || !dropoffCoords) {
             setDirections(null);
-            setActiveInfoWindow(null);
-        } else {
-            setActiveInfoWindow('both');
         }
     }, [pickupCoords, dropoffCoords]);
 
@@ -72,6 +81,10 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
         if (dropoffCoords) return dropoffCoords;
         return { lat: 39.8283, lng: -98.5795 };
     }, [pickupCoords, dropoffCoords]);
+    
+    const onLoad = useCallback((map: google.maps.Map) => {
+        if(onMapLoad) onMapLoad(map);
+    }, [onMapLoad]);
 
     const handleDirectionsResponse = (
         response: google.maps.DirectionsResult | null,
@@ -82,6 +95,16 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
         } else {
             console.error(`Directions request failed due to ${status}`);
         }
+    };
+    
+    // Custom SVG icons for markers
+    const pickupIcon = {
+        url: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="hsl(217 91% 60%)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="white"></circle></svg>`,
+        scaledSize: new window.google.maps.Size(32, 32),
+    };
+    const dropoffIcon = {
+        url: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="hsl(217 33% 17%)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3" fill="white"></circle></svg>`,
+        scaledSize: new window.google.maps.Size(32, 32),
     };
 
 
@@ -102,15 +125,17 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 options={{
                     disableDefaultUI: true,
                     zoomControl: true,
+                    styles: customMapStyle,
                 }}
-                onLoad={onMapLoad}
+                onLoad={onLoad}
             >
                 {pickupCoords && (
-                    <Marker position={pickupCoords}>
-                        {(activeInfoWindow === 'both' || activeInfoWindow === 'pickup') && pickup && (
-                            <InfoWindow position={pickupCoords}>
-                                <div className="p-1 text-xs font-semibold">
-                                    <p><strong>Pickup:</strong> {pickup}</p>
+                    <Marker position={pickupCoords} icon={pickupIcon} animation={window.google.maps.Animation.DROP} onClick={() => setActiveInfoWindow('pickup')}>
+                        {activeInfoWindow === 'pickup' && pickup && (
+                             <InfoWindow position={pickupCoords} onCloseClick={() => setActiveInfoWindow(null)}>
+                                <div className="p-1 font-sans">
+                                    <h4 className="font-bold text-sm text-primary">Pickup</h4>
+                                    <p className="text-xs text-foreground">{pickup}</p>
                                 </div>
                             </InfoWindow>
                         )}
@@ -118,11 +143,12 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 )}
 
                 {dropoffCoords && (
-                    <Marker position={dropoffCoords}>
-                        {(activeInfoWindow === 'both' || activeInfoWindow === 'dropoff') && dropoff && (
-                            <InfoWindow position={dropoffCoords}>
-                                <div className="p-1 text-xs font-semibold">
-                                    <p><strong>Destination:</strong> {dropoff}</p>
+                    <Marker position={dropoffCoords} icon={dropoffIcon} animation={window.google.maps.Animation.DROP} onClick={() => setActiveInfoWindow('dropoff')}>
+                       {activeInfoWindow === 'dropoff' && dropoff && (
+                             <InfoWindow position={dropoffCoords} onCloseClick={() => setActiveInfoWindow(null)}>
+                                <div className="p-1 font-sans">
+                                    <h4 className="font-bold text-sm text-foreground">Destination</h4>
+                                    <p className="text-xs text-muted-foreground">{dropoff}</p>
                                 </div>
                             </InfoWindow>
                         )}
@@ -146,8 +172,9 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                             directions,
                             suppressMarkers: true,
                             polylineOptions: {
-                                strokeColor: "#1D4ED8",
-                                strokeWeight: 5,
+                                strokeColor: "#2563EB", // Tailwind's blue-600
+                                strokeWeight: 6,
+                                strokeOpacity: 0.8,
                             },
                         }}
                     />
