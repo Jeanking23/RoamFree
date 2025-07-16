@@ -16,16 +16,64 @@ const containerStyle = {
 };
 
 const customMapStyle = [
+  { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] }, // Dark blue-gray for land
+  { elementType: "labels.text.stroke", stylers: [{ color: "#1d2c4d" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#a9b9d1" }] }, // Lighter text
   {
-    "featureType": "poi",
-    "stylers": [{ "visibility": "off" }]
+    featureType: "administrative.locality",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#d59563" }], // A slightly different color for cities
   },
   {
-    "featureType": "road",
-    "elementType": "labels.icon",
-    "stylers": [{ "visibility": "off" }]
+    featureType: "poi",
+    stylers: [{ visibility: "off" }], // Keep POIs off
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#2c3e50" }], // Darker blue for roads
+  },
+  {
+    featureType: "road",
+    elementType: "labels.icon",
+    stylers: [{ visibility: "off" }],
+  },
+  {
+    featureType: "road",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#8a97a8" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ color: "#3a537b" }], // Brighter blue for highways (from secondary)
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#1d2c4d" }],
+  },
+  {
+    featureType: "transit",
+    stylers: [{ visibility: "off" }],
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#17263c" }], // Darkest blue for water
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#515c6d" }],
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#17263c" }],
   },
 ];
+
 
 export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }: InteractiveMapPlaceholderProps) {
     const { isLoaded, loadError } = useGoogleMaps();
@@ -185,7 +233,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                             directions,
                             suppressMarkers: true,
                             polylineOptions: {
-                                strokeColor: "#2563EB", // Tailwind's blue-600
+                                strokeColor: "hsl(217 91% 60%)", // Primary color
                                 strokeWeight: 6,
                                 strokeOpacity: 0.8,
                             },
