@@ -149,10 +149,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                     >
                          {activeInfoWindow === 'pickup' && (
                              <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={pickupCoords}>
-                                <div className="p-1 font-sans">
-                                    <h4 className="font-bold text-sm text-primary">Pickup</h4>
-                                    <p className="text-xs text-foreground">{pickup}</p>
-                                </div>
+                                <div className="p-1 font-sans text-black">{pickup}</div>
                             </InfoWindow>
                         )}
                     </Marker>
@@ -167,10 +164,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                     >
                        {activeInfoWindow === 'dropoff' && (
                              <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={dropoffCoords}>
-                                <div className="p-1 font-sans">
-                                    <h4 className="font-bold text-sm text-foreground">Destination</h4>
-                                    <p className="text-xs text-muted-foreground">{dropoff}</p>
-                                </div>
+                                <div className="p-1 font-sans text-black">{dropoff}</div>
                             </InfoWindow>
                         )}
                     </Marker>
