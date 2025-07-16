@@ -44,8 +44,8 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 };
                 setter(newCoords);
                 setMapCenter(newCoords);
-                setZoom(14);
-                setActiveInfoWindow(infoWindowSetter);
+                setZoom(16); // Set a closer zoom level for a single address
+                setActiveInfoWindow(infoWindowSetter); // Show InfoWindow by default
             } else {
                 console.error(`Geocode was not successful for the following reason: ${status}`);
                 setter(null);
@@ -93,6 +93,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
             bounds.extend(pickupCoords);
             bounds.extend(dropoffCoords);
             mapRef.current.fitBounds(bounds, 100); // 100px padding
+            setActiveInfoWindow(null); // Hide individual info windows when showing a route
         }
     }, [directions, pickupCoords, dropoffCoords]);
 
