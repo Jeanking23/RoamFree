@@ -33,6 +33,8 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
     const [pickupCoords, setPickupCoords] = useState<google.maps.LatLngLiteral | null>(null);
     const [dropoffCoords, setDropoffCoords] = useState<google.maps.LatLngLiteral | null>(null);
     const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+    const [activeInfoWindow, setActiveInfoWindow] = useState<'pickup' | 'dropoff' | null>(null);
+
 
     const geocodeAddress = useCallback((address: string, setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>) => {
         if (!isLoaded || !address) {
@@ -72,6 +74,8 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
     useEffect(() => {
         if (!pickupCoords || !dropoffCoords) {
             setDirections(null);
+        } else {
+            setDirections(null); // Force re-fetch of directions when coords change
         }
     }, [pickupCoords, dropoffCoords]);
 
@@ -106,7 +110,6 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
             return <div>Loading map...</div>;
         }
         
-        // Custom SVG icons for markers
         const pickupIcon = {
             url: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="hsl(217 91% 60%)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="white"></circle></svg>`,
             scaledSize: new window.google.maps.Size(32, 32),
@@ -130,9 +133,14 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 onLoad={onLoad}
             >
                 {pickupCoords && (
-                    <Marker position={pickupCoords} icon={pickupIcon} animation={window.google.maps.Animation.DROP}>
-                         {pickup && (
-                             <InfoWindow position={pickupCoords}>
+                    <Marker 
+                        position={pickupCoords} 
+                        icon={pickupIcon} 
+                        animation={window.google.maps.Animation.DROP}
+                        onClick={() => setActiveInfoWindow('pickup')}
+                    >
+                         {activeInfoWindow === 'pickup' && pickup && (
+                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)}>
                                 <div className="p-1 font-sans">
                                     <h4 className="font-bold text-sm text-primary">Pickup</h4>
                                     <p className="text-xs text-foreground">{pickup}</p>
@@ -143,9 +151,14 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 )}
 
                 {dropoffCoords && (
-                    <Marker position={dropoffCoords} icon={dropoffIcon} animation={window.google.maps.Animation.DROP}>
-                       {dropoff && (
-                             <InfoWindow position={dropoffCoords}>
+                    <Marker 
+                        position={dropoffCoords} 
+                        icon={dropoffIcon} 
+                        animation={window.google.maps.Animation.DROP}
+                        onClick={() => setActiveInfoWindow('dropoff')}
+                    >
+                       {activeInfoWindow === 'dropoff' && dropoff && (
+                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)}>
                                 <div className="p-1 font-sans">
                                     <h4 className="font-bold text-sm text-foreground">Destination</h4>
                                     <p className="text-xs text-muted-foreground">{dropoff}</p>
