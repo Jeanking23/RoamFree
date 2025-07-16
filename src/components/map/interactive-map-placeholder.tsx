@@ -1,3 +1,4 @@
+
 import { GoogleMap, MarkerF as Marker, DirectionsService, DirectionsRenderer, InfoWindowF as InfoWindow } from '@react-google-maps/api';
 import { Map, MapPin } from 'lucide-react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
@@ -36,7 +37,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
 
 
     const geocodeAddress = useCallback((address: string, setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>) => {
-        if (!window.google || !address) {
+        if (!isLoaded || !address) {
             setter(null);
             return;
         }
@@ -52,7 +53,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 setter(null);
             }
         });
-    }, []);
+    }, [isLoaded]);
 
     useEffect(() => {
         if (isLoaded && pickup) {
@@ -97,16 +98,6 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
         }
     };
     
-    // Custom SVG icons for markers
-    const pickupIcon = {
-        url: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="hsl(217 91% 60%)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="white"></circle></svg>`,
-        scaledSize: new window.google.maps.Size(32, 32),
-    };
-    const dropoffIcon = {
-        url: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="hsl(217 33% 17%)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3" fill="white"></circle></svg>`,
-        scaledSize: new window.google.maps.Size(32, 32),
-    };
-
 
     const renderMap = () => {
         if (loadError) {
@@ -116,6 +107,17 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
         if (!isLoaded) {
             return <div>Loading map...</div>;
         }
+        
+        // Custom SVG icons for markers
+        const pickupIcon = {
+            url: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="hsl(217 91% 60%)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="white"></circle></svg>`,
+            scaledSize: new window.google.maps.Size(32, 32),
+        };
+        const dropoffIcon = {
+            url: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="hsl(217 33% 17%)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3" fill="white"></circle></svg>`,
+            scaledSize: new window.google.maps.Size(32, 32),
+        };
+
 
         return (
             <GoogleMap
