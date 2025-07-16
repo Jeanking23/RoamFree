@@ -35,12 +35,12 @@ function RideSearchResults() {
     const selectedRideDetails = rideOptions.find(r => r.id === selectedRide);
     
     // Split options for display logic
-    const primaryOptions = rideOptions.slice(0, 3);
-    const secondaryOptions = rideOptions.slice(3, 8); // Moto is now a primary option, this will get the rest
+    const primaryOptions = rideOptions.slice(0, 4); // Standard, Wait & Save, Comfort, Moto
+    const secondaryOptions = rideOptions.slice(4); // The rest
 
 
     return (
-        <div className="container mx-auto p-0 lg:p-4 h-[calc(100vh-4rem)] md:h-auto">
+        <div className="container mx-auto p-0 h-[calc(100vh-4rem)] md:h-auto md:p-4">
              <div className="relative h-full w-full flex flex-col lg:flex-row lg:gap-8">
                 {/* Back Button for Mobile */}
                 <Button variant="ghost" onClick={() => router.back()} className="absolute top-4 left-4 z-10 lg:hidden bg-background/60 hover:bg-background/80 rounded-full h-10 w-10 p-0">
@@ -61,7 +61,7 @@ function RideSearchResults() {
                          <h1 className="text-xl lg:text-3xl font-bold lg:font-headline lg:text-primary text-center lg:text-left">Choose a ride</h1>
                          <p className="hidden lg:block text-muted-foreground">Trip from <strong>{from}</strong> to <strong>{to}</strong>.</p>
                          
-                         <div className="hidden lg:flex items-center space-x-2 py-2">
+                         <div className="flex items-center justify-center lg:justify-start space-x-2 py-2">
                             <Switch id="ride-for-other" />
                             <Label htmlFor="ride-for-other">Ride for someone else</Label>
                         </div>
