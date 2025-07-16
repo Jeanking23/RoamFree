@@ -93,7 +93,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
             bounds.extend(pickupCoords);
             bounds.extend(dropoffCoords);
             mapRef.current.fitBounds(bounds, 100); // 100px padding
-            setActiveInfoWindow(null); // Hide individual info windows when showing a route
+            setActiveInfoWindow('pickup'); // Show pickup info window by default when route appears
         } else if (pickupCoords || dropoffCoords) {
             // If only one is set, ensure map is centered and zoomed on it
             const activeCoords = pickupCoords || dropoffCoords;
@@ -115,6 +115,14 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
             console.error(`Directions request failed due to ${status}`);
         }
     };
+    
+    const handleMarkerClick = (coords: google.maps.LatLngLiteral, infoWindow: 'pickup' | 'dropoff') => {
+        if(mapRef.current) {
+            mapRef.current.panTo(coords);
+            mapRef.current.setZoom(17);
+        }
+        setActiveInfoWindow(infoWindow);
+    }
 
     const renderMap = () => {
         if (loadError) {
@@ -146,7 +154,6 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 options={{
                     disableDefaultUI: true,
                     zoomControl: true,
-                    styles: []
                 }}
                 onLoad={onLoad}
             >
@@ -155,7 +162,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                         position={pickupCoords} 
                         icon={pickupIcon} 
                         animation={window.google.maps.Animation.DROP}
-                        onClick={() => setActiveInfoWindow('pickup')}
+                        onClick={() => handleMarkerClick(pickupCoords, 'pickup')}
                     >
                          {activeInfoWindow === 'pickup' && (
                              <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={pickupCoords} options={{ pixelOffset: new window.google.maps.Size(0, -40) }}>
@@ -173,7 +180,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                         position={dropoffCoords} 
                         icon={dropoffIcon} 
                         animation={window.google.maps.Animation.DROP}
-                        onClick={() => setActiveInfoWindow('dropoff')}
+                        onClick={() => handleMarkerClick(dropoffCoords, 'dropoff')}
                     >
                        {activeInfoWindow === 'dropoff' && (
                              <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={dropoffCoords} options={{ pixelOffset: new window.google.maps.Size(0, -40) }}>
