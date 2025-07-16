@@ -1,7 +1,7 @@
 
 import { GoogleMap, MarkerF as Marker, DirectionsService, DirectionsRenderer, InfoWindowF as InfoWindow } from '@react-google-maps/api';
-import { Map, MapPin } from 'lucide-react';
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { Map } from 'lucide-react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useGoogleMaps } from '@/context/google-maps-provider';
 
 interface InteractiveMapPlaceholderProps {
@@ -17,73 +17,14 @@ const containerStyle = {
 
 const customMapStyle = [
   {
-    "featureType": "all",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#7c93a3"
-      },
-      {
-        "lightness": "-10"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.country",
     "elementType": "geometry",
     "stylers": [
       {
-        "visibility": "on"
+        "color": "#f5f5f5"
       }
     ]
   },
   {
-    "featureType": "administrative.country",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#a0a4a5"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.province",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#a0a4a5"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.man_made",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#f7f1df"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.natural",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#f7f1df"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.natural.terrain",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
     "elementType": "labels.icon",
     "stylers": [
       {
@@ -92,20 +33,45 @@ const customMapStyle = [
     ]
   },
   {
-    "featureType": "poi.business",
-    "elementType": "all",
+    "elementType": "labels.text.fill",
     "stylers": [
       {
-        "visibility": "off"
+        "color": "#616161"
       }
     ]
   },
   {
-    "featureType": "poi.medical",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#f5f5f5"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#bdbdbd"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#fbd3da"
+        "color": "#eeeeee"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
       }
     ]
   },
@@ -114,61 +80,79 @@ const customMapStyle = [
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#bde6ab"
+        "color": "#e5e5e5"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
       }
     ]
   },
   {
     "featureType": "road",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#f5f5f5"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#c9c9c9"
+        "color": "#ffffff"
       }
     ]
   },
   {
     "featureType": "road.arterial",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#f5f5f5"
+        "color": "#dadada"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#616161"
       }
     ]
   },
   {
     "featureType": "road.local",
-    "elementType": "geometry",
+    "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#f5f5f5"
+        "color": "#9e9e9e"
       }
     ]
   },
   {
-    "featureType": "transit",
-    "elementType": "all",
+    "featureType": "transit.line",
+    "elementType": "geometry",
     "stylers": [
       {
-        "visibility": "off"
+        "color": "#e5e5e5"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.station",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#eeeeee"
       }
     ]
   },
@@ -177,12 +161,20 @@ const customMapStyle = [
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#aee2e0"
+        "color": "#c9c9c9"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
       }
     ]
   }
 ];
-
 
 export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }: InteractiveMapPlaceholderProps) {
     const { isLoaded, loadError } = useGoogleMaps();
@@ -191,9 +183,15 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
     const [dropoffCoords, setDropoffCoords] = useState<google.maps.LatLngLiteral | null>(null);
     const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
     const [activeInfoWindow, setActiveInfoWindow] = useState<'pickup' | 'dropoff' | null>(null);
+    const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral>({ lat: 39.8283, lng: -98.5795 });
+    const [zoom, setZoom] = useState(4);
+    const mapRef = useRef<google.maps.Map | null>(null);
 
-
-    const geocodeAddress = useCallback((address: string, setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>) => {
+    const geocodeAddress = useCallback((
+        address: string, 
+        setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>,
+        infoWindowSetter: 'pickup' | 'dropoff'
+    ) => {
         if (!isLoaded || !address) {
             setter(null);
             return;
@@ -201,10 +199,14 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
         const geocoder = new window.google.maps.Geocoder();
         geocoder.geocode({ address }, (results, status) => {
             if (status === 'OK' && results && results[0]) {
-                setter({
+                const newCoords = {
                     lat: results[0].geometry.location.lat(),
                     lng: results[0].geometry.location.lng(),
-                });
+                };
+                setter(newCoords);
+                setMapCenter(newCoords);
+                setZoom(14);
+                setActiveInfoWindow(infoWindowSetter);
             } else {
                 console.error(`Geocode was not successful for the following reason: ${status}`);
                 setter(null);
@@ -214,7 +216,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
 
     useEffect(() => {
         if (isLoaded && pickup) {
-            geocodeAddress(pickup, setPickupCoords);
+            geocodeAddress(pickup, setPickupCoords, 'pickup');
         } else {
             setPickupCoords(null);
         }
@@ -222,7 +224,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
 
     useEffect(() => {
         if (isLoaded && dropoff) {
-            geocodeAddress(dropoff, setDropoffCoords);
+            geocodeAddress(dropoff, setDropoffCoords, 'dropoff');
         } else {
             setDropoffCoords(null);
         }
@@ -230,21 +232,31 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
     
     useEffect(() => {
         if (!pickupCoords || !dropoffCoords) {
+            if (!pickupCoords && !dropoffCoords) {
+                // Reset to default view if both are cleared
+                setZoom(4);
+                setMapCenter({ lat: 39.8283, lng: -98.5795 });
+            }
             setDirections(null);
         } else {
             setDirections(null); // Force re-fetch of directions when coords change
         }
     }, [pickupCoords, dropoffCoords]);
 
-    const mapCenter = useMemo(() => {
-        if (pickupCoords) return pickupCoords;
-        if (dropoffCoords) return dropoffCoords;
-        return { lat: 39.8283, lng: -98.5795 };
-    }, [pickupCoords, dropoffCoords]);
-    
     const onLoad = useCallback((map: google.maps.Map) => {
+        mapRef.current = map;
         if(onMapLoad) onMapLoad(map);
     }, [onMapLoad]);
+
+    useEffect(() => {
+        if (mapRef.current && pickupCoords && dropoffCoords) {
+            const bounds = new window.google.maps.LatLngBounds();
+            bounds.extend(pickupCoords);
+            bounds.extend(dropoffCoords);
+            mapRef.current.fitBounds(bounds, 100); // 100px padding
+        }
+    }, [directions, pickupCoords, dropoffCoords]);
+
 
     const handleDirectionsResponse = (
         response: google.maps.DirectionsResult | null,
@@ -281,7 +293,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={mapCenter}
-                zoom={pickupCoords || dropoffCoords ? 12 : 4}
+                zoom={zoom}
                 options={{
                     disableDefaultUI: true,
                     zoomControl: true,
@@ -289,15 +301,15 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 }}
                 onLoad={onLoad}
             >
-                {pickupCoords && (
+                {pickupCoords && pickup && (
                     <Marker 
                         position={pickupCoords} 
                         icon={pickupIcon} 
                         animation={window.google.maps.Animation.DROP}
                         onClick={() => setActiveInfoWindow('pickup')}
                     >
-                         {activeInfoWindow === 'pickup' && pickup && (
-                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)}>
+                         {activeInfoWindow === 'pickup' && (
+                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={pickupCoords}>
                                 <div className="p-1 font-sans">
                                     <h4 className="font-bold text-sm text-primary">Pickup</h4>
                                     <p className="text-xs text-foreground">{pickup}</p>
@@ -307,15 +319,15 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                     </Marker>
                 )}
 
-                {dropoffCoords && (
+                {dropoffCoords && dropoff && (
                     <Marker 
                         position={dropoffCoords} 
                         icon={dropoffIcon} 
                         animation={window.google.maps.Animation.DROP}
                         onClick={() => setActiveInfoWindow('dropoff')}
                     >
-                       {activeInfoWindow === 'dropoff' && dropoff && (
-                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)}>
+                       {activeInfoWindow === 'dropoff' && (
+                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={dropoffCoords}>
                                 <div className="p-1 font-sans">
                                     <h4 className="font-bold text-sm text-foreground">Destination</h4>
                                     <p className="text-xs text-muted-foreground">{dropoff}</p>
