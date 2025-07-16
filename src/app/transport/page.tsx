@@ -23,7 +23,6 @@ import type { SavedPlace } from '@/services/places';
 import { Label } from '@/components/ui/label';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 
 const serviceCategories = [
@@ -84,23 +83,24 @@ interface LocationInputProps {
   value: string;
   onValueChange: (value: string) => void;
   placeholder: string;
-  isLoaded: boolean;
   iconType: 'pickup' | 'dropoff';
-  onMapSelectRequest: () => google.maps.MapsEventListener | null;
+  onMapSelectRequest: () => void;
+  onAllowLocationRequest: () => void;
 }
 
-function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, onMapSelectRequest }: LocationInputProps) {
+function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelectRequest, onAllowLocationRequest }: LocationInputProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
+  const { isLoaded } = useGoogleMaps();
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
 
+  // For adding a new saved place
   const [isAddPlaceDialogOpen, setIsAddPlaceDialogOpen] = useState(false);
   const [newPlaceName, setNewPlaceName] = useState("");
   const [newPlaceAddress, setNewPlaceAddress] = useState("");
-  const [isLocationPromptOpen, setIsLocationPromptOpen] = useState(false);
 
 
   useEffect(() => {
@@ -112,7 +112,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
   useEffect(() => {
     setInputValue(value);
   }, [value]);
-
+  
   const fetchPlaces = useCallback(async () => {
     setIsLoadingPlaces(true);
     const result = await getSavedPlacesAction();
@@ -125,16 +125,11 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
     setIsLoadingPlaces(false);
   }, []);
 
-  const onPopoverOpenChange = (open: boolean) => {
-    setOpen(open);
+  useEffect(() => {
     if (open) {
       fetchPlaces();
-      // If the input is for pickup and the value is empty, prompt for location.
-      if (iconType === 'pickup' && !value) {
-        setIsLocationPromptOpen(true);
-      }
     }
-  };
+  }, [open, fetchPlaces]);
 
   const handleInputChange = (term: string) => {
     setInputValue(term);
@@ -158,39 +153,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
     setSuggestions([]);
   };
   
-  const proceedWithGeolocation = () => {
-    if (!navigator.geolocation) {
-      toast({ title: 'Not Supported', description: 'Geolocation is not supported by your browser.', variant: 'destructive' });
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const geocoder = new window.google.maps.Geocoder();
-        const latLng = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        geocoder.geocode({ location: latLng }, (results, status) => {
-          if (status === 'OK' && results && results[0]) {
-            handleSelect(results[0].formatted_address);
-            toast({ title: "Location set!", description: "Your current location has been set as the address." });
-          } else {
-            toast({ title: 'Error', description: 'Could not get address from your location.', variant: 'destructive' });
-          }
-        });
-      },
-      () => {
-        toast({ title: 'Permission Denied', description: 'Could not access your location. You can enable it in your browser settings.', variant: 'destructive' });
-      }
-    );
-  };
-  
   const handleSetOnMap = () => {
-    toast({
-      title: "Select on Map",
-      description: "Please click a location on the map to set your pin.",
-    });
     setOpen(false);
     onMapSelectRequest();
   };
@@ -208,7 +171,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
         setIsAddPlaceDialogOpen(false);
         setNewPlaceName("");
         setNewPlaceAddress("");
-        fetchPlaces();
+        fetchPlaces(); // Refresh the list
     }
   };
 
@@ -218,13 +181,18 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
 
   return (
     <>
-    <Popover open={open} onOpenChange={onPopoverOpenChange}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
             variant="outline"
             role="combobox"
             aria-expanded={open}
             className="w-full justify-start h-auto py-3 px-4 text-left font-normal"
+            onClick={() => {
+              if (iconType === 'pickup' && !value) {
+                onAllowLocationRequest();
+              }
+            }}
         >
             <div className="flex items-center gap-3">
                 {icon}
@@ -273,7 +241,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
                         </Command>
                     </PopoverContent>
                 </Popover>
-                 <CommandItem onSelect={() => setIsLocationPromptOpen(true)} className="cursor-pointer">
+                <CommandItem onSelect={onAllowLocationRequest} className="cursor-pointer">
                     <LocateFixed className="mr-2 h-4 w-4" /> Allow location access
                 </CommandItem>
                 <CommandItem onSelect={handleSetOnMap} className="cursor-pointer">
@@ -320,20 +288,6 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
             </DialogFooter>
         </DialogContent>
      </Dialog>
-      <AlertDialog open={isLocationPromptOpen} onOpenChange={setIsLocationPromptOpen}>
-        <AlertDialogContent>
-            <AlertDialogHeader>
-            <AlertDialogTitle>Use your current location?</AlertDialogTitle>
-            <AlertDialogDescription>
-                To make it easier to set your location, RoamFree can use your device's current location. This helps us provide accurate pickup services and find drivers faster.
-            </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-            <AlertDialogCancel>No Thanks</AlertDialogCancel>
-            <AlertDialogAction onClick={proceedWithGeolocation}>Allow</AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-    </AlertDialog>
     </>
   );
 }
@@ -348,6 +302,10 @@ export default function TransportPage() {
     const mapRef = useRef<google.maps.Map | null>(null);
     const { isLoaded } = useGoogleMaps();
     const mapClickListener = useRef<google.maps.MapsEventListener | null>(null);
+
+    const [showLocationPrompt, setShowLocationPrompt] = useState(false);
+    const [fieldToSetFromLocation, setFieldToSetFromLocation] = useState<'pickup' | 'dropoff'>('pickup');
+
 
     const handleSearch = () => {
         if (!pickupLocation || !dropoffLocation) {
@@ -391,6 +349,10 @@ export default function TransportPage() {
             mapClickListener.current.remove();
         }
         if (mapRef.current) {
+            toast({
+              title: "Select on Map",
+              description: "Please click a location on the map to set your pin.",
+            });
             mapClickListener.current = mapRef.current.addListener('click', (e: google.maps.MapMouseEvent) => {
                 if (e.latLng) {
                     setLocationFromMapClick(e.latLng, fieldToSet);
@@ -401,12 +363,67 @@ export default function TransportPage() {
                 }
             });
         }
-        return mapClickListener.current;
     }, [setLocationFromMapClick]);
+    
+    const handleAllowLocationRequest = (field: 'pickup' | 'dropoff') => {
+        setFieldToSetFromLocation(field);
+        setShowLocationPrompt(true);
+    };
+
+    const proceedWithGeolocation = () => {
+        if (!navigator.geolocation) {
+          toast({ title: 'Not Supported', description: 'Geolocation is not supported by your browser.', variant: 'destructive' });
+          return;
+        }
+    
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const geocoder = new window.google.maps.Geocoder();
+            const latLng = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+            geocoder.geocode({ location: latLng }, (results, status) => {
+              if (status === 'OK' && results && results[0]) {
+                const address = results[0].formatted_address;
+                if (fieldToSetFromLocation === 'pickup') {
+                    setPickupLocation(address);
+                } else {
+                    setDropoffLocation(address);
+                }
+                toast({ title: "Location set!", description: "Your current location has been set as the address." });
+              } else {
+                toast({ title: 'Error', description: 'Could not get address from your location.', variant: 'destructive' });
+              }
+            });
+          },
+          () => {
+            toast({ title: 'Permission Denied', description: 'Could not access your location.', variant: 'destructive' });
+          }
+        );
+    };
 
 
   return (
     <div className="space-y-8">
+       <Dialog open={showLocationPrompt} onOpenChange={setShowLocationPrompt}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Allow Location Access?</DialogTitle>
+                    <DialogDescription>
+                        To set your current location automatically, RoamFree needs access to your device's location. This helps us find nearby rides and provide accurate pickup services.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setShowLocationPrompt(false)}>No Thanks</Button>
+                    <Button onClick={() => {
+                        setShowLocationPrompt(false);
+                        proceedWithGeolocation();
+                    }}>Allow</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
       <Card className="shadow-lg rounded-lg overflow-hidden">
         <CardHeader className="bg-primary/10">
           <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
@@ -449,17 +466,17 @@ export default function TransportPage() {
                             value={pickupLocation}
                             onValueChange={setPickupLocation}
                             placeholder="Pickup location"
-                            isLoaded={isLoaded}
                             iconType="pickup"
                             onMapSelectRequest={() => setupMapClickListener('pickup')}
+                            onAllowLocationRequest={() => handleAllowLocationRequest('pickup')}
                         />
                         <LocationInput
                             value={dropoffLocation}
                             onValueChange={setDropoffLocation}
                             placeholder="Destination"
-                            isLoaded={isLoaded}
                             iconType="dropoff"
                              onMapSelectRequest={() => setupMapClickListener('dropoff')}
+                             onAllowLocationRequest={() => handleAllowLocationRequest('dropoff')}
                         />
                     </div>
                 </div>
