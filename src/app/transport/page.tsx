@@ -1,4 +1,3 @@
-
 // src/app/transport/page.tsx
 'use client';
 
@@ -23,6 +22,7 @@ import type { SavedPlace } from '@/services/places';
 import { Label } from '@/components/ui/label';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 
 const serviceCategories = [
@@ -100,6 +100,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
   const [isAddPlaceDialogOpen, setIsAddPlaceDialogOpen] = useState(false);
   const [newPlaceName, setNewPlaceName] = useState("");
   const [newPlaceAddress, setNewPlaceAddress] = useState("");
+  const [isLocationPromptOpen, setIsLocationPromptOpen] = useState(false);
 
 
   useEffect(() => {
@@ -152,7 +153,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
     setSuggestions([]);
   };
   
-  const handleAllowLocation = () => {
+  const proceedWithGeolocation = () => {
     if (!navigator.geolocation) {
       toast({ title: 'Not Supported', description: 'Geolocation is not supported by your browser.', variant: 'destructive' });
       return;
@@ -267,7 +268,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
                         </Command>
                     </PopoverContent>
                 </Popover>
-                <CommandItem onSelect={handleAllowLocation} className="cursor-pointer">
+                 <CommandItem onSelect={() => setIsLocationPromptOpen(true)} className="cursor-pointer">
                     <LocateFixed className="mr-2 h-4 w-4" /> Allow location access
                 </CommandItem>
                 <CommandItem onSelect={handleSetOnMap} className="cursor-pointer">
@@ -314,6 +315,20 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
             </DialogFooter>
         </DialogContent>
      </Dialog>
+      <AlertDialog open={isLocationPromptOpen} onOpenChange={setIsLocationPromptOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+            <AlertDialogTitle>Use your current location?</AlertDialogTitle>
+            <AlertDialogDescription>
+                To make it easier to set your location, RoamFree can use your device's current location. We will only use this once and won't track you.
+            </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={proceedWithGeolocation}>Allow</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
     </>
   );
 }
