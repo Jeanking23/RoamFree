@@ -146,6 +146,16 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
             return fullAddress.split(',')[0];
         };
 
+        const infoWindowOptions = {
+            pixelOffset: new window.google.maps.Size(0, -40),
+            // These options help remove the default box and close button
+            disableAutoPan: true,
+            closeBox: false,
+            closeBoxURL: ``, // Use empty string to hide close box
+            infoBoxClearance: new google.maps.Size(1, 1)
+        };
+
+
         return (
             <GoogleMap
                 mapContainerStyle={containerStyle}
@@ -165,9 +175,9 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                         onClick={() => handleMarkerClick(pickupCoords, 'pickup')}
                     >
                          {activeInfoWindow === 'pickup' && (
-                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={pickupCoords} options={{ pixelOffset: new window.google.maps.Size(0, -40) }}>
+                             <InfoWindow position={pickupCoords} options={infoWindowOptions}>
                                  <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-lg font-sans">
-                                    <span className="font-bold text-black">From {getShortAddress(pickup)}</span>
+                                    <span className="font-bold text-black">FROM {getShortAddress(pickup)}</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-black"><path d="m9 18 6-6-6-6"/></svg>
                                 </div>
                             </InfoWindow>
@@ -183,9 +193,9 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                         onClick={() => handleMarkerClick(dropoffCoords, 'dropoff')}
                     >
                        {activeInfoWindow === 'dropoff' && (
-                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={dropoffCoords} options={{ pixelOffset: new window.google.maps.Size(0, -40) }}>
+                             <InfoWindow position={dropoffCoords} options={infoWindowOptions}>
                                  <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-lg font-sans">
-                                    <span className="font-bold text-black">To {getShortAddress(dropoff)}</span>
+                                    <span className="font-bold text-black">TO {getShortAddress(dropoff)}</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-black"><path d="m9 18 6-6-6-6"/></svg>
                                 </div>
                             </InfoWindow>
