@@ -46,6 +46,22 @@ const CarSuvIcon = () => (
         <path d="M 82,15 L 74,33 L 64,33 L 68,15 Z" fill="#555555" opacity="0.8" />
     </svg>
 );
+const MotorbikeIcon = () => (
+    <svg width="90" height="60" viewBox="0 0 100 60">
+        <path d="M 75,48 A 10 10, 0, 1, 1, 75, 47" fill="none" stroke="#A0A0A0" strokeWidth="6" />
+        <path d="M 25,48 A 10 10, 0, 1, 1, 25, 47" fill="none" stroke="#A0A0A0" strokeWidth="6" />
+        <path d="M 25,48 L 35,30 L 45,30 L 60,35 L 75,48" fill="none" stroke="#A0A0A0" strokeWidth="6" />
+        <path d="M 40,30 L 50,15 L 60,15" fill="none" stroke="#A0A0A0" strokeWidth="6" />
+        <path d="M 25,48 L 75,48" fill="none" stroke="#A0A0A0" strokeWidth="4" />
+        <path d="M 25,48 A 10 10, 0, 1, 1, 75, 48" fill="none" />
+        <path d="M 38,28 L 42,22 L 55,22 L 52,28 Z" fill="#A455FF" />
+        <path d="M 25,48 A 10 10, 0, 1, 1, 25, 47" fill="#505050" />
+        <path d="M 75,48 A 10 10, 0, 1, 1, 75, 47" fill="#505050" />
+        <path d="M 25,48 A 10 10, 0, 1, 1, 75, 48" fill="none" />
+        <path d="M 30,45 L 70,45" fill="none" stroke="#808080" strokeWidth="4" />
+    </svg>
+);
+
 
 const ClockIcon = () => (
   <div className="absolute top-0 right-0 -mt-1 -mr-1 bg-primary text-primary-foreground rounded-full p-0.5">
@@ -96,6 +112,16 @@ export const rideOptions = [
         arrivalTime: '4:38 PM',
         price: 39.53,
         description: 'Roomier, cleaner & newer'
+    },
+    { 
+        id: 'moto',
+        name: 'Moto',
+        icon: MotorbikeIcon,
+        capacity: 1,
+        eta: 'in 3 min',
+        arrivalTime: '4:36 PM',
+        price: 15.50,
+        description: 'Quickest way there'
     },
     { 
         id: 'xl',

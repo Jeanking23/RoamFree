@@ -35,6 +35,11 @@ function RideSearchResults() {
     }
 
     const selectedRideDetails = rideOptions.find(r => r.id === selectedRide);
+    
+    // Split options for display logic
+    const primaryOptions = rideOptions.slice(0, 3);
+    const secondaryOptions = rideOptions.slice(3);
+
 
     return (
         <div className="container mx-auto">
@@ -61,20 +66,24 @@ function RideSearchResults() {
                     </div>
 
                     <div className="space-y-3 max-h-[calc(100vh-30rem)] lg:max-h-[calc(100vh-22rem)] overflow-y-auto pr-2">
-                        {rideOptions.map((ride, index) => (
-                             <>
-                               {index === 3 && (
-                                <div className="py-4">
-                                    <h2 className="text-xl font-bold">More ways to get there</h2>
-                                </div>
-                               )}
+                         {primaryOptions.map((ride, index) => (
                                <RideOptionCard
                                    key={ride.id}
                                    ride={ride}
                                    isSelected={selectedRide === ride.id}
                                    onSelect={handleRideSelection}
                                />
-                             </>
+                        ))}
+                        <div className="py-4">
+                            <h2 className="text-xl font-bold">More ways to get there</h2>
+                        </div>
+                        {secondaryOptions.map((ride, index) => (
+                               <RideOptionCard
+                                   key={ride.id}
+                                   ride={ride}
+                                   isSelected={selectedRide === ride.id}
+                                   onSelect={handleRideSelection}
+                               />
                         ))}
                     </div>
                     <Button onClick={handleConfirmRide} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg">
