@@ -125,11 +125,16 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
     setIsLoadingPlaces(false);
   }, []);
 
-  useEffect(() => {
+  const onPopoverOpenChange = (open: boolean) => {
+    setOpen(open);
     if (open) {
       fetchPlaces();
+      // If the input is for pickup and the value is empty, prompt for location.
+      if (iconType === 'pickup' && !value) {
+        setIsLocationPromptOpen(true);
+      }
     }
-  }, [open, fetchPlaces]);
+  };
 
   const handleInputChange = (term: string) => {
     setInputValue(term);
@@ -213,7 +218,7 @@ function LocationInput({ value, onValueChange, placeholder, isLoaded, iconType, 
 
   return (
     <>
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={onPopoverOpenChange}>
       <PopoverTrigger asChild>
         <Button
             variant="outline"
