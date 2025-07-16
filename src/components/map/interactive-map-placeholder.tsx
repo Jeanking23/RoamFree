@@ -94,6 +94,13 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
             bounds.extend(dropoffCoords);
             mapRef.current.fitBounds(bounds, 100); // 100px padding
             setActiveInfoWindow(null); // Hide individual info windows when showing a route
+        } else if (pickupCoords || dropoffCoords) {
+            // If only one is set, ensure map is centered and zoomed on it
+            const activeCoords = pickupCoords || dropoffCoords;
+            if (activeCoords) {
+                setMapCenter(activeCoords);
+                setZoom(16);
+            }
         }
     }, [directions, pickupCoords, dropoffCoords]);
 
@@ -108,7 +115,6 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
             console.error(`Directions request failed due to ${status}`);
         }
     };
-    
 
     const renderMap = () => {
         if (loadError) {
@@ -128,6 +134,9 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
             scaledSize: new window.google.maps.Size(32, 32),
         };
 
+        const getShortAddress = (fullAddress: string) => {
+            return fullAddress.split(',')[0];
+        };
 
         return (
             <GoogleMap
@@ -137,6 +146,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                 options={{
                     disableDefaultUI: true,
                     zoomControl: true,
+                    styles: []
                 }}
                 onLoad={onLoad}
             >
@@ -148,8 +158,11 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                         onClick={() => setActiveInfoWindow('pickup')}
                     >
                          {activeInfoWindow === 'pickup' && (
-                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={pickupCoords}>
-                                <div className="p-1 font-sans text-black">{pickup}</div>
+                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={pickupCoords} options={{ pixelOffset: new window.google.maps.Size(0, -40) }}>
+                                 <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-lg font-sans">
+                                    <span className="font-bold text-black">From {getShortAddress(pickup)}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-black"><path d="m9 18 6-6-6-6"/></svg>
+                                </div>
                             </InfoWindow>
                         )}
                     </Marker>
@@ -163,8 +176,11 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                         onClick={() => setActiveInfoWindow('dropoff')}
                     >
                        {activeInfoWindow === 'dropoff' && (
-                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={dropoffCoords}>
-                                <div className="p-1 font-sans text-black">{dropoff}</div>
+                             <InfoWindow onCloseClick={() => setActiveInfoWindow(null)} position={dropoffCoords} options={{ pixelOffset: new window.google.maps.Size(0, -40) }}>
+                                 <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-lg font-sans">
+                                    <span className="font-bold text-black">To {getShortAddress(dropoff)}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-black"><path d="m9 18 6-6-6-6"/></svg>
+                                </div>
                             </InfoWindow>
                         )}
                     </Marker>
