@@ -328,6 +328,7 @@ export default function TransportPage() {
     };
     
     const setLocationFromMapClick = useCallback((latLng: google.maps.LatLng, field: 'pickup' | 'dropoff') => {
+        if (!isLoaded) return;
         const geocoder = new window.google.maps.Geocoder();
         geocoder.geocode({ location: latLng }, (results, status) => {
             if (status === 'OK' && results && results[0]) {
@@ -342,7 +343,7 @@ export default function TransportPage() {
                 toast({ title: 'Error', description: 'Could not get address from map location.', variant: 'destructive' });
             }
         });
-    }, []);
+    }, [isLoaded]);
 
     const setupMapClickListener = useCallback((fieldToSet: 'pickup' | 'dropoff') => {
         if (mapClickListener.current) {
@@ -378,6 +379,10 @@ export default function TransportPage() {
     
         navigator.geolocation.getCurrentPosition(
           (position) => {
+            if (!isLoaded) {
+                 toast({ title: 'Map not ready', description: 'Please wait for the map to load.', variant: 'destructive' });
+                 return;
+            }
             const geocoder = new window.google.maps.Geocoder();
             const latLng = {
               lat: position.coords.latitude,
@@ -453,6 +458,8 @@ export default function TransportPage() {
                 <InteractiveMapPlaceholder 
                     pickup={pickupLocation} 
                     dropoff={dropoffLocation} 
+                    setPickup={setPickupLocation}
+                    setDropoff={setDropoffLocation}
                     onMapLoad={(map) => { mapRef.current = map; }}
                 />
             </div>

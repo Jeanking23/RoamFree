@@ -8,6 +8,8 @@ interface InteractiveMapPlaceholderProps {
   pickup?: string;
   dropoff?: string;
   onMapLoad?: (map: google.maps.Map) => void;
+  setPickup?: (address: string) => void;
+  setDropoff?: (address: string) => void;
 }
 
 const containerStyle = {
@@ -15,7 +17,7 @@ const containerStyle = {
   height: '100%',
 };
 
-export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }: InteractiveMapPlaceholderProps) {
+export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, setPickup, setDropoff }: InteractiveMapPlaceholderProps) {
     const { isLoaded, loadError } = useGoogleMaps();
 
     const [pickupCoords, setPickupCoords] = useState<google.maps.LatLngLiteral | null>(null);
@@ -28,8 +30,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
 
     const geocodeAddress = useCallback((
         address: string, 
-        setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>,
-        infoWindowSetter: 'pickup' | 'dropoff'
+        setter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral | null>>
     ) => {
         if (!isLoaded || !address) {
             setter(null);
@@ -43,9 +44,6 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                     lng: results[0].geometry.location.lng(),
                 };
                 setter(newCoords);
-                setMapCenter(newCoords);
-                setZoom(16); // Set a closer zoom level for a single address
-                setActiveInfoWindow(infoWindowSetter); // Show InfoWindow by default
             } else {
                 console.error(`Geocode was not successful for the following reason: ${status}`);
                 setter(null);
@@ -55,7 +53,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
 
     useEffect(() => {
         if (isLoaded && pickup) {
-            geocodeAddress(pickup, setPickupCoords, 'pickup');
+            geocodeAddress(pickup, setPickupCoords);
         } else {
             setPickupCoords(null);
         }
@@ -63,24 +61,35 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
 
     useEffect(() => {
         if (isLoaded && dropoff) {
-            geocodeAddress(dropoff, setDropoffCoords, 'dropoff');
+            geocodeAddress(dropoff, setDropoffCoords);
         } else {
             setDropoffCoords(null);
         }
     }, [dropoff, isLoaded, geocodeAddress]);
     
     useEffect(() => {
-        if (!pickupCoords || !dropoffCoords) {
-            if (!pickupCoords && !dropoffCoords) {
-                // Reset to default view if both are cleared
-                setZoom(4);
-                setMapCenter({ lat: 39.8283, lng: -98.5795 });
-            }
+        if (!pickupCoords && !dropoffCoords) {
+            // Reset to default view if both are cleared
+            setZoom(4);
+            setMapCenter({ lat: 39.8283, lng: -98.5795 });
             setDirections(null);
-        } else {
-            setDirections(null); // Force re-fetch of directions when coords change
+            setActiveInfoWindow(null);
+        } else if (pickupCoords && dropoffCoords) {
+            setDirections(null); // Force re-fetch of directions when both coords are available
+            setActiveInfoWindow(null); // Hide info windows initially when showing a route
+        } else if (pickupCoords) {
+             setMapCenter(pickupCoords);
+             setZoom(16);
+             setActiveInfoWindow('pickup');
+             setDirections(null);
+        } else if (dropoffCoords) {
+             setMapCenter(dropoffCoords);
+             setZoom(16);
+             setActiveInfoWindow('dropoff');
+             setDirections(null);
         }
     }, [pickupCoords, dropoffCoords]);
+
 
     const onLoad = useCallback((map: google.maps.Map) => {
         mapRef.current = map;
@@ -88,18 +97,15 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
     }, [onMapLoad]);
 
     useEffect(() => {
-        if (mapRef.current && pickupCoords && dropoffCoords) {
+        if (mapRef.current && directions) {
             const bounds = new window.google.maps.LatLngBounds();
-            bounds.extend(pickupCoords);
-            bounds.extend(dropoffCoords);
-            mapRef.current.fitBounds(bounds, 100); // 100px padding
-            setActiveInfoWindow('pickup'); // Show pickup info window by default when route appears
-        } else if (pickupCoords || dropoffCoords) {
-            // If only one is set, ensure map is centered and zoomed on it
-            const activeCoords = pickupCoords || dropoffCoords;
-            if (activeCoords) {
-                setMapCenter(activeCoords);
-                setZoom(16);
+            if(pickupCoords) bounds.extend(pickupCoords);
+            if(dropoffCoords) bounds.extend(dropoffCoords);
+            if(bounds.getNorthEast().equals(bounds.getSouthWest())) {
+                mapRef.current.setCenter(bounds.getCenter());
+                mapRef.current.setZoom(16);
+            } else {
+                 mapRef.current.fitBounds(bounds, 100); // 100px padding
             }
         }
     }, [directions, pickupCoords, dropoffCoords]);
@@ -111,6 +117,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
     ) => {
         if (status === 'OK' && response) {
             setDirections(response);
+            setActiveInfoWindow(null); // Hide individual popups when route is shown
         } else {
             console.error(`Directions request failed due to ${status}`);
         }
@@ -122,7 +129,16 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
             mapRef.current.setZoom(17);
         }
         setActiveInfoWindow(infoWindow);
-    }
+    };
+
+    const handleInfoClick = (type: 'pickup' | 'dropoff') => {
+        if (type === 'pickup' && pickup && setPickup) {
+            setPickup(pickup);
+        } else if (type === 'dropoff' && dropoff && setDropoff) {
+            setDropoff(dropoff);
+        }
+    };
+
 
     const renderMap = () => {
         if (loadError) {
@@ -145,13 +161,12 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
         const getShortAddress = (fullAddress: string) => {
             return fullAddress.split(',')[0];
         };
-
+        
         const infoWindowOptions = {
             pixelOffset: new window.google.maps.Size(0, -40),
-            // These options help remove the default box and close button
             disableAutoPan: true,
             closeBox: false,
-            closeBoxURL: ``, // Use empty string to hide close box
+            closeBoxURL: ``, 
             infoBoxClearance: new google.maps.Size(1, 1)
         };
 
@@ -176,7 +191,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                     >
                          {activeInfoWindow === 'pickup' && (
                              <InfoWindow position={pickupCoords} options={infoWindowOptions}>
-                                 <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-lg font-sans">
+                                 <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-lg font-sans cursor-pointer" onClick={() => handleInfoClick('pickup')}>
                                     <span className="font-bold text-black">FROM {getShortAddress(pickup)}</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-black"><path d="m9 18 6-6-6-6"/></svg>
                                 </div>
@@ -194,7 +209,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad }
                     >
                        {activeInfoWindow === 'dropoff' && (
                              <InfoWindow position={dropoffCoords} options={infoWindowOptions}>
-                                 <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-lg font-sans">
+                                <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-lg font-sans cursor-pointer" onClick={() => handleInfoClick('dropoff')}>
                                     <span className="font-bold text-black">TO {getShortAddress(dropoff)}</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-black"><path d="m9 18 6-6-6-6"/></svg>
                                 </div>
