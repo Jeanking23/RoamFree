@@ -5,8 +5,9 @@ import React from 'react';
 export default function RideSearchLayout({ children }: { children: React.ReactNode }) {
   return (
     // We don't wrap with the standard layout components here
-    <main className="h-screen w-screen overflow-hidden">
+    // The main div is removed from here and handled in page.tsx to allow for full-screen map on mobile
+    <>
       {children}
-    </main>
+    </>
   );
 }

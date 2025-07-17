@@ -1,4 +1,6 @@
 
+'use client';
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -7,7 +9,10 @@ import Footer from '@/components/layout/footer';
 import BottomNavBar from '@/components/layout/bottom-nav-bar';
 import { LocaleProvider } from '@/context/locale-provider';
 import { GoogleMapsProvider } from '@/context/google-maps-provider';
+import { usePathname } from 'next/navigation';
 
+// This is a partial definition for metadata to satisfy the component signature.
+// In a client component layout, you'd handle metadata differently if needed.
 export const metadata: Metadata = {
   title: 'RoamFree',
   description: 'Your ultimate travel companion for accommodation, transport, and exploration.',
@@ -18,6 +23,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const hideBottomNav = pathname === '/transport/search';
+
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <head>
@@ -35,7 +43,7 @@ export default function RootLayout({
                 {children}
               </main>
               <Footer />
-              <BottomNavBar />
+              {!hideBottomNav && <BottomNavBar />}
             </div>
             <Toaster />
           </LocaleProvider>

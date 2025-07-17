@@ -256,7 +256,7 @@ function RideSearchResults() {
                         </Popover>
                         
                         <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
-                           Confirm & Pay
+                           Confirm {selectedRideDetails?.name}
                         </Button>
                     </div>
                  </div>
