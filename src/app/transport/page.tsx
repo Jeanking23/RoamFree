@@ -43,7 +43,7 @@ const suggestionItems = [
     {
       title: 'Reserve',
       description: 'Advance book a ride up to 30 days.',
-      imageSrc: 'https://images.unsplash.com/photo-1614189839508-8261411697b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjYWxlbmRhciUyMGNhcnxlbnwwfHx8fDE3NTI3Mjc2MDd8MA&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1614189839508-8261411697b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjYWxlbmRhciUyMGNhcnxlbnwwfHx8fDE3NTI3Mjc2MDd8MA&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'calendar car',
       link: '#ride-booking',
     },
@@ -462,6 +462,12 @@ export default function TransportPage() {
         }
     }, [setLocationFromMapClick]);
 
+    const handleFromContacts = () => {
+        toast({
+            title: "Open Contacts (Demo)",
+            description: "This would open your device's contact list to select a rider and auto-fill their details.",
+        });
+    };
 
   return (
     <div className="space-y-8">
@@ -588,7 +594,10 @@ export default function TransportPage() {
                         <h4 className="font-semibold text-foreground">Rider's Details</h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <Label htmlFor="riderName">Rider's Name</Label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <Label htmlFor="riderName">Rider's Name</Label>
+                                    <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={handleFromContacts}>From Contacts</Button>
+                                </div>
                                 <Input id="riderName" placeholder="e.g., Jane Doe" value={riderName} onChange={(e) => setRiderName(e.target.value)} />
                             </div>
                             <div>
