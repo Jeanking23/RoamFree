@@ -304,6 +304,8 @@ export default function TransportPage() {
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [time, setTime] = useState('10:00');
     const [rideForSomeoneElse, setRideForSomeoneElse] = useState(false);
+    const [riderName, setRiderName] = useState('');
+    const [riderPhone, setRiderPhone] = useState('');
     const mapRef = useRef<google.maps.Map | null>(null);
     const { isLoaded } = useGoogleMaps();
     const mapClickListener = useRef<google.maps.MapsEventListener | null>(null);
@@ -395,6 +397,15 @@ export default function TransportPage() {
             });
             return;
         }
+
+        if (rideForSomeoneElse && (!riderName || !riderPhone)) {
+             toast({
+                title: 'Missing Rider Information',
+                description: "Please enter the rider's name and phone number.",
+                variant: 'destructive',
+            });
+            return;
+        }
         
         const query = new URLSearchParams({
             from: pickupLocation,
@@ -405,6 +416,8 @@ export default function TransportPage() {
 
         if (rideForSomeoneElse) {
             query.set('forSomeoneElse', 'true');
+            query.set('riderName', riderName);
+            query.set('riderPhone', riderPhone);
         }
 
         router.push(`/transport/search?${query.toString()}`);
@@ -495,7 +508,7 @@ export default function TransportPage() {
           <Separator className="my-8" />
 
           <div id="ride-booking" className="grid lg:grid-cols-2 gap-8 items-start">
-            <div className="hidden lg:block rounded-lg overflow-hidden h-96 lg:h-[32rem] sticky top-24">
+            <div className="hidden lg:block rounded-lg overflow-hidden h-96 lg:h-[36rem] sticky top-24">
                 <InteractiveMapPlaceholder 
                     pickup={pickupLocation} 
                     dropoff={dropoffLocation} 
@@ -569,7 +582,24 @@ export default function TransportPage() {
                     <Switch id="ride-for-other" checked={rideForSomeoneElse} onCheckedChange={setRideForSomeoneElse} />
                     <Label htmlFor="ride-for-other" className="flex items-center gap-2"><UserPlus className="h-4 w-4" />Ride for someone else</Label>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-2">
+
+                {rideForSomeoneElse && (
+                    <div className="space-y-4 pt-4 border-t mt-4 animate-in fade-in-0 duration-300">
+                        <h4 className="font-semibold text-foreground">Rider's Details</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor="riderName">Rider's Name</Label>
+                                <Input id="riderName" placeholder="e.g., Jane Doe" value={riderName} onChange={(e) => setRiderName(e.target.value)} />
+                            </div>
+                            <div>
+                                <Label htmlFor="riderPhone">Rider's Phone Number</Label>
+                                <Input id="riderPhone" type="tel" placeholder="e.g., +1 555-123-4567" value={riderPhone} onChange={(e) => setRiderPhone(e.target.value)} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row gap-2 pt-2">
                     <Button className="w-full" onClick={handleSearch}>
                         Search Rides
                     </Button>
