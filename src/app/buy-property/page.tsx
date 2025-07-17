@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Bed, Bath, Maximize, Home, DollarSign, MapPin, Search, Phone, Heart } from 'lucide-react';
+import { Bed, Bath, Maximize, Home, DollarSign, MapPin, Search, Phone, Heart, Info, SlidersHorizontal, List, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,6 +16,8 @@ import { toast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import Link from 'next/link';
 import { mockSaleProperties } from '@/lib/mock-data'; // Import mock data
+import { Separator } from '@/components/ui/separator';
+import { Slider } from '@/components/ui/slider';
 
 const propertySearchSchema = z.object({
   location: z.string().optional(),
@@ -26,12 +28,31 @@ const propertySearchSchema = z.object({
 
 type PropertySearchFormValues = z.infer<typeof propertySearchSchema>;
 
+// Mortgage Calculator Schema
+const mortgageCalculatorSchema = z.object({
+  totalAmount: z.coerce.number().positive("Total amount must be positive."),
+  downPayment: z.coerce.number().nonnegative("Down payment cannot be negative."),
+  interestRate: z.coerce.number().positive("Interest rate must be positive.").max(20, "Rate seems high."),
+  loanTerm: z.coerce.number().int().positive("Loan term must be a positive integer."),
+});
+
+type MortgageCalculatorFormValues = z.infer<typeof mortgageCalculatorSchema>;
+
+
 export default function BuyPropertyPage() {
   const [properties, setProperties] = useState(mockSaleProperties);
+  const [monthlyPayment, setMonthlyPayment] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+
 
   const propertySearchForm = useForm<PropertySearchFormValues>({
     resolver: zodResolver(propertySearchSchema),
     defaultValues: { propertyType: "ANY", location: "", minPrice: undefined, maxPrice: undefined },
+  });
+  
+  const mortgageForm = useForm<MortgageCalculatorFormValues>({
+    resolver: zodResolver(mortgageCalculatorSchema),
+    defaultValues: { totalAmount: 350000, downPayment: 70000, interestRate: 6.5, loanTerm: 30 },
   });
 
   function onPropertySearchSubmit(data: PropertySearchFormValues) {
@@ -51,6 +72,20 @@ export default function BuyPropertyPage() {
   const handleContactAgent = (propertyName: string) => {
     toast({ title: "Contacting Agent (Demo)", description: `Connecting you with an agent for ${propertyName}.` });
   };
+  
+  function onMortgageCalculate(data: MortgageCalculatorFormValues) {
+    const loanAmount = data.totalAmount - data.downPayment;
+    if (loanAmount <= 0) {
+        setMonthlyPayment(0);
+        return;
+    }
+    const monthlyInterestRate = data.interestRate / 100 / 12;
+    const numberOfPayments = data.loanTerm * 12;
+    
+    const payment = loanAmount * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments)) / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
+    
+    setMonthlyPayment(payment);
+  }
 
   return (
     <div className="space-y-8">
@@ -65,26 +100,47 @@ export default function BuyPropertyPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <Card className="mb-8 bg-muted/50">
+          <Card className="mb-6 bg-muted/50">
             <CardContent className="pt-6">
               <Form {...propertySearchForm}>
-                <form onSubmit={propertySearchForm.handleSubmit(onPropertySearchSubmit)} className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                  <FormField control={propertySearchForm.control} name="location" render={({ field }) => (<FormItem><FormLabel>Location</FormLabel><FormControl><Input placeholder="City, State, Zip" {...field} value={field.value || ""} /></FormControl></FormItem>)} />
-                  <FormField control={propertySearchForm.control} name="propertyType" render={({ field }) => (<FormItem><FormLabel>Property Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Any Type" /></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any Type</SelectItem><SelectItem value="HOUSE">House</SelectItem><SelectItem value="LAND">Land</SelectItem><SelectItem value="APARTMENT">Apartment</SelectItem></SelectContent></Select></FormItem>)} />
-                  <FormField control={propertySearchForm.control} name="maxPrice" render={({ field }) => (<FormItem><FormLabel>Max Price</FormLabel><FormControl><Input type="number" placeholder="e.g., 500000" {...field} value={field.value ?? ""} /></FormControl></FormItem>)} />
-                  <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                    <Search className="mr-2 h-4 w-4" /> Search
-                  </Button>
+                <form onSubmit={propertySearchForm.handleSubmit(onPropertySearchSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+                        <FormField control={propertySearchForm.control} name="location" render={({ field }) => (<FormItem className="md:col-span-2"><FormControl><Input placeholder="City, State, Zip..." {...field} value={field.value || ""} className="h-11"/></FormControl></FormItem>)} />
+                        <FormField control={propertySearchForm.control} name="propertyType" render={({ field }) => (<FormItem><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="h-11"><SelectValue placeholder="Type" /></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any Type</SelectItem><SelectItem value="HOUSE">House</SelectItem><SelectItem value="LAND">Land</SelectItem><SelectItem value="APARTMENT">Apartment</SelectItem></SelectContent></Select></FormItem>)} />
+                        <FormField control={propertySearchForm.control} name="maxPrice" render={({ field }) => (<FormItem><Select><FormControl><SelectTrigger className="h-11"><SelectValue placeholder="Price" /></SelectTrigger></FormControl><SelectContent><SelectItem value="200000">$200,000</SelectItem><SelectItem value="400000">$400,000</SelectItem><SelectItem value="600000">$600,000</SelectItem><SelectItem value="800000">$800,000</SelectItem></SelectContent></Select></FormItem>)} />
+                        <Button type="submit" className="w-full h-11 bg-accent hover:bg-accent/90 text-accent-foreground">
+                            <Search className="h-5 w-5" />
+                        </Button>
+                    </div>
                 </form>
               </Form>
             </CardContent>
           </Card>
 
-          <div className="mb-4">
-             <h3 className="text-2xl font-semibold text-foreground">
-                {properties.length > 0 ? `${properties.length} Homes For Sale` : 'No Properties Found'}
-            </h3>
-             <p className="text-sm text-muted-foreground">Based on your search criteria</p>
+           <div className="mb-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+             <div>
+                <h3 className="text-2xl font-semibold text-foreground">
+                    {properties.length > 0 ? `${properties.length} Homes For Sale` : 'No Properties Found'}
+                </h3>
+                <p className="text-sm text-muted-foreground">Based on your search criteria</p>
+             </div>
+             <div className="flex items-center gap-4">
+                <Select defaultValue="relevant">
+                    <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="relevant">Sort by: Relevant</SelectItem>
+                        <SelectItem value="price_asc">Price: Low to High</SelectItem>
+                        <SelectItem value="price_desc">Price: High to Low</SelectItem>
+                        <SelectItem value="newest">Newest</SelectItem>
+                    </SelectContent>
+                </Select>
+                <div className="bg-muted p-1 rounded-md flex items-center">
+                    <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="sm" onClick={() => setViewMode('list')}><List className="mr-2 h-4 w-4"/>List</Button>
+                    <Button variant={viewMode === 'map' ? 'secondary' : 'ghost'} size="sm" onClick={() => setViewMode('map')}><Map className="mr-2 h-4 w-4"/>Map</Button>
+                </div>
+             </div>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -102,8 +158,8 @@ export default function BuyPropertyPage() {
                 <CardContent className="p-4 flex-grow flex flex-col">
                   <p className="text-2xl font-bold text-foreground mb-1">${(prop.price ?? 0).toLocaleString()}</p>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mb-2">
-                      {prop.bedrooms && <span><Bed className="inline h-4 w-4 mr-1"/> {prop.bedrooms} bed</span>}
-                      {prop.bathrooms && <span><Bath className="inline h-4 w-4 mr-1"/> {prop.bathrooms} bath</span>}
+                      {prop.bedrooms && <span><Bed className="inline h-4 w-4 mr-1"/> {prop.bedrooms} bds</span>}
+                      {prop.bathrooms && <span><Bath className="inline h-4 w-4 mr-1"/> {prop.bathrooms} ba</span>}
                       {prop.sizeSqft && <span><Maximize className="inline h-4 w-4 mr-1"/> {prop.sizeSqft} sqft</span>}
                       {prop.sizeAcres && <span><Maximize className="inline h-4 w-4 mr-1"/> {prop.sizeAcres} acre lot</span>}
                   </div>
@@ -125,9 +181,47 @@ export default function BuyPropertyPage() {
                 <p className="text-muted-foreground mt-2">Try adjusting your search filters.</p>
             </div>
            )}
-
         </CardContent>
       </Card>
+      
+      <Separator />
+      
+      {/* Mortgage Calculator Section */}
+       <Card id="mortgage-calculator" className="shadow-lg rounded-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3 text-2xl font-headline text-primary">
+            Mortgage Calculator
+          </CardTitle>
+          <CardDescription>
+            Estimate your monthly mortgage payment. This is for informational purposes only.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-8 items-start">
+            <Form {...mortgageForm}>
+              <form onSubmit={mortgageForm.handleSubmit(onMortgageCalculate)} className="space-y-6">
+                <FormField control={mortgageForm.control} name="totalAmount" render={({ field }) => ( <FormItem> <FormLabel>Total Amount ($)</FormLabel> <FormControl><Input type="number" placeholder="350000" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                <FormField control={mortgageForm.control} name="downPayment" render={({ field }) => ( <FormItem> <FormLabel>Down Payment ($)</FormLabel> <FormControl><Input type="number" placeholder="70000" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                <FormField control={mortgageForm.control} name="interestRate" render={({ field }) => ( <FormItem> <FormLabel>Interest Rate (%)</FormLabel> <FormControl><Input type="number" step="0.01" placeholder="6.5" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                <FormField control={mortgageForm.control} name="loanTerm" render={({ field }) => ( <FormItem> <FormLabel>Loan Term (Years)</FormLabel> <FormControl><Input type="number" placeholder="30" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                <Button type="submit">Calculate Payment</Button>
+              </form>
+            </Form>
+            <div className="bg-muted/50 rounded-lg p-6 text-center h-full flex flex-col justify-center">
+              {monthlyPayment !== null ? (
+                <>
+                  <p className="text-lg text-muted-foreground">Estimated Monthly Payment:</p>
+                  <p className="text-4xl font-bold text-primary">${monthlyPayment.toFixed(2)}</p>
+                  <p className="text-xs text-muted-foreground mt-2"> (Principal & Interest only)</p>
+                </>
+              ) : (
+                <p className="text-muted-foreground">Enter your details to see an estimate.</p>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
     </div>
   );
 }
