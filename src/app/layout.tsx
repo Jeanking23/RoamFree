@@ -9,6 +9,7 @@ import BottomNavBar from '@/components/layout/bottom-nav-bar';
 import { LocaleProvider } from '@/context/locale-provider';
 import { GoogleMapsProvider } from '@/context/google-maps-provider';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export default function RootLayout({
   children,
@@ -16,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const hideBottomNav = pathname === '/transport/search';
+  const hideNavElements = pathname === '/transport/search';
 
   return (
     <html lang="en" suppressHydrationWarning={true}>
@@ -32,12 +33,12 @@ export default function RootLayout({
         <GoogleMapsProvider>
           <LocaleProvider>
             <div className="relative flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1 container mx-auto px-4 py-8 pb-24 md:pb-8">
+              {!hideNavElements && <Header />}
+              <main className={cn("flex-1", !hideNavElements && "container mx-auto px-4 py-8 pb-24 md:pb-8")}>
                 {children}
               </main>
-              <Footer />
-              {!hideBottomNav && <BottomNavBar />}
+              {!hideNavElements && <Footer />}
+              {!hideNavElements && <BottomNavBar />}
             </div>
             <Toaster />
           </LocaleProvider>
