@@ -23,7 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Wand2, Loader2, AlertTriangle, ArrowRight, ArrowLeft, BedDouble, Car } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getAiTripPlanAction } from "@/app/actions";
 import type { AiTripPlanInput, AiTripPlanOutput } from "@/ai/flows/trip-planner-flow";
 import { toast } from "@/hooks/use-toast";
@@ -84,11 +84,30 @@ const formSteps = [
     { title: "Transport & Extras", fields: ["needsFlight", "needsCarRental", "needsLocalTransport", "needsAiRides", "extras"] },
 ];
 
+const slideshowImages = [
+  { url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", hint: "travel mountains" },
+  { url: "https://images.unsplash.com/photo-1507525428034-b723a9ce6890?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMHN1bnJpc2V8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", hint: "beach sunrise" },
+  { url: "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwwfHx8fDE3NTI4MTQxMzB8MA&ixlib=rb-4.1.0&q=80&w=1080", hint: "mountain landscape" },
+  { url: "https://images.unsplash.com/photo-1519010470956-6d877008eaa4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjaXR5c2NhcGUlMjBhJTIwbmlnaHR8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", hint: "cityscape night" },
+];
+
 export default function AiTripPlannerSurveyPage() {
   const [tripPlan, setTripPlan] = useState<AiTripPlanOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [currentStep, setCurrentStep] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    let slideshowTimer: NodeJS.Timeout;
+    if (tripPlan && !isLoading) {
+      slideshowTimer = setInterval(() => {
+        setCurrentImageIndex(prevIndex => (prevIndex + 1) % slideshowImages.length);
+      }, 5000); // Change image every 5 seconds
+    }
+    return () => clearInterval(slideshowTimer);
+  }, [tripPlan, isLoading]);
+
 
   const form = useForm<TripPlannerFormValues>({
     resolver: zodResolver(tripPlannerSurveySchema),
@@ -299,14 +318,25 @@ export default function AiTripPlannerSurveyPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <Card className="bg-muted/30 overflow-hidden relative">
-                        <Image 
-                            src={`https://placehold.co/1200x400.png`} 
-                            alt={`Scenery of ${tripPlan.suggestedDestination.name}`} 
-                            width={1200} height={400} 
-                            className="w-full h-48 object-cover"
-                            data-ai-hint="travel landscape"
-                        />
+                    <Card className="bg-muted/30 overflow-hidden relative h-64">
+                        <AnimatePresence>
+                            <motion.div
+                                key={currentImageIndex}
+                                className="absolute inset-0 z-0"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 1.5, ease: 'easeInOut' }}
+                            >
+                                <Image 
+                                    src={slideshowImages[currentImageIndex].url}
+                                    alt={`Scenery of ${tripPlan.suggestedDestination.name}`} 
+                                    fill
+                                    className="object-cover"
+                                    data-ai-hint={slideshowImages[currentImageIndex].hint}
+                                />
+                            </motion.div>
+                        </AnimatePresence>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                         <div className="absolute bottom-0 left-0 p-6">
                             <CardTitle className="text-3xl font-headline text-white shadow-lg">Your Trip to {tripPlan.suggestedDestination.name}</CardTitle>
