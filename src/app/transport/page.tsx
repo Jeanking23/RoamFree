@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown, Wand2, Map as MapIcon, Navigation, Trash2 } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown, Wand2, Map as MapIcon, Navigation, Trash2, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
@@ -307,9 +307,14 @@ export default function TransportPage() {
     const mapRef = useRef<google.maps.Map | null>(null);
     const { isLoaded } = useGoogleMaps();
     const mapClickListener = useRef<google.maps.MapsEventListener | null>(null);
+    const [hasMounted, setHasMounted] = useState(false);
 
     const [showLocationPrompt, setShowLocationPrompt] = useState(false);
     const [fieldToSetFromLocation, setFieldToSetFromLocation] = useState<'pickup' | 'dropoff'>('pickup');
+
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
     
     const geocodeCurrentPosition = useCallback((position: GeolocationPosition, field: 'pickup' | 'dropoff') => {
         if (!isLoaded) {
@@ -359,7 +364,7 @@ export default function TransportPage() {
     
     // Auto-fetch location on load if permission is already granted
     useEffect(() => {
-        if (isLoaded) {
+        if (isLoaded && hasMounted) {
             navigator.permissions.query({ name: 'geolocation' }).then((permissionStatus) => {
                 if (permissionStatus.state === 'granted') {
                     // Automatically get location for pickup field without user click
@@ -370,7 +375,7 @@ export default function TransportPage() {
                 }
             });
         }
-    }, [isLoaded, geocodeCurrentPosition]);
+    }, [isLoaded, hasMounted, geocodeCurrentPosition]);
 
 
     const proceedWithGeolocation = () => {
@@ -562,7 +567,7 @@ export default function TransportPage() {
                 </div>
                 <div className="flex items-center space-x-2 pt-2">
                     <Switch id="ride-for-other" checked={rideForSomeoneElse} onCheckedChange={setRideForSomeoneElse} />
-                    <Label htmlFor="ride-for-other">Ride for someone else</Label>
+                    <Label htmlFor="ride-for-other" className="flex items-center gap-2"><UserPlus className="h-4 w-4" />Ride for someone else</Label>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2">
                     <Button className="w-full" onClick={handleSearch}>
