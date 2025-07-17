@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown, Wand2, Map as MapIcon, Navigation, Trash2, UserPlus } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown, Wand2, Map as MapIcon, Navigation, Trash2, UserPlus, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
@@ -584,23 +584,35 @@ export default function TransportPage() {
       
       <Separator className="my-8" />
        
-      <Card className="bg-accent/10 border-accent/30 shadow-md hover:shadow-lg transition-shadow">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-2xl font-headline text-accent-foreground flex items-center gap-2">
-            <Wand2 className="h-7 w-7 text-accent" />Still planning? Let our AI help.
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground mb-4">
-            Our AI Trip Planner can build a custom itinerary for you, including transport, stays, and activities.
-          </p>
-        </CardContent>
-        <CardFooter>
-          <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-sm hover:shadow-md transition-shadow" asChild>
-            <Link href="/ai-trip-planner">Start Planning with AI</Link>
-          </Button>
-        </CardFooter>
+      <Card className="relative overflow-hidden group rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+        <Image 
+          src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+          alt="AI Trip Planner background"
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
+          data-ai-hint="travel mountains"
+        />
+        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="relative p-6 md:p-8 text-white">
+          <CardHeader className="p-0 pb-4">
+            <CardTitle className="text-2xl md:text-3xl font-headline text-white flex items-center gap-2">
+              <Sparkles className="h-7 w-7 text-yellow-300" />
+              Plan smarter with AI
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <p className="mb-4 max-w-lg">
+              Our AI Trip Planner can build a custom itinerary for you, including transport, stays, and activities.
+            </p>
+          </CardContent>
+          <CardFooter className="p-0">
+            <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-sm hover:shadow-md transition-shadow" asChild>
+              <Link href="/ai-trip-planner">Start Planning</Link>
+            </Button>
+          </CardFooter>
+        </div>
       </Card>
+
 
       <Separator className="my-8" />
 
