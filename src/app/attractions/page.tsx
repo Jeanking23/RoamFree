@@ -13,11 +13,11 @@ import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 
 const mockAttractions = [
-  { id: "attr1", name: "City Museum of Art", category: "Culture", image: "https://placehold.co/600x400.png?text=Art+Museum", dataAiHint: "art museum", location: "Downtown" },
-  { id: "attr2", name: "Riverside Park & Trails", category: "Nature", image: "https://placehold.co/600x400.png?text=Riverside+Park", dataAiHint: "park nature", location: "West End" },
-  { id: "attr3", name: "Starlight Concert Hall", category: "Nightlife", image: "https://placehold.co/600x400.png?text=Concert+Hall", dataAiHint: "concert hall", location: "Entertainment District" },
-  { id: "attr4", name: "Adventure Zipline Tours", category: "Adventure", image: "https://placehold.co/600x400.png?text=Zipline", dataAiHint: "zipline adventure", location: "Mountain View" },
-  { id: "attr5", name: "Children's Discovery Place", category: "Family", image: "https://placehold.co/600x400.png?text=Childrens+Museum", dataAiHint: "kids museum", location: "Suburban Area" },
+  { id: "attr1", name: "City Museum of Art", category: "Culture", image: "https://images.unsplash.com/photo-1603750003385-3342231a1ff1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhcnQlMjBtdXNldW18ZW58MHx8fHwxNzUyNzg0ODk0fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "art museum", location: "Downtown" },
+  { id: "attr2", name: "Riverside Park & Trails", category: "Nature", image: "https://images.unsplash.com/photo-1678195057327-78b9d245de36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwYXJrJTIwbmF0dXJlfGVufDB8fHx8MTc1MjcyODIzNnww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "park nature", location: "West End" },
+  { id: "attr3", name: "Starlight Concert Hall", category: "Nightlife", image: "https://images.unsplash.com/photo-1531660963020-52ba84d92593?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjb25jZXJ0JTIwaGFsbHxlbnwwfHx8fDE3NTI3ODQ4OTR8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "concert hall", location: "Entertainment District" },
+  { id: "attr4", name: "Adventure Zipline Tours", category: "Adventure", image: "https://images.unsplash.com/photo-1692205959816-d75d4a7b89d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx6aXBsaW5lJTIwYWR2ZW50dXJlfGVufDB8fHx8MTc1Mjc4NDg5NHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "zipline adventure", location: "Mountain View" },
+  { id: "attr5", name: "Children's Discovery Place", category: "Family", image: "https://images.unsplash.com/photo-1506845347893-bc5faede1eec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxraWRzJTIwbXVzZXVtfGVufDB8fHx8MTc1Mjc4NDg5NHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "kids museum", location: "Suburban Area" },
 ];
 
 const interestCategories = ["All", "Nature", "Nightlife", "Culture", "Family", "Adventure", "Historical"];
