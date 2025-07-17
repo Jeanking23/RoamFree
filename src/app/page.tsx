@@ -110,8 +110,10 @@ export default function HomePage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    setIsLoading(false);
+    setIsLoading(true);
+    // Directly use mock data instead of fetching
     setFeaturedStays(allMockStays.slice(0, 6));
+    setIsLoading(false);
 
     const notificationTimer = setTimeout(() => {
       if (typeof window !== 'undefined' && !localStorage.getItem('notificationPromptDismissed')) {
@@ -190,11 +192,11 @@ export default function HomePage() {
       <section className="container mx-auto px-4">
         <Card className="relative overflow-hidden group rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
           <Image 
-            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx0cmF2ZWwlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+            src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080"
             alt="AI Trip Planner background"
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
-            data-ai-hint="travel landscape"
+            data-ai-hint="travel mountains"
           />
           <div className="absolute inset-0 bg-black/50"></div>
           <div className="relative p-6 md:p-8 text-white">
