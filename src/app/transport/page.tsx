@@ -86,10 +86,10 @@ interface LocationInputProps {
   placeholder: string;
   iconType: 'pickup' | 'dropoff';
   onMapSelectRequest: () => void;
-  onAllowLocationRequest: () => void;
+  onUseCurrentLocation: () => void;
 }
 
-function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelectRequest, onAllowLocationRequest }: LocationInputProps) {
+function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelectRequest, onUseCurrentLocation }: LocationInputProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
@@ -189,11 +189,6 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
             role="combobox"
             aria-expanded={open}
             className="w-full justify-start h-auto py-3 px-4 text-left font-normal"
-            onClick={() => {
-              if (iconType === 'pickup' && !value) {
-                onAllowLocationRequest();
-              }
-            }}
         >
             <div className="flex items-center gap-3">
                 {icon}
@@ -213,6 +208,9 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
           <CommandList>
             <CommandEmpty>{isLoadingPlaces ? 'Loading places...' : 'No results found.'}</CommandEmpty>
              <CommandGroup>
+                <CommandItem onSelect={() => { onUseCurrentLocation(); setOpen(false); }} className="cursor-pointer">
+                    <LocateFixed className="mr-2 h-4 w-4" /> Use Current Location
+                </CommandItem>
                 <Popover>
                     <PopoverTrigger asChild>
                         <CommandItem className="cursor-pointer">
@@ -242,9 +240,6 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
                         </Command>
                     </PopoverContent>
                 </Popover>
-                <CommandItem onSelect={onAllowLocationRequest} className="cursor-pointer">
-                    <LocateFixed className="mr-2 h-4 w-4" /> Allow location access
-                </CommandItem>
                 <CommandItem onSelect={handleSetOnMap} className="cursor-pointer">
                     <MapIcon className="mr-2 h-4 w-4" /> Set location on map
                 </CommandItem>
@@ -316,6 +311,57 @@ export default function TransportPage() {
 
     const [showLocationPrompt, setShowLocationPrompt] = useState(false);
     const [fieldToSetFromLocation, setFieldToSetFromLocation] = useState<'pickup' | 'dropoff'>('pickup');
+    
+    const geocodeCurrentPosition = useCallback((position: GeolocationPosition) => {
+        if (!isLoaded) {
+            toast({ title: 'Map not ready', description: 'Please wait for the map to load.', variant: 'destructive' });
+            return;
+        }
+        const geocoder = new window.google.maps.Geocoder();
+        const latLng = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+        };
+        geocoder.geocode({ location: latLng }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+                const address = results[0].formatted_address;
+                if (fieldToSetFromLocation === 'pickup') {
+                    setPickupLocation(address);
+                } else {
+                    setDropoffLocation(address);
+                }
+                toast({ title: "Location set!", description: "Your current location has been set." });
+            } else {
+                toast({ title: 'Error', description: 'Could not get address from your location.', variant: 'destructive' });
+            }
+        });
+    }, [isLoaded, fieldToSetFromLocation]);
+
+    const handleUseCurrentLocation = (field: 'pickup' | 'dropoff') => {
+        setFieldToSetFromLocation(field);
+        if (!navigator.geolocation) {
+            toast({ title: 'Not Supported', description: 'Geolocation is not supported by your browser.', variant: 'destructive' });
+            return;
+        }
+
+        navigator.permissions.query({ name: 'geolocation' }).then((permissionStatus) => {
+            if (permissionStatus.state === 'granted') {
+                navigator.geolocation.getCurrentPosition(geocodeCurrentPosition, () => {
+                     toast({ title: 'Error', description: 'Could not access your location.', variant: 'destructive' });
+                });
+            } else if (permissionStatus.state === 'prompt') {
+                setShowLocationPrompt(true);
+            } else if (permissionStatus.state === 'denied') {
+                toast({ title: 'Permission Denied', description: 'Please enable location services in your browser settings.', variant: 'destructive' });
+            }
+        });
+    };
+
+    const proceedWithGeolocation = () => {
+        navigator.geolocation.getCurrentPosition(geocodeCurrentPosition, () => {
+             toast({ title: 'Permission Denied', description: 'Could not access your location.', variant: 'destructive' });
+        });
+    };
 
 
     const handleSearch = () => {
@@ -380,48 +426,6 @@ export default function TransportPage() {
             });
         }
     }, [setLocationFromMapClick]);
-    
-    const handleAllowLocationRequest = (field: 'pickup' | 'dropoff') => {
-        setFieldToSetFromLocation(field);
-        setShowLocationPrompt(true);
-    };
-
-    const proceedWithGeolocation = () => {
-        if (!navigator.geolocation) {
-          toast({ title: 'Not Supported', description: 'Geolocation is not supported by your browser.', variant: 'destructive' });
-          return;
-        }
-    
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            if (!isLoaded) {
-                 toast({ title: 'Map not ready', description: 'Please wait for the map to load.', variant: 'destructive' });
-                 return;
-            }
-            const geocoder = new window.google.maps.Geocoder();
-            const latLng = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            };
-            geocoder.geocode({ location: latLng }, (results, status) => {
-              if (status === 'OK' && results && results[0]) {
-                const address = results[0].formatted_address;
-                if (fieldToSetFromLocation === 'pickup') {
-                    setPickupLocation(address);
-                } else {
-                    setDropoffLocation(address);
-                }
-                toast({ title: "Location set!", description: "Your current location has been set as the address." });
-              } else {
-                toast({ title: 'Error', description: 'Could not get address from your location.', variant: 'destructive' });
-              }
-            });
-          },
-          () => {
-            toast({ title: 'Permission Denied', description: 'Could not access your location.', variant: 'destructive' });
-          }
-        );
-    };
 
 
   return (
@@ -491,7 +495,7 @@ export default function TransportPage() {
                             placeholder="Pickup location"
                             iconType="pickup"
                             onMapSelectRequest={() => setupMapClickListener('pickup')}
-                            onAllowLocationRequest={() => handleAllowLocationRequest('pickup')}
+                            onUseCurrentLocation={() => handleUseCurrentLocation('pickup')}
                         />
                         <LocationInput
                             value={dropoffLocation}
@@ -499,7 +503,7 @@ export default function TransportPage() {
                             placeholder="Destination"
                             iconType="dropoff"
                              onMapSelectRequest={() => setupMapClickListener('dropoff')}
-                             onAllowLocationRequest={() => handleAllowLocationRequest('dropoff')}
+                             onUseCurrentLocation={() => handleUseCurrentLocation('dropoff')}
                         />
                     </div>
                 </div>
