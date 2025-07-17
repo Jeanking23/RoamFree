@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
-import { ArrowLeft, Calendar, CreditCard, ChevronDown, UserPlus, Info, Smartphone, Wallet, Check } from 'lucide-react';
+import { ArrowLeft, Calendar, CreditCard, ChevronDown, UserPlus, Info, Smartphone, Wallet, Check, CircleDollarSign } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import RideOptionCard, { rideOptions } from './ride-option-card';
@@ -14,11 +14,20 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-type PaymentMethod = 'wallet' | 'card' | 'mobile_money';
+type PaymentMethodType = 'wallet' | 'card' | 'mobile_money';
+interface PaymentMethod {
+    id: PaymentMethodType;
+    name: string;
+    icon: React.ElementType;
+    details?: string;
+}
 
-const paymentOptions = [
-    { id: 'wallet', name: 'Wallet', icon: Wallet },
+const initialPaymentOptions: PaymentMethod[] = [
+    { id: 'wallet', name: 'Wallet', icon: Wallet, details: '$75.50 available' },
     { id: 'card', name: 'Add Credit/Debit Card', icon: CreditCard },
     { id: 'mobile_money', name: 'Mobile Money', icon: Smartphone },
 ];
@@ -30,9 +39,19 @@ function RideSearchResults() {
     const to = searchParams.get('to') || 'your destination';
 
     const [selectedRide, setSelectedRide] = useState<string | null>(rideOptions[0].id);
-    const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>('wallet');
+    const [paymentOptions, setPaymentOptions] = useState<PaymentMethod[]>(initialPaymentOptions);
+    const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>(paymentOptions[0]);
     const [openPaymentPopover, setOpenPaymentPopover] = useState(false);
+    
+    // Dialog states
+    const [isAddCardOpen, setIsAddCardOpen] = useState(false);
+    const [isMobileMoneyOpen, setIsMobileMoneyOpen] = useState(false);
 
+    // Form states for dialogs
+    const [cardNumber, setCardNumber] = useState('');
+    const [cardExpiry, setCardExpiry] = useState('');
+    const [cardCVC, setCardCVC] = useState('');
+    const [mobileMoneyNumber, setMobileMoneyNumber] = useState('');
 
     const handleRideSelection = (rideId: string) => {
         setSelectedRide(rideId);
@@ -40,20 +59,70 @@ function RideSearchResults() {
 
     const handleConfirmRide = () => {
          const ride = rideOptions.find(r => r.id === selectedRide);
-         const paymentMethod = paymentOptions.find(p => p.id === selectedPayment);
         toast({
             title: `Confirming ${ride?.name} Ride`,
-            description: `Proceeding to payment for ride from ${from} to ${to}. Payment via ${paymentMethod?.name}.`,
+            description: `Proceeding to payment for ride from ${from} to ${to}. Payment via ${selectedPayment.name}.`,
         });
         // In a real app, this would trigger the payment processing flow and navigate to a confirmation/tracking page.
     }
+    
+    const handleAddCard = () => {
+        if (cardNumber.length < 16 || cardExpiry.length < 4 || cardCVC.length < 3) {
+            toast({ title: "Invalid Card Details", description: "Please check your card information.", variant: "destructive" });
+            return;
+        }
+        const last4 = cardNumber.slice(-4);
+        const newCard: PaymentMethod = { id: 'card', name: `Visa **** ${last4}`, icon: CreditCard, details: `Expires ${cardExpiry}` };
+        setPaymentOptions(prev => {
+            const existing = prev.find(p => p.id === 'card' && p.name.includes(last4));
+            if (existing) return prev;
+            return [...prev, newCard].filter(p => p.name !== 'Add Credit/Debit Card');
+        });
+        setSelectedPayment(newCard);
+        toast({ title: "Card Added", description: `Visa ending in ${last4} has been saved.` });
+        setIsAddCardOpen(false);
+        setCardNumber(''); setCardExpiry(''); setCardCVC('');
+    };
+    
+    const handleAddMobileMoney = () => {
+        if (mobileMoneyNumber.length < 9) {
+            toast({ title: "Invalid Phone Number", description: "Please enter a valid phone number.", variant: "destructive" });
+            return;
+        }
+        const newMobileMoney: PaymentMethod = { id: 'mobile_money', name: 'Mobile Money', icon: Smartphone, details: mobileMoneyNumber };
+        setPaymentOptions(prev => {
+            const existing = prev.find(p => p.id === 'mobile_money' && p.details === mobileMoneyNumber);
+            if(existing) return prev;
+            // Replace placeholder if it exists, otherwise add new.
+            const placeholderExists = prev.some(p => p.name === 'Mobile Money' && !p.details);
+            if(placeholderExists) {
+                return prev.map(p => p.id === 'mobile_money' ? newMobileMoney : p);
+            }
+            return [...prev, newMobileMoney];
+        });
+        setSelectedPayment(newMobileMoney);
+        toast({ title: "Mobile Money Added", description: `Using number: ${mobileMoneyNumber}.` });
+        setIsMobileMoneyOpen(false);
+        setMobileMoneyNumber('');
+    };
+    
+    const handlePaymentSelect = (option: PaymentMethod) => {
+        setOpenPaymentPopover(false);
+        if (option.name === 'Add Credit/Debit Card') {
+            setIsAddCardOpen(true);
+        } else if (option.name === 'Mobile Money' && !option.details) { // The initial placeholder
+            setIsMobileMoneyOpen(true);
+        } else {
+            setSelectedPayment(option);
+        }
+    };
 
     const selectedRideDetails = rideOptions.find(r => r.id === selectedRide);
-    const selectedPaymentDetails = paymentOptions.find(p => p.id === selectedPayment);
-    const SelectedPaymentIcon = selectedPaymentDetails?.icon || Wallet;
+    const SelectedPaymentIcon = selectedPayment.icon || Wallet;
 
 
     return (
+      <>
         <div className="grid lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 rounded-lg overflow-hidden h-96 lg:h-[calc(100vh-8rem)] lg:sticky lg:top-24">
                  <InteractiveMapPlaceholder pickup={from} dropoff={to} />
@@ -84,7 +153,7 @@ function RideSearchResults() {
                             <PopoverTrigger asChild>
                                 <Button variant="ghost" role="combobox" aria-expanded={openPaymentPopover} className="p-1 h-auto text-left">
                                     <SelectedPaymentIcon className="mr-2 h-5 w-5 text-primary"/>
-                                    <span className="font-semibold">{selectedPaymentDetails?.name.split(' ')[0]}</span>
+                                    <span className="font-semibold">{selectedPayment.name.split(' ')[0]}</span>
                                     <ChevronDown className="h-4 w-4 ml-1 opacity-50"/>
                                 </Button>
                             </PopoverTrigger>
@@ -96,13 +165,11 @@ function RideSearchResults() {
                                         <CommandGroup>
                                             {paymentOptions.map((option) => (
                                                 <CommandItem
-                                                    key={option.id}
-                                                    onSelect={() => {
-                                                        setSelectedPayment(option.id as PaymentMethod);
-                                                        setOpenPaymentPopover(false);
-                                                    }}
+                                                    key={option.name} // Use name as key in case of multiple cards
+                                                    onSelect={() => handlePaymentSelect(option)}
+                                                    className="cursor-pointer"
                                                 >
-                                                    <Check className={cn("mr-2 h-4 w-4", selectedPayment === option.id ? "opacity-100" : "opacity-0")}/>
+                                                    <Check className={cn("mr-2 h-4 w-4", selectedPayment.name === option.name ? "opacity-100" : "opacity-0")}/>
                                                     <option.icon className="mr-2 h-4 w-4 text-muted-foreground"/>
                                                     {option.name}
                                                 </CommandItem>
@@ -120,6 +187,57 @@ function RideSearchResults() {
                 </Card>
             </div>
         </div>
+
+        {/* Add Card Dialog */}
+        <Dialog open={isAddCardOpen} onOpenChange={setIsAddCardOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Add a new Card</DialogTitle>
+                    <DialogDescription>Your payment information is securely stored.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="cardNumber">Card Number</Label>
+                        <Input id="cardNumber" placeholder="0000 0000 0000 0000" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="cardExpiry">Expiry (MM/YY)</Label>
+                            <Input id="cardExpiry" placeholder="MM/YY" value={cardExpiry} onChange={(e) => setCardExpiry(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="cardCVC">CVC</Label>
+                            <Input id="cardCVC" placeholder="123" value={cardCVC} onChange={(e) => setCardCVC(e.target.value)} />
+                        </div>
+                    </div>
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                    <Button type="button" onClick={handleAddCard}>Save Card</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+        
+        {/* Mobile Money Dialog */}
+        <Dialog open={isMobileMoneyOpen} onOpenChange={setIsMobileMoneyOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Mobile Money Payment</DialogTitle>
+                    <DialogDescription>Enter your phone number to proceed.</DialogDescription>
+                </DialogHeader>
+                 <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="mobileMoneyNumber">Phone Number</Label>
+                        <Input id="mobileMoneyNumber" type="tel" placeholder="e.g., +237 6XX XXX XXX" value={mobileMoneyNumber} onChange={(e) => setMobileMoneyNumber(e.target.value)} />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                    <Button type="button" onClick={handleAddMobileMoney}>Confirm Number</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+      </>
     );
 }
 
