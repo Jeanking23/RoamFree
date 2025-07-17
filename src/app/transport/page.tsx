@@ -1,4 +1,3 @@
-
 // src/app/transport/page.tsx
 'use client';
 
@@ -312,7 +311,7 @@ export default function TransportPage() {
     const [showLocationPrompt, setShowLocationPrompt] = useState(false);
     const [fieldToSetFromLocation, setFieldToSetFromLocation] = useState<'pickup' | 'dropoff'>('pickup');
     
-    const geocodeCurrentPosition = useCallback((position: GeolocationPosition) => {
+    const geocodeCurrentPosition = useCallback((position: GeolocationPosition, field: 'pickup' | 'dropoff') => {
         if (!isLoaded) {
             toast({ title: 'Map not ready', description: 'Please wait for the map to load.', variant: 'destructive' });
             return;
@@ -325,7 +324,7 @@ export default function TransportPage() {
         geocoder.geocode({ location: latLng }, (results, status) => {
             if (status === 'OK' && results && results[0]) {
                 const address = results[0].formatted_address;
-                if (fieldToSetFromLocation === 'pickup') {
+                if (field === 'pickup') {
                     setPickupLocation(address);
                 } else {
                     setDropoffLocation(address);
@@ -335,9 +334,9 @@ export default function TransportPage() {
                 toast({ title: 'Error', description: 'Could not get address from your location.', variant: 'destructive' });
             }
         });
-    }, [isLoaded, fieldToSetFromLocation]);
+    }, [isLoaded]);
 
-    const handleUseCurrentLocation = (field: 'pickup' | 'dropoff') => {
+    const handleUseCurrentLocation = useCallback((field: 'pickup' | 'dropoff') => {
         setFieldToSetFromLocation(field);
         if (!navigator.geolocation) {
             toast({ title: 'Not Supported', description: 'Geolocation is not supported by your browser.', variant: 'destructive' });
@@ -346,21 +345,39 @@ export default function TransportPage() {
 
         navigator.permissions.query({ name: 'geolocation' }).then((permissionStatus) => {
             if (permissionStatus.state === 'granted') {
-                navigator.geolocation.getCurrentPosition(geocodeCurrentPosition, () => {
-                     toast({ title: 'Error', description: 'Could not access your location.', variant: 'destructive' });
-                });
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => geocodeCurrentPosition(pos, field), 
+                    () => toast({ title: 'Error', description: 'Could not access your location.', variant: 'destructive' })
+                );
             } else if (permissionStatus.state === 'prompt') {
                 setShowLocationPrompt(true);
             } else if (permissionStatus.state === 'denied') {
                 toast({ title: 'Permission Denied', description: 'Please enable location services in your browser settings.', variant: 'destructive' });
             }
         });
-    };
+    }, [geocodeCurrentPosition]);
+    
+    // Auto-fetch location on load if permission is already granted
+    useEffect(() => {
+        if (isLoaded) {
+            navigator.permissions.query({ name: 'geolocation' }).then((permissionStatus) => {
+                if (permissionStatus.state === 'granted') {
+                    // Automatically get location for pickup field without user click
+                     navigator.geolocation.getCurrentPosition(
+                        (pos) => geocodeCurrentPosition(pos, 'pickup'), 
+                        () => console.error("Could not access location automatically.")
+                    );
+                }
+            });
+        }
+    }, [isLoaded, geocodeCurrentPosition]);
+
 
     const proceedWithGeolocation = () => {
-        navigator.geolocation.getCurrentPosition(geocodeCurrentPosition, () => {
-             toast({ title: 'Permission Denied', description: 'Could not access your location.', variant: 'destructive' });
-        });
+        navigator.geolocation.getCurrentPosition(
+            (pos) => geocodeCurrentPosition(pos, fieldToSetFromLocation), 
+            () => toast({ title: 'Permission Denied', description: 'Could not access your location.', variant: 'destructive' })
+        );
     };
 
 
