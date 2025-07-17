@@ -245,7 +245,7 @@ function RideSearchResults() {
                 drag="y"
                 dragControls={dragControls}
                 dragListener={false}
-                dragConstraints={{ top: 0, bottom: window.innerHeight * 0.65 }}
+                dragConstraints={{ top: 0, bottom: (window.innerHeight * 0.65) }}
                 dragElastic={0.1}
                 onDragEnd={handleDragEnd}
                 animate={controls}
