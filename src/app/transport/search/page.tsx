@@ -14,7 +14,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
@@ -52,6 +52,11 @@ function RideSearchResults() {
     const [cardExpiry, setCardExpiry] = useState('');
     const [cardCVC, setCardCVC] = useState('');
     const [mobileMoneyNumber, setMobileMoneyNumber] = useState('');
+
+    const [hasMounted, setHasMounted] = useState(false);
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
 
     const handleRideSelection = (rideId: string) => {
         setSelectedRide(rideId);
@@ -120,12 +125,15 @@ function RideSearchResults() {
     const selectedRideDetails = rideOptions.find(r => r.id === selectedRide);
     const SelectedPaymentIcon = selectedPayment.icon || Wallet;
 
+    if (!hasMounted) {
+        return null; // Or a loading spinner
+    }
 
     return (
       <>
         {/* Desktop View */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-8 items-start">
-            <div className="lg:col-span-2 rounded-lg overflow-hidden h-[calc(100vh-8rem)] lg:sticky lg:top-24">
+            <div className="lg:col-span-2 rounded-lg overflow-hidden h-full">
                  <InteractiveMapPlaceholder pickup={from} dropoff={to} />
             </div>
             <div className="lg:col-span-1">
