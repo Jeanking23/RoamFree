@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale } from '@/context/locale-provider';
 import { getAllStays } from '@/services/stays';
 import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 
 const mockPropertyTypes = [
   { name: "Hotel", icon: Building, image: "https://images.unsplash.com/photo-1690314749019-2754cc7bfac9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3RlbCUyMGJ1aWxkaW5nfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "hotel building", filterType: "HOTEL" },
@@ -34,7 +35,7 @@ const mockRecentSearches = [
 
 const mockTrendingDestinations = [
   { id: "td1", name: "Top Hotels in Paris", image: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwYXJpcyUyMGVpZmZlbCUyMHRvd2VyfGVufDB8fHx8MTc1MjcyMjczNXww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "paris eiffel tower", price: "120", rating: 4.7, filter: { destination: "Paris", propertyType: "HOTEL" } },
-  { id: "td2", name: "Apartments in Douala", image: "https://images.unsplash.com/photo-1588334488081-06fca9a234f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjaXR5JTIwZG91YWxhfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "city douala", price: "80", rating: 4.3, filter: { destination: "Douala", propertyType: "RENTAL" } },
+  { id: "td2", name: "Apartments in Douala", image: "https://images.unsplash.com/photo-1588334488081-06fca5a234f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjaXR5JTIwZG91YWxhfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "city douala", price: "80", rating: 4.3, filter: { destination: "Douala", propertyType: "RENTAL" } },
   { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://images.unsplash.com/photo-1705330409537-e6476e6ca90c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMGFiaWRqYW58ZW58MHx8fHwxNzUyNzIyNzM0fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "beach abidjan", price: "150", rating: 4.5, filter: { destination: "Abidjan", propertyType: "HOTEL" } },
   { id: "td4", name: "Villas in Aspen", image: "https://images.unsplash.com/photo-1601268615527-c02730fea66a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhc3BlbiUyMG1vdW50YWluc3xlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "aspen mountains", price: "300", rating: 4.9, filter: { destination: "Aspen", propertyType: "RENTAL" } },
 ];
@@ -182,22 +183,38 @@ export default function HomePage() {
 
       {/* AI Trip Planner Offer */}
       <section className="container mx-auto px-4">
-        <Card className="bg-accent/10 border-accent/30 shadow-md hover:shadow-lg transition-shadow rounded-lg">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-2xl font-headline text-accent-foreground flex items-center gap-2">
-              <Sparkles className="h-7 w-7 text-accent" />Plan smarter with AI
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              Unlock promotions, exclusive deals &amp; personalized specials for your next trip with our AI-powered planner.
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-sm hover:shadow-md transition-shadow" asChild>
-              <Link href="/ai-trip-planner">Start Planning</Link>
-            </Button>
-          </CardFooter>
+        <Card className="relative overflow-hidden group rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+          <Image 
+            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx0cmF2ZWwlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+            alt="AI Trip Planner background"
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
+            data-ai-hint="travel landscape"
+          />
+          <div className="absolute inset-0 bg-black/50"></div>
+          <div className="relative p-6 md:p-8 text-white">
+            <CardHeader className="p-0 pb-4">
+              <CardTitle className="text-2xl md:text-3xl font-headline text-white flex items-center gap-2">
+                <motion.div
+                    animate={{ scale: [1, 1.1, 1], rotate: [-5, 5, -5, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+                >
+                    <Sparkles className="h-7 w-7 text-yellow-300" />
+                </motion.div>
+                Plan smarter with AI
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <p className="mb-4 max-w-lg">
+                Unlock promotions, exclusive deals &amp; personalized specials for your next trip with our AI-powered planner.
+              </p>
+            </CardContent>
+            <CardFooter className="p-0">
+              <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-sm hover:shadow-md transition-shadow" asChild>
+                <Link href="/ai-trip-planner">Start Planning</Link>
+              </Button>
+            </CardFooter>
+          </div>
         </Card>
       </section>
 

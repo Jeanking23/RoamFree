@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /* config options here */
+  experimental: {
+    allowedDevOrigins: ['*.cloudworkstations.dev'],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -15,7 +18,7 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
-      {
+       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
         port: '',
