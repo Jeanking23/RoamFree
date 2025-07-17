@@ -1,4 +1,3 @@
-
 // src/lib/mock-data.ts
 
 export interface StayPhoto {
@@ -455,76 +454,57 @@ export const mockRentalProperties: MockStay[] = [
 ];
 
 export const mockSaleProperties: MockStay[] = [
-  { 
-    id: "sale1", 
-    name: "Spacious Family Home", 
-    price: 350000, 
-    pricePerNight: 0, // Not applicable for sale
-    location: "Green Valley", 
-    propertyType: "House", 
-    type: "Rental", // This should probably be 'Sale' or a new type
-    category: "House",
-    sizeSqft: "2200 sqft", 
-    zoning: "Residential", 
-    image: "https://placehold.co/600x400.png", 
-    dataAiHint: "family house", 
-    status: "Verified", 
-    lastSalePrice: 280000, 
-    marketTrend: "+5% YoY",
-    description: "A beautiful and spacious family home located in the desirable Green Valley neighborhood. Features 4 bedrooms, 2.5 bathrooms, a large kitchen, and a well-maintained backyard. Perfect for a growing family.",
-    bedrooms: 4,
-    bathrooms: 2.5,
-    rating: 4.8, // Added for consistency if needed
-    amenities: ["Backyard", "Garage", "Updated Kitchen"],
-    photos: [ { id: "p1sa1", src: "https://placehold.co/800x600.png", alt: "Sale home exterior", dataAiHint: "house exterior sale" } ],
-    host: { name: "Real Estate Pro", avatar: "https://placehold.co/100x100.png", dataAiHint: "agent portrait" }
-  },
-  { 
-    id: "sale2", 
-    name: "Prime Commercial Land", 
-    price: 1200000, 
-    pricePerNight: 0,
-    location: "Downtown Core", 
-    propertyType: "Land", 
-    type: "Rental", // This should probably be 'Sale'
-    category: "Land",
-    sizeAcres: "2 acres", 
-    zoning: "Commercial", 
-    image: "https://placehold.co/600x400.png", 
-    dataAiHint: "empty lot", 
-    status: "Title Deed Uploaded", 
-    lastSalePrice: 950000, 
-    marketTrend: "+8% YoY",
-    description: "An exceptional opportunity to acquire 2 acres of prime commercial land in the bustling Downtown Core. High traffic area with excellent development potential for retail, office, or mixed-use projects.",
-    rating: 4.5, // Added
-    amenities: ["Road Frontage", "Utilities Nearby"],
-    photos: [ { id: "p1sa2", src: "https://placehold.co/800x600.png", alt: "Land plot aerial view", dataAiHint: "land aerial" } ],
-    host: { name: "Land Investments Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "company logo" }
-  },
-  { 
-    id: "sale3", 
-    name: "Modern Downtown Apartment", 
-    price: 450000, 
-    pricePerNight: 0,
-    location: "City Center", 
-    propertyType: "Apartment", 
-    type: "Rental", // This should probably be 'Sale'
-    category: "Apartment",
-    sizeSqft: "1200 sqft", 
-    zoning: "Residential", 
-    image: "https://placehold.co/600x400.png", 
-    dataAiHint: "apartment building", 
-    status: "Leasehold", 
-    lastSalePrice: 400000, 
-    marketTrend: "+3% YoY",
-    description: "A sleek and modern apartment in a prime city center location. This 2-bedroom, 2-bathroom unit offers stunning city views, high-end finishes, and access to building amenities including a fitness center and concierge.",
-    bedrooms: 2,
-    bathrooms: 2,
-    rating: 4.9, // Added
-    amenities: ["City Views", "Fitness Center", "Concierge"],
-    photos: [ { id: "p1sa3", src: "https://placehold.co/800x600.png", alt: "Apartment sale interior", dataAiHint: "modern apartment interior" } ],
-    host: { name: "City Living Sales", avatar: "https://placehold.co/100x100.png", dataAiHint: "agent portrait" }
-  },
+    { 
+        id: "sale1", 
+        name: "162 Brookwood Dr", 
+        location: "Camden Wyoming, DE 19934",
+        price: 525000, 
+        pricePerNight: 0,
+        propertyType: "House", 
+        type: "Rental", // Note: This field may need to be 'Sale'
+        category: "House",
+        bedrooms: 4,
+        bathrooms: 3,
+        sizeSqft: "3,814",
+        sizeAcres: "0.58",
+        image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzdWJ1cmJhbiUyMGhvdXNlfGVufDB8fHx8MTc1MjgxMjQwMnww&ixlib=rb-4.1.0&q=80&w=1080", 
+        dataAiHint: "suburban house", 
+        rating: 4.8,
+    },
+    { 
+        id: "sale2", 
+        name: "26 Meadow Ave", 
+        location: "Wyoming, DE 19934",
+        price: 374900, 
+        pricePerNight: 0,
+        propertyType: "House", 
+        type: "Rental",
+        category: "House",
+        bedrooms: 3,
+        bathrooms: 2,
+        sizeSqft: "1,660",
+        sizeAcres: "0.34",
+        image: "https://images.unsplash.com/photo-1576941089067-2de3c901e126?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWFsbCUyMHN1YnVyYmFuJTIwaG91c2V8ZW58MHx8fHwxNzUyODEyNDAyfDA&ixlib=rb-4.1.0&q=80&w=1080", 
+        dataAiHint: "small suburban house", 
+        rating: 4.5,
+    },
+    { 
+        id: "sale3", 
+        name: "17 S Main St", 
+        location: "Camden, DE 19934",
+        price: 249900, 
+        pricePerNight: 0,
+        propertyType: "House", 
+        type: "Rental",
+        category: "House",
+        bedrooms: 3,
+        bathrooms: 1.5,
+        sizeSqft: "1,814",
+        sizeAcres: "0.25",
+        image: "https://images.unsplash.com/photo-1600585152915-d208bec867a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0d28lMjBzdG9yeSUyMGhvdXNlfGVufDB8fHx8MTc1MjgxMjQwMnww&ixlib=rb-4.1.0&q=80&w=1080", 
+        dataAiHint: "two story house", 
+        rating: 4.3,
+    },
 ];
 
 
