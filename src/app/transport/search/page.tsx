@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
-import { ArrowLeft, CreditCard, ChevronDown, Check, Wallet, Smartphone } from 'lucide-react';
+import { ArrowLeft, CreditCard, ChevronDown, Check, Wallet, Smartphone, PlusCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import RideOptionCard, { rideOptions } from './ride-option-card';
@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion, useAnimation, useDragControls } from 'framer-motion';
@@ -41,9 +41,9 @@ function RideSearchResults() {
     const [selectedRide, setSelectedRide] = useState<string | null>(rideOptions[0].id);
     const [paymentOptions, setPaymentOptions] = useState<PaymentMethod[]>(initialPaymentOptions);
     const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>(paymentOptions[0]);
-    const [openPaymentPopover, setOpenPaymentPopover] = useState(false);
     
     // Dialog states
+    const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
     const [isAddCardOpen, setIsAddCardOpen] = useState(false);
     const [isMobileMoneyOpen, setIsMobileMoneyOpen] = useState(false);
 
@@ -129,7 +129,7 @@ function RideSearchResults() {
     };
     
     const handlePaymentSelect = (option: PaymentMethod) => {
-        setOpenPaymentPopover(false);
+        setIsPaymentDialogOpen(false); // Close main payment dialog first
         if (option.name === 'Add Credit/Debit Card') {
             setIsAddCardOpen(true);
         } else if (option.name === 'Mobile Money' && !option.details) { // The initial placeholder
@@ -145,6 +145,38 @@ function RideSearchResults() {
     if (!hasMounted) {
         return null; // Or a loading spinner
     }
+
+    const PaymentOptionsDialogContent = () => (
+        <div className="space-y-2">
+            {paymentOptions.map((option) => (
+                <button
+                    key={option.name}
+                    className={cn(
+                        "w-full flex items-center p-3 rounded-lg border text-left transition-colors",
+                        selectedPayment.name === option.name
+                            ? "border-primary bg-primary/10"
+                            : "hover:bg-muted/50"
+                    )}
+                    onClick={() => handlePaymentSelect(option)}
+                >
+                    <option.icon className="mr-3 h-6 w-6 text-muted-foreground" />
+                    <div className="flex-grow">
+                        <p className="font-semibold">{option.name}</p>
+                        {option.details && <p className="text-xs text-muted-foreground">{option.details}</p>}
+                    </div>
+                    {selectedPayment.name === option.name && <Check className="h-5 w-5 text-primary" />}
+                </button>
+            ))}
+        </div>
+    );
+
+    const paymentTriggerButton = (
+         <Button variant="ghost" className="p-1 h-auto text-left">
+            <SelectedPaymentIcon className="mr-2 h-5 w-5 text-primary"/>
+            <span className="font-semibold">{selectedPayment.name.split(' ')[0]}</span>
+            <ChevronDown className="h-4 w-4 ml-1 opacity-50"/>
+        </Button>
+    )
 
     return (
       <>
@@ -184,36 +216,17 @@ function RideSearchResults() {
                     ))}
                 </div>
                 <div className="p-4 border-t flex items-center justify-between mt-2">
-                    <Popover open={openPaymentPopover} onOpenChange={setOpenPaymentPopover}>
-                        <PopoverTrigger asChild>
-                            <Button variant="ghost" role="combobox" aria-expanded={openPaymentPopover} className="p-1 h-auto text-left">
-                                <SelectedPaymentIcon className="mr-2 h-5 w-5 text-primary"/>
-                                <span className="font-semibold">{selectedPayment.name.split(' ')[0]}</span>
-                                <ChevronDown className="h-4 w-4 ml-1 opacity-50"/>
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[250px] p-0">
-                            <Command>
-                                <CommandInput placeholder="Select payment method..." />
-                                <CommandList>
-                                    <CommandEmpty>No payment method found.</CommandEmpty>
-                                    <CommandGroup>
-                                        {paymentOptions.map((option) => (
-                                            <CommandItem
-                                                key={option.name} // Use name as key in case of multiple cards
-                                                onSelect={() => handlePaymentSelect(option)}
-                                                className="cursor-pointer"
-                                            >
-                                                <Check className={cn("mr-2 h-4 w-4", selectedPayment.name === option.name ? "opacity-100" : "opacity-0")}/>
-                                                <option.icon className="mr-2 h-4 w-4 text-muted-foreground"/>
-                                                {option.name}
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                </CommandList>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
+                    <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+                        <DialogTrigger asChild>
+                            {paymentTriggerButton}
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Select Payment Method</DialogTitle>
+                            </DialogHeader>
+                            <PaymentOptionsDialogContent />
+                        </DialogContent>
+                    </Dialog>
                     <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
                        Confirm {selectedRideDetails?.name}
                     </Button>
@@ -271,36 +284,17 @@ function RideSearchResults() {
                     ))}
                 </div>
                  <div className="p-4 border-t flex items-center justify-between flex-shrink-0">
-                    <Popover open={openPaymentPopover} onOpenChange={setOpenPaymentPopover}>
-                        <PopoverTrigger asChild>
-                            <Button variant="ghost" role="combobox" aria-expanded={openPaymentPopover} className="p-1 h-auto text-left">
-                                <SelectedPaymentIcon className="mr-2 h-5 w-5 text-primary"/>
-                                <span className="font-semibold">{selectedPayment.name.split(' ')[0]}</span>
-                                <ChevronDown className="h-4 w-4 ml-1 opacity-50"/>
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[250px] p-0 mb-2">
-                            <Command>
-                                <CommandInput placeholder="Select payment method..." />
-                                <CommandList>
-                                    <CommandEmpty>No payment method found.</CommandEmpty>
-                                    <CommandGroup>
-                                        {paymentOptions.map((option) => (
-                                            <CommandItem
-                                                key={option.name}
-                                                onSelect={() => handlePaymentSelect(option)}
-                                                className="cursor-pointer"
-                                            >
-                                                <Check className={cn("mr-2 h-4 w-4", selectedPayment.name === option.name ? "opacity-100" : "opacity-0")}/>
-                                                <option.icon className="mr-2 h-4 w-4 text-muted-foreground"/>
-                                                {option.name}
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                </CommandList>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
+                    <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+                        <DialogTrigger asChild>
+                            {paymentTriggerButton}
+                        </DialogTrigger>
+                        <DialogContent className="max-w-[90vw] rounded-lg">
+                            <DialogHeader>
+                                <DialogTitle>Select Payment Method</DialogTitle>
+                            </DialogHeader>
+                            <PaymentOptionsDialogContent />
+                        </DialogContent>
+                    </Dialog>
                     
                     <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
                        Confirm {selectedRideDetails?.name}
