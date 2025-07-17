@@ -28,20 +28,8 @@ const propertySearchSchema = z.object({
 
 type PropertySearchFormValues = z.infer<typeof propertySearchSchema>;
 
-// Mortgage Calculator Schema
-const mortgageCalculatorSchema = z.object({
-  totalAmount: z.coerce.number().positive("Total amount must be positive."),
-  downPayment: z.coerce.number().nonnegative("Down payment cannot be negative."),
-  interestRate: z.coerce.number().positive("Interest rate must be positive.").max(20, "Rate seems high."),
-  loanTerm: z.coerce.number().int().positive("Loan term must be a positive integer."),
-});
-
-type MortgageCalculatorFormValues = z.infer<typeof mortgageCalculatorSchema>;
-
-
 export default function BuyPropertyPage() {
   const [properties, setProperties] = useState(mockSaleProperties);
-  const [monthlyPayment, setMonthlyPayment] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
 
@@ -50,11 +38,6 @@ export default function BuyPropertyPage() {
     defaultValues: { propertyType: "ANY", location: "", minPrice: undefined, maxPrice: undefined },
   });
   
-  const mortgageForm = useForm<MortgageCalculatorFormValues>({
-    resolver: zodResolver(mortgageCalculatorSchema),
-    defaultValues: { totalAmount: 350000, downPayment: 70000, interestRate: 6.5, loanTerm: 30 },
-  });
-
   function onPropertySearchSubmit(data: PropertySearchFormValues) {
     console.log("Property Search Filters:", data);
     const filteredProperties = mockSaleProperties.filter(prop => {
@@ -73,20 +56,6 @@ export default function BuyPropertyPage() {
     toast({ title: "Contacting Agent (Demo)", description: `Connecting you with an agent for ${propertyName}.` });
   };
   
-  function onMortgageCalculate(data: MortgageCalculatorFormValues) {
-    const loanAmount = data.totalAmount - data.downPayment;
-    if (loanAmount <= 0) {
-        setMonthlyPayment(0);
-        return;
-    }
-    const monthlyInterestRate = data.interestRate / 100 / 12;
-    const numberOfPayments = data.loanTerm * 12;
-    
-    const payment = loanAmount * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments)) / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
-    
-    setMonthlyPayment(payment);
-  }
-
   return (
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
@@ -183,45 +152,6 @@ export default function BuyPropertyPage() {
            )}
         </CardContent>
       </Card>
-      
-      <Separator />
-      
-      {/* Mortgage Calculator Section */}
-       <Card id="mortgage-calculator" className="shadow-lg rounded-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3 text-2xl font-headline text-primary">
-            Mortgage Calculator
-          </CardTitle>
-          <CardDescription>
-            Estimate your monthly mortgage payment. This is for informational purposes only.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-2 gap-8 items-start">
-            <Form {...mortgageForm}>
-              <form onSubmit={mortgageForm.handleSubmit(onMortgageCalculate)} className="space-y-6">
-                <FormField control={mortgageForm.control} name="totalAmount" render={({ field }) => ( <FormItem> <FormLabel>Total Amount ($)</FormLabel> <FormControl><Input type="number" placeholder="350000" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                <FormField control={mortgageForm.control} name="downPayment" render={({ field }) => ( <FormItem> <FormLabel>Down Payment ($)</FormLabel> <FormControl><Input type="number" placeholder="70000" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                <FormField control={mortgageForm.control} name="interestRate" render={({ field }) => ( <FormItem> <FormLabel>Interest Rate (%)</FormLabel> <FormControl><Input type="number" step="0.01" placeholder="6.5" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                <FormField control={mortgageForm.control} name="loanTerm" render={({ field }) => ( <FormItem> <FormLabel>Loan Term (Years)</FormLabel> <FormControl><Input type="number" placeholder="30" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                <Button type="submit">Calculate Payment</Button>
-              </form>
-            </Form>
-            <div className="bg-muted/50 rounded-lg p-6 text-center h-full flex flex-col justify-center">
-              {monthlyPayment !== null ? (
-                <>
-                  <p className="text-lg text-muted-foreground">Estimated Monthly Payment:</p>
-                  <p className="text-4xl font-bold text-primary">${monthlyPayment.toFixed(2)}</p>
-                  <p className="text-xs text-muted-foreground mt-2"> (Principal & Interest only)</p>
-                </>
-              ) : (
-                <p className="text-muted-foreground">Enter your details to see an estimate.</p>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
     </div>
   );
 }
