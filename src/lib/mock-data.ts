@@ -134,7 +134,7 @@ export const allMockStays: MockStay[] = [
     name: "Sunny Beachfront Villa",
     location: "Bali, Indonesia",
     pricePerNight: 250,
-    image: "https://images.unsplash.com/photo-1542362567-b07e54358753?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxiZWFjaCUyMHZpbGxhfGVufDB8fHx8MTc1MjczMTE3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1668277155756-0ebb2801f6b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxiZWFjaCUyMHZpbGxhJTIwYmFsaXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "beach villa bali",
     rating: 4.8,
     category: "Villa",
@@ -167,7 +167,7 @@ export const allMockStays: MockStay[] = [
     name: "Cozy Mountain Cabin",
     location: "Aspen, Colorado",
     pricePerNight: 180,
-    image: "https://images.unsplash.com/photo-1594950313333-9118a1a3b3a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtb3VudGFpbiUyMGNhYmlufGVufDB8fHx8MTc1MjczMTE3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1610301349088-1d7ec5a1d961?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtb3VudGFpbiUyMGNhYmluJTIwc25vd3xlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "mountain cabin snow",
     rating: 4.9,
     category: "Cabin",
@@ -197,7 +197,7 @@ export const allMockStays: MockStay[] = [
     name: "Urban Chic Hotel Room",
     location: "Paris, France",
     pricePerNight: 150,
-    image: "https://images.unsplash.com/photo-1559863412-f04642e03823?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxob3RlbCUyMHJvb20lMjBwYXJpc3xlbnwwfHx8fDE3NTI3MzExNzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1694637768991-0397391eb557?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtb2Rlcm4lMjBob3RlbCUyMHJvb20lMjBwYXJpc3xlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "modern hotel room paris",
     rating: 4.7,
     category: "Hotel Room",
@@ -225,7 +225,7 @@ export const allMockStays: MockStay[] = [
     name: "Riverside Lodge Escape",
     location: "Scottish Highlands",
     pricePerNight: 220,
-    image: "https://images.unsplash.com/photo-1627916574482-3e284a1e9c56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyb2FkJTIwc2NvdGxhbmR8ZW58MHx8fHwxNzUyNzMxMTc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1668597354945-b67f6a77ded5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyaXZlciUyMGxvZGdlJTIwc2NvdGxhbmR8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "river lodge scotland",
     rating: 4.6,
     category: "Lodge",
@@ -249,7 +249,7 @@ export const allMockStays: MockStay[] = [
     name: "Desert Oasis Hotel",
     location: "Sedona, Arizona",
     pricePerNight: 300,
-    image: "https://images.unsplash.com/photo-1590453390231-a83ef26227b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxkZXNlcnQlMjBob3RlbHxlbnwwfHx8fDE3NTI3MzExNzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1605474231454-4c006ed61ae4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxkZXNlcnQlMjBob3RlbCUyMGFyaXpvbmF8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "desert hotel arizona",
     rating: 4.8,
     category: "Hotel",
@@ -270,7 +270,7 @@ export const allMockStays: MockStay[] = [
     name: "Historic City Center Flat",
     location: "Rome, Italy",
     pricePerNight: 120,
-    image: "https://images.unsplash.com/photo-1579038228185-c64484964177?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyb21lJTIwYXBhcnRtZW50fGVufDB8fHx8MTc1MjczMTE3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1724020538147-da2fe0a93751?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoaXN0b3JpYyUyMGJ1aWxkaW5nJTIwcm9tZXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "historic building rome",
     rating: 4.5,
     category: "Flat",
@@ -287,7 +287,7 @@ export const allMockStays: MockStay[] = [
     host: { name: "Marco Rossi", avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
     guestReviews: [ { id: "gr1s6", user: "Jessica B.", rating: 4, comment: "Amazing location for sightseeing!", date: "2024-03-05", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar"} ],
     policies: { checkIn: "After 2:00 PM", checkOut: "Before 10:00 AM", cancellation: "Non-refundable." },
-    neighborhoodInsights: { walkabilityScore: 99, crimeRate: "Medium", schools: [], publicTransport: [{type:'Metro', line:'Line A', stopDistance:'200m'}, {type:'Bus', line:'Multiple', stopDistance:'50m'}], description: 'Immerse yourself in history. Steps from the Colosseum and Roman Forum. Can be noisy due to central location.' }
+    neighborhoodInsights: { walkabilityScore: 99, crimeRate: "Medium", schools: [], publicTransport: [{type:'Metro', line:'Line A', stopDistance:'200m'}, {type:'Bus', line: 'Multiple', stopDistance:'50m'}], description: 'Immerse yourself in history. Steps from the Colosseum and Roman Forum. Can be noisy due to central location.' }
   }
 ];
 
