@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { motion, useAnimation, useDragControls } from 'framer-motion';
+import { motion, useAnimation, useDragControls, type PanInfo } from 'framer-motion';
 
 type PaymentMethodType = 'wallet' | 'card' | 'mobile_money';
 interface PaymentMethod {
@@ -59,11 +59,18 @@ function RideSearchResults() {
     const controls = useAnimation();
     const dragControls = useDragControls();
 
-    const handleDragEnd = (event: any, info: any) => {
-        if (info.offset.y > 100) {
-            controls.start({ y: "65%" }); // Snap to minimized state
-        } else if (info.offset.y < -100) {
-            controls.start({ y: 0 }); // Snap to maximized state
+    const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+        const dragVelocity = info.velocity.y;
+        const dragOffset = info.offset.y;
+
+        if (Math.abs(dragVelocity) > 300) { // If it's a flick
+            controls.start({ y: dragVelocity > 0 ? "65%" : 0 });
+        } else { // If it's a slow drag
+            if (dragOffset > window.innerHeight * 0.2) {
+                controls.start({ y: "65%" }); // Snap to minimized state
+            } else {
+                controls.start({ y: 0 }); // Snap to maximized state
+            }
         }
     };
 
@@ -247,7 +254,7 @@ function RideSearchResults() {
                 onDragEnd={handleDragEnd}
                 animate={controls}
                 initial={{ y: "65%" }}
-                transition={{ type: "spring", stiffness: 400, damping: 40 }}
+                transition={{ type: "spring", stiffness: 350, damping: 40 }}
             >
                 <div 
                     onPointerDown={(e) => dragControls.start(e)}
