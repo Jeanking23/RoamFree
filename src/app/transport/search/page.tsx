@@ -260,7 +260,7 @@ function RideSearchResults() {
                     <CardTitle className="text-xl font-bold text-center w-full">Choose a ride</CardTitle>
                     {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
                 </div>
-                <div className="px-4 overflow-y-auto space-y-2 no-scrollbar flex-grow min-h-[150px]">
+                <div className="px-4 overflow-y-auto space-y-2 no-scrollbar flex-grow">
                      {rideOptions.map((ride) => (
                         <RideOptionCard
                             key={ride.id}
@@ -371,4 +371,3 @@ export default function RideSearchPage() {
         </Suspense>
     );
 }
-
