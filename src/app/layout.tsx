@@ -1,7 +1,6 @@
 
 'use client';
 
-import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import Header from '@/components/layout/header';
@@ -10,13 +9,6 @@ import BottomNavBar from '@/components/layout/bottom-nav-bar';
 import { LocaleProvider } from '@/context/locale-provider';
 import { GoogleMapsProvider } from '@/context/google-maps-provider';
 import { usePathname } from 'next/navigation';
-
-// This is a partial definition for metadata to satisfy the component signature.
-// In a client component layout, you'd handle metadata differently if needed.
-export const metadata: Metadata = {
-  title: 'RoamFree',
-  description: 'Your ultimate travel companion for accommodation, transport, and exploration.',
-};
 
 export default function RootLayout({
   children,
@@ -29,6 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <head>
+        <title>RoamFree</title>
+        <meta name="description" content="Your ultimate travel companion for accommodation, transport, and exploration." />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
