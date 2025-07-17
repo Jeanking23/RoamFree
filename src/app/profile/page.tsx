@@ -251,7 +251,17 @@ const HistoryTab = () => (
 );
 
 const PreferencesTab = () => {
-  const handleSaveChanges = (section: string) => toast({ title: "Changes Saved (Demo)", description: `Your ${section} have been updated.`});
+  const [travelStyle, setTravelStyle] = useState(mockUser.preferences.travelStyle);
+  const [dietaryNeeds, setDietaryNeeds] = useState(mockUser.preferences.dietaryNeeds);
+  const [interests, setInterests] = useState(mockUser.preferences.interests);
+  const [pricingAlerts, setPricingAlerts] = useState(mockUser.preferences.pricingAlerts);
+  const [pushNotifications, setPushNotifications] = useState(mockUser.preferences.receivePushNotifications);
+
+  const handleSaveChanges = () => {
+    // Here you would typically send the data to your backend API
+    console.log("Saving preferences:", { travelStyle, dietaryNeeds, interests, pricingAlerts, pushNotifications });
+    toast({ title: "Preferences Saved (Demo)", description: "Your preferences have been updated." });
+  };
   
   return (
     <Card>
@@ -262,22 +272,22 @@ const PreferencesTab = () => {
       <CardContent className="space-y-4">
         <div>
           <Label htmlFor="travelStyle">Travel Style</Label>
-          <Input id="travelStyle" defaultValue={mockUser.preferences.travelStyle} placeholder="e.g., Adventure, Luxury, Budget-friendly"/>
+          <Input id="travelStyle" value={travelStyle} onChange={(e) => setTravelStyle(e.target.value)} placeholder="e.g., Adventure, Luxury, Budget-friendly"/>
         </div>
         <div>
           <Label htmlFor="dietaryNeeds">Dietary Needs/Preferences</Label>
-          <Input id="dietaryNeeds" defaultValue={mockUser.preferences.dietaryNeeds} placeholder="e.g., Vegetarian, Gluten-free"/>
+          <Input id="dietaryNeeds" value={dietaryNeeds} onChange={(e) => setDietaryNeeds(e.target.value)} placeholder="e.g., Vegetarian, Gluten-free"/>
         </div>
         <div>
           <Label htmlFor="interests">Interests &amp; Hobbies</Label>
-          <Textarea id="interests" defaultValue={mockUser.preferences.interests} placeholder="e.g., Hiking, Museums, Nightlife, Shopping"/>
+          <Textarea id="interests" value={interests} onChange={(e) => setInterests(e.target.value)} placeholder="e.g., Hiking, Museums, Nightlife, Shopping"/>
         </div>
         <div className="flex items-center space-x-2 pt-2">
-          <Switch id="pricing-alerts" defaultChecked={mockUser.preferences.pricingAlerts} />
+          <Switch id="pricing-alerts" checked={pricingAlerts} onCheckedChange={setPricingAlerts} />
           <Label htmlFor="pricing-alerts">Enable AI Predictive Pricing Alerts (Demo)</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <Switch id="push-notifications" defaultChecked={mockUser.preferences.receivePushNotifications} />
+          <Switch id="push-notifications" checked={pushNotifications} onCheckedChange={setPushNotifications} />
           <Label htmlFor="push-notifications">Receive Push Notifications (Trip reminders, price drops, etc. - Demo)</Label>
         </div>
         <div className="pt-2">
@@ -285,12 +295,13 @@ const PreferencesTab = () => {
           <p className="text-sm text-muted-foreground">Group travel coordination features will appear under 'My Trips' (Coming Soon).</p>
         </div>
       </CardContent>
-        <CardFooter className="border-t px-6 py-4">
-          <Button onClick={() => handleSaveChanges("preferences")}>Save Preferences</Button>
+      <CardFooter className="border-t px-6 py-4">
+        <Button onClick={handleSaveChanges}>Save Preferences</Button>
       </CardFooter>
     </Card>
   );
 };
+
 
 const SecurityTab = () => {
   const [lastLoginTime, setLastLoginTime] = useState('');
