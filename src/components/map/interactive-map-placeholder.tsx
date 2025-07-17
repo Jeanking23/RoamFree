@@ -1,5 +1,5 @@
 
-import { GoogleMap, MarkerF as Marker, DirectionsService, DirectionsRenderer, InfoWindowF as InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, MarkerF as Marker, Polyline, InfoWindowF as InfoWindow } from '@react-google-maps/api';
 import { Map } from 'lucide-react';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useGoogleMaps } from '@/context/google-maps-provider';
@@ -29,11 +29,17 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
 
     const [pickupCoords, setPickupCoords] = useState<google.maps.LatLngLiteral | null>(null);
     const [dropoffCoords, setDropoffCoords] = useState<google.maps.LatLngLiteral | null>(null);
-    const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+    
+    // State for route animation
+    const [directionsResult, setDirectionsResult] = useState<google.maps.DirectionsResult | null>(null);
+    const [animatedPath, setAnimatedPath] = useState<google.maps.LatLng[]>([]);
+    
     const [activeInfoWindow, setActiveInfoWindow] = useState<'pickup' | 'dropoff' | null>(null);
     const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral>({ lat: 39.8283, lng: -98.5795 });
     const [zoom, setZoom] = useState(4);
     const mapRef = useRef<google.maps.Map | null>(null);
+    const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
 
     const geocodeAddress = useCallback((
         address: string, 
@@ -74,61 +80,91 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
         }
     }, [dropoff, isLoaded, geocodeAddress]);
     
+    // Effect to handle map view adjustments
     useEffect(() => {
         if (!pickupCoords && !dropoffCoords) {
-            // Reset to default view if both are cleared
             setZoom(4);
             setMapCenter({ lat: 39.8283, lng: -98.5795 });
-            setDirections(null);
+            setDirectionsResult(null);
             setActiveInfoWindow(null);
         } else if (pickupCoords && dropoffCoords) {
-            setDirections(null); // Force re-fetch of directions when both coords are available
-            setActiveInfoWindow(null); // Hide info windows initially when showing a route
+            // New route request
+            if(isLoaded) {
+                 const directionsService = new window.google.maps.DirectionsService();
+                 directionsService.route({
+                    origin: pickupCoords,
+                    destination: dropoffCoords,
+                    travelMode: window.google.maps.TravelMode.DRIVING
+                 }, (result, status) => {
+                    if (status === window.google.maps.DirectionsStatus.OK && result) {
+                        setDirectionsResult(result);
+                        setActiveInfoWindow(null);
+                    } else {
+                        console.error(`Directions request failed due to ${status}`);
+                    }
+                 });
+            }
         } else if (pickupCoords) {
              setMapCenter(pickupCoords);
              setZoom(16);
              setActiveInfoWindow('pickup');
-             setDirections(null);
+             setDirectionsResult(null);
         } else if (dropoffCoords) {
              setMapCenter(dropoffCoords);
              setZoom(16);
              setActiveInfoWindow('dropoff');
-             setDirections(null);
+             setDirectionsResult(null);
         }
-    }, [pickupCoords, dropoffCoords]);
+    }, [pickupCoords, dropoffCoords, isLoaded]);
+    
+    // Effect for the line drawing animation
+    useEffect(() => {
+        if (animationIntervalRef.current) {
+            clearInterval(animationIntervalRef.current);
+        }
+        
+        if (directionsResult && directionsResult.routes[0]) {
+            const path = directionsResult.routes[0].overview_path;
+            setAnimatedPath([]); // Reset path for new animation
+            
+            let step = 0;
+            const steps = path.length;
+            const animationSpeed = 20; // ms per step
+
+            animationIntervalRef.current = setInterval(() => {
+                if (step >= steps) {
+                    if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
+                    return;
+                }
+                setAnimatedPath(prev => path.slice(0, step + 1));
+                step++;
+            }, animationSpeed);
+            
+            // Fit map to bounds after calculating directions
+            if(mapRef.current) {
+                const bounds = new window.google.maps.LatLngBounds();
+                path.forEach(point => bounds.extend(point));
+                mapRef.current.fitBounds(bounds, 100);
+            }
+
+        } else {
+            setAnimatedPath([]); // Clear path if no directions
+        }
+
+        // Cleanup on unmount or when directions change
+        return () => {
+            if (animationIntervalRef.current) {
+                clearInterval(animationIntervalRef.current);
+            }
+        };
+
+    }, [directionsResult]);
 
 
     const onLoad = useCallback((map: google.maps.Map) => {
         mapRef.current = map;
         if(onMapLoad) onMapLoad(map);
     }, [onMapLoad]);
-
-    useEffect(() => {
-        if (mapRef.current && directions) {
-            const bounds = new window.google.maps.LatLngBounds();
-            if(pickupCoords) bounds.extend(pickupCoords);
-            if(dropoffCoords) bounds.extend(dropoffCoords);
-            if(bounds.getNorthEast().equals(bounds.getSouthWest())) {
-                mapRef.current.setCenter(bounds.getCenter());
-                mapRef.current.setZoom(16);
-            } else {
-                 mapRef.current.fitBounds(bounds, 100); // 100px padding
-            }
-        }
-    }, [directions, pickupCoords, dropoffCoords]);
-
-
-    const handleDirectionsResponse = (
-        response: google.maps.DirectionsResult | null,
-        status: google.maps.DirectionsStatus
-    ) => {
-        if (status === 'OK' && response) {
-            setDirections(response);
-            setActiveInfoWindow(null); // Hide individual popups when route is shown
-        } else {
-            console.error(`Directions request failed due to ${status}`);
-        }
-    };
     
     const handleMarkerClick = (coords: google.maps.LatLngLiteral, infoWindow: 'pickup' | 'dropoff') => {
         if(mapRef.current) {
@@ -245,30 +281,17 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
                     </Marker>
                 )}
                 
-                {pickupCoords && dropoffCoords && !directions && (
-                    <DirectionsService
+                {animatedPath.length > 0 && (
+                     <Polyline
+                        path={animatedPath}
                         options={{
-                            destination: dropoffCoords,
-                            origin: pickupCoords,
-                            travelMode: google.maps.TravelMode.DRIVING,
+                            strokeColor: "hsl(217 91% 60%)",
+                            strokeOpacity: 0.8,
+                            strokeWeight: 6,
                         }}
-                        callback={handleDirectionsResponse}
                     />
                 )}
                 
-                {directions && (
-                     <DirectionsRenderer
-                        options={{
-                            directions,
-                            suppressMarkers: true,
-                            polylineOptions: {
-                                strokeColor: "hsl(217 91% 60%)", // Primary color
-                                strokeWeight: 6,
-                                strokeOpacity: 0.8,
-                            },
-                        }}
-                    />
-                )}
 
                 {availableVehicles.map(vehicle => (
                     <Marker
@@ -307,3 +330,5 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
         </div>
     );
 }
+
+    
