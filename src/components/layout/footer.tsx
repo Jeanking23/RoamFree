@@ -126,7 +126,7 @@ export default function Footer() {
         
         {/* Newsletter and Social Links */}
         <div className="border-t mt-8 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="w-full md:w-auto text-center md:text-left">
+            <div className="hidden md:block w-full md:w-auto text-center md:text-left">
                 <h4 className="font-semibold text-foreground mb-2">Stay Updated</h4>
                 <p className="text-sm mb-3">Subscribe to our newsletter for deals and updates.</p>
                 <form onSubmit={handleNewsletterSubmit} className="flex gap-2 max-w-sm mx-auto md:mx-0">
