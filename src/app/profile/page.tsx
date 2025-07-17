@@ -15,6 +15,8 @@ import { useState, useEffect } from 'react';
 import { useLocale } from '@/context/locale-provider';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+
 
 // Mock data - replace with actual data fetching
 const mockUser = {
@@ -54,9 +56,17 @@ const mockWalletTransactions = [
     { id: 'txn3', date: '2024-05-01', description: 'Ride: Airport Transfer JFK', amount: -65.00 },
 ];
 
-const initialPaymentMethods = [
-    { id: 'pm1', type: 'Visa', last4: '4242', expiry: '12/26' },
-    { id: 'pm2', type: 'MasterCard', last4: '5555', expiry: '08/25' },
+interface PaymentMethod {
+  id: string;
+  type: string;
+  last4: string;
+  expiry: string;
+  isDefault?: boolean;
+}
+
+const initialPaymentMethods: PaymentMethod[] = [
+    { id: 'pm1', type: 'Visa', last4: '4242', expiry: '12/26', isDefault: true },
+    { id: 'pm2', type: 'MasterCard', last4: '5555', expiry: '08/25', isDefault: false },
 ];
 
 
@@ -338,10 +348,9 @@ const SecurityTab = () => {
 
 const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => string; convertedBalance: number; currency: any }) => {
   const [topUpAmount, setTopUpAmount] = useState("");
-  const [selectedPayment, setSelectedPayment] = useState(initialPaymentMethods[0].id);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(initialPaymentMethods);
+  const [selectedPaymentId, setSelectedPaymentId] = useState<string>(initialPaymentMethods.find(p => p.isDefault)?.id || initialPaymentMethods[0].id);
   
-  const [paymentMethods, setPaymentMethods] = useState(initialPaymentMethods);
-
   // States for the "Add Card" dialog
   const [isAddCardOpen, setIsAddCardOpen] = useState(false);
   const [newCardNumber, setNewCardNumber] = useState("");
@@ -355,22 +364,39 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
       toast({ title: "Invalid Amount", description: "Please enter a valid amount to top up.", variant: "destructive" });
       return;
     }
-    toast({ title: "Top Up Successful (Demo)", description: `Successfully added ${currency.symbol}${amount.toFixed(2)} to your wallet using your ${paymentMethods.find(p => p.id === selectedPayment)?.type} card.` });
+    const selectedMethod = paymentMethods.find(p => p.id === selectedPaymentId);
+    toast({ title: "Top Up Successful (Demo)", description: `Successfully added ${currency.symbol}${amount.toFixed(2)} to your wallet using your ${selectedMethod?.type} card.` });
     setTopUpAmount(""); // Reset amount
   };
 
-  const handleManageCard = () => toast({ title: "Manage Card (Demo)", description: "This would open options to set as default or remove the card."});
+  const handleSetDefault = (methodId: string) => {
+    setPaymentMethods(prev => prev.map(m => ({ ...m, isDefault: m.id === methodId })));
+    toast({ title: "Default Card Updated", description: "Your default payment method has been changed." });
+  };
+
+  const handleRemoveCard = (methodId: string) => {
+    setPaymentMethods(prev => {
+        const newMethods = prev.filter(m => m.id !== methodId);
+        // If the removed card was default, set the first one as new default if exists
+        if (newMethods.length > 0 && prev.find(m => m.id === methodId)?.isDefault) {
+            newMethods[0].isDefault = true;
+        }
+        return newMethods;
+    });
+    toast({ title: "Card Removed", description: "The payment method has been removed." });
+  };
   
   const handleSaveCard = () => {
     if (newCardNumber.length < 16 || newCardExpiry.length < 4 || newCardCVC.length < 3) {
       toast({ title: "Invalid Card Details", description: "Please check your card information.", variant: "destructive" });
       return;
     }
-    const newCard = {
+    const newCard: PaymentMethod = {
       id: `pm${Date.now()}`,
       type: "Visa", // Simplified for demo
       last4: newCardNumber.slice(-4),
       expiry: newCardExpiry,
+      isDefault: paymentMethods.length === 0, // Make first card added default
     };
     setPaymentMethods(prev => [...prev, newCard]);
     toast({ title: "Card Added!", description: `Visa ending in ${newCard.last4} has been added.`});
@@ -423,12 +449,12 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
                   {paymentMethods.map(method => (
                     <div
                       key={method.id}
-                      onClick={() => setSelectedPayment(method.id)}
-                      className={`p-3 border rounded-md cursor-pointer flex items-center gap-3 transition-colors ${selectedPayment === method.id ? 'border-primary ring-2 ring-primary' : 'hover:bg-muted/50'}`}
+                      onClick={() => setSelectedPaymentId(method.id)}
+                      className={`p-3 border rounded-md cursor-pointer flex items-center gap-3 transition-colors ${selectedPaymentId === method.id ? 'border-primary ring-2 ring-primary' : 'hover:bg-muted/50'}`}
                     >
                       <CreditCard className="h-6 w-6 text-muted-foreground" />
                       <div>
-                        <p className="font-medium">{method.type} ending in {method.last4}</p>
+                        <p className="font-medium">{method.type} ending in {method.last4} {method.isDefault && <span className="text-xs text-primary">(Default)</span>}</p>
                         <p className="text-xs text-muted-foreground">Expires {method.expiry}</p>
                       </div>
                     </div>
@@ -455,13 +481,21 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
                   <div className="flex items-center gap-3">
                     <CreditCard className="h-6 w-6 text-muted-foreground" />
                     <div>
-                      <p className="font-medium">{method.type} ending in {method.last4}</p>
+                      <p className="font-medium">{method.type} ending in {method.last4} {method.isDefault && <span className="text-xs text-primary">(Default)</span>}</p>
                       <p className="text-xs text-muted-foreground">Expires {method.expiry}</p>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={handleManageCard}>
-                    <MoreHorizontal className="h-5 w-5" />
-                  </Button>
+                   <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-5 w-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                         {!method.isDefault && <DropdownMenuItem onClick={() => handleSetDefault(method.id)}>Set as default</DropdownMenuItem>}
+                         <DropdownMenuItem onClick={() => handleRemoveCard(method.id)} className="text-destructive">Remove</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
               </Card>
             ))}
