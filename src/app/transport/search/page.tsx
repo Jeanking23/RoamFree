@@ -123,8 +123,9 @@ function RideSearchResults() {
 
     return (
       <>
-        <div className="grid lg:grid-cols-3 gap-8 items-start">
-            <div className="lg:col-span-2 rounded-lg overflow-hidden h-96 lg:h-[calc(100vh-8rem)] lg:sticky lg:top-24">
+        {/* Desktop View */}
+        <div className="hidden lg:grid lg:grid-cols-3 gap-8 items-start">
+            <div className="lg:col-span-2 rounded-lg overflow-hidden h-[calc(100vh-8rem)] lg:sticky lg:top-24">
                  <InteractiveMapPlaceholder pickup={from} dropoff={to} />
             </div>
             <div className="lg:col-span-1">
@@ -187,6 +188,73 @@ function RideSearchResults() {
                 </Card>
             </div>
         </div>
+
+        {/* Mobile View */}
+        <div className="lg:hidden h-screen w-screen fixed inset-0">
+            <div className="h-full w-full">
+                <InteractiveMapPlaceholder pickup={from} dropoff={to} />
+            </div>
+             <div className="absolute top-0 left-0 right-0 p-4 pt-6 bg-gradient-to-b from-black/50 to-transparent">
+                 <Button variant="ghost" onClick={() => router.back()} className="h-10 w-10 p-0 bg-background/80 hover:bg-background rounded-full">
+                    <ArrowLeft className="h-5 w-5" /> 
+                </Button>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0">
+                 <div className="bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col max-h-[75vh]">
+                    <div className="p-4 flex-shrink-0">
+                        <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
+                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
+                    </div>
+                    <div className="px-4 overflow-y-auto space-y-2 no-scrollbar">
+                         {rideOptions.map((ride) => (
+                            <RideOptionCard
+                                key={ride.id}
+                                ride={ride}
+                                isSelected={selectedRide === ride.id}
+                                onSelect={handleRideSelection}
+                            />
+                        ))}
+                    </div>
+                     <div className="p-4 border-t flex items-center justify-between flex-shrink-0">
+                        <Popover open={openPaymentPopover} onOpenChange={setOpenPaymentPopover}>
+                            <PopoverTrigger asChild>
+                                <Button variant="ghost" role="combobox" aria-expanded={openPaymentPopover} className="p-1 h-auto text-left">
+                                    <SelectedPaymentIcon className="mr-2 h-5 w-5 text-primary"/>
+                                    <span className="font-semibold">{selectedPayment.name.split(' ')[0]}</span>
+                                    <ChevronDown className="h-4 w-4 ml-1 opacity-50"/>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[250px] p-0 mb-2">
+                                <Command>
+                                    <CommandInput placeholder="Select payment method..." />
+                                    <CommandList>
+                                        <CommandEmpty>No payment method found.</CommandEmpty>
+                                        <CommandGroup>
+                                            {paymentOptions.map((option) => (
+                                                <CommandItem
+                                                    key={option.name}
+                                                    onSelect={() => handlePaymentSelect(option)}
+                                                    className="cursor-pointer"
+                                                >
+                                                    <Check className={cn("mr-2 h-4 w-4", selectedPayment.name === option.name ? "opacity-100" : "opacity-0")}/>
+                                                    <option.icon className="mr-2 h-4 w-4 text-muted-foreground"/>
+                                                    {option.name}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                        
+                        <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
+                           Confirm & Pay
+                        </Button>
+                    </div>
+                 </div>
+            </div>
+        </div>
+
 
         {/* Add Card Dialog */}
         <Dialog open={isAddCardOpen} onOpenChange={setIsAddCardOpen}>
