@@ -10,12 +10,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
-import { type MockStay } from '@/lib/mock-data';
+import { type MockStay, allMockStays } from '@/lib/mock-data';
 import type { AccommodationSearchFormValues } from '@/components/search/accommodation-search-form';
 import { Progress } from '@/components/ui/progress';
 import { useRouter } from 'next/navigation';
 import { useLocale } from '@/context/locale-provider';
-import { getAllStays } from '@/services/stays';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 
@@ -99,34 +98,9 @@ const translations = {
 export default function HomePage() {
   const router = useRouter();
   const { currency, language } = useLocale();
-  const [featuredStays, setFeaturedStays] = useState<MockStay[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [featuredStays] = useState<MockStay[]>(() => allMockStays.slice(0, 6));
+  const [isLoading] = useState(false);
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
-
-  useEffect(() => {
-    async function fetchStays() {
-      setIsLoading(true);
-      try {
-        const stays = await getAllStays();
-        // Here we can add logic to select "featured" stays, for now just taking the first 6.
-        setFeaturedStays(stays.slice(0, 6));
-      } catch (error) {
-        console.error("Failed to fetch stays:", error);
-        toast({
-          title: "Error",
-          description: "Could not load featured stays. Please try again later.",
-          variant: "destructive",
-        });
-      }
-      setIsLoading(false);
-    }
-    fetchStays();
-  }, []);
-
-  const t = (key: keyof typeof translations) => {
-    const langCode = language.code as keyof typeof translations[keyof typeof translations];
-    return translations[key][langCode] || translations[key]['en-US'];
-  };
 
   useEffect(() => {
     // This effect runs only on the client, after hydration
@@ -141,6 +115,10 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, []);
 
+  const t = (key: keyof typeof translations) => {
+    const langCode = language.code as keyof typeof translations[keyof typeof translations];
+    return translations[key][langCode] || translations[key]['en-US'];
+  };
 
   const handleFilterAndNavigate = (filters: Partial<AccommodationSearchFormValues & { priceMax?: number }>) => {
     const queryParams = new URLSearchParams();
