@@ -29,7 +29,7 @@ export default function PropertiesMapPlaceholder({ rentals }: PropertiesMapPlace
       <CardHeader>
         <CardTitle className="text-lg font-headline font-semibold text-primary flex items-center gap-2">
             <Map className="h-5 w-5" />
-            Rentals Map View
+            Properties Map View
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-grow p-0 relative">
@@ -44,16 +44,20 @@ export default function PropertiesMapPlaceholder({ rentals }: PropertiesMapPlace
          {rentals.map((rental) => {
             const top = pseudoRandomPosition(rental.id + 'top', 85) + 5; // 5-90%
             const left = pseudoRandomPosition(rental.id + 'left', 85) + 5; // 5-90%
+            const pageLink = rental.price ? `/buy-property/${rental.id}` : `/rent-home/${rental.id}`;
+            const priceDisplay = rental.price ? rental.price : rental.pricePerNight;
+            const priceSuffix = rental.price ? '' : '/night';
+
 
             return (
                 <div key={rental.id} className="absolute" style={{ top: `${top}%`, left: `${left}%` }}>
-                      <Link href={`/rent-home/${rental.id}`}>
+                      <Link href={pageLink}>
                         <Badge
                             variant="default"
                             className="cursor-pointer text-sm font-bold shadow-lg hover:scale-110 transition-transform bg-primary hover:bg-primary/90"
-                            title={`${rental.name} - ${(rental.price ?? rental.pricePerNight).toLocaleString()}${rental.price ? '/month' : '/night'}`}
+                            title={`${rental.name} - $${priceDisplay.toLocaleString()}${priceSuffix}`}
                         >
-                            ${(rental.price ?? rental.pricePerNight).toLocaleString()}
+                            ${priceDisplay.toLocaleString()}
                         </Badge>
                       </Link>
                 </div>

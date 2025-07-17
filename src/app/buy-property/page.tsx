@@ -20,6 +20,7 @@ import { mockSaleProperties } from '@/lib/mock-data'; // Import mock data
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import PropertiesMapPlaceholder from '@/components/map/properties-map-placeholder';
 
 
 const propertySearchSchema = z.object({
@@ -188,37 +189,84 @@ export default function BuyPropertyPage() {
              </div>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {properties.map(prop => (
-              <Card key={prop.id} className="overflow-hidden flex flex-col group rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                <div className="relative">
-                    <Link href={`/buy-property/${prop.id}`}>
-                        <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-56 object-cover" data-ai-hint={prop.dataAiHint}/>
-                    </Link>
-                    <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-black/30 hover:bg-black/50 text-white rounded-full">
-                        <Heart className="h-5 w-5"/>
-                        <span className="sr-only">Add to wishlist</span>
-                    </Button>
-                </div>
-                <CardContent className="p-4 flex-grow flex flex-col">
-                  <p className="text-2xl font-bold text-foreground mb-1">${(prop.price ?? 0).toLocaleString()}</p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mb-2">
-                      {prop.bedrooms && <span><Bed className="inline h-4 w-4 mr-1"/> {prop.bedrooms} bds</span>}
-                      {prop.bathrooms && <span><Bath className="inline h-4 w-4 mr-1"/> {prop.bathrooms} ba</span>}
-                      {prop.sizeSqft && <span><Maximize className="inline h-4 w-4 mr-1"/> {prop.sizeSqft} sqft</span>}
-                      {prop.sizeAcres && <span><Maximize className="inline h-4 w-4 mr-1"/> {prop.sizeAcres} acre lot</span>}
+          {viewMode === 'list' && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {properties.map(prop => (
+                <Card key={prop.id} className="overflow-hidden flex flex-col group rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <div className="relative">
+                      <Link href={`/buy-property/${prop.id}`}>
+                          <Image src={prop.image} alt={prop.name} width={600} height={400} className="w-full h-56 object-cover" data-ai-hint={prop.dataAiHint}/>
+                      </Link>
+                      <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-black/30 hover:bg-black/50 text-white rounded-full">
+                          <Heart className="h-5 w-5"/>
+                          <span className="sr-only">Add to wishlist</span>
+                      </Button>
                   </div>
-                  <p className="text-sm text-foreground truncate">{prop.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{prop.location}</p>
-                </CardContent>
-                <CardFooter className="p-4 pt-0 mt-auto">
-                   <Button variant="outline" size="sm" className="w-full" onClick={() => handleContactAgent(prop.name)}>
-                    <Phone className="mr-2 h-4 w-4" /> Contact Agent
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
+                  <CardContent className="p-4 flex-grow flex flex-col">
+                    <p className="text-2xl font-bold text-foreground mb-1">${(prop.price ?? 0).toLocaleString()}</p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mb-2">
+                        {prop.bedrooms && <span><Bed className="inline h-4 w-4 mr-1"/> {prop.bedrooms} bds</span>}
+                        {prop.bathrooms && <span><Bath className="inline h-4 w-4 mr-1"/> {prop.bathrooms} ba</span>}
+                        {prop.sizeSqft && <span><Maximize className="inline h-4 w-4 mr-1"/> {prop.sizeSqft} sqft</span>}
+                        {prop.sizeAcres && <span><Maximize className="inline h-4 w-4 mr-1"/> {prop.sizeAcres} acre lot</span>}
+                    </div>
+                    <p className="text-sm text-foreground truncate">{prop.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{prop.location}</p>
+                  </CardContent>
+                  <CardFooter className="p-4 pt-0 mt-auto">
+                     <Button variant="outline" size="sm" className="w-full" onClick={() => handleContactAgent(prop.name)}>
+                      <Phone className="mr-2 h-4 w-4" /> Contact Agent
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {viewMode === 'map' && (
+             <div className="mt-8">
+                {properties.length > 0 ? (
+                    <div className="grid lg:grid-cols-2 gap-6 items-start">
+                        <div className="lg:sticky lg:top-24 h-[600px] lg:h-[calc(100vh-8rem)]">
+                            <PropertiesMapPlaceholder rentals={properties} />
+                        </div>
+                        <div className="space-y-4 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">
+                            {properties.map(prop => (
+                                <Card key={prop.id} className="overflow-hidden flex flex-row shadow-md hover:shadow-lg transition-shadow">
+                                    <Link href={`/buy-property/${prop.id}`} className="block w-1/3 flex-shrink-0 relative">
+                                        <Image src={prop.image} alt={prop.name} fill className="object-cover" data-ai-hint={prop.dataAiHint}/>
+                                    </Link>
+                                    <div className="flex flex-col flex-grow">
+                                        <CardHeader className="p-3">
+                                            <CardTitle className="text-md hover:text-primary"><Link href={`/buy-property/${prop.id}`}>{prop.name}</Link></CardTitle>
+                                            <CardDescription className="text-primary font-semibold text-base">${(prop.price ?? 0).toLocaleString()}</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-0 space-y-2 text-sm flex-grow">
+                                            <p className="text-muted-foreground flex items-center gap-1 truncate"><MapPin className="h-4 w-4 flex-shrink-0"/>{prop.location}</p>
+                                            <div className="text-xs text-muted-foreground flex items-center flex-wrap gap-x-3">
+                                                <span><Bed className="inline h-3 w-3 mr-1"/>{prop.bedrooms} bds</span>
+                                                <span><Bath className="inline h-3 w-3 mr-1"/>{prop.bathrooms} ba</span>
+                                                <span><Maximize className="inline h-3 w-3 mr-1"/>{prop.sizeSqft} sqft</span>
+                                            </div>
+                                        </CardContent>
+                                        <CardFooter className="p-2 border-t bg-muted/30">
+                                            <Button asChild variant="default" size="sm" className="w-full">
+                                                <Link href={`/buy-property/${prop.id}`}>View Details</Link>
+                                            </Button>
+                                        </CardFooter>
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="mt-8 py-12 bg-muted/50 rounded-md flex flex-col items-center justify-center">
+                        <p className="text-xl font-semibold text-foreground">No matching properties found for map view.</p>
+                        <p className="text-muted-foreground mt-2">Try adjusting your search filters.</p>
+                    </div>
+                )}
+            </div>
+          )}
 
            {properties.length === 0 && (
             <div className="mt-8 py-12 bg-muted/50 rounded-md flex flex-col items-center justify-center">
