@@ -36,12 +36,12 @@ const MotorbikeIcon = () => (
 
 
 const PopularBadge = () => (
-    <div className="absolute top-0 right-0 -mt-1 -mr-1 bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-semibold flex items-center gap-1">
+    <div className="absolute top-1 right-2 bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-semibold flex items-center gap-1">
         <Star className="h-3 w-3" /> Popular
     </div>
 );
 const SurgeBadge = () => (
-    <div className="absolute top-0 right-0 -mt-1 -mr-1 bg-orange-500 text-white rounded-full px-2 py-0.5 text-xs font-semibold flex items-center gap-1">
+    <div className="absolute top-1 right-2 bg-orange-500 text-white rounded-full px-2 py-0.5 text-xs font-semibold flex items-center gap-1">
         <TrendingUp className="h-3 w-3" /> Higher demand
     </div>
 );
@@ -132,7 +132,7 @@ interface RideOptionCardProps {
 export default function RideOptionCard({ ride, isSelected, onSelect }: RideOptionCardProps) {
   
   const cardClasses = cn(
-    "hover:bg-muted cursor-pointer transition-colors duration-200 border",
+    "hover:bg-muted cursor-pointer transition-colors duration-200 border-2",
     isSelected ? "bg-muted border-primary" : "bg-card border-transparent"
   );
   

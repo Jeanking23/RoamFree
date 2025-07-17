@@ -2,21 +2,21 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
-import { ArrowLeft, Calendar, CreditCard, ChevronDown, UserPlus, Info, Smartphone, Wallet, Check, CircleDollarSign } from 'lucide-react';
+import { ArrowLeft, CreditCard, ChevronDown, Check, Wallet, Smartphone } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import RideOptionCard, { rideOptions } from './ride-option-card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { motion, useAnimation, useDragControls } from 'framer-motion';
 
 type PaymentMethodType = 'wallet' | 'card' | 'mobile_money';
 interface PaymentMethod {
@@ -54,6 +54,20 @@ function RideSearchResults() {
     const [mobileMoneyNumber, setMobileMoneyNumber] = useState('');
 
     const [hasMounted, setHasMounted] = useState(false);
+
+    // Drag controls for the bottom sheet
+    const controls = useAnimation();
+    const dragControls = useDragControls();
+
+    const handleDragEnd = (event: any, info: any) => {
+        if (info.offset.y > 100) {
+            controls.start({ y: "65%" }); // Snap to minimized state
+        } else if (info.offset.y < -100) {
+            controls.start({ y: 0 }); // Snap to maximized state
+        }
+    };
+
+
     useEffect(() => {
         setHasMounted(true);
     }, []);
@@ -131,69 +145,76 @@ function RideSearchResults() {
 
     return (
       <>
-        {/* Desktop View */}
+        {/* Desktop View remains the same */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 rounded-lg overflow-hidden h-full">
                  <InteractiveMapPlaceholder pickup={from} dropoff={to} />
             </div>
             <div className="lg:col-span-1">
-                <Button variant="ghost" onClick={() => router.back()} className="mb-4">
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to Search
-                </Button>
-                <Card className="rounded-lg shadow-lg">
-                    <CardHeader>
-                        <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
-                        <CardDescription>Trip from {from} to {to}.</CardDescription>
-                        {selectedRideDetails && <p className="text-lg font-semibold pt-2">ETA: {selectedRideDetails.eta}</p>}
-                    </CardHeader>
-                    <CardContent className="space-y-2 max-h-[50vh] overflow-y-auto">
-                        {rideOptions.map((ride) => (
-                            <RideOptionCard
-                                key={ride.id}
-                                ride={ride}
-                                isSelected={selectedRide === ride.id}
-                                onSelect={handleRideSelection}
-                            />
-                        ))}
-                    </CardContent>
-                    <Separator />
-                     <div className="p-4 border-t flex items-center justify-between">
-                        <Popover open={openPaymentPopover} onOpenChange={setOpenPaymentPopover}>
-                            <PopoverTrigger asChild>
-                                <Button variant="ghost" role="combobox" aria-expanded={openPaymentPopover} className="p-1 h-auto text-left">
-                                    <SelectedPaymentIcon className="mr-2 h-5 w-5 text-primary"/>
-                                    <span className="font-semibold">{selectedPayment.name.split(' ')[0]}</span>
-                                    <ChevronDown className="h-4 w-4 ml-1 opacity-50"/>
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[250px] p-0">
-                                <Command>
-                                    <CommandInput placeholder="Select payment method..." />
-                                    <CommandList>
-                                        <CommandEmpty>No payment method found.</CommandEmpty>
-                                        <CommandGroup>
-                                            {paymentOptions.map((option) => (
-                                                <CommandItem
-                                                    key={option.name} // Use name as key in case of multiple cards
-                                                    onSelect={() => handlePaymentSelect(option)}
-                                                    className="cursor-pointer"
-                                                >
-                                                    <Check className={cn("mr-2 h-4 w-4", selectedPayment.name === option.name ? "opacity-100" : "opacity-0")}/>
-                                                    <option.icon className="mr-2 h-4 w-4 text-muted-foreground"/>
-                                                    {option.name}
-                                                </CommandItem>
-                                            ))}
-                                        </CommandGroup>
-                                    </CommandList>
-                                </Command>
-                            </PopoverContent>
-                        </Popover>
-                        
-                        <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
-                           Confirm & Pay
-                        </Button>
+                 <div className="p-4 border-b">
+                    <Button variant="ghost" onClick={() => router.back()} className="mb-2 -ml-4">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Search
+                    </Button>
+                    <div className="space-y-1">
+                        <div className="flex items-start gap-2">
+                            <div className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-primary"></div>
+                            <p className="font-medium">{from}</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                            <div className="mt-1 flex-shrink-0 w-2 h-2 bg-foreground"></div>
+                            <p className="font-medium">{to}</p>
+                        </div>
                     </div>
-                </Card>
+                 </div>
+                <div className="p-4">
+                    <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
+                    {selectedRideDetails && <p className="text-lg font-semibold pt-2">ETA: {selectedRideDetails.eta}</p>}
+                </div>
+                <div className="space-y-2 max-h-[calc(100vh-350px)] overflow-y-auto px-4">
+                    {rideOptions.map((ride) => (
+                        <RideOptionCard
+                            key={ride.id}
+                            ride={ride}
+                            isSelected={selectedRide === ride.id}
+                            onSelect={handleRideSelection}
+                        />
+                    ))}
+                </div>
+                <div className="p-4 border-t flex items-center justify-between mt-2">
+                    <Popover open={openPaymentPopover} onOpenChange={setOpenPaymentPopover}>
+                        <PopoverTrigger asChild>
+                            <Button variant="ghost" role="combobox" aria-expanded={openPaymentPopover} className="p-1 h-auto text-left">
+                                <SelectedPaymentIcon className="mr-2 h-5 w-5 text-primary"/>
+                                <span className="font-semibold">{selectedPayment.name.split(' ')[0]}</span>
+                                <ChevronDown className="h-4 w-4 ml-1 opacity-50"/>
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[250px] p-0">
+                            <Command>
+                                <CommandInput placeholder="Select payment method..." />
+                                <CommandList>
+                                    <CommandEmpty>No payment method found.</CommandEmpty>
+                                    <CommandGroup>
+                                        {paymentOptions.map((option) => (
+                                            <CommandItem
+                                                key={option.name} // Use name as key in case of multiple cards
+                                                onSelect={() => handlePaymentSelect(option)}
+                                                className="cursor-pointer"
+                                            >
+                                                <Check className={cn("mr-2 h-4 w-4", selectedPayment.name === option.name ? "opacity-100" : "opacity-0")}/>
+                                                <option.icon className="mr-2 h-4 w-4 text-muted-foreground"/>
+                                                {option.name}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+                    <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
+                       Confirm {selectedRideDetails?.name}
+                    </Button>
+                </div>
             </div>
         </div>
 
@@ -203,64 +224,86 @@ function RideSearchResults() {
                 <InteractiveMapPlaceholder pickup={from} dropoff={to} />
             </div>
              <div className="absolute top-0 left-0 right-0 p-4 pt-6 bg-gradient-to-b from-black/50 to-transparent">
-                 <Button variant="ghost" onClick={() => router.back()} className="h-10 w-10 p-0 bg-background/80 hover:bg-background rounded-full">
-                    <ArrowLeft className="h-5 w-5" /> 
-                </Button>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0">
-                 <div className="bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col max-h-[75vh]">
-                    <div className="p-4 flex-shrink-0">
-                        <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
-                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
-                    </div>
-                    <div className="px-4 overflow-y-auto space-y-2 no-scrollbar">
-                         {rideOptions.map((ride) => (
-                            <RideOptionCard
-                                key={ride.id}
-                                ride={ride}
-                                isSelected={selectedRide === ride.id}
-                                onSelect={handleRideSelection}
-                            />
-                        ))}
-                    </div>
-                     <div className="p-4 border-t flex items-center justify-between flex-shrink-0">
-                        <Popover open={openPaymentPopover} onOpenChange={setOpenPaymentPopover}>
-                            <PopoverTrigger asChild>
-                                <Button variant="ghost" role="combobox" aria-expanded={openPaymentPopover} className="p-1 h-auto text-left">
-                                    <SelectedPaymentIcon className="mr-2 h-5 w-5 text-primary"/>
-                                    <span className="font-semibold">{selectedPayment.name.split(' ')[0]}</span>
-                                    <ChevronDown className="h-4 w-4 ml-1 opacity-50"/>
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[250px] p-0 mb-2">
-                                <Command>
-                                    <CommandInput placeholder="Select payment method..." />
-                                    <CommandList>
-                                        <CommandEmpty>No payment method found.</CommandEmpty>
-                                        <CommandGroup>
-                                            {paymentOptions.map((option) => (
-                                                <CommandItem
-                                                    key={option.name}
-                                                    onSelect={() => handlePaymentSelect(option)}
-                                                    className="cursor-pointer"
-                                                >
-                                                    <Check className={cn("mr-2 h-4 w-4", selectedPayment.name === option.name ? "opacity-100" : "opacity-0")}/>
-                                                    <option.icon className="mr-2 h-4 w-4 text-muted-foreground"/>
-                                                    {option.name}
-                                                </CommandItem>
-                                            ))}
-                                        </CommandGroup>
-                                    </CommandList>
-                                </Command>
-                            </PopoverContent>
-                        </Popover>
-                        
-                        <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
-                           Confirm {selectedRideDetails?.name}
+                 <div className="bg-background/80 rounded-lg p-2 shadow-lg">
+                    <div className="flex items-center gap-2">
+                         <Button variant="ghost" onClick={() => router.back()} className="h-8 w-8 p-0">
+                            <ArrowLeft className="h-5 w-5" /> 
                         </Button>
+                         <div className="space-y-1 text-sm overflow-hidden">
+                            <p className="font-medium truncate">{from}</p>
+                            <p className="font-medium truncate">{to}</p>
+                        </div>
                     </div>
-                 </div>
+                </div>
             </div>
+            
+            <motion.div
+                className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col"
+                drag="y"
+                dragControls={dragControls}
+                dragListener={false}
+                dragConstraints={{ top: 0, bottom: window.innerHeight * 0.65 }}
+                dragElastic={0.1}
+                onDragEnd={handleDragEnd}
+                animate={controls}
+                initial={{ y: "65%" }}
+                transition={{ type: "spring", stiffness: 400, damping: 40 }}
+            >
+                <div 
+                    onPointerDown={(e) => dragControls.start(e)}
+                    className="p-4 flex-shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center"
+                >
+                    <div className="w-8 h-1.5 bg-muted-foreground/50 rounded-full mb-2"></div>
+                    <CardTitle className="text-xl font-bold text-center w-full">Choose a ride</CardTitle>
+                    {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
+                </div>
+                <div className="px-4 overflow-y-auto space-y-2 no-scrollbar flex-grow min-h-[150px]">
+                     {rideOptions.map((ride) => (
+                        <RideOptionCard
+                            key={ride.id}
+                            ride={ride}
+                            isSelected={selectedRide === ride.id}
+                            onSelect={handleRideSelection}
+                        />
+                    ))}
+                </div>
+                 <div className="p-4 border-t flex items-center justify-between flex-shrink-0">
+                    <Popover open={openPaymentPopover} onOpenChange={setOpenPaymentPopover}>
+                        <PopoverTrigger asChild>
+                            <Button variant="ghost" role="combobox" aria-expanded={openPaymentPopover} className="p-1 h-auto text-left">
+                                <SelectedPaymentIcon className="mr-2 h-5 w-5 text-primary"/>
+                                <span className="font-semibold">{selectedPayment.name.split(' ')[0]}</span>
+                                <ChevronDown className="h-4 w-4 ml-1 opacity-50"/>
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[250px] p-0 mb-2">
+                            <Command>
+                                <CommandInput placeholder="Select payment method..." />
+                                <CommandList>
+                                    <CommandEmpty>No payment method found.</CommandEmpty>
+                                    <CommandGroup>
+                                        {paymentOptions.map((option) => (
+                                            <CommandItem
+                                                key={option.name}
+                                                onSelect={() => handlePaymentSelect(option)}
+                                                className="cursor-pointer"
+                                            >
+                                                <Check className={cn("mr-2 h-4 w-4", selectedPayment.name === option.name ? "opacity-100" : "opacity-0")}/>
+                                                <option.icon className="mr-2 h-4 w-4 text-muted-foreground"/>
+                                                {option.name}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+                    
+                    <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
+                       Confirm {selectedRideDetails?.name}
+                    </Button>
+                </div>
+            </motion.div>
         </div>
 
 
