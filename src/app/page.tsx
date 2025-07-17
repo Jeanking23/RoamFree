@@ -16,7 +16,7 @@ import { Progress } from '@/components/ui/progress';
 import { useRouter } from 'next/navigation';
 import { useLocale } from '@/context/locale-provider';
 import { Skeleton } from '@/components/ui/skeleton';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const mockPropertyTypes = [
   { name: "Hotel", icon: Building, image: "https://images.unsplash.com/photo-1690314749019-2754cc7bfac9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3RlbCUyMGJ1aWxkaW5nfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "hotel building", filterType: "HOTEL" },
@@ -94,25 +94,39 @@ const translations = {
   }
 };
 
+const slideshowImages = [
+  { url: "https://images.unsplash.com/photo-1507525428034-b723a9ce6890?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMHN1bnJpc2V8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", hint: "beach sunrise" },
+  { url: "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwwfHx8fDE3NTI4MTQxMzB8MA&ixlib=rb-4.1.0&q=80&w=1080", hint: "mountain landscape" },
+  { url: "https://images.unsplash.com/photo-1519010470956-6d877008eaa4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjaXR5c2NhcGUlMjBhJTIwbmlnaHR8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", hint: "cityscape night" },
+];
+
 
 export default function HomePage() {
   const router = useRouter();
   const { currency, language } = useLocale();
-  const [featuredStays] = useState<MockStay[]>(() => allMockStays.slice(0, 6));
-  const [isLoading, setIsLoading] = useState(false);
+  const [featuredStays, setFeaturedStays] = useState<MockStay[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    // This effect runs only on the client, after hydration
-    const timer = setTimeout(() => {
-      // Check if window is defined (ensuring it's client-side) and if the prompt hasn't been dismissed
+    setIsLoading(false);
+    setFeaturedStays(allMockStays.slice(0, 6));
+
+    const notificationTimer = setTimeout(() => {
       if (typeof window !== 'undefined' && !localStorage.getItem('notificationPromptDismissed')) {
         setShowNotificationPrompt(true);
       }
-    }, 5000); // Delay of 5 seconds
+    }, 5000);
 
-    // Cleanup function to clear the timer if the component unmounts
-    return () => clearTimeout(timer);
+    const imageSlideshowTimer = setInterval(() => {
+      setCurrentImageIndex(prevIndex => (prevIndex + 1) % slideshowImages.length);
+    }, 7000);
+
+    return () => {
+      clearTimeout(notificationTimer);
+      clearInterval(imageSlideshowTimer);
+    };
   }, []);
 
   const t = (key: keyof typeof translations) => {
@@ -145,18 +159,19 @@ export default function HomePage() {
   return (
     <div className="space-y-12 md:space-y-16">
       {/* Hero Section */}
-      <section className="relative -mx-4 md:mx-0 py-12 md:py-16 rounded-xl shadow-sm overflow-hidden">
-        <motion.div
-            className="absolute inset-0 z-0"
-            style={{
-                backgroundImage: `url(https://images.unsplash.com/photo-1507525428034-b723a9ce6890?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMHN1bnJpc2V8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080)`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-            }}
-            data-ai-hint="beach sunrise"
-            animate={{ scale: [1.1, 1], x: [-20, 0] }}
-            transition={{ duration: 10, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' }}
-        />
+      <section className="relative -mx-4 md:mx-0 h-[60vh] md:h-[70vh] flex items-center justify-center rounded-xl shadow-sm overflow-hidden">
+        <AnimatePresence>
+            <motion.div
+                key={currentImageIndex}
+                className="absolute inset-0 z-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${slideshowImages[currentImageIndex].url})` }}
+                data-ai-hint={slideshowImages[currentImageIndex].hint}
+                initial={{ opacity: 0, scale: 1.1, x: -20 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.5, ease: 'easeInOut' }}
+            />
+        </AnimatePresence>
         <div className="absolute inset-0 bg-black/40 z-10"></div>
         <div className="container mx-auto px-4 text-center relative z-20">
           <h1 className="text-4xl md:text-5xl font-headline font-bold text-white mb-4 leading-tight shadow-text">
