@@ -148,7 +148,7 @@ function RideSearchResults() {
 
     return (
       <>
-        {/* Desktop View remains the same */}
+        {/* Desktop View */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 rounded-lg overflow-hidden h-full">
                  <InteractiveMapPlaceholder pickup={from} dropoff={to} />
