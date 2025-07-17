@@ -182,8 +182,8 @@ export const allMockStays: MockStay[] = [
     description: "A charming and cozy cabin nestled in the Aspen mountains. Features a fireplace, hot tub, and stunning forest views. Ideal for ski trips or summer hiking.",
     amenities: ["Hot Tub", "Fireplace", "WiFi", "Kitchenette", "Ski-in/Ski-out Access (nearby)"],
      photos: [
-      { id: "p1s2", src: "https://placehold.co/800x600.png", alt: "Cabin exterior in snow", dataAiHint: "cabin snow" },
-      { id: "p2s2", src: "https://placehold.co/400x300.png", alt: "Cozy cabin interior with fireplace", dataAiHint: "cabin fireplace" },
+      { id: "p1s2", src: "https://images.unsplash.com/photo-1669394478167-a4965c32a98e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjYWJpbiUyMHNub3d8ZW58MHx8fHwxNzUyNzI4NDI0fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Cabin exterior in snow", dataAiHint: "cabin snow" },
+      { id: "p2s2", src: "https://images.unsplash.com/photo-1697807713050-b0e7d00956a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjYWJpbiUyMGZpcmVwbGFjZXxlbnwwfHx8fDE3NTI3Mjg0MjR8MA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Cozy cabin interior with fireplace", dataAiHint: "cabin fireplace" },
     ],
     host: { name: "Mike R.", avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
     guestReviews: [
