@@ -54,7 +54,7 @@ const mockWalletTransactions = [
     { id: 'txn3', date: '2024-05-01', description: 'Ride: Airport Transfer JFK', amount: -65.00 },
 ];
 
-const mockPaymentMethods = [
+const initialPaymentMethods = [
     { id: 'pm1', type: 'Visa', last4: '4242', expiry: '12/26' },
     { id: 'pm2', type: 'MasterCard', last4: '5555', expiry: '08/25' },
 ];
@@ -338,7 +338,16 @@ const SecurityTab = () => {
 
 const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => string; convertedBalance: number; currency: any }) => {
   const [topUpAmount, setTopUpAmount] = useState("");
-  const [selectedPayment, setSelectedPayment] = useState(mockPaymentMethods[0].id);
+  const [selectedPayment, setSelectedPayment] = useState(initialPaymentMethods[0].id);
+  
+  const [paymentMethods, setPaymentMethods] = useState(initialPaymentMethods);
+
+  // States for the "Add Card" dialog
+  const [isAddCardOpen, setIsAddCardOpen] = useState(false);
+  const [newCardNumber, setNewCardNumber] = useState("");
+  const [newCardExpiry, setNewCardExpiry] = useState("");
+  const [newCardCVC, setNewCardCVC] = useState("");
+
 
   const handleTopUpWallet = () => {
     const amount = parseFloat(topUpAmount);
@@ -346,13 +355,33 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
       toast({ title: "Invalid Amount", description: "Please enter a valid amount to top up.", variant: "destructive" });
       return;
     }
-    toast({ title: "Top Up Successful (Demo)", description: `Successfully added ${currency.symbol}${amount.toFixed(2)} to your wallet using your ${mockPaymentMethods.find(p => p.id === selectedPayment)?.type} card.` });
+    toast({ title: "Top Up Successful (Demo)", description: `Successfully added ${currency.symbol}${amount.toFixed(2)} to your wallet using your ${paymentMethods.find(p => p.id === selectedPayment)?.type} card.` });
     setTopUpAmount(""); // Reset amount
   };
 
   const handleManageCard = () => toast({ title: "Manage Card (Demo)", description: "This would open options to set as default or remove the card."});
-  const handleAddCard = () => toast({ title: "Add New Card (Demo)", description: "This would open a secure form to add a new payment method."});
   
+  const handleSaveCard = () => {
+    if (newCardNumber.length < 16 || newCardExpiry.length < 4 || newCardCVC.length < 3) {
+      toast({ title: "Invalid Card Details", description: "Please check your card information.", variant: "destructive" });
+      return;
+    }
+    const newCard = {
+      id: `pm${Date.now()}`,
+      type: "Visa", // Simplified for demo
+      last4: newCardNumber.slice(-4),
+      expiry: newCardExpiry,
+    };
+    setPaymentMethods(prev => [...prev, newCard]);
+    toast({ title: "Card Added!", description: `Visa ending in ${newCard.last4} has been added.`});
+    
+    // Reset form and close dialog
+    setNewCardNumber("");
+    setNewCardExpiry("");
+    setNewCardCVC("");
+    setIsAddCardOpen(false);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -391,7 +420,7 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
               <div className="space-y-2">
                 <Label>Payment Method</Label>
                 <div className="space-y-2">
-                  {mockPaymentMethods.map(method => (
+                  {paymentMethods.map(method => (
                     <div
                       key={method.id}
                       onClick={() => setSelectedPayment(method.id)}
@@ -420,7 +449,7 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
         <div>
           <h4 className="text-lg font-semibold mb-3">Saved Payment Methods</h4>
           <div className="space-y-3">
-            {mockPaymentMethods.map(method => (
+            {paymentMethods.map(method => (
               <Card key={method.id} className="p-3">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
@@ -436,9 +465,40 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
                 </div>
               </Card>
             ))}
-            <Button variant="outline" className="w-full" onClick={handleAddCard}>
-                <PlusCircle className="mr-2 h-4 w-4" /> Add a new payment method
-            </Button>
+            <Dialog open={isAddCardOpen} onOpenChange={setIsAddCardOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="outline" className="w-full">
+                        <PlusCircle className="mr-2 h-4 w-4" /> Add a new payment method
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Add New Card</DialogTitle>
+                        <DialogDescription>Your payment information is securely stored.</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="newCardNumber">Card Number</Label>
+                            <Input id="newCardNumber" value={newCardNumber} onChange={(e) => setNewCardNumber(e.target.value)} placeholder="0000 0000 0000 0000" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="newCardExpiry">Expiry Date (MM/YY)</Label>
+                                <Input id="newCardExpiry" value={newCardExpiry} onChange={(e) => setNewCardExpiry(e.target.value)} placeholder="MM/YY" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="newCardCVC">CVC</Label>
+                                <Input id="newCardCVC" value={newCardCVC} onChange={(e) => setNewCardCVC(e.target.value)} placeholder="123" />
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                        <Button onClick={handleSaveCard}>Save Card</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
           </div>
         </div>
 
