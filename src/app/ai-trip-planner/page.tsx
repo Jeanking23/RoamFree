@@ -22,13 +22,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Wand2, Loader2, AlertTriangle, ArrowRight, ArrowLeft } from "lucide-react";
+import { Wand2, Loader2, AlertTriangle, ArrowRight, ArrowLeft, BedDouble, Car } from "lucide-react";
 import { useState } from "react";
 import { getAiTripPlanAction } from "@/app/actions";
 import type { AiTripPlanInput, AiTripPlanOutput } from "@/ai/flows/trip-planner-flow";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
+import Image from 'next/image';
+import Link from 'next/link';
 
 const tripPlannerSurveySchema = z.object({
   travelPurpose: z.enum(["VACATION", "BUSINESS", "FAMILY", "ROMANTIC", "EVENT", "SPIRITUAL"], {
@@ -297,44 +299,65 @@ export default function AiTripPlannerSurveyPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <Card className="bg-muted/30">
+                    <Card className="bg-muted/30 overflow-hidden relative">
+                        <Image 
+                            src={`https://placehold.co/1200x400.png`} 
+                            alt={`Scenery of ${tripPlan.suggestedDestination.name}`} 
+                            width={1200} height={400} 
+                            className="w-full h-48 object-cover"
+                            data-ai-hint="travel landscape"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div className="absolute bottom-0 left-0 p-6">
+                            <CardTitle className="text-3xl font-headline text-white shadow-lg">Your Trip to {tripPlan.suggestedDestination.name}</CardTitle>
+                            <CardDescription className="text-white/90">{tripPlan.suggestedDestination.reason}</CardDescription>
+                        </div>
+                    </Card>
+                    
+                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-2xl font-headline text-primary">Your Trip to {tripPlan.suggestedDestination.name}</CardTitle>
-                            <CardDescription>{tripPlan.suggestedDestination.reason}</CardDescription>
+                            <CardTitle>Trip Overview</CardTitle>
                         </CardHeader>
                          <CardContent>
-                            <p className="text-xl font-bold">Estimated Cost: ${tripPlan.estimatedCost.total}</p>
+                            <p className="text-2xl font-bold">Estimated Cost: ${tripPlan.estimatedCost.total.toLocaleString()}</p>
                             <p className="text-sm text-muted-foreground">{tripPlan.estimatedCost.breakdown}</p>
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader><CardTitle>Accommodation Suggestion</CardTitle></CardHeader>
-                        <CardContent>
-                            <h4 className="font-semibold">{tripPlan.accommodationSuggestion.name} ({tripPlan.accommodationSuggestion.type})</h4>
-                            <p className="text-muted-foreground">{tripPlan.accommodationSuggestion.reason}</p>
-                        </CardContent>
-                    </Card>
-
-                     <Card>
-                        <CardHeader><CardTitle>Transport Suggestion</CardTitle></CardHeader>
-                        <CardContent><p>{tripPlan.transportSuggestion}</p></CardContent>
-                    </Card>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <Card>
+                            <CardHeader><CardTitle>Accommodation Suggestion</CardTitle></CardHeader>
+                            <CardContent className="space-y-2">
+                                <h4 className="font-semibold">{tripPlan.accommodationSuggestion.name} ({tripPlan.accommodationSuggestion.type})</h4>
+                                <p className="text-muted-foreground text-sm">{tripPlan.accommodationSuggestion.reason}</p>
+                            </CardContent>
+                             <CardFooter>
+                                <Button asChild className="w-full"><Link href="/stays/search"><BedDouble className="mr-2 h-4 w-4"/>Book this Stay (Demo)</Link></Button>
+                            </CardFooter>
+                        </Card>
+                        <Card>
+                            <CardHeader><CardTitle>Transport Suggestion</CardTitle></CardHeader>
+                            <CardContent><p className="text-sm">{tripPlan.transportSuggestion}</p></CardContent>
+                            <CardFooter>
+                                <Button asChild className="w-full"><Link href="/transport"><Car className="mr-2 h-4 w-4"/>Arrange Transport (Demo)</Link></Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
 
                     <Card>
                         <CardHeader><CardTitle>Your Day-by-Day Itinerary</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             {tripPlan.itinerary.map(day => (
-                                <div key={day.day} className="p-3 border rounded-md">
+                                <div key={day.day} className="p-4 border rounded-md transition-all hover:bg-muted/50 hover:shadow-sm">
                                     <h4 className="font-semibold text-lg text-primary">Day {day.day}: {day.title}</h4>
-                                    <p className="whitespace-pre-line mt-1">{day.activities}</p>
+                                    <p className="whitespace-pre-line mt-1 text-sm text-muted-foreground">{day.activities}</p>
                                 </div>
                             ))}
                         </CardContent>
                     </Card>
                     
                     {tripPlan.additionalTips && (
-                        <Card><CardHeader><CardTitle>Additional Tips</CardTitle></CardHeader><CardContent><p>{tripPlan.additionalTips}</p></CardContent></Card>
+                        <Card><CardHeader><CardTitle>Additional Tips</CardTitle></CardHeader><CardContent><p className="text-sm">{tripPlan.additionalTips}</p></CardContent></Card>
                     )}
 
                      <Button variant="link" onClick={() => setTripPlan(null)}>
