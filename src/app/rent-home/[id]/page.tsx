@@ -247,7 +247,7 @@ export default function RentalPropertyProfilePage() {
                         </div>
                         <DialogFooter>
                             <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-                            <Button onClick={handleApplyNow}>Submit Application</Button>
+                            <DialogClose asChild><Button onClick={handleApplyNow}>Submit Application</Button></DialogClose>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
