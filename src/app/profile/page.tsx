@@ -14,6 +14,7 @@ import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { useLocale } from '@/context/locale-provider';
 import Image from 'next/image';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 
 // Mock data - replace with actual data fetching
 const mockUser = {
@@ -82,7 +83,7 @@ const translations = {
   myWallet: { 'en-US': 'My RoamFree Wallet', 'es-ES': 'Mi Monedero RoamFree', 'fr-FR': 'Mon Portefeuille RoamFree' },
   manageFunds: { 'en-US': 'Manage your funds for seamless payments across the platform. Buy Now, Pay Later options (e.g. Klarna, Afterpay) available for select services (Demo).', 'es-ES': 'Gestiona tus fondos para pagos fluidos en toda la plataforma. Opciones de Compra Ahora, Paga Después (ej. Klarna, Afterpay) disponibles para servicios seleccionados (Demo).', 'fr-FR': 'Gérez vos fonds pour des paiements fluides sur toute la plateforme. Options Achetez Maintenant, Payez Plus Tard (ex. Klarna, Afterpay) disponibles pour certains services (Démo).' },
   currentBalance: { 'en-US': 'Current Balance', 'es-ES': 'Saldo Actual', 'fr-FR': 'Solde Actuel' },
-  topUpWallet: { 'en-US': 'Top Up Wallet (Demo)', 'es-ES': 'Recargar Monedero (Demo)', 'fr-FR': 'Recharger le Portefeuille (Démo)' },
+  topUpWallet: { 'en-US': 'Top Up Wallet', 'es-ES': 'Recargar Monedero', 'fr-FR': 'Recharger le Portefeuille' },
 };
 
 
@@ -335,8 +336,20 @@ const SecurityTab = () => {
   );
 };
 
-const WalletTab = ({ t, convertedBalance, currency }: { t: (key: keyof typeof translations) => string; convertedBalance: number; currency: any }) => {
-  const handleTopUpWallet = () => toast({ title: "Top Up Wallet (Demo)", description: "Proceeding to wallet top-up options (e.g., Credit Card, PayPal). Multi-currency options coming soon." });
+const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => string; convertedBalance: number; currency: any }) => {
+  const [topUpAmount, setTopUpAmount] = useState("");
+  const [selectedPayment, setSelectedPayment] = useState(mockPaymentMethods[0].id);
+
+  const handleTopUpWallet = () => {
+    const amount = parseFloat(topUpAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast({ title: "Invalid Amount", description: "Please enter a valid amount to top up.", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Top Up Successful (Demo)", description: `Successfully added ${currency.symbol}${amount.toFixed(2)} to your wallet using your ${mockPaymentMethods.find(p => p.id === selectedPayment)?.type} card.` });
+    setTopUpAmount(""); // Reset amount
+  };
+
   const handleManageCard = () => toast({ title: "Manage Card (Demo)", description: "This would open options to set as default or remove the card."});
   const handleAddCard = () => toast({ title: "Add New Card (Demo)", description: "This would open a secure form to add a new payment method."});
   
@@ -352,9 +365,56 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: keyof typeof tr
           <Label>{t('currentBalance')}</Label>
           <p className="text-3xl font-bold text-primary">{currency.symbol}{convertedBalance.toFixed(2)}</p>
         </div>
-        <Button onClick={handleTopUpWallet} className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-          <CreditCard className="mr-2 h-4 w-4"/> {t('topUpWallet')}
-        </Button>
+        
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
+              <CreditCard className="mr-2 h-4 w-4"/> {t('topUpWallet')}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Top Up Wallet</DialogTitle>
+              <DialogDescription>Add funds to your RoamFree wallet.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="topup-amount">Amount ({currency.code})</Label>
+                <Input
+                  id="topup-amount"
+                  type="number"
+                  placeholder="e.g., 50.00"
+                  value={topUpAmount}
+                  onChange={(e) => setTopUpAmount(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Payment Method</Label>
+                <div className="space-y-2">
+                  {mockPaymentMethods.map(method => (
+                    <div
+                      key={method.id}
+                      onClick={() => setSelectedPayment(method.id)}
+                      className={`p-3 border rounded-md cursor-pointer flex items-center gap-3 transition-colors ${selectedPayment === method.id ? 'border-primary ring-2 ring-primary' : 'hover:bg-muted/50'}`}
+                    >
+                      <CreditCard className="h-6 w-6 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium">{method.type} ending in {method.last4}</p>
+                        <p className="text-xs text-muted-foreground">Expires {method.expiry}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+              <DialogClose asChild>
+                <Button onClick={handleTopUpWallet}>Add Funds</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Saved Payment Methods Section */}
         <div>
