@@ -302,7 +302,7 @@ export const carListings: CarListing[] = [
     pricePerDay: 55,
     pricePerHour: 10,
     pricePerWeek: 350,
-    image: "https://placehold.co/600x400.png",
+    image: "https://images.unsplash.com/photo-1607928086418-95fc643a0e0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c2VkYW4lMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
     photos: [
       { id: "car1p1", src: "https://placehold.co/800x600.png", alt: "Camry front view", dataAiHint: "sedan front" },
       { id: "car1p2", src: "https://placehold.co/400x300.png", alt: "Camry interior", dataAiHint: "car dashboard" },
@@ -330,7 +330,7 @@ export const carListings: CarListing[] = [
     pricePerDay: 85,
     pricePerHour: 18,
     pricePerWeek: 550,
-    image: "https://placehold.co/600x400.png",
+    image: "https://images.unsplash.com/photo-1618353482480-61ca5a9a7879?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzdXYlMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
     photos: [
       { id: "car2p1", src: "https://placehold.co/800x600.png", alt: "Explorer front view", dataAiHint: "suv front" },
       { id: "car2p2", src: "https://placehold.co/400x300.png", alt: "Explorer interior with third row", dataAiHint: "suv interior seats" },
@@ -357,7 +357,7 @@ export const carListings: CarListing[] = [
     pricePerDay: 150,
     pricePerHour: 30,
     pricePerWeek: 950,
-    image: "https://placehold.co/600x400.png",
+    image: "https://images.unsplash.com/photo-1635714612847-a515e7939326?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx2YW4lMjB2ZWhpY2xlfGVufDB8fHx8MTc1MjcyMjE4OXww&ixlib=rb-4.1.0&q=80&w=1080",
      photos: [
       { id: "car3p1", src: "https://placehold.co/800x600.png", alt: "Sprinter van exterior", dataAiHint: "white van" },
       { id: "car3p2", src: "https://placehold.co/400x300.png", alt: "Sprinter van interior seating", dataAiHint: "van interior" },
