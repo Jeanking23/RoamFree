@@ -69,23 +69,6 @@ export default function RentHomePage() {
     toast({ title: "Search Submitted", description: `Found ${filteredRentals.length} rentals.` });
   }
 
-  const handleScheduleTour = (propertyName: string) => {
-    toast({ title: "Tour Scheduled (Demo)", description: `A tour for ${propertyName} has been requested.` });
-  };
-  const handleVirtualWalkthrough = (propertyName: string) => {
-    toast({ title: "Virtual Walkthrough (Demo)", description: `Starting virtual walkthrough for ${propertyName}. This is a placeholder.`});
-  };
-   const handleContactAgent = (propertyName: string) => {
-    toast({ title: "Contacting Agent (Demo)", description: `Connecting you with an agent for ${propertyName}.` });
-  };
-  const handleViewFloorPlan = (propertyName: string) => {
-    toast({ title: "View Floor Plan (Demo)", description: `Displaying 3D floor plan for ${propertyName}.` });
-  };
-  const handleLeaseManagement = (propertyName: string) => {
-    toast({ title: "Lease Management (Demo)", description: `Accessing lease documents and payment options for ${propertyName}. Digital signing and rent reminders would be here.` });
-  };
-
-
   return (
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
@@ -257,7 +240,7 @@ export default function RentHomePage() {
             <>
                 <h3 className="text-2xl font-semibold text-foreground mb-4 mt-8">Featured Rentals</h3>
                 <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-x-visible no-scrollbar">
-                    {rentals.map(prop => (
+                    {rentals.slice(0, 3).map(prop => (
                         <Card key={prop.id} className="overflow-hidden flex flex-col w-[80vw] sm:w-[45vw] md:w-full flex-shrink-0">
                             <Link href={`/rent-home/${prop.id}`} className="block relative w-full h-48">
                                 <Image src={prop.image} alt={prop.name} fill className="object-cover" data-ai-hint={prop.dataAiHint}/>
