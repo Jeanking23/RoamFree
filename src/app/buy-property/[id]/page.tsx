@@ -161,14 +161,14 @@ export default function SalePropertyProfilePage() {
             <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer group" onClick={() => openLightbox(0)}>
               {currentImage && <Image src={currentImage.src} alt={currentImage.alt} fill className="object-cover rounded-l-md" data-ai-hint={currentImage.dataAiHint} />}
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Maximize className="h-8 w-8 text-white" />
+                  <Maximize className="h-12 w-12 text-white" />
               </div>
             </div>
             {displayPhotos.slice(1, 5).map((photo, index) => (
               <div key={photo.id} className={`relative aspect-[4/3] md:aspect-auto cursor-pointer group ${index > 1 ? 'hidden md:block' : ''}`} onClick={() => openLightbox(index + 1)}>
                 <Image src={photo.src} alt={photo.alt} fill className={`object-cover ${index === 1 ? "md:rounded-tr-md" : index === 3 ? "md:rounded-br-md" : ""}`} data-ai-hint={photo.dataAiHint} />
                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Maximize className="h-6 w-6 text-white" />
+                    <Maximize className="h-8 w-8 text-white" />
                  </div>
               </div>
             ))}
