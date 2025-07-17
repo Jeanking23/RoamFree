@@ -8,8 +8,6 @@ import InteractiveMapPlaceholder from '@/components/map/interactive-map-placehol
 import { ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import RideOptionCard, { rideOptions } from './ride-option-card';
 
 function RideSearchResults() {
@@ -60,11 +58,6 @@ function RideSearchResults() {
                      <div className='lg:space-y-4'>
                          <h1 className="text-xl lg:text-3xl font-bold lg:font-headline lg:text-primary text-center lg:text-left">Choose a ride</h1>
                          <p className="hidden lg:block text-muted-foreground">Trip from <strong>{from}</strong> to <strong>{to}</strong>.</p>
-                         
-                         <div className="flex items-center justify-center lg:justify-start space-x-2 py-2">
-                            <Switch id="ride-for-other" />
-                            <Label htmlFor="ride-for-other">Ride for someone else</Label>
-                        </div>
                      </div>
 
                     <div className="flex-grow space-y-3 overflow-y-auto pr-2 mt-4 lg:mt-0">

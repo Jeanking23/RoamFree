@@ -23,6 +23,7 @@ import type { SavedPlace } from '@/services/places';
 import { Label } from '@/components/ui/label';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Switch } from '@/components/ui/switch';
 
 
 const serviceCategories = [
@@ -308,6 +309,7 @@ export default function TransportPage() {
     const [dropoffLocation, setDropoffLocation] = useState('');
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [time, setTime] = useState('10:00');
+    const [rideForSomeoneElse, setRideForSomeoneElse] = useState(false);
     const mapRef = useRef<google.maps.Map | null>(null);
     const { isLoaded } = useGoogleMaps();
     const mapClickListener = useRef<google.maps.MapsEventListener | null>(null);
@@ -332,6 +334,10 @@ export default function TransportPage() {
             date: date ? date.toISOString() : new Date().toISOString(),
             time: time,
         });
+
+        if (rideForSomeoneElse) {
+            query.set('forSomeoneElse', 'true');
+        }
 
         router.push(`/transport/search?${query.toString()}`);
     };
@@ -532,6 +538,10 @@ export default function TransportPage() {
                             onChange={(e) => setTime(e.target.value)}
                         />
                     </div>
+                </div>
+                <div className="flex items-center space-x-2 pt-2">
+                    <Switch id="ride-for-other" checked={rideForSomeoneElse} onCheckedChange={setRideForSomeoneElse} />
+                    <Label htmlFor="ride-for-other">Ride for someone else</Label>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2">
                     <Button className="w-full" onClick={handleSearch}>
