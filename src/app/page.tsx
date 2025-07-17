@@ -99,7 +99,7 @@ export default function HomePage() {
   const router = useRouter();
   const { currency, language } = useLocale();
   const [featuredStays] = useState<MockStay[]>(() => allMockStays.slice(0, 6));
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
   useEffect(() => {
@@ -145,12 +145,24 @@ export default function HomePage() {
   return (
     <div className="space-y-12 md:space-y-16">
       {/* Hero Section */}
-      <section className="py-12 md:py-16 bg-gradient-to-br from-primary/10 via-background to-background rounded-xl shadow-sm -mx-4 px-4 md:mx-0 md:px-0">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4 leading-tight">
+      <section className="relative -mx-4 md:mx-0 py-12 md:py-16 rounded-xl shadow-sm overflow-hidden">
+        <motion.div
+            className="absolute inset-0 z-0"
+            style={{
+                backgroundImage: `url(https://images.unsplash.com/photo-1507525428034-b723a9ce6890?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMHN1bnJpc2V8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+            }}
+            data-ai-hint="beach sunrise"
+            animate={{ scale: [1.1, 1], x: [-20, 0] }}
+            transition={{ duration: 10, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' }}
+        />
+        <div className="absolute inset-0 bg-black/40 z-10"></div>
+        <div className="container mx-auto px-4 text-center relative z-20">
+          <h1 className="text-4xl md:text-5xl font-headline font-bold text-white mb-4 leading-tight shadow-text">
             Find Your Perfect Stay
           </h1>
-          <p className="text-lg md:text-xl text-foreground/80 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto shadow-text">
             Discover amazing places to stay for your next adventure, from cozy cabins to luxury villas.
           </p>
           <div className="max-w-4xl mx-auto bg-card p-3 md:p-4 rounded-xl shadow-lg border">
