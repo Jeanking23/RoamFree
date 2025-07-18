@@ -71,3 +71,7 @@
 .cursor-pointer {
     cursor: pointer !important;
 }
+
+[cmdk-item] {
+  cursor: pointer !important;
+}
