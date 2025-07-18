@@ -23,6 +23,7 @@ import { Label } from '@/components/ui/label';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Switch } from '@/components/ui/switch';
+import { motion, AnimatePresence } from 'framer-motion';
 
 
 const serviceCategories = [
@@ -64,14 +65,14 @@ const suggestionItems = [
     {
       title: 'Food',
       description: 'Get your favorite meals delivered.',
-      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
       dataAiHint: 'food delivery',
       link: '#!', // Placeholder link
     },
     {
       title: 'Grocery',
       description: 'Have groceries delivered to your door.',
-      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
       dataAiHint: 'grocery bag',
       link: '#!', // Placeholder link
     },
@@ -463,9 +464,9 @@ export default function TransportPage() {
     }, [setLocationFromMapClick]);
 
     const handleFromContacts = async () => {
-        if ('contacts' in navigator && 'select' in navigator.contacts) {
+        if ('contacts' in navigator && 'select' in (navigator as any).contacts) {
             try {
-                const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: false });
+                const contacts = await (navigator as any).contacts.select(['name', 'tel'], { multiple: false });
                 if (contacts.length > 0) {
                     const contact = contacts[0];
                     if (contact.name && contact.name.length > 0) {
@@ -612,24 +613,32 @@ export default function TransportPage() {
                     <Label htmlFor="ride-for-other" className="flex items-center gap-2"><UserPlus className="h-4 w-4" />Ride for someone else</Label>
                 </div>
 
-                {rideForSomeoneElse && (
-                    <div className="space-y-4 pt-4 border-t mt-4 animate-in fade-in-0 duration-300 p-4 border rounded-md">
-                        <h4 className="font-semibold text-foreground">Rider's Details</h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <div className="flex justify-between items-center mb-1">
-                                    <Label htmlFor="riderName">Rider's Name</Label>
-                                    <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={handleFromContacts}>From Contacts</Button>
+                <AnimatePresence>
+                    {rideForSomeoneElse && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
+                            animate={{ opacity: 1, height: 'auto', marginTop: '1rem', paddingTop: '1rem', paddingBottom: '1rem' }}
+                            exit={{ opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="space-y-4 pt-4 border-t overflow-hidden p-4 border rounded-md"
+                        >
+                            <h4 className="font-semibold text-foreground">Rider's Details</h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <div className="flex justify-between items-center mb-1">
+                                        <Label htmlFor="riderName">Rider's Name</Label>
+                                        <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={handleFromContacts}>From Contacts</Button>
+                                    </div>
+                                    <Input id="riderName" placeholder="e.g., Jane Doe" value={riderName} onChange={(e) => setRiderName(e.target.value)} />
                                 </div>
-                                <Input id="riderName" placeholder="e.g., Jane Doe" value={riderName} onChange={(e) => setRiderName(e.target.value)} />
+                                <div>
+                                    <Label htmlFor="riderPhone">Rider's Phone Number</Label>
+                                    <Input id="riderPhone" type="tel" placeholder="e.g., +1 555-123-4567" value={riderPhone} onChange={(e) => setRiderPhone(e.target.value)} />
+                                </div>
                             </div>
-                            <div>
-                                <Label htmlFor="riderPhone">Rider's Phone Number</Label>
-                                <Input id="riderPhone" type="tel" placeholder="e.g., +1 555-123-4567" value={riderPhone} onChange={(e) => setRiderPhone(e.target.value)} />
-                            </div>
-                        </div>
-                    </div>
-                )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 <div className="flex flex-col sm:flex-row gap-2 pt-2">
                     <Button className="w-full" onClick={handleSearch}>
