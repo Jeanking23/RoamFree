@@ -64,14 +64,14 @@ const suggestionItems = [
     {
       title: 'Food',
       description: 'Get your favorite meals delivered.',
-      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'food delivery',
       link: '#!', // Placeholder link
     },
     {
       title: 'Grocery',
       description: 'Have groceries delivered to your door.',
-      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'grocery bag',
       link: '#!', // Placeholder link
     },
@@ -462,11 +462,34 @@ export default function TransportPage() {
         }
     }, [setLocationFromMapClick]);
 
-    const handleFromContacts = () => {
-        toast({
-            title: "Open Contacts (Demo)",
-            description: "This would open your device's contact list to select a rider and auto-fill their details.",
-        });
+    const handleFromContacts = async () => {
+        if ('contacts' in navigator && 'select' in navigator.contacts) {
+            try {
+                const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: false });
+                if (contacts.length > 0) {
+                    const contact = contacts[0];
+                    if (contact.name && contact.name.length > 0) {
+                        setRiderName(contact.name[0]);
+                    }
+                    if (contact.tel && contact.tel.length > 0) {
+                        setRiderPhone(contact.tel[0]);
+                    }
+                    toast({ title: "Contact Selected", description: "Rider details have been filled in." });
+                }
+            } catch (ex) {
+                toast({
+                    title: "Could Not Access Contacts",
+                    description: "There was an error accessing your contacts. Please ensure you have granted permission.",
+                    variant: "destructive"
+                });
+            }
+        } else {
+            toast({
+                title: "Feature Not Supported",
+                description: "Your browser does not support the Contact Picker API.",
+                variant: "default",
+            });
+        }
     };
 
   return (
@@ -590,7 +613,7 @@ export default function TransportPage() {
                 </div>
 
                 {rideForSomeoneElse && (
-                    <div className="space-y-4 pt-4 border-t mt-4 animate-in fade-in-0 duration-300">
+                    <div className="space-y-4 pt-4 border-t mt-4 animate-in fade-in-0 duration-300 p-4 border rounded-md">
                         <h4 className="font-semibold text-foreground">Rider's Details</h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
