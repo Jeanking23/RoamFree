@@ -72,7 +72,7 @@ const suggestionItems = [
     {
       title: 'Grocery',
       description: 'Have groceries delivered to your door.',
-      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'grocery bag',
       link: '#!', // Placeholder link
     },
@@ -208,12 +208,12 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
           <CommandList>
             <CommandEmpty>{isLoadingPlaces ? 'Loading places...' : 'No results found.'}</CommandEmpty>
              <CommandGroup>
-                <CommandItem onSelect={() => { onUseCurrentLocation(); setOpen(false); }} className="cursor-pointer">
+                <CommandItem onSelect={() => { onUseCurrentLocation(); setOpen(false); }} className="!cursor-pointer">
                     <LocateFixed className="mr-2 h-4 w-4" /> Use Current Location
                 </CommandItem>
                 <Popover>
                     <PopoverTrigger asChild>
-                        <CommandItem className="cursor-pointer">
+                        <CommandItem className="!cursor-pointer">
                             <Star className="mr-2 h-4 w-4" />
                             <span>Saved places</span>
                         </CommandItem>
@@ -225,14 +225,14 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
                                 <CommandEmpty>No saved places found.</CommandEmpty>
                                 <CommandGroup>
                                     {savedPlaces.map((place) => (
-                                    <CommandItem key={place.id} onSelect={() => handleSelect(place.address)} className="cursor-pointer">
+                                    <CommandItem key={place.id} onSelect={() => handleSelect(place.address)} className="!cursor-pointer">
                                         <Home className="mr-2 h-4 w-4" />{place.name}
                                     </CommandItem>
                                     ))}
                                 </CommandGroup>
                                 <CommandSeparator />
                                 <CommandGroup>
-                                    <CommandItem onSelect={() => setIsAddPlaceDialogOpen(true)} className="cursor-pointer">
+                                    <CommandItem onSelect={() => setIsAddPlaceDialogOpen(true)} className="!cursor-pointer">
                                         <Plus className="mr-2 h-4 w-4" /> Add new place
                                     </CommandItem>
                                 </CommandGroup>
@@ -240,7 +240,7 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
                         </Command>
                     </PopoverContent>
                 </Popover>
-                <CommandItem onSelect={handleSetOnMap} className="cursor-pointer">
+                <CommandItem onSelect={handleSetOnMap} className="!cursor-pointer">
                     <MapIcon className="mr-2 h-4 w-4" /> Set location on map
                 </CommandItem>
             </CommandGroup>
@@ -251,7 +251,7 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
                 <CommandItem
                   key={prediction.place_id}
                   onSelect={() => handleSelect(prediction.description)}
-                  className="cursor-pointer"
+                  className="!cursor-pointer"
                 >
                   <MapPin className="mr-2 h-4 w-4" />
                   {prediction.description}
