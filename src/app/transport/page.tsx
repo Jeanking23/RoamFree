@@ -51,21 +51,21 @@ const suggestionItems = [
     {
       title: 'Rental Cars',
       description: 'Rent a car from a variety of models.',
-      imageSrc: 'https://images.unsplash.com/photo-1581966451257-a5c7c5afa833?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZW50YWwlMjBjYXJzfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1581966451257-a5c7c5afa833?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZW50YWwlMjBjYXJzfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'rental cars',
       link: '/car-rent',
     },
     {
       title: 'Courier',
       description: 'Send packages to friends and family.',
-      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'delivery package',
       link: '/courier-delivery',
     },
     {
       title: 'Food',
       description: 'Get your favorite meals delivered.',
-      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'food delivery',
       link: '#!', // Placeholder link
     },
@@ -208,12 +208,12 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
           <CommandList>
             <CommandEmpty>{isLoadingPlaces ? 'Loading places...' : 'No results found.'}</CommandEmpty>
              <CommandGroup>
-                <CommandItem onSelect={() => { onUseCurrentLocation(); setOpen(false); }} className="!cursor-pointer">
+                <CommandItem onSelect={() => { onUseCurrentLocation(); setOpen(false); }} className="cursor-pointer">
                     <LocateFixed className="mr-2 h-4 w-4" /> Use Current Location
                 </CommandItem>
                 <Popover>
                     <PopoverTrigger asChild>
-                        <CommandItem className="!cursor-pointer">
+                        <CommandItem className="cursor-pointer">
                             <Star className="mr-2 h-4 w-4" />
                             <span>Saved places</span>
                         </CommandItem>
@@ -225,14 +225,14 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
                                 <CommandEmpty>No saved places found.</CommandEmpty>
                                 <CommandGroup>
                                     {savedPlaces.map((place) => (
-                                    <CommandItem key={place.id} onSelect={() => handleSelect(place.address)} className="!cursor-pointer">
+                                    <CommandItem key={place.id} onSelect={() => handleSelect(place.address)} className="cursor-pointer">
                                         <Home className="mr-2 h-4 w-4" />{place.name}
                                     </CommandItem>
                                     ))}
                                 </CommandGroup>
                                 <CommandSeparator />
                                 <CommandGroup>
-                                    <CommandItem onSelect={() => setIsAddPlaceDialogOpen(true)} className="!cursor-pointer">
+                                    <CommandItem onSelect={() => setIsAddPlaceDialogOpen(true)} className="cursor-pointer">
                                         <Plus className="mr-2 h-4 w-4" /> Add new place
                                     </CommandItem>
                                 </CommandGroup>
@@ -240,7 +240,7 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
                         </Command>
                     </PopoverContent>
                 </Popover>
-                <CommandItem onSelect={handleSetOnMap} className="!cursor-pointer">
+                <CommandItem onSelect={handleSetOnMap} className="cursor-pointer">
                     <MapIcon className="mr-2 h-4 w-4" /> Set location on map
                 </CommandItem>
             </CommandGroup>
@@ -251,7 +251,7 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
                 <CommandItem
                   key={prediction.place_id}
                   onSelect={() => handleSelect(prediction.description)}
-                  className="!cursor-pointer"
+                  className="cursor-pointer"
                 >
                   <MapPin className="mr-2 h-4 w-4" />
                   {prediction.description}
@@ -657,7 +657,7 @@ export default function TransportPage() {
        
       <Card className="relative overflow-hidden group rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
         <Image 
-          src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+          src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib-rb-4.1.0&q=80&w=1080"
           alt="AI Trip Planner background"
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
