@@ -16,20 +16,20 @@ import { cn } from '@/lib/utils';
 export default function AttractionProfilePage() {
   const params = useParams();
   const router = useRouter();
-  const [attraction, setAttraction] = useState<MockAttraction | null>(null);
+  const [attraction, setAttraction] = useState<MockAttraction | null>(mockAttractionDetails);
   const [isFavorited, setIsFavorited] = useState(false);
   const [currentImage, setCurrentImage] = useState(attraction?.photos[0] || null);
   const [isArViewActive, setIsArViewActive] = useState(false);
   const [isAudioGuideActive, setIsAudioGuideActive] = useState(false);
   
   useEffect(() => {
-    // In a real app, fetch data based on params.id
-    // For now, we use mockAttractionDetails regardless of ID.
-    if (params.id) {
-       setAttraction(mockAttractionDetails);
-       setCurrentImage(mockAttractionDetails.photos[0]);
+    // In a real app, this would be the place to fetch data based on params.id if it wasn't pre-loaded
+    // For this demo, we initialize the state directly with mock data for better performance.
+    if (params.id && !attraction) {
+       // Logic to handle if data wasn't found initially or needs re-fetching
+       console.log("Looking for attraction with ID:", params.id);
     }
-  }, [params.id]);
+  }, [params.id, attraction]);
 
 
   const handleBookTickets = () => {
@@ -56,7 +56,7 @@ export default function AttractionProfilePage() {
 
 
   if (!attraction) { 
-    return <div className="text-center py-10">Loading attraction details...</div>; 
+    return <div className="text-center py-10">Attraction not found.</div>; 
   }
 
   const getCrowdLevelIcon = (level: string) => {
