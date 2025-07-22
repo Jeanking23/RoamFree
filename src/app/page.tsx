@@ -104,17 +104,12 @@ const slideshowImages = [
 export default function HomePage() {
   const router = useRouter();
   const { currency, language } = useLocale();
-  const [featuredStays, setFeaturedStays] = useState<MockStay[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const featuredStays = allMockStays.slice(0, 6);
+  const isLoading = false; // Data is now loaded synchronously
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    setIsLoading(true);
-    // Directly use mock data instead of fetching
-    setFeaturedStays(allMockStays.slice(0, 6));
-    setIsLoading(false);
-
     const notificationTimer = setTimeout(() => {
       if (typeof window !== 'undefined' && !localStorage.getItem('notificationPromptDismissed')) {
         setShowNotificationPrompt(true);
