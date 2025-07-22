@@ -269,7 +269,7 @@ export const allMockStays: MockStay[] = [
     name: "Historic City Center Flat",
     location: "Rome, Italy",
     pricePerNight: 120,
-    image: "https://images.unsplash.com/photo-1724020538147-da2fe0a93751?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoaXN0b3JpYyUyMGJ1aWxkaW5nJTIwcm9tZXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1724020538147-da2fe0a93751?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoaXN0b3JpYyUyMGJ1aWxkaW5nJTIwcm9tZXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
     dataAiHint: "historic building rome",
     rating: 4.5,
     category: "Flat",
@@ -301,7 +301,7 @@ export const carListings: CarListing[] = [
     pricePerDay: 55,
     pricePerHour: 10,
     pricePerWeek: 350,
-    image: "https://images.unsplash.com/photo-1607928086418-95fc643a0e0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c2VkYW4lMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1607928086418-95fc643a0e0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c2VkYW4lMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib-rb-4.1.0&q=80&w=1080",
     photos: [
       { id: "car1p1", src: "https://placehold.co/800x600.png", alt: "Camry front view", dataAiHint: "sedan front" },
       { id: "car1p2", src: "https://placehold.co/400x300.png", alt: "Camry interior", dataAiHint: "car dashboard" },
@@ -329,7 +329,7 @@ export const carListings: CarListing[] = [
     pricePerDay: 85,
     pricePerHour: 18,
     pricePerWeek: 550,
-    image: "https://images.unsplash.com/photo-1618353482480-61ca5a9a7879?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzdXYlMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1618353482480-61ca5a9a7879?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzdXYlMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib-rb-4.1.0&q=80&w=1080",
     photos: [
       { id: "car2p1", src: "https://placehold.co/800x600.png", alt: "Explorer front view", dataAiHint: "suv front" },
       { id: "car2p2", src: "https://placehold.co/400x300.png", alt: "Explorer interior with third row", dataAiHint: "suv interior seats" },
@@ -356,7 +356,7 @@ export const carListings: CarListing[] = [
     pricePerDay: 150,
     pricePerHour: 30,
     pricePerWeek: 950,
-    image: "https://images.unsplash.com/photo-1635714612847-a515e7939326?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx2YW4lMjB2ZWhpY2xlfGVufDB8fHx8MTc1MjcyMjE4OXww&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1635714612847-a515e7939326?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx2YW4lMjB2ZWhpY2xlfGVufDB8fHx8MTc1MjcyMjE4OXww&ixlib-rb-4.1.0&q=80&w=1080",
      photos: [
       { id: "car3p1", src: "https://placehold.co/800x600.png", alt: "Sprinter van exterior", dataAiHint: "white van" },
       { id: "car3p2", src: "https://placehold.co/400x300.png", alt: "Sprinter van interior seating", dataAiHint: "van interior" },
@@ -388,7 +388,7 @@ export const mockRentalProperties: MockStay[] = [
     bathrooms: 1,
     sizeSqft: "900 sqft",
     amenities: ["Gym", "Pool", "In-unit Laundry"], 
-    image: "https://images.unsplash.com/photo-1704428381312-0579346a779c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsb2Z0JTIwYXBhcnRtZW50fGVufDB8fHx8MTc1Mjc1NDU5NHww&ixlib=rb-4.1.0&q=80&w=1080", 
+    image: "https://images.unsplash.com/photo-1704428381312-0579346a779c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsb2Z0JTIwYXBhcnRtZW50fGVufDB8fHx8MTc1Mjc1NDU5NHww&ixlib-rb-4.1.0&q=80&w=1080", 
     dataAiHint: "loft apartment", 
     virtualTourLink: "#", 
     floorPlanLink: "#", 
@@ -541,9 +541,9 @@ export const mockAttractionDetails: MockAttraction = {
     { id: "deal3", title: "Student Tuesday", description: "50% off adult admission every Tuesday with a valid student ID." },
   ],
   visitorPhotos: [
-    { id: "vp1", src: "https://placehold.co/400x300.png", alt: "Visitor taking a selfie with a painting", dataAiHint: "museum selfie" },
-    { id: "vp2", src: "https://placehold.co/400x300.png", alt: "Visitor admiring a sculpture", dataAiHint: "person art" },
-    { id: "vp3", src: "https://placehold.co/400x300.png", alt: "A child interacting with an exhibit", dataAiHint: "child museum" },
+    { id: "vp1", src: "https://images.unsplash.com/photo-1645165102257-9963785edd8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtdXNldW0lMjBzZWxmaWV8ZW58MHx8fHwxNzUzMjAxMDM4fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Visitor taking a selfie with a painting", dataAiHint: "museum selfie" },
+    { id: "vp2", src: "https://images.unsplash.com/photo-1732996909415-8653208de4c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBhcnR8ZW58MHx8fHwxNzUzMjAxMDM4fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Visitor admiring a sculpture", dataAiHint: "person art" },
+    { id: "vp3", src: "https://images.unsplash.com/photo-1561246806-04a48afaf9ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjaGlsZCUyMG11c2V1bXxlbnwwfHx8fDE3NTMyMDEwMzh8MA&ixlib=rb-4.1.0&q=80&w=1080", alt: "A child interacting with an exhibit", dataAiHint: "child museum" },
   ],
   topTips: [
       "Go early on a weekday to avoid the biggest crowds.",
