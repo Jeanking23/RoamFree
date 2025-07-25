@@ -304,8 +304,13 @@ const PreferencesTab = () => {
 
 
 const SecurityTab = () => {
-  const [lastLoginTime, setLastLoginTime] = useState('');
-  useEffect(() => { setLastLoginTime(new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})); }, []);
+  const [lastLoginTime, setLastLoginTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    // This code runs only on the client, after the initial render (hydration).
+    setLastLoginTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  }, []);
+
   const handleIdVerification = () => toast({ title: "ID Verification (Demo)", description: "Starting ID verification process. This would typically involve uploading documents." });
   const handleVideoIdVerification = () => toast({ title: "Video ID Verification (Demo)", description: "Starting video-based ID verification. You might be asked to record a short video and show your ID." });
   const handleMfaSetup = () => toast({ title: "MFA Setup (Demo)", description: "Navigating to Multi-Factor Authentication setup." });
@@ -351,7 +356,9 @@ const SecurityTab = () => {
           <p className="text-xs text-muted-foreground">Blockchain-based verification for property ownership proof is a future feature.</p>
       </CardContent>
         <CardFooter className="border-t px-6 py-4">
-          <p className="text-xs text-muted-foreground">Last login: Today at <span suppressHydrationWarning>{lastLoginTime}</span> (Simulated)</p>
+          <p className="text-xs text-muted-foreground">
+            {lastLoginTime ? `Last login: Today at ${lastLoginTime} (Simulated)` : 'Loading login info...'}
+          </p>
       </CardFooter>
     </Card>
   );
