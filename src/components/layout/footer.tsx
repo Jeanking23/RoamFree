@@ -145,7 +145,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t mt-8 pt-6 text-center text-sm">
-          <p>&copy; <span suppressHydrationWarning>{currentYear}</span> RoamFree. All rights reserved.</p>
+          <p>&copy; {currentYear} RoamFree. All rights reserved.</p>
           <p className="text-xs mt-1">Travel with freedom, explore with joy.</p>
         </div>
       </div>
