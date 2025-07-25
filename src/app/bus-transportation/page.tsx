@@ -184,6 +184,7 @@ export default function BusTransportationPage() {
   });
   
   useEffect(() => {
+    // Set default departure date on client-side to avoid hydration mismatch
     if (!form.getValues("departureDate")) {
         form.setValue("departureDate", new Date(), { shouldValidate: true });
     }

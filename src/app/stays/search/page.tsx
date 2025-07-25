@@ -26,11 +26,11 @@ function SearchResultsDisplay() {
   const performSearch = useCallback(async (params: URLSearchParams) => {
     setIsLoading(true);
     const destination = params.get('destination');
-    const dateFrom = params.get('dateFrom');
-    const dateTo = params.get('dateTo');
+    // const dateFrom = params.get('dateFrom');
+    // const dateTo = params.get('dateTo');
     const adults = params.get('adults') ? parseInt(params.get('adults') as string, 10) : undefined;
     const children = params.get('children') ? parseInt(params.get('children') as string, 10) : undefined;
-    const rooms = params.get('rooms') ? parseInt(params.get('rooms') as string, 10) : undefined;
+    // const rooms = params.get('rooms') ? parseInt(params.get('rooms') as string, 10) : undefined;
     const propertyType = params.get('propertyType') as AccommodationSearchFormValues['propertyType'];
     const mood = params.get('mood') as AccommodationSearchFormValues['mood'];
     const wheelchairAccessible = params.get('wheelchairAccessible') === 'true';
