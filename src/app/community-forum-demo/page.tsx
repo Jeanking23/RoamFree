@@ -11,27 +11,49 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { cn } from '@/lib/utils';
 
 const forumCategories = [
-  "All", "General Discussion", "Accommodation Help", "Transportation Tips", "Local Attractions",
+  "General Discussion", "Accommodation Help", "Transportation Tips", "Local Attractions",
   "Safety & Scams", "Real Estate", "Car Rentals", "Visa & Travel Docs", "Local Culture",
   "Meet Other Travelers", "Trip Reports"
 ];
 
-const mockThreads = [
-  { id: "t1", title: "Best hidden gems in Kyoto?", author: "TravelerGal", replies: 15, upvotes: 42, lastReply: "2 hours ago", category: "Local Attractions", tags: ["Kyoto", "Hidden Gems", "Culture"], isSolved: true, authorAvatar: "TG" },
-  { id: "t2", title: "Tips for budget backpacking in South America?", author: "AdventureSeeker", replies: 22, upvotes: 58, lastReply: "5 hours ago", category: "Transportation Tips", tags: ["South America", "Budget", "Backpacking"], isSolved: false, authorAvatar: "AS" },
-  { id: "t3", title: "Family friendly resorts in the Caribbean", author: "FamilyVacay", replies: 8, upvotes: 19, lastReply: "1 day ago", category: "Accommodation Help", tags: ["Caribbean", "Family", "Resorts"], isSolved: true, authorAvatar: "FV" },
-  { id: "t4", title: "Sustainable travel practices - share your tips!", author: "EcoWarrior", replies: 30, upvotes: 75, lastReply: "3 days ago", category: "Local Culture", tags: ["Sustainable Travel", "Eco-friendly"], isSolved: false, authorAvatar: "EW" },
-  { id: "t5", title: "Advice on buying property in Spain?", author: "ExpatDreams", replies: 12, upvotes: 25, lastReply: "4 hours ago", category: "Real Estate", tags: ["Spain", "Property", "Investment"], isSolved: false, authorAvatar: "ED" },
-  { id: "t6", title: "Car rental experiences in Italy - good or bad?", author: "RoadTripper", replies: 18, upvotes: 33, lastReply: "6 hours ago", category: "Car Rentals", tags: ["Italy", "Car Rental", "Travel Scams"], isSolved: true, authorAvatar: "RT" },
-  { id: "t7", title: "Just got back from Cameroon - Trip Report!", author: "CameroonExplorer", replies: 5, upvotes: 29, lastReply: "10 hours ago", category: "Trip Reports", tags: ["Cameroon", "Douala", "Yaounde", "Trip Report"], isSolved: false, authorAvatar: "CE" },
+const initialThreads = [
+  { id: "t1", title: "Best hidden gems in Kyoto?", author: "TravelerGal", replies: 15, upvotes: 42, lastReply: "2 hours ago", category: "Local Attractions", tags: ["Kyoto", "Hidden Gems", "Culture"], isSolved: true, authorAvatar: "TG", isBookmarked: false },
+  { id: "t2", title: "Tips for budget backpacking in South America?", author: "AdventureSeeker", replies: 22, upvotes: 58, lastReply: "5 hours ago", category: "Transportation Tips", tags: ["South America", "Budget", "Backpacking"], isSolved: false, authorAvatar: "AS", isBookmarked: true },
+  { id: "t3", title: "Family friendly resorts in the Caribbean", author: "FamilyVacay", replies: 8, upvotes: 19, lastReply: "1 day ago", category: "Accommodation Help", tags: ["Caribbean", "Family", "Resorts"], isSolved: true, authorAvatar: "FV", isBookmarked: false },
+  { id: "t4", title: "Sustainable travel practices - share your tips!", author: "EcoWarrior", replies: 30, upvotes: 75, lastReply: "3 days ago", category: "Local Culture", tags: ["Sustainable Travel", "Eco-friendly"], isSolved: false, authorAvatar: "EW", isBookmarked: false },
+  { id: "t5", title: "Advice on buying property in Spain?", author: "ExpatDreams", replies: 12, upvotes: 25, lastReply: "4 hours ago", category: "Real Estate", tags: ["Spain", "Property", "Investment"], isSolved: false, authorAvatar: "ED", isBookmarked: false },
+  { id: "t6", title: "Car rental experiences in Italy - good or bad?", author: "RoadTripper", replies: 18, upvotes: 33, lastReply: "6 hours ago", category: "Car Rentals", tags: ["Italy", "Car Rental", "Travel Scams"], isSolved: true, authorAvatar: "RT", isBookmarked: true },
+  { id: "t7", title: "Just got back from Cameroon - Trip Report!", author: "CameroonExplorer", replies: 5, upvotes: 29, lastReply: "10 hours ago", category: "Trip Reports", tags: ["Cameroon", "Douala", "Yaounde", "Trip Report"], isSolved: false, authorAvatar: "CE", isBookmarked: false },
 ];
 
+const newThreadSchema = z.object({
+  title: z.string().min(10, "Title must be at least 10 characters.").max(150),
+  category: z.string({ required_error: "Please select a category." }),
+  tags: z.string().optional().describe("Comma-separated tags"),
+});
+type NewThreadFormValues = z.infer<typeof newThreadSchema>;
+
+
 export default function CommunityForumDemoPage() {
+  const [threads, setThreads] = useState(initialThreads);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>(["All"]);
+  const [isNewThreadOpen, setIsNewThreadOpen] = useState(false);
+
+  const newThreadForm = useForm<NewThreadFormValues>({
+    resolver: zodResolver(newThreadSchema),
+    defaultValues: { title: "", tags: "" },
+  });
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategories(prev => {
@@ -39,14 +61,55 @@ export default function CommunityForumDemoPage() {
       const newCategories = prev.includes("All") ? [] : [...prev];
       if (newCategories.includes(category)) {
         const filtered = newCategories.filter(c => c !== category);
-        return filtered.length === 0 ? ["All"] : filtered; // if empty, default to "All"
+        return filtered.length === 0 ? ["All"] : filtered;
       } else {
         return [...newCategories, category];
       }
     });
   };
 
-  const filteredThreads = mockThreads.filter(thread => {
+  const handleUpvote = (threadId: string) => {
+    setThreads(prevThreads => 
+      prevThreads.map(thread => 
+        thread.id === threadId ? { ...thread, upvotes: thread.upvotes + 1 } : thread
+      )
+    );
+  };
+
+  const handleBookmark = (threadId: string) => {
+    setThreads(prevThreads =>
+      prevThreads.map(thread =>
+        thread.id === threadId ? { ...thread, isBookmarked: !thread.isBookmarked } : thread
+      )
+    );
+    const thread = threads.find(t => t.id === threadId);
+    if (thread) {
+        toast({ title: thread.isBookmarked ? "Bookmark Removed" : "Thread Bookmarked!" });
+    }
+  };
+
+  const handleCreateNewThread = (values: NewThreadFormValues) => {
+    const newThread = {
+        id: `t${threads.length + 1}`,
+        title: values.title,
+        author: "CurrentUser", // In a real app, this would be the logged-in user
+        replies: 0,
+        upvotes: 1,
+        lastReply: "Just now",
+        category: values.category,
+        tags: values.tags ? values.tags.split(',').map(tag => tag.trim()) : [],
+        isSolved: false,
+        authorAvatar: "CU",
+        isBookmarked: false
+    };
+    setThreads(prev => [newThread, ...prev]);
+    toast({ title: "Thread Created!", description: "Your new thread has been posted." });
+    setIsNewThreadOpen(false);
+    newThreadForm.reset();
+  };
+
+
+  const filteredThreads = threads.filter(thread => {
     const matchesSearch =
       thread.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       thread.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -61,7 +124,7 @@ export default function CommunityForumDemoPage() {
         <CardHeader className="bg-primary/10">
           <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
             <Users2 className="h-10 w-10" />
-            RoamFree Community Forum (Demo)
+            RoamFree Community Forum
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
             Connect with fellow travelers, share tips, ask questions, and inspire your next journey!
@@ -79,14 +142,59 @@ export default function CommunityForumDemoPage() {
                 />
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               </div>
-              <Button className="w-full sm:w-auto" onClick={() => toast({title: "New Thread (Demo)", description: "Rich text editor for creating a new post would open."})}>
-                <PlusCircle className="mr-2 h-4 w-4" /> Create New Thread
-              </Button>
+              <Dialog open={isNewThreadOpen} onOpenChange={setIsNewThreadOpen}>
+                <DialogTrigger asChild>
+                    <Button className="w-full sm:w-auto">
+                        <PlusCircle className="mr-2 h-4 w-4" /> Create New Thread
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Create a New Forum Thread</DialogTitle>
+                        <DialogDescription>Share your question or story with the community.</DialogDescription>
+                    </DialogHeader>
+                    <Form {...newThreadForm}>
+                        <form onSubmit={newThreadForm.handleSubmit(handleCreateNewThread)} className="space-y-4 py-4">
+                            <FormField control={newThreadForm.control} name="title" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Title</FormLabel>
+                                    <FormControl><Input placeholder="What's your question or topic?" {...field}/></FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}/>
+                             <FormField control={newThreadForm.control} name="category" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Category</FormLabel>
+                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl><SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger></FormControl>
+                                        <SelectContent>
+                                            {forumCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}/>
+                             <FormField control={newThreadForm.control} name="tags" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Tags</FormLabel>
+                                    <FormControl><Input placeholder="e.g., Budget, Europe, Visas" {...field}/></FormControl>
+                                    <FormDescription>Separate tags with a comma.</FormDescription>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}/>
+                            <DialogFooter>
+                                <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                                <Button type="submit">Post Thread</Button>
+                            </DialogFooter>
+                        </form>
+                    </Form>
+                </DialogContent>
+              </Dialog>
             </div>
             <div>
               <Label className="block mb-2 font-medium">Filter by Category</Label>
               <div className="flex flex-wrap gap-x-4 gap-y-2">
-                {forumCategories.map(category => (
+                {["All", ...forumCategories].map(category => (
                   <div key={category} className="flex items-center space-x-2">
                     <Checkbox
                       id={`category-${category.replace(/\s+/g, '-')}`}
@@ -109,7 +217,7 @@ export default function CommunityForumDemoPage() {
                             <AvatarFallback>{thread.authorAvatar}</AvatarFallback>
                          </Avatar>
                          <p className="text-xs font-medium text-primary">{thread.author}</p>
-                         <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                         <Button variant="ghost" size="sm" className="flex items-center gap-1" onClick={() => handleUpvote(thread.id)}>
                             <ThumbsUp className="h-4 w-4" />
                             <span className="font-bold">{thread.upvotes}</span>
                         </Button>
@@ -139,8 +247,8 @@ export default function CommunityForumDemoPage() {
                             <MessageSquare className="inline h-4 w-4"/>{thread.replies} Replies
                         </div>
                         <p className="text-xs mt-1">Last reply: {thread.lastReply}</p>
-                         <Button variant="ghost" size="icon" className="h-7 w-7 mt-1" onClick={() => toast({title: "Bookmark (Demo)", description: "Thread bookmarked!"})}>
-                            <Bookmark className="h-4 w-4"/>
+                         <Button variant="ghost" size="icon" className="h-7 w-7 mt-1" onClick={() => handleBookmark(thread.id)}>
+                            <Bookmark className={cn("h-4 w-4", thread.isBookmarked ? "fill-current text-primary" : "")}/>
                         </Button>
                     </div>
                 </CardContent>
@@ -149,11 +257,6 @@ export default function CommunityForumDemoPage() {
               <p className="text-muted-foreground text-center py-4">No threads match your search or filters.</p>
             )}
           </div>
-          {filteredThreads.length > 0 && ( // Only show if there are some results initially
-            <div className="mt-8 text-center">
-              <Button variant="outline">Load More Threads (Demo)</Button>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>
