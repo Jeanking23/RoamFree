@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building, CreditCard, Video, Bell, Car, Receipt, ThumbsUp, Star, FileUp, PlusCircle, MoreHorizontal } from 'lucide-react'; 
+import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building, CreditCard, Video, Bell, Car, Receipt, ThumbsUp, Star, FileUp, PlusCircle, MoreHorizontal, AlertCircle } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,13 +11,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import Link from 'next/link';
 import { toast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocale } from '@/context/locale-provider';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import withAuth from '@/components/auth/with-auth';
 import { useAuth } from '@/context/auth-provider';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 
 // Mock data - replace with actual data fetching
@@ -311,10 +312,57 @@ const PreferencesTab = () => {
 
 const SecurityTab = () => {
   const [isIdVerified, setIsIdVerified] = useState(mockUser.isIdVerified);
-  const [isVideoIdVerified, setIsVideoIdVerified] = useState(mockUser.isVideoIdVerified);
   const [mfaEnabled, setMfaEnabled] = useState(mockUser.mfaEnabled);
 
-  const handleVideoIdVerification = () => toast({ title: "Video ID Verification (Demo)", description: "Starting video-based ID verification. You might be asked to record a short video and show your ID." });
+  // State for Video Verification
+  const [isVideoIdVerified, setIsVideoIdVerified] = useState(mockUser.isVideoIdVerified);
+  const [isVideoDialogOpen, setIsVideoDialogOpen] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!isVideoDialogOpen) {
+      // Stop video stream when dialog closes
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+      }
+      return;
+    }
+
+    const getCameraPermission = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setHasCameraPermission(true);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings.',
+        });
+      }
+    };
+
+    getCameraPermission();
+  }, [isVideoDialogOpen]);
+
+  const handleVideoVerification = () => {
+    setIsVerifying(true);
+    // Simulate a verification process
+    setTimeout(() => {
+      setIsVerifying(false);
+      setIsVideoIdVerified(true);
+      setIsVideoDialogOpen(false);
+      toast({ title: "Video Verified!", description: "Your identity has been successfully verified via video." });
+    }, 2500); // Simulate 2.5 second verification
+  };
+
   const handleMfaSetup = (checked: boolean) => {
     setMfaEnabled(checked);
     toast({ title: "MFA Setup (Demo)", description: `MFA has been ${checked ? 'enabled' : 'disabled'}.` });
@@ -330,77 +378,110 @@ const SecurityTab = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Security Settings</CardTitle>
-        <CardDescription>Manage your account security options. AI Smart Fraud Detection is active (Demo).</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex items-center justify-between p-4 border rounded-md">
-          <div>
-            <h4 className="font-medium">Standard ID Verification</h4>
-            <p className={`text-sm ${isIdVerified ? "text-green-600" : "text-orange-600"}`}>Status: {isIdVerified ? "Verified" : "Not Verified"}</p>
-            {!isIdVerified && <p className="text-xs text-muted-foreground">Verification is required for listing properties or making certain bookings.</p>}
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Security Settings</CardTitle>
+          <CardDescription>Manage your account security options. AI Smart Fraud Detection is active (Demo).</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between p-4 border rounded-md">
+            <div>
+              <h4 className="font-medium">Standard ID Verification</h4>
+              <p className={`text-sm ${isIdVerified ? "text-green-600" : "text-orange-600"}`}>Status: {isIdVerified ? "Verified" : "Not Verified"}</p>
+              {!isIdVerified && <p className="text-xs text-muted-foreground">Verification is required for listing properties or making certain bookings.</p>}
+            </div>
+            {!isIdVerified ? (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button>Verify ID</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Verify Your Identity</DialogTitle>
+                    <DialogDescription>
+                      Please upload a photo of your government-issued ID. This is a simulation.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleIdSubmit}>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="id-number">ID Number</Label>
+                        <Input id="id-number" placeholder="e.g., A1234567" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="id-photo">Upload ID Photo</Label>
+                        <Input id="id-photo" type="file" required />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                      <DialogClose asChild><Button type="submit">Submit for Verification</Button></DialogClose>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <ShieldCheck className="h-6 w-6 text-green-600" />
+            )}
           </div>
-          {!isIdVerified ? (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>Verify ID</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Verify Your Identity</DialogTitle>
-                  <DialogDescription>
-                    Please upload a photo of your government-issued ID. This is a simulation.
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleIdSubmit}>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="id-number">ID Number</Label>
-                      <Input id="id-number" placeholder="e.g., A1234567" required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="id-photo">Upload ID Photo</Label>
-                      <Input id="id-photo" type="file" required />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
-                    <DialogClose asChild><Button type="submit">Submit for Verification</Button></DialogClose>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
-          ) : (
-            <ShieldCheck className="h-6 w-6 text-green-600" />
-          )}
-        </div>
-        <div className="flex items-center justify-between p-4 border rounded-md">
-          <div>
-            <h4 className="font-medium">Video ID Verification</h4>
+          <div className="flex items-center justify-between p-4 border rounded-md">
+            <div>
+              <h4 className="font-medium">Video ID Verification</h4>
               <p className={`text-sm ${isVideoIdVerified ? "text-green-600" : "text-muted-foreground"}`}>Status: {isVideoIdVerified ? "Video Verified" : "Not Verified"}</p>
-            <p className="text-xs text-muted-foreground">Enhance trust with video-based verification (Demo).</p>
+              <p className="text-xs text-muted-foreground">Enhance trust with video-based verification.</p>
+            </div>
+            {!isVideoIdVerified ? (
+                <Dialog open={isVideoDialogOpen} onOpenChange={setIsVideoDialogOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline"><Video className="mr-2 h-4 w-4"/>Start Video Verification</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                         <DialogHeader>
+                            <DialogTitle>Live Video Verification</DialogTitle>
+                            <DialogDescription>Please center your face in the frame.</DialogDescription>
+                        </DialogHeader>
+                        <div className="my-4 aspect-video bg-muted rounded-md flex items-center justify-center overflow-hidden">
+                            <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                            {hasCameraPermission === false && (
+                                <Alert variant="destructive">
+                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertTitle>Camera Access Required</AlertTitle>
+                                    <AlertDescription>
+                                        Please allow camera access to use this feature.
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild><Button variant="outline" disabled={isVerifying}>Cancel</Button></DialogClose>
+                            <Button onClick={handleVideoVerification} disabled={!hasCameraPermission || isVerifying}>
+                                {isVerifying ? "Verifying..." : "Start Verification"}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+             ) : (
+                <ShieldCheck className="h-6 w-6 text-green-600" />
+             )}
           </div>
-          {!isVideoIdVerified && <Button variant="outline" onClick={handleVideoIdVerification}><Video className="mr-2 h-4 w-4"/>Start Video Verification (Demo)</Button>}
-          {isVideoIdVerified && <ShieldCheck className="h-6 w-6 text-green-600" />}
-        </div>
-        <div className="flex items-center justify-between p-4 border rounded-md">
-          <div>
-            <h4 className="font-medium">Multi-Factor Authentication (MFA)</h4>
-            <p className={`text-sm ${mfaEnabled ? "text-green-600" : "text-muted-foreground"}`}>Status: {mfaEnabled ? "Enabled" : "Disabled"}</p>
-            {!mfaEnabled && <p className="text-xs text-muted-foreground">Enhance your account security by enabling MFA.</p>}
+          <div className="flex items-center justify-between p-4 border rounded-md">
+            <div>
+              <h4 className="font-medium">Multi-Factor Authentication (MFA)</h4>
+              <p className={`text-sm ${mfaEnabled ? "text-green-600" : "text-muted-foreground"}`}>Status: {mfaEnabled ? "Enabled" : "Disabled"}</p>
+              {!mfaEnabled && <p className="text-xs text-muted-foreground">Enhance your account security by enabling MFA.</p>}
+            </div>
+            <Switch checked={mfaEnabled} onCheckedChange={handleMfaSetup} id="mfa-switch"/>
           </div>
-          <Switch checked={mfaEnabled} onCheckedChange={handleMfaSetup} id="mfa-switch"/>
-        </div>
-        <div className="p-4 border rounded-md">
-            <h4 className="font-medium">Password</h4>
-            <p className="text-sm text-muted-foreground mb-2">It's a good practice to use a strong, unique password.</p>
-            <Button variant="outline">Change Password (Demo)</Button>
-        </div>
+          <div className="p-4 border rounded-md">
+              <h4 className="font-medium">Password</h4>
+              <p className="text-sm text-muted-foreground mb-2">It's a good practice to use a strong, unique password.</p>
+              <Button variant="outline">Change Password (Demo)</Button>
+          </div>
           <p className="text-xs text-muted-foreground">Blockchain-based verification for property ownership proof is a future feature.</p>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </>
   );
 };
 
