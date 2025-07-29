@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building, CreditCard, Video, Bell, Car, Receipt, ThumbsUp, Star, FileUp, PlusCircle, MoreHorizontal, AlertCircle } from 'lucide-react'; 
+import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building, CreditCard, Video, Bell, Car, Receipt, ThumbsUp, Star, FileUp, PlusCircle, MoreHorizontal, AlertCircle, Lock } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,6 +19,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import withAuth from '@/components/auth/with-auth';
 import { useAuth } from '@/context/auth-provider';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { changePassword } from '@/lib/auth';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 
 // Mock data - replace with actual data fetching
@@ -310,6 +315,17 @@ const PreferencesTab = () => {
 };
 
 
+const passwordChangeSchema = z.object({
+  currentPassword: z.string().min(6, 'Password must be at least 6 characters.'),
+  newPassword: z.string().min(6, 'New password must be at least 6 characters.'),
+  confirmPassword: z.string(),
+}).refine(data => data.newPassword === data.confirmPassword, {
+  message: "New passwords don't match.",
+  path: ['confirmPassword'],
+});
+type PasswordChangeFormValues = z.infer<typeof passwordChangeSchema>;
+
+
 const SecurityTab = () => {
   const [isIdVerified, setIsIdVerified] = useState(mockUser.isIdVerified);
   const [mfaEnabled, setMfaEnabled] = useState(mockUser.mfaEnabled);
@@ -320,6 +336,13 @@ const SecurityTab = () => {
   const [isVerifying, setIsVerifying] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+
+  const passwordForm = useForm<PasswordChangeFormValues>({
+    resolver: zodResolver(passwordChangeSchema),
+    defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
+  });
+
 
   useEffect(() => {
     if (!isVideoDialogOpen) {
@@ -376,6 +399,25 @@ const SecurityTab = () => {
       toast({ title: "ID Verified!", description: "Your identity has been successfully verified." });
     }, 1000);
   };
+
+  async function onPasswordChangeSubmit(values: PasswordChangeFormValues) {
+    const result = await changePassword(values.currentPassword, values.newPassword);
+    if ('error' in result) {
+      toast({
+        title: 'Password Change Failed',
+        description: result.error,
+        variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: 'Success',
+        description: 'Your password has been changed successfully.',
+      });
+      setIsPasswordDialogOpen(false);
+      passwordForm.reset();
+    }
+  }
+
 
   return (
     <>
@@ -476,7 +518,50 @@ const SecurityTab = () => {
           <div className="p-4 border rounded-md">
               <h4 className="font-medium">Password</h4>
               <p className="text-sm text-muted-foreground mb-2">It's a good practice to use a strong, unique password.</p>
-              <Button variant="outline">Change Password (Demo)</Button>
+               <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="outline">Change Password</Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Change Your Password</DialogTitle>
+                        <DialogDescription>
+                            Enter your current password and a new password below.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Form {...passwordForm}>
+                        <form onSubmit={passwordForm.handleSubmit(onPasswordChangeSubmit)} className="space-y-4 py-4">
+                            <FormField control={passwordForm.control} name="currentPassword" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Current Password</FormLabel>
+                                    <FormControl><Input type="password" icon={<Lock className="h-4 w-4" />} {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                             <FormField control={passwordForm.control} name="newPassword" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>New Password</FormLabel>
+                                    <FormControl><Input type="password" icon={<Lock className="h-4 w-4" />} {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                            <FormField control={passwordForm.control} name="confirmPassword" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Confirm New Password</FormLabel>
+                                    <FormControl><Input type="password" icon={<Lock className="h-4 w-4" />} {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                            <DialogFooter>
+                                <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                                <Button type="submit" disabled={passwordForm.formState.isSubmitting}>
+                                    {passwordForm.formState.isSubmitting ? "Changing..." : "Change Password"}
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </Form>
+                </DialogContent>
+            </Dialog>
           </div>
           <p className="text-xs text-muted-foreground">Blockchain-based verification for property ownership proof is a future feature.</p>
         </CardContent>
