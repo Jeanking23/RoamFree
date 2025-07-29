@@ -310,21 +310,24 @@ const PreferencesTab = () => {
 
 
 const SecurityTab = () => {
-  const [lastLoginTime, setLastLoginTime] = useState<string | null>(null);
+  const [isIdVerified, setIsIdVerified] = useState(mockUser.isIdVerified);
+  const [isVideoIdVerified, setIsVideoIdVerified] = useState(mockUser.isVideoIdVerified);
   const [mfaEnabled, setMfaEnabled] = useState(mockUser.mfaEnabled);
 
-  useEffect(() => {
-    // This code runs only on the client, after the initial render (hydration).
-    setLastLoginTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-  }, []);
-
-  const handleIdVerification = () => toast({ title: "ID Verification (Demo)", description: "Starting ID verification process. This would typically involve uploading documents." });
   const handleVideoIdVerification = () => toast({ title: "Video ID Verification (Demo)", description: "Starting video-based ID verification. You might be asked to record a short video and show your ID." });
   const handleMfaSetup = (checked: boolean) => {
     setMfaEnabled(checked);
     toast({ title: "MFA Setup (Demo)", description: `MFA has been ${checked ? 'enabled' : 'disabled'}.` });
   };
 
+  const handleIdSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Simulate API call
+    setTimeout(() => {
+      setIsIdVerified(true);
+      toast({ title: "ID Verified!", description: "Your identity has been successfully verified." });
+    }, 1000);
+  };
 
   return (
     <Card>
@@ -336,20 +339,51 @@ const SecurityTab = () => {
         <div className="flex items-center justify-between p-4 border rounded-md">
           <div>
             <h4 className="font-medium">Standard ID Verification</h4>
-            <p className={`text-sm ${mockUser.isIdVerified ? "text-green-600" : "text-orange-600"}`}>Status: {mockUser.isIdVerified ? "Verified" : "Not Verified"}</p>
-            {!mockUser.isIdVerified && <p className="text-xs text-muted-foreground">Verification is required for listing properties or making certain bookings.</p>}
+            <p className={`text-sm ${isIdVerified ? "text-green-600" : "text-orange-600"}`}>Status: {isIdVerified ? "Verified" : "Not Verified"}</p>
+            {!isIdVerified && <p className="text-xs text-muted-foreground">Verification is required for listing properties or making certain bookings.</p>}
           </div>
-          {!mockUser.isIdVerified && <Button onClick={handleIdVerification}>Verify ID (Demo)</Button>}
-          {mockUser.isIdVerified && <ShieldCheck className="h-6 w-6 text-green-600" />}
+          {!isIdVerified ? (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>Verify ID</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Verify Your Identity</DialogTitle>
+                  <DialogDescription>
+                    Please upload a photo of your government-issued ID. This is a simulation.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleIdSubmit}>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="id-number">ID Number</Label>
+                      <Input id="id-number" placeholder="e.g., A1234567" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="id-photo">Upload ID Photo</Label>
+                      <Input id="id-photo" type="file" required />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                    <DialogClose asChild><Button type="submit">Submit for Verification</Button></DialogClose>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <ShieldCheck className="h-6 w-6 text-green-600" />
+          )}
         </div>
         <div className="flex items-center justify-between p-4 border rounded-md">
           <div>
             <h4 className="font-medium">Video ID Verification</h4>
-              <p className={`text-sm ${mockUser.isVideoIdVerified ? "text-green-600" : "text-muted-foreground"}`}>Status: {mockUser.isVideoIdVerified ? "Video Verified" : "Not Verified"}</p>
+              <p className={`text-sm ${isVideoIdVerified ? "text-green-600" : "text-muted-foreground"}`}>Status: {isVideoIdVerified ? "Video Verified" : "Not Verified"}</p>
             <p className="text-xs text-muted-foreground">Enhance trust with video-based verification (Demo).</p>
           </div>
-          {!mockUser.isVideoIdVerified && <Button variant="outline" onClick={handleVideoIdVerification}><Video className="mr-2 h-4 w-4"/>Start Video Verification (Demo)</Button>}
-          {mockUser.isVideoIdVerified && <ShieldCheck className="h-6 w-6 text-green-600" />}
+          {!isVideoIdVerified && <Button variant="outline" onClick={handleVideoIdVerification}><Video className="mr-2 h-4 w-4"/>Start Video Verification (Demo)</Button>}
+          {isVideoIdVerified && <ShieldCheck className="h-6 w-6 text-green-600" />}
         </div>
         <div className="flex items-center justify-between p-4 border rounded-md">
           <div>
@@ -366,11 +400,6 @@ const SecurityTab = () => {
         </div>
           <p className="text-xs text-muted-foreground">Blockchain-based verification for property ownership proof is a future feature.</p>
       </CardContent>
-        <CardFooter className="border-t px-6 py-4">
-          <p className="text-xs text-muted-foreground">
-            {lastLoginTime ? `Last login: Today at ${lastLoginTime} (Simulated)` : 'Loading login info...'}
-          </p>
-      </CardFooter>
     </Card>
   );
 };
