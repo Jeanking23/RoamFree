@@ -5,12 +5,12 @@ import { getAuth } from "firebase/auth";
 
 // TODO: Replace with your app's Firebase project configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  "projectId": "roamfree-t03lp",
+  "appId": "1:140284138887:web:25eccd73bfc2eba786af22",
+  "storageBucket": "roamfree-t03lp.appspot.com",
+  "apiKey": "AIzaSyBC5dXUuJS1x_lL8ooozQUycBXkv89FqPw",
+  "authDomain": "roamfree-t03lp.firebaseapp.com",
+  "messagingSenderId": "140284138887"
 };
 
 // Initialize Firebase
