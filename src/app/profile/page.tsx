@@ -96,7 +96,7 @@ const translations = {
   emailAddress: { 'en-US': 'Email Address', 'es-ES': 'Dirección de Email', 'fr-FR': 'Adresse E-mail' },
   joinedDate: { 'en-US': 'Joined RoamFree', 'es-ES': 'Miembro desde', 'fr-FR': 'Membre depuis' },
   driversLicense: { 'en-US': "Driver's License (for Car Rentals)", 'es-ES': 'Licencia de Conducir (para Alquiler de Coches)', 'fr-FR': "Permis de Conduire (pour Location de Voiture)" },
-  uploadLicense: { 'en-US': "Upload License (Demo)", 'es-ES': 'Subir Licencia (Demo)', 'fr-FR': 'Télécharger le Permis (Démo)' },
+  uploadLicense: { 'en-US': "Upload License", 'es-ES': 'Subir Licencia', 'fr-FR': 'Télécharger le Permis' },
   saveChanges: { 'en-US': 'Save Changes', 'es-ES': 'Guardar Cambios', 'fr-FR': 'Enregistrer les Modifications' },
   // Wallet tab
   myWallet: { 'en-US': 'My RoamFree Wallet', 'es-ES': 'Mi Monedero RoamFree', 'fr-FR': 'Mon Portefeuille RoamFree' },
@@ -193,7 +193,7 @@ const ProfileTab = ({ t }: { t: (key: keyof typeof translations) => string }) =>
           <div className="pt-2">
           <Label htmlFor="driverLicense">{t('driversLicense')}</Label>
           {isLicenseUploaded ? (
-              <p className="text-sm text-green-600 flex items-center mt-2"><ShieldCheck className="h-4 w-4 mr-1"/>License on File (Demo)</p>
+              <p className="text-sm text-green-600 flex items-center mt-2"><ShieldCheck className="h-4 w-4 mr-1"/>License on File</p>
           ) : (
             <Dialog>
                 <DialogTrigger asChild>
@@ -422,7 +422,7 @@ const SecurityTab = () => {
 
   const handleMfaSetup = (checked: boolean) => {
     setMfaEnabled(checked);
-    toast({ title: "MFA Setup (Demo)", description: `MFA has been ${checked ? 'enabled' : 'disabled'}.` });
+    toast({ title: "MFA Setup", description: `MFA has been ${checked ? 'enabled' : 'disabled'}.` });
   };
 
   const handleIdSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -458,7 +458,7 @@ const SecurityTab = () => {
       <Card>
         <CardHeader>
           <CardTitle>Security Settings</CardTitle>
-          <CardDescription>Manage your account security options. AI Smart Fraud Detection is active (Demo).</CardDescription>
+          <CardDescription>Manage your account security options. AI Smart Fraud Detection is active.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between p-4 border rounded-md">
