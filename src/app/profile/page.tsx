@@ -311,6 +311,7 @@ const PreferencesTab = () => {
 
 const SecurityTab = () => {
   const [lastLoginTime, setLastLoginTime] = useState<string | null>(null);
+  const [mfaEnabled, setMfaEnabled] = useState(mockUser.mfaEnabled);
 
   useEffect(() => {
     // This code runs only on the client, after the initial render (hydration).
@@ -319,7 +320,11 @@ const SecurityTab = () => {
 
   const handleIdVerification = () => toast({ title: "ID Verification (Demo)", description: "Starting ID verification process. This would typically involve uploading documents." });
   const handleVideoIdVerification = () => toast({ title: "Video ID Verification (Demo)", description: "Starting video-based ID verification. You might be asked to record a short video and show your ID." });
-  const handleMfaSetup = () => toast({ title: "MFA Setup (Demo)", description: "Navigating to Multi-Factor Authentication setup." });
+  const handleMfaSetup = (checked: boolean) => {
+    setMfaEnabled(checked);
+    toast({ title: "MFA Setup (Demo)", description: `MFA has been ${checked ? 'enabled' : 'disabled'}.` });
+  };
+
 
   return (
     <Card>
@@ -349,10 +354,10 @@ const SecurityTab = () => {
         <div className="flex items-center justify-between p-4 border rounded-md">
           <div>
             <h4 className="font-medium">Multi-Factor Authentication (MFA)</h4>
-            <p className={`text-sm ${mockUser.mfaEnabled ? "text-green-600" : "text-muted-foreground"}`}>Status: {mockUser.mfaEnabled ? "Enabled" : "Disabled"}</p>
-            {!mockUser.mfaEnabled && <p className="text-xs text-muted-foreground">Enhance your account security by enabling MFA.</p>}
+            <p className={`text-sm ${mfaEnabled ? "text-green-600" : "text-muted-foreground"}`}>Status: {mfaEnabled ? "Enabled" : "Disabled"}</p>
+            {!mfaEnabled && <p className="text-xs text-muted-foreground">Enhance your account security by enabling MFA.</p>}
           </div>
-          <Switch checked={mockUser.mfaEnabled} onCheckedChange={handleMfaSetup} id="mfa-switch"/>
+          <Switch checked={mfaEnabled} onCheckedChange={handleMfaSetup} id="mfa-switch"/>
         </div>
         <div className="p-4 border rounded-md">
             <h4 className="font-medium">Password</h4>
