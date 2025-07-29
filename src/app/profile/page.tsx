@@ -16,6 +16,8 @@ import { useLocale } from '@/context/locale-provider';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import withAuth from '@/components/auth/with-auth';
+import { useAuth } from '@/context/auth-provider';
 
 
 // Mock data - replace with actual data fetching
@@ -98,7 +100,7 @@ const translations = {
 
 
 // Main Profile Page Component
-export default function ProfilePage() {
+function ProfilePage() {
   const { language, currency } = useLocale();
 
   const t = (key: keyof typeof translations) => {
@@ -143,8 +145,12 @@ export default function ProfilePage() {
   );
 }
 
+export default withAuth(ProfilePage);
+
+
 // Sub-components for each tab
 const ProfileTab = ({ t }: { t: (key: keyof typeof translations) => string }) => {
+  const { user } = useAuth();
   const handleSaveChanges = (section: string) => toast({ title: "Changes Saved (Demo)", description: `Your ${section} have been updated.`});
   const handleUploadLicense = () => toast({ title: "Upload Driver's License (Demo)", description: "Opening file upload for driver's license. This is for car rental verification."});
 
@@ -157,16 +163,16 @@ const ProfileTab = ({ t }: { t: (key: keyof typeof translations) => string }) =>
       <CardContent className="space-y-4">
         <div>
           <Label htmlFor="name">{t('fullName')}</Label>
-          <Input id="name" defaultValue={mockUser.name} />
+          <Input id="name" defaultValue={user?.displayName || ''} />
         </div>
         <div>
           <Label htmlFor="email">{t('emailAddress')}</Label>
-          <Input id="email" type="email" defaultValue={mockUser.email} readOnly />
+          <Input id="email" type="email" defaultValue={user?.email || ''} readOnly />
             <p className="text-xs text-muted-foreground mt-1">Email cannot be changed here.</p>
         </div>
         <div>
           <Label htmlFor="joinDate">{t('joinedDate')}</Label>
-          <Input id="joinDate" defaultValue={new Date(mockUser.joinDate).toLocaleDateString()} readOnly />
+          <Input id="joinDate" defaultValue={user?.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : ''} readOnly />
         </div>
           <div className="pt-2">
           <Label htmlFor="driverLicense">{t('driversLicense')}</Label>

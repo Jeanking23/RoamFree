@@ -1,8 +1,7 @@
 // src/lib/firebase.ts
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-// import { getStorage } from "firebase/storage";
-// import { getAuth } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 // TODO: Replace with your app's Firebase project configuration
 const firebaseConfig = {
@@ -17,7 +16,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
-// const storage = getStorage(app);
-// const auth = getAuth(app);
+const auth = getAuth(app);
 
-export { app, db };
+export { app, db, auth };

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   BedDouble, Car, KeyRound, Landmark, Home, ClipboardList, HelpCircle, Building,
   UserCircle, LayoutDashboard, Heart, Award, MessageSquare, ShieldAlert, Search, Bell,
-  CalendarCheck2, Globe, MapPin, LogOut, Menu, Users, Phone, CarFront, Bus, Truck, Check
+  CalendarCheck2, Globe, MapPin, LogOut, Menu, Users, Phone, CarFront, Bus, Truck, Check, LogIn
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -21,6 +21,9 @@ import { cn } from '@/lib/utils';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocale } from '@/context/locale-provider';
+import { useAuth } from '@/context/auth-provider';
+import { signOut } from '@/lib/auth';
+import { useRouter } from 'next/navigation';
 
 
 // Main navigation items for desktop view
@@ -147,7 +150,15 @@ function LanguageCurrencySelector({ isMobile = false }) {
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const { language } = useLocale();
+  const { user, loading } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({ title: 'Signed Out', description: 'You have been successfully signed out.' });
+    router.push('/');
+  };
 
   const t = (key: keyof typeof sosTranslations) => {
     const langCode = sosTranslations[key][language.code as keyof typeof sosTranslations[keyof typeof sosTranslations]];
@@ -165,9 +176,51 @@ export default function Header() {
 
   const isLinkActive = (itemHref: string) => {
     if (itemHref === '/') return pathname === '/';
-    // For other routes, check if the pathname starts with the href
-    // This makes parent routes active for their sub-routes (e.g., /stays is active for /stays/123)
     return pathname.startsWith(itemHref);
+  };
+
+  const renderUserActions = () => {
+    if (loading) {
+      return null;
+    }
+
+    if (user) {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-9 w-9 relative rounded-full">
+              <Avatar className="h-9 w-9">
+                <AvatarImage src={`https://placehold.co/100x100.png?text=${user.email?.[0].toUpperCase()}`} alt="User Avatar" data-ai-hint="person avatar"/>
+                <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">Logged In</p>
+                <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild><Link href="/profile"><UserCircle className="mr-2 h-4 w-4" />Profile</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/bookings"><CalendarCheck2 className="mr-2 h-4 w-4" />Bookings</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/community-forum-demo"><Users className="mr-2 h-4 w-4" />Community Forum</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/contact-support"><Phone className="mr-2 h-4 w-4" />Contact Support</Link></DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleSignOut}><LogOut className="mr-2 h-4 w-4" />Log out</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+
+    return (
+      <>
+        <Button asChild variant="outline" size="sm"><Link href="/signin">Sign In</Link></Button>
+        <Button asChild size="sm"><Link href="/signup">Register</Link></Button>
+      </>
+    );
   };
 
   return (
@@ -205,38 +258,9 @@ export default function Header() {
         </div>
         <div className="hidden md:flex flex-none items-center justify-end gap-1">
             <LanguageCurrencySelector />
-            
             <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={() => toast({title: "Notifications (Demo)", description:"No new notifications."})}><Bell className="h-5 w-5" /></Button>
-
             <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={() => toast({title: "Messages (Demo)", description:"No new messages."})}><MessageSquare className="h-5 w-5"/></Button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 relative rounded-full">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src="https://placehold.co/100x100.png" alt="User Avatar" data-ai-hint="person avatar"/>
-                    <AvatarFallback>U</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">User (Demo)</p>
-                    <p className="text-xs leading-none text-muted-foreground">user@example.com</p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild><Link href="/profile"><UserCircle className="mr-2 h-4 w-4" />Profile</Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild><Link href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/bookings"><CalendarCheck2 className="mr-2 h-4 w-4" />Bookings</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/community-forum-demo"><Users className="mr-2 h-4 w-4" />Community Forum</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/contact-support"><Phone className="mr-2 h-4 w-4" />Contact Support</Link></DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => toast({title: "Logged out (Demo)"})}><LogOut className="mr-2 h-4 w-4" />Log out</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
+            {renderUserActions()}
             <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 h-9 w-9" aria-label="SOS Emergency" onClick={handleSosClick}><ShieldAlert className="h-5 w-5" /></Button>
         </div>
         
@@ -281,8 +305,23 @@ export default function Header() {
           <Link href="/" className="text-2xl font-extrabold text-primary">RoamFree</Link>
           
           <div className="flex items-center gap-1">
-              <Button variant="ghost" size="icon" onClick={() => toast({title: "Messages (Demo)", description:"No new messages."})}><MessageSquare className="h-5 w-5"/></Button>
-              <Button variant="ghost" size="icon" onClick={() => toast({title: "Notifications (Demo)", description:"No new notifications."})}><Bell className="h-5 w-5" /></Button>
+              {user ? (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="relative rounded-full">
+                            <Avatar className="h-8 w-8">
+                                <AvatarImage src={`https://placehold.co/100x100.png?text=${user.email?.[0].toUpperCase()}`} alt="User Avatar" data-ai-hint="person avatar"/>
+                                <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                         <DropdownMenuItem onClick={handleSignOut}><LogOut className="mr-2 h-4 w-4" />Log out</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button asChild variant="ghost" size="icon"><Link href="/signin"><LogIn className="h-5 w-5"/></Link></Button>
+              )}
               <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}><ShieldAlert className="h-5 w-5" /></Button>
           </div>
         </div>

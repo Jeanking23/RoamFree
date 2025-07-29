@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator'; 
 import { useState } from 'react';
+import withAuth from '@/components/auth/with-auth';
 
 // Mock data - replace with actual data fetching
 const mockListings = [
@@ -31,7 +32,7 @@ const mockAnalytics = {
   popularListing: "Sunny Beachfront Villa",
 };
 
-export default function DashboardPage() {
+function DashboardPage() {
   const [blackoutDates, setBlackoutDates] = useState('');
 
   const handleDeleteListing = (listingId: string, listingName: string) => {
@@ -265,5 +266,7 @@ export default function DashboardPage() {
   );
 }
     
-
+export default withAuth(DashboardPage);
     
+
+```
