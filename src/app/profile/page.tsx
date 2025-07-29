@@ -157,8 +157,17 @@ export default withAuth(ProfilePage);
 // Sub-components for each tab
 const ProfileTab = ({ t }: { t: (key: keyof typeof translations) => string }) => {
   const { user } = useAuth();
+  const [isLicenseUploaded, setIsLicenseUploaded] = useState(mockUser.driverLicenseUploaded);
   const handleSaveChanges = (section: string) => toast({ title: "Changes Saved (Demo)", description: `Your ${section} have been updated.`});
-  const handleUploadLicense = () => toast({ title: "Upload Driver's License (Demo)", description: "Opening file upload for driver's license. This is for car rental verification."});
+  
+  const handleLicenseSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Simulate API call for upload
+    setTimeout(() => {
+        setIsLicenseUploaded(true);
+        toast({ title: "License Uploaded!", description: "Your driver's license has been successfully uploaded." });
+    }, 1000);
+  };
 
   return (
     <Card>
@@ -182,12 +191,36 @@ const ProfileTab = ({ t }: { t: (key: keyof typeof translations) => string }) =>
         </div>
           <div className="pt-2">
           <Label htmlFor="driverLicense">{t('driversLicense')}</Label>
-          {mockUser.driverLicenseUploaded ? (
-              <p className="text-sm text-green-600 flex items-center"><ShieldCheck className="h-4 w-4 mr-1"/>License on File (Demo)</p>
+          {isLicenseUploaded ? (
+              <p className="text-sm text-green-600 flex items-center mt-2"><ShieldCheck className="h-4 w-4 mr-1"/>License on File (Demo)</p>
           ) : (
-              <Button variant="outline" size="sm" onClick={handleUploadLicense} className="mt-1">
-                  <FileUp className="mr-2 h-4 w-4"/> {t('uploadLicense')}
-              </Button>
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="mt-1">
+                        <FileUp className="mr-2 h-4 w-4"/> {t('uploadLicense')}
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Upload Driver's License</DialogTitle>
+                        <DialogDescription>
+                            Please upload a clear photo of your driver's license for car rental verification. This is a simulation.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleLicenseSubmit}>
+                        <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="license-photo">Upload Photo</Label>
+                                <Input id="license-photo" type="file" required />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                            <DialogClose asChild><Button type="submit">Upload</Button></DialogClose>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
           )}
         </div>
       </CardContent>
