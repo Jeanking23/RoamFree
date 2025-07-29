@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building, CreditCard, Video, Bell, Car, Receipt, ThumbsUp, Star, FileUp, PlusCircle, MoreHorizontal, AlertCircle, Lock } from 'lucide-react'; 
+import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building, CreditCard, Video, Bell, Car, Receipt, ThumbsUp, Star, FileUp, PlusCircle, MoreHorizontal, AlertCircle, Lock, Smartphone } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -66,9 +66,10 @@ const mockWalletTransactions = [
 
 interface PaymentMethod {
   id: string;
-  type: string;
-  last4: string;
-  expiry: string;
+  type: 'Visa' | 'MasterCard' | 'Mobile Money' | 'Card';
+  last4?: string;
+  expiry?: string;
+  phone?: string;
   isDefault?: boolean;
 }
 
@@ -614,6 +615,10 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
   const [newCardExpiry, setNewCardExpiry] = useState("");
   const [newCardCVC, setNewCardCVC] = useState("");
 
+  // State for Mobile Money
+  const [isAddMobileMoneyOpen, setIsAddMobileMoneyOpen] = useState(false);
+  const [mobileMoneyNumber, setMobileMoneyNumber] = useState("");
+
 
   const handleTopUpWallet = () => {
     const amount = parseFloat(topUpAmount);
@@ -622,7 +627,7 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
       return;
     }
     const selectedMethod = paymentMethods.find(p => p.id === selectedPaymentId);
-    toast({ title: "Top Up Successful (Demo)", description: `Successfully added ${currency.symbol}${amount.toFixed(2)} to your wallet using your ${selectedMethod?.type} card.` });
+    toast({ title: "Top Up Successful (Demo)", description: `Successfully added ${currency.symbol}${amount.toFixed(2)} to your wallet using your ${selectedMethod?.type}.` });
     setTopUpAmount(""); // Reset amount
   };
 
@@ -663,6 +668,24 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
     setNewCardExpiry("");
     setNewCardCVC("");
     setIsAddCardOpen(false);
+  };
+  
+  const handleSaveMobileMoney = () => {
+    if (mobileMoneyNumber.length < 9) {
+      toast({ title: "Invalid Phone Number", description: "Please enter a valid phone number.", variant: "destructive" });
+      return;
+    }
+    const newMobileMoney: PaymentMethod = {
+      id: `mm${Date.now()}`,
+      type: "Mobile Money",
+      phone: mobileMoneyNumber,
+      isDefault: paymentMethods.length === 0,
+    };
+    setPaymentMethods(prev => [...prev, newMobileMoney]);
+    toast({ title: "Mobile Money Added!", description: `Number ${mobileMoneyNumber} has been added.`});
+    
+    setMobileMoneyNumber("");
+    setIsAddMobileMoneyOpen(false);
   };
 
   return (
@@ -709,10 +732,10 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
                       onClick={() => setSelectedPaymentId(method.id)}
                       className={`p-3 border rounded-md cursor-pointer flex items-center gap-3 transition-colors ${selectedPaymentId === method.id ? 'border-primary ring-2 ring-primary' : 'hover:bg-muted/50'}`}
                     >
-                      <CreditCard className="h-6 w-6 text-muted-foreground" />
+                      {method.type === 'Mobile Money' ? <Smartphone className="h-6 w-6 text-muted-foreground" /> : <CreditCard className="h-6 w-6 text-muted-foreground" />}
                       <div>
-                        <p className="font-medium">{method.type} ending in {method.last4} {method.isDefault && <span className="text-xs text-primary">(Default)</span>}</p>
-                        <p className="text-xs text-muted-foreground">Expires {method.expiry}</p>
+                        <p className="font-medium">{method.type} {method.last4 ? `ending in ${method.last4}` : ''} {method.isDefault && <span className="text-xs text-primary">(Default)</span>}</p>
+                        <p className="text-xs text-muted-foreground">{method.expiry ? `Expires ${method.expiry}` : method.phone}</p>
                       </div>
                     </div>
                   ))}
@@ -736,10 +759,10 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
               <Card key={method.id} className="p-3">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <CreditCard className="h-6 w-6 text-muted-foreground" />
+                    {method.type === 'Mobile Money' ? <Smartphone className="h-6 w-6 text-muted-foreground" /> : <CreditCard className="h-6 w-6 text-muted-foreground" />}
                     <div>
-                      <p className="font-medium">{method.type} ending in {method.last4} {method.isDefault && <span className="text-xs text-primary">(Default)</span>}</p>
-                      <p className="text-xs text-muted-foreground">Expires {method.expiry}</p>
+                      <p className="font-medium">{method.type} {method.last4 ? `ending in ${method.last4}` : ''} {method.isDefault && <span className="text-xs text-primary">(Default)</span>}</p>
+                      <p className="text-xs text-muted-foreground">{method.expiry ? `Expires ${method.expiry}` : method.phone}</p>
                     </div>
                   </div>
                    <DropdownMenu>
@@ -756,40 +779,64 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
                 </div>
               </Card>
             ))}
-            <Dialog open={isAddCardOpen} onOpenChange={setIsAddCardOpen}>
-                <DialogTrigger asChild>
-                    <Button variant="outline" className="w-full">
-                        <PlusCircle className="mr-2 h-4 w-4" /> Add a new payment method
-                    </Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Add New Card</DialogTitle>
-                        <DialogDescription>Your payment information is securely stored.</DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="newCardNumber">Card Number</Label>
-                            <Input id="newCardNumber" value={newCardNumber} onChange={(e) => setNewCardNumber(e.target.value)} placeholder="0000 0000 0000 0000" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col sm:flex-row gap-2">
+                <Dialog open={isAddCardOpen} onOpenChange={setIsAddCardOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full">
+                            <PlusCircle className="mr-2 h-4 w-4" /> Add Card
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Add New Card</DialogTitle>
+                            <DialogDescription>Your payment information is securely stored.</DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
                             <div className="space-y-2">
-                                <Label htmlFor="newCardExpiry">Expiry Date (MM/YY)</Label>
-                                <Input id="newCardExpiry" value={newCardExpiry} onChange={(e) => setNewCardExpiry(e.target.value)} placeholder="MM/YY" />
+                                <Label htmlFor="newCardNumber">Card Number</Label>
+                                <Input id="newCardNumber" value={newCardNumber} onChange={(e) => setNewCardNumber(e.target.value)} placeholder="0000 0000 0000 0000" />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="newCardCVC">CVC</Label>
-                                <Input id="newCardCVC" value={newCardCVC} onChange={(e) => setNewCardCVC(e.target.value)} placeholder="123" />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="newCardExpiry">Expiry Date (MM/YY)</Label>
+                                    <Input id="newCardExpiry" value={newCardExpiry} onChange={(e) => setNewCardExpiry(e.target.value)} placeholder="MM/YY" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="newCardCVC">CVC</Label>
+                                    <Input id="newCardCVC" value={newCardCVC} onChange={(e) => setNewCardCVC(e.target.value)} placeholder="123" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <DialogFooter>
-                        <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-                        <Button onClick={handleSaveCard}>Save Card</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
+                        <DialogFooter>
+                            <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                            <Button onClick={handleSaveCard}>Save Card</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+                <Dialog open={isAddMobileMoneyOpen} onOpenChange={setIsAddMobileMoneyOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full">
+                            <PlusCircle className="mr-2 h-4 w-4" /> Add Mobile Money
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Add Mobile Money</DialogTitle>
+                            <DialogDescription>Enter your phone number to link your account.</DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="mobileMoneyNumber">Phone Number</Label>
+                                <Input id="mobileMoneyNumber" value={mobileMoneyNumber} onChange={(e) => setMobileMoneyNumber(e.target.value)} placeholder="+1 234 567 890" />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                            <Button onClick={handleSaveMobileMoney}>Save Number</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </div>
           </div>
         </div>
 
