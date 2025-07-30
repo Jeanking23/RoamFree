@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -118,12 +119,12 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-end p-0 md:p-6 bg-card rounded-lg">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-end p-0 md:p-6 bg-card rounded-lg">
         <FormField
           control={form.control}
           name="destination"
           render={({ field }) => (
-            <FormItem className="lg:col-span-1 xl:col-span-1">
+            <FormItem className="sm:col-span-2 lg:col-span-1">
               <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Destination</FormLabel>
               <FormControl>
                 <Input placeholder="e.g., Paris, France" {...field} value={field.value || ''} />
@@ -136,7 +137,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           control={form.control}
           name="dateRange"
           render={({ field }) => (
-            <FormItem className="flex flex-col lg:col-span-1 xl:col-span-1">
+            <FormItem className="flex flex-col">
               <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Check-in - Check-out</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -183,7 +184,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           control={form.control}
           name="adults" 
           render={() => ( 
-            <FormItem className="flex flex-col lg:col-span-1 xl:col-span-1">
+            <FormItem className="flex flex-col">
               <FormLabel className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests & Rooms</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -248,7 +249,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           control={form.control}
           name="propertyType"
           render={({ field }) => (
-            <FormItem className="lg:col-span-1 xl:col-span-1">
+            <FormItem>
               <FormLabel className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Property Type</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
@@ -271,7 +272,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           control={form.control}
           name="mood"
           render={({ field }) => (
-            <FormItem className="lg:col-span-1 xl:col-span-1">
+            <FormItem>
               <FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-primary" />Mood (Optional)</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
@@ -291,7 +292,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           )}
         />
 
-        <div className="flex flex-col gap-2 lg:col-span-1 xl:col-span-1 self-end pb-1"> 
+        <div className="flex flex-col gap-2 self-end pb-1 sm:col-span-2 lg:col-span-1"> 
             <FormField
             control={form.control}
             name="wheelchairAccessible"
@@ -325,7 +326,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
         </div>
 
 
-        <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground md:col-span-2 lg:col-span-1 xl:col-span-1">
+        <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground sm:col-span-2 lg:col-span-1">
           <Search className="mr-2 h-4 w-4" /> Search
         </Button>
       </form>
