@@ -22,6 +22,9 @@ import PropertiesMapPlaceholder from '@/components/map/properties-map-placeholde
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 
 const rentalSearchSchema = z.object({
@@ -30,7 +33,8 @@ const rentalSearchSchema = z.object({
   propertyType: z.enum(["ANY", "APARTMENT", "HOUSE", "TOWNHOUSE", "CONDO"]).default("ANY").optional(),
   bedrooms: z.enum(["ANY", "1+", "2+", "3+", "4+"]).default("ANY").optional(),
   bathrooms: z.enum(["ANY", "1+", "2+", "3+"]).default("ANY").optional(),
-  amenities: z.array(z.string()).optional(), 
+  amenities: z.array(z.string()).optional(),
+  moveInDate: z.date().optional(),
 });
 
 type RentalSearchFormValues = z.infer<typeof rentalSearchSchema>;
@@ -49,7 +53,8 @@ export default function RentHomePage() {
         priceRange: [0, 5000],
         bedrooms: "ANY",
         bathrooms: "ANY",
-        amenities: [] 
+        amenities: [],
+        moveInDate: undefined,
     },
   });
 
@@ -156,6 +161,44 @@ export default function RentHomePage() {
                       </div>
                     </PopoverContent>
                   </Popover>
+
+                   <FormField
+                    control={rentalSearchForm.control}
+                    name="moveInDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "h-11 w-[150px] justify-start text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "MMM dd, yyyy")
+                                ) : (
+                                  <span>Move-in by</span>
+                                )}
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <FormField control={rentalSearchForm.control} name="propertyType" render={({ field }) => (<FormItem><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="h-11"><SelectValue placeholder="Property Type" /></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any Type</SelectItem><SelectItem value="APARTMENT">Apartment</SelectItem><SelectItem value="HOUSE">House</SelectItem><SelectItem value="TOWNHOUSE">Townhouse</SelectItem><SelectItem value="CONDO">Condo</SelectItem></SelectContent></Select></FormItem>)} />
                   <FormField control={rentalSearchForm.control} name="bedrooms" render={({ field }) => (<FormItem><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="h-11"><SelectValue placeholder="Beds" /></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any Beds</SelectItem><SelectItem value="1+">1+</SelectItem><SelectItem value="2+">2+</SelectItem><SelectItem value="3+">3+</SelectItem><SelectItem value="4+">4+</SelectItem></SelectContent></Select></FormItem>)} />
