@@ -17,7 +17,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { mockRentalProperties } from '@/lib/mock-data';
-import PropertiesMapPlaceholder from '@/components/map/properties-map-placeholder';
+import PropertiesMap from '@/components/map/properties-map';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
@@ -606,7 +606,7 @@ export default function RentHomePage() {
                  <div className="mt-8">
                     <div className="grid lg:grid-cols-2 gap-6 items-start">
                         <div className="lg:sticky lg:top-24 h-[600px] lg:h-[calc(100vh-8rem)]">
-                            <PropertiesMapPlaceholder rentals={rentals} />
+                            <PropertiesMap properties={rentals} basePath="rent-home"/>
                         </div>
                         <div className="space-y-4 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">
                             {rentals.map(prop => (

@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface PropertiesMapProps {
   properties: MockStay[];
+  basePath: 'buy-property' | 'rent-home';
 }
 
 interface PropertyWithCoords extends MockStay {
@@ -24,7 +25,7 @@ const containerStyle = {
   height: '100%',
 };
 
-export default function PropertiesMap({ properties }: PropertiesMapProps) {
+export default function PropertiesMap({ properties, basePath }: PropertiesMapProps) {
   const { isLoaded, loadError } = useGoogleMaps();
   const [propertiesWithCoords, setPropertiesWithCoords] = useState<PropertyWithCoords[]>([]);
   const [activeMarker, setActiveMarker] = useState<string | null>(null);
@@ -56,6 +57,7 @@ export default function PropertiesMap({ properties }: PropertiesMapProps) {
     const processProperties = async () => {
       const geocodedProperties = await Promise.all(
         properties.map(async (prop) => {
+          if (!prop.location) return null;
           const coords = await geocodeAddress(prop.location);
           return coords ? { ...prop, coords } : null;
         })
@@ -97,51 +99,55 @@ export default function PropertiesMap({ properties }: PropertiesMapProps) {
       zoom={zoom}
       options={{ disableDefaultUI: true, zoomControl: true }}
     >
-      {propertiesWithCoords.map((prop) => (
-        <Marker
-          key={prop.id}
-          position={prop.coords}
-          onClick={() => handleMarkerClick(prop.id)}
-          label={{
-            text: `$${((prop.price ?? 0) / 1000).toFixed(0)}k`,
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '12px',
-          }}
-          icon={{
-             path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z',
-             fillColor: 'hsl(var(--primary))',
-             fillOpacity: 1,
-             strokeWeight: 1,
-             strokeColor: 'white',
-             rotation: 0,
-             scale: 1.5,
-             anchor: new google.maps.Point(12, 24),
-             labelOrigin: new google.maps.Point(12, 10)
-          }}
-        >
-          {activeMarker === prop.id && (
-            <InfoWindow
-              position={prop.coords}
-              onCloseClick={() => setActiveMarker(null)}
+      {propertiesWithCoords.map((prop) => {
+        const price = prop.price ?? prop.pricePerNight;
+        const priceDisplay = price > 1000 ? `${(price / 1000).toFixed(0)}k` : `${price}`;
+        return (
+            <Marker
+            key={prop.id}
+            position={prop.coords}
+            onClick={() => handleMarkerClick(prop.id)}
+            label={{
+                text: `$${priceDisplay}`,
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '12px',
+            }}
+            icon={{
+                path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z',
+                fillColor: 'hsl(var(--primary))',
+                fillOpacity: 1,
+                strokeWeight: 1,
+                strokeColor: 'white',
+                rotation: 0,
+                scale: 1.5,
+                anchor: new google.maps.Point(12, 24),
+                labelOrigin: new google.maps.Point(12, 10)
+            }}
             >
-              <div className="w-48">
-                <div className="relative h-24 w-full mb-2">
-                  <Image src={prop.image} alt={prop.name} fill className="object-cover rounded-t-md" />
+            {activeMarker === prop.id && (
+                <InfoWindow
+                position={prop.coords}
+                onCloseClick={() => setActiveMarker(null)}
+                >
+                <div className="w-48">
+                    <div className="relative h-24 w-full mb-2">
+                    <Image src={prop.image} alt={prop.name} fill className="object-cover rounded-t-md" />
+                    </div>
+                    <div className="p-1">
+                        <h4 className="font-bold text-sm truncate">{prop.name}</h4>
+                        <p className="text-primary font-semibold">${(price).toLocaleString()}{prop.pricePerNight && !prop.price ? '/night' : ''}</p>
+                        <p className="text-xs text-muted-foreground">{prop.bedrooms} bds | {prop.bathrooms} ba</p>
+                        <Button asChild variant="link" size="sm" className="p-0 h-auto mt-1">
+                            <Link href={`/${basePath}/${prop.id}`}>View Details</Link>
+                        </Button>
+                    </div>
                 </div>
-                <div className="p-1">
-                    <h4 className="font-bold text-sm truncate">{prop.name}</h4>
-                    <p className="text-primary font-semibold">${(prop.price ?? 0).toLocaleString()}</p>
-                    <p className="text-xs text-muted-foreground">{prop.bedrooms} bds | {prop.bathrooms} ba</p>
-                    <Button asChild variant="link" size="sm" className="p-0 h-auto mt-1">
-                        <Link href={`/buy-property/${prop.id}`}>View Details</Link>
-                    </Button>
-                </div>
-              </div>
-            </InfoWindow>
-          )}
-        </Marker>
-      ))}
+                </InfoWindow>
+            )}
+            </Marker>
+        )
+      })}
     </GoogleMap>
   );
 }

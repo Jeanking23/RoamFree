@@ -1,5 +1,6 @@
 
 
+
 import Image from 'next/image';
 import { Map } from 'lucide-react';
 import type { MockStay } from '@/lib/mock-data';
