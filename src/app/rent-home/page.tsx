@@ -31,7 +31,7 @@ const rentalSearchSchema = z.object({
   location: z.string().optional(),
   priceRange: z.array(z.number()).optional(),
   propertyType: z.enum(["ANY", "APARTMENT", "HOUSE", "TOWNHOUSE", "CONDO"]).default("ANY").optional(),
-  bedrooms: z.enum(["ANY", "1+", "2+", "3+", "4+"]).default("ANY").optional(),
+  bedrooms: z.enum(["ANY", "1+", "2+", "3+", "4+", "5+"]).default("ANY").optional(),
   bathrooms: z.enum(["ANY", "1+", "2+", "3+", "4+", "5+"]).default("ANY").optional(),
   amenities: z.array(z.string()).optional(),
   moveInDate: z.date().optional(),
@@ -91,6 +91,7 @@ export default function RentHomePage() {
   
   const locationValue = rentalSearchForm.watch('location');
   const bathroomsValue = rentalSearchForm.watch('bathrooms');
+  const bedroomsValue = rentalSearchForm.watch('bedrooms');
 
   return (
     <div className="space-y-8">
@@ -202,7 +203,49 @@ export default function RentHomePage() {
                   />
 
                   <FormField control={rentalSearchForm.control} name="propertyType" render={({ field }) => (<FormItem><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="h-11"><SelectValue placeholder="Property Type" /></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any Type</SelectItem><SelectItem value="APARTMENT">Apartment</SelectItem><SelectItem value="HOUSE">House</SelectItem><SelectItem value="TOWNHOUSE">Townhouse</SelectItem><SelectItem value="CONDO">Condo</SelectItem></SelectContent></Select></FormItem>)} />
-                  <FormField control={rentalSearchForm.control} name="bedrooms" render={({ field }) => (<FormItem><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="h-11"><SelectValue placeholder="Beds" /></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any Beds</SelectItem><SelectItem value="1+">1+</SelectItem><SelectItem value="2+">2+</SelectItem><SelectItem value="3+">3+</SelectItem><SelectItem value="4+">4+</SelectItem></SelectContent></Select></FormItem>)} />
+                  
+                  <FormField control={rentalSearchForm.control} name="bedrooms" render={({ field }) => (
+                    <FormItem>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button type="button" variant="outline" className="h-11">
+                                    {bedroomsValue === 'ANY' ? 'Any Beds' : `${bedroomsValue} Beds`}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80">
+                                <div className="space-y-4">
+                                    <h4 className="font-medium">Bedrooms</h4>
+                                    <div className="flex rounded-md border p-1 bg-muted">
+                                        {(["ANY", "1+", "2+", "3+", "4+", "5+"] as const).map(val => (
+                                            <Button
+                                                key={val}
+                                                type="button"
+                                                variant={field.value === val ? "secondary" : "ghost"}
+                                                onClick={() => field.onChange(val)}
+                                                className="flex-1 h-8 text-sm"
+                                            >
+                                                {val === "ANY" ? "Any" : val}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                    <p className="text-sm text-muted-foreground text-center">Or select bedrooms range</p>
+                                    <div className="flex items-center gap-2">
+                                        <Select>
+                                            <SelectTrigger><SelectValue placeholder="From"/></SelectTrigger>
+                                            <SelectContent>{[1,2,3,4,5].map(i => <SelectItem key={`from-bed-${i}`} value={i.toString()}>{i}</SelectItem>)}</SelectContent>
+                                        </Select>
+                                        <span>-</span>
+                                        <Select>
+                                            <SelectTrigger><SelectValue placeholder="To"/></SelectTrigger>
+                                            <SelectContent>{[1,2,3,4,5].map(i => <SelectItem key={`to-bed-${i}`} value={i.toString()}>{i}</SelectItem>)}</SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </FormItem>
+                  )} />
+
                   <FormField control={rentalSearchForm.control} name="bathrooms" render={({ field }) => (
                     <FormItem>
                         <Popover>
