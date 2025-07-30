@@ -349,7 +349,7 @@ export default function RentHomePage() {
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button type="button" variant="outline" className="h-11">
-                                    {bathroomsValue === 'ANY' ? 'Any Baths' : `${bathroomsValue} Baths`}
+                                    {bathroomsValue === 'ANY' ? 'Baths' : `${bathroomsValue} Baths`}
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-80">
