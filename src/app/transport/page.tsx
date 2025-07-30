@@ -37,42 +37,42 @@ const suggestionItems = [
     {
       title: 'Ride',
       description: 'Request a ride now, or schedule one for later.',
-      imageSrc: 'https://images.unsplash.com/photo-1589828155685-83225f7d91f3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjYXIlMjByb2FkfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1589828155685-83225f7d91f3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjYXIlMjByb2FkfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'car road',
       link: '#ride-booking',
     },
     {
       title: 'Reserve',
       description: 'Advance book a ride up to 30 days.',
-      imageSrc: 'https://images.unsplash.com/photo-1614189839508-8261411697b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjYWxlbmRhciUyMGNhcnxlbnwwfHx8fDE3NTI3Mjc2MDd8MA&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1614189839508-8261411697b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjYWxlbmRhciUyMGNhcnxlbnwwfHx8fDE3NTI3Mjc2MDd8MA&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'calendar car',
       link: '#ride-booking',
     },
     {
       title: 'Rental Cars',
       description: 'Rent a car from a variety of models.',
-      imageSrc: 'https://images.unsplash.com/photo-1581966451257-a5c7c5afa833?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZW50YWwlMjBjYXJzfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1581966451257-a5c7c5afa833?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZW50YWwlMjBjYXJzfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'rental cars',
       link: '/car-rent',
     },
     {
       title: 'Courier',
       description: 'Send packages to friends and family.',
-      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'delivery package',
       link: '/courier-delivery',
     },
     {
       title: 'Food',
       description: 'Get your favorite meals delivered.',
-      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'food delivery',
       link: '#!', // Placeholder link
     },
     {
       title: 'Grocery',
       description: 'Have groceries delivered to your door.',
-      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'grocery bag',
       link: '#!', // Placeholder link
     },
@@ -222,9 +222,10 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
                 <CommandItem
                   key={place.id}
                   onSelect={() => handleSelect(place.address)}
+                  className="group"
                 >
-                  <Star className="mr-2 h-4 w-4" />
-                  {place.name}
+                  <Star className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-amber-400" />
+                  <span className="group-hover:text-foreground">{place.name}</span>
                 </CommandItem>
               ))}
                 <CommandItem onSelect={() => setIsAddPlaceDialogOpen(true)}>
@@ -522,9 +523,20 @@ export default function TransportPage() {
           </div>
           
           <Separator className="my-8" />
+          
+           <div className="block rounded-lg overflow-hidden h-96 lg:hidden mb-8">
+             <InteractiveMapPlaceholder 
+                pickup={pickupLocation} 
+                dropoff={dropoffLocation} 
+                setPickup={setPickupLocation}
+                setDropoff={setDropoffLocation}
+                onMapLoad={(map) => { mapRef.current = map; }}
+                availableVehicles={mockVehicles}
+            />
+          </div>
 
           <div id="ride-booking" className="grid lg:grid-cols-2 gap-8 items-start">
-            <div className="block rounded-lg overflow-hidden h-96 lg:h-[36rem] lg:sticky lg:top-24">
+            <div className="hidden lg:block rounded-lg overflow-hidden h-96 lg:h-[36rem] lg:sticky lg:top-24">
                 <InteractiveMapPlaceholder 
                     pickup={pickupLocation} 
                     dropoff={dropoffLocation} 
