@@ -3,7 +3,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { ClipboardList, HomeIcon, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Search, Bed, Bath, Smile, TvIcon, FileText, CheckCircle, School, Building, Leaf, ShieldCheck, Users, Star, X, SlidersHorizontal, List, Map as MapIcon, Plus } from 'lucide-react';
+import { ClipboardList, HomeIcon, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Search, Bed, Bath, Smile, TvIcon, FileText, CheckCircle, School, Building, Leaf, ShieldCheck, Users, Star, X, SlidersHorizontal, List, Map as MapIcon, Plus, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
