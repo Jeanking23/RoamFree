@@ -47,6 +47,8 @@ const propertyTypes = [
   { id: 'HOUSE', label: 'Single family', icon: HomeIcon },
 ];
 
+const priceOptions = [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000];
+
 export default function RentHomePage() {
   const [rentals, setRentals] = useState(mockRentalProperties);
   const [searchPerformed, setSearchPerformed] = useState(false);
@@ -76,7 +78,7 @@ export default function RentHomePage() {
         }
         if (data.priceRange) {
             const [minPrice, maxPrice] = data.priceRange;
-            if (rental.price && (rental.price < minPrice || (maxPrice < 5000 && rental.price > maxPrice))) {
+            if (rental.price && (rental.price < minPrice || (maxPrice < 10000 && rental.price > maxPrice))) {
                 matches = false;
             }
         }
@@ -101,6 +103,7 @@ export default function RentHomePage() {
   const bathroomsValue = rentalSearchForm.watch('bathrooms');
   const bedroomsValue = rentalSearchForm.watch('bedrooms');
   const propertyTypeValues = rentalSearchForm.watch('propertyType') || [];
+  const priceRangeValue = rentalSearchForm.watch('priceRange') || [0, 5000];
 
 
   return (
@@ -145,10 +148,13 @@ export default function RentHomePage() {
                     <PopoverTrigger asChild>
                       <Button type="button" variant="outline" className="h-11">Price</Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-80">
-                      <div className="space-y-4">
-                          <h4 className="font-medium">Price Range (/month)</h4>
-                           <FormField
+                     <PopoverContent className="w-96 p-0">
+                       <div className="p-4 border-b">
+                         <h4 className="font-medium">Price</h4>
+                         <p className="text-sm text-muted-foreground">Select your monthly budget.</p>
+                       </div>
+                       <div className="p-4 space-y-4">
+                            <FormField
                               control={rentalSearchForm.control}
                               name="priceRange"
                               render={({ field }) => (
@@ -163,14 +169,35 @@ export default function RentHomePage() {
                                         value={field.value}
                                     />
                                   </FormControl>
-                                  <div className="flex justify-between text-xs text-muted-foreground">
-                                      <span>${field.value?.[0]?.toLocaleString() ?? '0'}</span>
-                                      <span>${field.value?.[1]?.toLocaleString() ?? '5000'}{field.value?.[1] === 10000 ? '+' : ''}</span>
-                                  </div>
                                 </FormItem>
                               )}
                             />
-                      </div>
+                            <div className="flex items-center gap-2">
+                                <Select onValueChange={(val) => rentalSearchForm.setValue('priceRange', [Number(val), priceRangeValue[1]])} value={priceRangeValue[0].toString()}>
+                                    <SelectTrigger><SelectValue placeholder="No min"/></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="0">No min</SelectItem>
+                                        {priceOptions.map(p => <SelectItem key={`min-${p}`} value={p.toString()}>${p.toLocaleString()}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <span>-</span>
+                                <Select onValueChange={(val) => rentalSearchForm.setValue('priceRange', [priceRangeValue[0], Number(val)])} value={priceRangeValue[1].toString()}>
+                                    <SelectTrigger><SelectValue placeholder="No max"/></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="10000">No max</SelectItem>
+                                         {priceOptions.map(p => p > 0 && <SelectItem key={`max-${p}`} value={p.toString()}>${p.toLocaleString()}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="rent-specials" />
+                                <Label htmlFor="rent-specials" className="font-normal">Only show listings with rent specials</Label>
+                            </div>
+                       </div>
+                       <div className="flex justify-between items-center p-4 border-t bg-muted/50">
+                            <Button type="button" variant="ghost" onClick={() => rentalSearchForm.setValue('priceRange', [0, 10000])}>Reset</Button>
+                            <Button type="submit">View {rentals.length} results</Button>
+                       </div>
                     </PopoverContent>
                   </Popover>
 
