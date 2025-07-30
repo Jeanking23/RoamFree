@@ -3,7 +3,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { ClipboardList, HomeIcon, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Search, Bed, Bath, Smile, TvIcon, FileText, CheckCircle, School, Building, Leaf, ShieldCheck, Users, Star, X, SlidersHorizontal, List, Map as MapIcon } from 'lucide-react';
+import { ClipboardList, HomeIcon, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Search, Bed, Bath, Smile, TvIcon, FileText, CheckCircle, School, Building, Leaf, ShieldCheck, Users, Star, X, SlidersHorizontal, List, Map as MapIcon, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,6 +21,7 @@ import { mockRentalProperties } from '@/lib/mock-data';
 import PropertiesMapPlaceholder from '@/components/map/properties-map-placeholder';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
 
 
 const rentalSearchSchema = z.object({
@@ -164,9 +165,56 @@ export default function RentHomePage() {
                     <PopoverTrigger asChild>
                       <Button type="button" variant="outline" className="h-11"><SlidersHorizontal className="mr-2 h-4 w-4"/>More</Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-80">
-                       <h4 className="font-medium mb-4">More Filters</h4>
-                       <p className="text-sm text-muted-foreground">Additional filters like move-in date and specific amenities are coming soon.</p>
+                    <PopoverContent className="w-96 p-0">
+                       <div className="p-4 border-b">
+                         <h4 className="font-medium">More Filters</h4>
+                         <p className="text-sm text-muted-foreground">Refine your search with more options.</p>
+                       </div>
+                       <div className="p-4 space-y-4">
+                            <div className="flex items-center justify-between">
+                                <Label>Pet friendly</Label>
+                                <Select>
+                                    <SelectTrigger className="w-[180px]"><SelectValue placeholder="None selected" /></SelectTrigger>
+                                    <SelectContent><SelectItem value="any">Any</SelectItem><SelectItem value="dogs">Dogs allowed</SelectItem><SelectItem value="cats">Cats allowed</SelectItem></SelectContent>
+                                </Select>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <Label>Square feet</Label>
+                                <Select>
+                                    <SelectTrigger className="w-[180px]"><SelectValue placeholder="Any" /></SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="any">Any</SelectItem>
+                                      <SelectItem value="500+">500+ sqft</SelectItem>
+                                      <SelectItem value="1000+">1000+ sqft</SelectItem>
+                                      <SelectItem value="1500+">1500+ sqft</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <Separator />
+                            <div className="flex items-center justify-between">
+                                <Label>Accepts online applications</Label>
+                                <Switch />
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <Label>3D Tours</Label>
+                                <Switch />
+                            </div>
+                             <Separator />
+                            <div>
+                                <h5 className="font-semibold mb-2">Keyword search</h5>
+                                <Input placeholder="Select a keyword below or type here"/>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                    {["Pool", "Water front", "Basement", "Gated", "Pond"].map(keyword => (
+                                        <Button key={keyword} variant="outline" size="sm" type="button"><Plus className="h-4 w-4 mr-1"/>{keyword}</Button>
+                                    ))}
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-2">Note: To increase accuracy, the keyword filter suggests the most commonly searched terms. Results may vary.</p>
+                            </div>
+                       </div>
+                       <div className="flex justify-between items-center p-4 border-t bg-muted/50">
+                            <Button type="button" variant="ghost">Reset</Button>
+                            <Button type="submit">View {rentals.length} results</Button>
+                       </div>
                     </PopoverContent>
                   </Popover>
 
