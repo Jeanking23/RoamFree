@@ -1,4 +1,3 @@
-
 // src/app/transport/page.tsx
 'use client';
 
@@ -525,7 +524,7 @@ export default function TransportPage() {
           <Separator className="my-8" />
 
           <div id="ride-booking" className="grid lg:grid-cols-2 gap-8 items-start">
-            <div className="hidden lg:block rounded-lg overflow-hidden h-96 lg:h-[36rem] sticky top-24">
+            <div className="block rounded-lg overflow-hidden h-96 lg:h-[36rem] lg:sticky lg:top-24">
                 <InteractiveMapPlaceholder 
                     pickup={pickupLocation} 
                     dropoff={dropoffLocation} 
@@ -644,7 +643,7 @@ export default function TransportPage() {
        
       <Card className="relative overflow-hidden group rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
         <Image 
-          src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+          src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib-rb-4.1.0&q=80&w=1080"
           alt="AI Trip Planner background"
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
@@ -701,5 +700,3 @@ export default function TransportPage() {
     </div>
   );
 }
-
-    
