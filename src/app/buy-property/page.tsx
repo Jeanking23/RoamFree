@@ -20,7 +20,7 @@ import { mockSaleProperties } from '@/lib/mock-data'; // Import mock data
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import PropertiesMapPlaceholder from '@/components/map/properties-map-placeholder';
+import PropertiesMap from '@/components/map/properties-map';
 
 
 const propertySearchSchema = z.object({
@@ -228,7 +228,7 @@ export default function BuyPropertyPage() {
                 {properties.length > 0 ? (
                     <div className="grid lg:grid-cols-2 gap-6 items-start">
                         <div className="lg:sticky lg:top-24 h-[600px] lg:h-[calc(100vh-8rem)]">
-                            <PropertiesMapPlaceholder rentals={properties} />
+                            <PropertiesMap properties={properties} />
                         </div>
                         <div className="space-y-4 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">
                             {properties.map(prop => (
