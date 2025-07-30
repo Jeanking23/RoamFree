@@ -25,12 +25,13 @@ import { Switch } from '@/components/ui/switch';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { Checkbox } from '@/components/ui/checkbox';
 
 
 const rentalSearchSchema = z.object({
   location: z.string().optional(),
   priceRange: z.array(z.number()).optional(),
-  propertyType: z.enum(["ANY", "APARTMENT", "HOUSE", "TOWNHOUSE", "CONDO"]).default("ANY").optional(),
+  propertyType: z.array(z.string()).optional(),
   bedrooms: z.enum(["ANY", "1+", "2+", "3+", "4+", "5+"]).default("ANY").optional(),
   bathrooms: z.enum(["ANY", "1+", "2+", "3+", "4+", "5+"]).default("ANY").optional(),
   amenities: z.array(z.string()).optional(),
@@ -38,6 +39,13 @@ const rentalSearchSchema = z.object({
 });
 
 type RentalSearchFormValues = z.infer<typeof rentalSearchSchema>;
+
+const propertyTypes = [
+  { id: 'APARTMENT', label: 'Apartment', icon: Building },
+  { id: 'TOWNHOUSE', label: 'Townhome', icon: HomeIcon },
+  { id: 'CONDO', label: 'Condo', icon: Building },
+  { id: 'HOUSE', label: 'Single family', icon: HomeIcon },
+];
 
 export default function RentHomePage() {
   const [rentals, setRentals] = useState(mockRentalProperties);
@@ -48,7 +56,7 @@ export default function RentHomePage() {
   const rentalSearchForm = useForm<RentalSearchFormValues>({
     resolver: zodResolver(rentalSearchSchema),
     defaultValues: { 
-        propertyType: "ANY", 
+        propertyType: [], 
         location: "", 
         priceRange: [0, 5000],
         bedrooms: "ANY",
@@ -72,7 +80,7 @@ export default function RentHomePage() {
                 matches = false;
             }
         }
-        if (data.propertyType !== "ANY" && rental.category?.toLowerCase() !== data.propertyType?.toLowerCase()) {
+        if (data.propertyType && data.propertyType.length > 0 && !data.propertyType.includes(rental.category?.toUpperCase() as string)) {
             matches = false;
         }
         
@@ -92,6 +100,8 @@ export default function RentHomePage() {
   const locationValue = rentalSearchForm.watch('location');
   const bathroomsValue = rentalSearchForm.watch('bathrooms');
   const bedroomsValue = rentalSearchForm.watch('bedrooms');
+  const propertyTypeValues = rentalSearchForm.watch('propertyType') || [];
+
 
   return (
     <div className="space-y-8">
@@ -202,7 +212,68 @@ export default function RentHomePage() {
                     )}
                   />
 
-                  <FormField control={rentalSearchForm.control} name="propertyType" render={({ field }) => (<FormItem><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="h-11"><SelectValue placeholder="Property Type" /></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any Type</SelectItem><SelectItem value="APARTMENT">Apartment</SelectItem><SelectItem value="HOUSE">House</SelectItem><SelectItem value="TOWNHOUSE">Townhouse</SelectItem><SelectItem value="CONDO">Condo</SelectItem></SelectContent></Select></FormItem>)} />
+                  <FormField control={rentalSearchForm.control} name="propertyType" render={({ field }) => (
+                    <FormItem>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button type="button" variant="outline" className="h-11">
+                                    {propertyTypeValues.length === 0 ? 'Any Type' : propertyTypeValues.length === 1 ? propertyTypes.find(p => p.id === propertyTypeValues[0])?.label : `${propertyTypeValues.length} types`}
+                                </Button>
+                            </PopoverTrigger>
+                             <PopoverContent className="w-80 p-0">
+                                <div className="p-4 border-b">
+                                    <h4 className="font-medium">Property type</h4>
+                                </div>
+                                <div className="p-2 space-y-1">
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        onClick={() => field.onChange([])}
+                                        className={cn("w-full justify-between h-12 text-base", propertyTypeValues.length === 0 && "bg-accent text-accent-foreground")}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <HomeIcon className="h-5 w-5"/> Any
+                                        </div>
+                                        {propertyTypeValues.length === 0 && <Check className="h-5 w-5"/>}
+                                    </Button>
+                                    {propertyTypes.map(item => (
+                                        <FormField
+                                            key={item.id}
+                                            control={rentalSearchForm.control}
+                                            name="propertyType"
+                                            render={({ field }) => (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    className="w-full justify-between h-12 text-base font-normal"
+                                                    onClick={() => {
+                                                        const currentValues = field.value || [];
+                                                        const newValues = currentValues.includes(item.id)
+                                                            ? currentValues.filter(v => v !== item.id)
+                                                            : [...currentValues, item.id];
+                                                        field.onChange(newValues);
+                                                    }}
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <item.icon className="h-5 w-5"/> {item.label}
+                                                    </div>
+                                                    <Checkbox
+                                                        checked={field.value?.includes(item.id)}
+                                                        className="h-5 w-5"
+                                                    />
+                                                </Button>
+                                            )}
+                                        />
+                                    ))}
+                                </div>
+                                <div className="flex justify-between items-center p-4 border-t bg-muted/50">
+                                    <Button type="button" variant="link" className="px-0" onClick={() => field.onChange([])}>Reset</Button>
+                                    <Button type="submit">View {rentals.length} results</Button>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </FormItem>
+                  )} />
                   
                   <FormField control={rentalSearchForm.control} name="bedrooms" render={({ field }) => (
                     <FormItem>
