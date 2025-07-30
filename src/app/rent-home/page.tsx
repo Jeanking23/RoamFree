@@ -539,15 +539,15 @@ export default function RentHomePage() {
             </form>
           </Form>
           
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-             <div>
+          <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end gap-4 mb-6">
+             <div className="text-center sm:text-left">
                 <h3 className="text-2xl font-semibold text-foreground">
                     Apartments and homes for rent {locationValue ? `in ${locationValue}`: ''}
                 </h3>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center justify-center sm:justify-start gap-4 text-sm text-muted-foreground mt-1">
                     <span>{rentals.length} Rentals</span>
                     <Select defaultValue="best_match">
-                        <SelectTrigger className="h-auto p-0 border-0 bg-transparent focus:ring-0 focus:ring-offset-0">
+                        <SelectTrigger className="h-auto p-0 border-0 bg-transparent focus:ring-0 focus:ring-offset-0 w-auto">
                             <span className="mr-1">Sort by:</span>
                             <SelectValue />
                         </SelectTrigger>
@@ -560,7 +560,7 @@ export default function RentHomePage() {
                     </Select>
                 </div>
              </div>
-             <div className="bg-muted p-1 rounded-full flex items-center self-end">
+             <div className="bg-muted p-1 rounded-full flex items-center self-center sm:self-end">
                 <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="sm" onClick={() => setViewMode('list')} className="rounded-full"><List className="mr-2 h-4 w-4"/>List</Button>
                 <Button variant={viewMode === 'map' ? 'secondary' : 'ghost'} size="sm" onClick={() => setViewMode('map')} className="rounded-full"><MapIcon className="mr-2 h-4 w-4"/>Map</Button>
             </div>
