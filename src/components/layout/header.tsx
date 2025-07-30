@@ -24,6 +24,7 @@ import { useLocale } from '@/context/locale-provider';
 import { useAuth } from '@/context/auth-provider';
 import { signOut } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 // Main navigation items for desktop view
@@ -270,35 +271,39 @@ export default function Header() {
             <SheetTrigger asChild>
                 <Button variant="ghost" size="icon"><Menu className="h-5 w-5" /></Button>
             </SheetTrigger>
-            <SheetContent side="left">
-                  <Link href="/" className="text-3xl font-extrabold text-primary mb-8 block">RoamFree</Link>
-                  <nav className="flex flex-col gap-4">
-                    {mainNavItems.map((item) => {
-                      const translatedLabel = navTranslations[item.label]?.[language.code] || item.label;
-                      return (
-                        <Link key={item.label} href={item.href} className={`flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted ${isLinkActive(item.href) ? 'bg-muted font-semibold' : ''}`}>
-                            <item.icon className="h-5 w-5 text-primary" />
-                            <span className="text-lg">{translatedLabel}</span>
-                        </Link>
-                      )
-                    })}
-                    <Separator className="my-2" />
-                      <Link href="/bus-transportation" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Bus className="h-5 w-5 text-primary" /><span className="text-lg">Bus Tickets</span></Link>
-                      <Link href="/courier-delivery" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Truck className="h-5 w-5 text-primary" /><span className="text-lg">Courier</span></Link>
-                    <Separator className="my-2"/>
-                      <div className="px-0">
-                          <Button variant="ghost" className='w-full justify-start flex items-center gap-2 p-2 h-auto text-base' onClick={() => {
-                              const popoverTrigger = document.querySelector('#desktop-lang-currency-selector');
-                              if(popoverTrigger) (popoverTrigger as HTMLElement).click();
-                           }}>
-                            <Globe className="h-5 w-5 text-primary" />Language & Currency
-                          </Button>
-                      </div>
-                    <Separator className="my-2"/>
-                      <Link href="/community-forum-demo" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Users className="h-5 w-5 text-primary" /><span className="text-lg">Forum</span></Link>
-                      <Link href="/contact-support" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Phone className="h-5 w-5 text-primary" /><span className="text-lg">Contact</span></Link>
-                      <Link href="/profile" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><UserCircle className="h-5 w-5 text-primary" /><span className="text-lg">My Account</span></Link>
-                  </nav>
+            <SheetContent side="left" className="flex flex-col p-0">
+                  <div className="p-6">
+                    <Link href="/" className="text-3xl font-extrabold text-primary mb-8 block">RoamFree</Link>
+                  </div>
+                  <ScrollArea className="flex-1">
+                    <nav className="flex flex-col gap-4 px-6">
+                      {mainNavItems.map((item) => {
+                        const translatedLabel = navTranslations[item.label]?.[language.code] || item.label;
+                        return (
+                          <Link key={item.label} href={item.href} className={`flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted ${isLinkActive(item.href) ? 'bg-muted font-semibold' : ''}`}>
+                              <item.icon className="h-5 w-5 text-primary" />
+                              <span className="text-lg">{translatedLabel}</span>
+                          </Link>
+                        )
+                      })}
+                      <Separator className="my-2" />
+                        <Link href="/bus-transportation" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Bus className="h-5 w-5 text-primary" /><span className="text-lg">Bus Tickets</span></Link>
+                        <Link href="/courier-delivery" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Truck className="h-5 w-5 text-primary" /><span className="text-lg">Courier</span></Link>
+                      <Separator className="my-2"/>
+                        <div className="px-0">
+                            <Button variant="ghost" className='w-full justify-start flex items-center gap-2 p-2 h-auto text-base' onClick={() => {
+                                const popoverTrigger = document.querySelector('#desktop-lang-currency-selector');
+                                if(popoverTrigger) (popoverTrigger as HTMLElement).click();
+                            }}>
+                              <Globe className="h-5 w-5 text-primary" />Language & Currency
+                            </Button>
+                        </div>
+                      <Separator className="my-2"/>
+                        <Link href="/community-forum-demo" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Users className="h-5 w-5 text-primary" /><span className="text-lg">Forum</span></Link>
+                        <Link href="/contact-support" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Phone className="h-5 w-5 text-primary" /><span className="text-lg">Contact</span></Link>
+                        <Link href="/profile" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><UserCircle className="h-5 w-5 text-primary" /><span className="text-lg">My Account</span></Link>
+                    </nav>
+                  </ScrollArea>
             </SheetContent>
           </Sheet>
           
