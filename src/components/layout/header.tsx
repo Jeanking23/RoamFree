@@ -305,6 +305,8 @@ export default function Header() {
           <Link href="/" className="text-2xl font-extrabold text-primary">RoamFree</Link>
           
           <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={() => toast({title: "Notifications (Demo)", description:"No new notifications."})}><Bell className="h-5 w-5" /></Button>
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={() => toast({title: "Messages (Demo)", description:"No new messages."})}><MessageSquare className="h-5 w-5"/></Button>
               {user ? (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
