@@ -244,7 +244,7 @@ export default function RentHomePage() {
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button type="button" variant="outline" className="h-11">
-                                    {propertyTypeValues.length === 0 ? 'Any Type' : propertyTypeValues.length === 1 ? propertyTypes.find(p => p.id === propertyTypeValues[0])?.label : `${propertyTypeValues.length} types`}
+                                    {propertyTypeValues.length === 0 ? 'Property type' : propertyTypeValues.length === 1 ? propertyTypes.find(p => p.id === propertyTypeValues[0])?.label : `${propertyTypeValues.length} types`}
                                 </Button>
                             </PopoverTrigger>
                              <PopoverContent className="w-80 p-0">
