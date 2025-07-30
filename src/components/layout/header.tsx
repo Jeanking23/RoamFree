@@ -327,7 +327,19 @@ export default function Header() {
                     </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button asChild variant="ghost" size="icon"><Link href="/signin"><LogIn className="h-5 w-5"/></Link></Button>
+                <Button asChild variant="ghost" size="icon"><Link href="/signin">
+                  <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6">
+                    <defs>
+                      <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style={{stopColor: 'rgb(216, 138, 255)', stopOpacity: 1}} />
+                        <stop offset="100%" style={{stopColor: 'rgb(85, 85, 255)', stopOpacity: 1}} />
+                      </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="48" fill="url(#grad1)" />
+                    <circle cx="50" cy="38" r="15" stroke="white" strokeWidth="4" fill="none"/>
+                    <path d="M 20 85 A 30 30 0 0 1 80 85" stroke="white" strokeWidth="4" fill="none" />
+                  </svg>
+                </Link></Button>
               )}
               <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}><ShieldAlert className="h-5 w-5" /></Button>
           </div>
