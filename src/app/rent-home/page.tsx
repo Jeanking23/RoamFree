@@ -1,9 +1,8 @@
-
 // src/app/rent-home/page.tsx
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { ClipboardList, HomeIcon, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Search, Bed, Bath, Smile, TvIcon, FileText, CheckCircle, School, Building, Leaf, ShieldCheck, Users, Star, X, SlidersHorizontal, List, Map as MapIcon, Plus, Check } from 'lucide-react';
+import { ClipboardList, HomeIcon, DollarSign, MapPin, Maximize, Layers, CalendarDays, Phone, Search, Bed, Bath, Smile, TvIcon, FileText, CheckCircle, School, Building, Leaf, ShieldCheck, Users, Star, X, SlidersHorizontal, List, Map as MapIcon, Plus, Check, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +25,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from '@/components/ui/sheet';
 
 
 const rentalSearchSchema = z.object({
@@ -121,7 +121,8 @@ export default function RentHomePage() {
         <CardContent className="p-6">
           <Form {...rentalSearchForm}>
             <form onSubmit={rentalSearchForm.handleSubmit(onRentalSearchSubmit)}>
-              <div className="flex flex-wrap items-center gap-2 mb-4">
+              {/* Desktop & Tablet Search Form */}
+              <div className="hidden md:flex flex-wrap items-center gap-2 mb-4">
                   <FormField
                     control={rentalSearchForm.control}
                     name="location"
@@ -445,6 +446,96 @@ export default function RentHomePage() {
 
                   <Button type="button" variant="outline" className="h-11 rounded-full" onClick={() => toast({title: "Search Saved!", description: "Your current search filters have been saved."})}>Save Search</Button>
               </div>
+
+              {/* Mobile Search Form */}
+               <div className="md:hidden flex items-center gap-2 mb-4">
+                  <FormField
+                    control={rentalSearchForm.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem className="flex-grow">
+                        <FormControl>
+                          <div className="relative">
+                            <Input placeholder="Newark, DE" {...field} value={field.value || ''} className="h-11 pl-4 pr-16 rounded-full"/>
+                            {field.value && (
+                                <Button type="button" variant="ghost" size="icon" className="absolute right-10 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full" onClick={() => field.onChange('')}>
+                                    <X className="h-4 w-4"/>
+                                </Button>
+                            )}
+                            <Button type="submit" size="icon" className="absolute right-1.5 top-1/2 -translate-y-1/2 h-8 w-8 bg-foreground hover:bg-foreground/80 rounded-full">
+                                <Search className="h-4 w-4 text-background"/>
+                            </Button>
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <Sheet>
+                      <SheetTrigger asChild>
+                          <Button type="button" variant="outline" className="h-11 flex-shrink-0">
+                              <Filter className="h-4 w-4 mr-0 sm:mr-2" />
+                              <span className="hidden sm:inline">Filter</span>
+                          </Button>
+                      </SheetTrigger>
+                      <SheetContent>
+                          <SheetHeader>
+                              <SheetTitle>Filters</SheetTitle>
+                          </SheetHeader>
+                          <div className="py-4 space-y-6 overflow-y-auto h-[calc(100%-120px)] pr-4">
+                              {/* All filter popover contents go here */}
+                               <div>
+                                  <h4 className="font-medium mb-2">Price</h4>
+                                  <div className="p-4 space-y-4 border rounded-md">
+                                    <FormField control={rentalSearchForm.control} name="priceRange" render={({ field }) => (<FormItem><FormControl><Slider defaultValue={[0, 5000]} min={0} max={10000} step={100} onValueChange={field.onChange} value={field.value} /></FormControl></FormItem>)} />
+                                    <div className="flex items-center gap-2">
+                                        <Select onValueChange={(val) => rentalSearchForm.setValue('priceRange', [Number(val), priceRangeValue[1]])} value={priceRangeValue[0].toString()}>
+                                            <SelectTrigger><SelectValue placeholder="No min"/></SelectTrigger>
+                                            <SelectContent>{priceOptions.map(p => <SelectItem key={`min-mob-${p}`} value={p.toString()}>${p.toLocaleString()}</SelectItem>)}</SelectContent>
+                                        </Select><span>-</span>
+                                        <Select onValueChange={(val) => rentalSearchForm.setValue('priceRange', [priceRangeValue[0], Number(val)])} value={priceRangeValue[1].toString()}>
+                                            <SelectTrigger><SelectValue placeholder="No max"/></SelectTrigger>
+                                            <SelectContent><SelectItem value="10000">No max</SelectItem>{priceOptions.map(p => p > 0 && <SelectItem key={`max-mob-${p}`} value={p.toString()}>${p.toLocaleString()}</SelectItem>)}</SelectContent>
+                                        </Select>
+                                    </div>
+                                  </div>
+                               </div>
+                               <div>
+                                  <h4 className="font-medium mb-2">Beds & Baths</h4>
+                                  <div className="p-4 space-y-4 border rounded-md">
+                                    <FormField control={rentalSearchForm.control} name="bedrooms" render={({ field }) => (<FormItem><FormLabel>Bedrooms</FormLabel><div className="flex rounded-md border p-1 bg-muted">{(["ANY", "1+", "2+", "3+", "4+", "5+"] as const).map(val => (<Button key={val} type="button" variant={field.value === val ? "secondary" : "ghost"} onClick={() => field.onChange(val)} className="flex-1 h-8 text-xs">{val === "ANY" ? "Any" : val}</Button>))}</div></FormItem>)} />
+                                    <FormField control={rentalSearchForm.control} name="bathrooms" render={({ field }) => (<FormItem><FormLabel>Bathrooms</FormLabel><div className="flex rounded-md border p-1 bg-muted">{(["ANY", "1+", "2+", "3+", "4+", "5+"] as const).map(val => (<Button key={val} type="button" variant={field.value === val ? "secondary" : "ghost"} onClick={() => field.onChange(val)} className="flex-1 h-8 text-xs">{val === "ANY" ? "Any" : val}</Button>))}</div></FormItem>)} />
+                                  </div>
+                               </div>
+                               <div>
+                                  <h4 className="font-medium mb-2">Property Type</h4>
+                                  <div className="p-2 space-y-1 border rounded-md">
+                                    {propertyTypes.map(item => (
+                                        <FormField key={item.id} control={rentalSearchForm.control} name="propertyType"
+                                            render={({ field }) => (
+                                                <Button type="button" variant="ghost" className="w-full justify-between h-12 text-base font-normal"
+                                                    onClick={() => {
+                                                        const currentValues = field.value || [];
+                                                        const newValues = currentValues.includes(item.id) ? currentValues.filter(v => v !== item.id) : [...currentValues, item.id];
+                                                        field.onChange(newValues);
+                                                    }}>
+                                                    <div className="flex items-center gap-2"><item.icon className="h-5 w-5"/> {item.label}</div>
+                                                    <Checkbox checked={field.value?.includes(item.id)} className="h-5 w-5"/>
+                                                </Button>
+                                            )}
+                                        />
+                                    ))}
+                                  </div>
+                               </div>
+                          </div>
+                          <SheetFooter>
+                              <SheetClose asChild>
+                                  <Button type="submit" className="w-full">View {rentals.length} results</Button>
+                              </SheetClose>
+                          </SheetFooter>
+                      </SheetContent>
+                  </Sheet>
+               </div>
+
             </form>
           </Form>
           
