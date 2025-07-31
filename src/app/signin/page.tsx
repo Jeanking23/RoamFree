@@ -16,12 +16,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Mail, Lock, LogIn } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signIn, signInWithGoogle } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { Separator } from '@/components/ui/separator';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 const signInSchema = z.object({
   email: z.string().email('Invalid email address.'),
@@ -48,9 +49,24 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     );
 }
 
+const slideshowImages = [
+  { url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", hint: "travel mountains" },
+  { url: "https://images.unsplash.com/photo-1507525428034-b723a9ce6890?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMHN1bnJpc2V8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", hint: "beach sunrise" },
+  { url: "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwwfHx8fDE3NTI4MTQxMzB8MA&ixlib=rb-4.1.0&q=80&w=1080", hint: "mountain landscape" },
+  { url: "https://images.unsplash.com/photo-1519010470956-6d877008eaa4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjaXR5c2NhcGUlMjBhJ25pZ2h0fGVufDB8fHx8MTc1MjgwMzcwN3ww&ixlib=rb-4.1.0&q=80&w=1080", hint: "cityscape night" },
+];
+
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const slideshowTimer = setInterval(() => {
+      setCurrentImageIndex(prevIndex => (prevIndex + 1) % slideshowImages.length);
+    }, 5000);
+    return () => clearInterval(slideshowTimer);
+  }, []);
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -98,8 +114,28 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-muted/30">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="relative flex items-center justify-center min-h-screen bg-background overflow-hidden">
+       <AnimatePresence>
+        <motion.div
+          key={currentImageIndex}
+          className="absolute inset-0 z-0"
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.5, ease: 'easeInOut' }}
+        >
+          <Image 
+            src={slideshowImages[currentImageIndex].url}
+            alt="RoamFree background" 
+            fill
+            className="object-cover"
+            data-ai-hint={slideshowImages[currentImageIndex].hint}
+            priority
+          />
+        </motion.div>
+      </AnimatePresence>
+      <div className="absolute inset-0 bg-black/50 z-10"></div>
+      <Card className="w-full max-w-md shadow-lg z-20 bg-background/80 backdrop-blur-sm border-border/50">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-headline text-primary">Welcome Back</CardTitle>
           <CardDescription>Sign in to your RoamFree account</CardDescription>
@@ -111,10 +147,10 @@ export default function SignInPage() {
             </Button>
             <div className="relative mb-6">
                 <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
+                    <span className="w-full border-t border-border/50" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                    <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
                 </div>
             </div>
           <Form {...form}>
