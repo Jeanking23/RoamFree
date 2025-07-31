@@ -119,12 +119,12 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-end p-0 md:p-6 bg-card rounded-lg">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end p-0 md:p-6 bg-card rounded-lg">
         <FormField
           control={form.control}
           name="destination"
           render={({ field }) => (
-            <FormItem className="md:col-span-2 lg:col-span-1">
+            <FormItem>
               <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Destination</FormLabel>
               <FormControl>
                 <Input placeholder="e.g., Paris, France" {...field} value={field.value || ''} />
@@ -244,87 +244,86 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-2 gap-4 md:col-span-2 lg:col-span-3 xl:col-span-1">
-            <FormField
-            control={form.control}
-            name="propertyType"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                    <SelectItem value="ANY">Any</SelectItem>
-                    <SelectItem value="HOTEL">Hotel</SelectItem>
-                    <SelectItem value="RENTAL">Rental</SelectItem>
-                    </SelectContent>
-                </Select>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            <FormField
-            control={form.control}
-            name="mood"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-primary" />Mood</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select mood" />
-                    </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                    <SelectItem value="ANY">Any</SelectItem>
-                    <SelectItem value="PEACEFUL">Peaceful</SelectItem>
-                    <SelectItem value="ROMANTIC">Romantic</SelectItem>
-                    <SelectItem value="ADVENTUROUS">Adventurous</SelectItem>
-                    </SelectContent>
-                </Select>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-        </div>
-        <div className="grid grid-cols-2 gap-4 pt-6 md:col-span-full xl:col-span-2"> 
-            <FormField
-            control={form.control}
-            name="wheelchairAccessible"
-            render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                <FormControl>
-                    <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    />
-                </FormControl>
-                <FormLabel className="font-normal flex items-center gap-2 text-sm"><Accessibility className="h-4 w-4 text-primary"/>Accessible</FormLabel>
-                </FormItem>
-            )}
-            />
-            <FormField
-            control={form.control}
-            name="ecoFriendly"
-            render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                <FormControl>
-                    <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    />
-                </FormControl>
-                <FormLabel className="font-normal flex items-center gap-2 text-sm"><Leaf className="h-4 w-4 text-primary"/>Eco-Friendly</FormLabel>
-                </FormItem>
-            )}
-            />
-        </div>
 
-        <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground md:col-span-full xl:col-span-2">
+        <FormField
+          control={form.control}
+          name="propertyType"
+          render={({ field }) => (
+              <FormItem>
+              <FormLabel className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Type</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                  <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                  <SelectItem value="ANY">Any</SelectItem>
+                  <SelectItem value="HOTEL">Hotel</SelectItem>
+                  <SelectItem value="RENTAL">Rental</SelectItem>
+                  </SelectContent>
+              </Select>
+              <FormMessage />
+              </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="mood"
+          render={({ field }) => (
+              <FormItem>
+              <FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-primary" />Mood</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                  <SelectTrigger>
+                      <SelectValue placeholder="Select mood" />
+                  </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                  <SelectItem value="ANY">Any</SelectItem>
+                  <SelectItem value="PEACEFUL">Peaceful</SelectItem>
+                  <SelectItem value="ROMANTIC">Romantic</SelectItem>
+                  <SelectItem value="ADVENTUROUS">Adventurous</SelectItem>
+                  </SelectContent>
+              </Select>
+              <FormMessage />
+              </FormItem>
+          )}
+        />
+        <div className="flex items-end space-x-4">
+            <FormField
+              control={form.control}
+              name="wheelchairAccessible"
+              render={({ field }) => (
+                  <FormItem className="flex flex-row items-center space-x-2 space-y-0 pt-8">
+                  <FormControl>
+                      <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      />
+                  </FormControl>
+                  <FormLabel className="font-normal flex items-center gap-2 text-sm"><Accessibility className="h-4 w-4 text-primary"/>Accessible</FormLabel>
+                  </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="ecoFriendly"
+              render={({ field }) => (
+                  <FormItem className="flex flex-row items-center space-x-2 space-y-0 pt-8">
+                  <FormControl>
+                      <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      />
+                  </FormControl>
+                  <FormLabel className="font-normal flex items-center gap-2 text-sm"><Leaf className="h-4 w-4 text-primary"/>Eco-Friendly</FormLabel>
+                  </FormItem>
+              )}
+            />
+        </div>
+        
+        <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground md:col-start-2 lg:col-start-4">
           <Search className="mr-2 h-4 w-4" /> Search
         </Button>
       </form>
