@@ -119,7 +119,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
 
   return (
     <Form {...form}>
-       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:grid md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto] md:gap-4 items-end p-0 md:p-6 bg-card rounded-lg">
+       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:items-end p-0 bg-card rounded-lg">
         {/* Destination */}
         <FormField
           control={form.control}
@@ -212,22 +212,24 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           )}
         />
         
-        {/* Type & Mood */}
-        <div className="grid grid-cols-2 gap-4 md:col-span-2 lg:col-span-1">
-            <FormField control={form.control} name="propertyType" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="HOTEL">Hotel</SelectItem><SelectItem value="RENTAL">Rental</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
-            <FormField control={form.control} name="mood" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-primary" />Mood</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="PEACEFUL">Peaceful</SelectItem><SelectItem value="ROMANTIC">Romantic</SelectItem><SelectItem value="ADVENTUROUS">Adventurous</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
-        </div>
+        <div className="grid grid-cols-2 gap-4 md:col-span-2 lg:col-span-3">
+            {/* Type & Mood */}
+            <div className="grid grid-cols-2 gap-4">
+                <FormField control={form.control} name="propertyType" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="HOTEL">Hotel</SelectItem><SelectItem value="RENTAL">Rental</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
+                <FormField control={form.control} name="mood" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-primary" />Mood</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="PEACEFUL">Peaceful</SelectItem><SelectItem value="ROMANTIC">Romantic</SelectItem><SelectItem value="ADVENTUROUS">Adventurous</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
+            </div>
 
-        {/* Accessibility & Eco-Friendly */}
-        <div className="grid grid-cols-2 gap-4 items-center md:col-span-2 lg:col-span-1 pt-2 md:pt-8">
-            <FormField control={form.control} name="wheelchairAccessible" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-2 text-sm"><Accessibility className="h-4 w-4 text-primary"/>Accessible</FormLabel></FormItem> )}/>
-            <FormField control={form.control} name="ecoFriendly" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-2 text-sm"><Leaf className="h-4 w-4 text-primary"/>Eco-Friendly</FormLabel></FormItem> )}/>
+            {/* Accessibility & Eco-Friendly */}
+            <div className="grid grid-cols-2 gap-4 items-center pt-2 md:pt-8">
+                <FormField control={form.control} name="wheelchairAccessible" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-2 text-sm"><Accessibility className="h-4 w-4 text-primary"/>Accessible</FormLabel></FormItem> )}/>
+                <FormField control={form.control} name="ecoFriendly" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-2 text-sm"><Leaf className="h-4 w-4 text-primary"/>Eco-Friendly</FormLabel></FormItem> )}/>
+            </div>
+            
+            {/* Search Button */}
+            <Button type="submit" className="w-full h-12 md:h-10 self-end bg-accent hover:bg-accent/90 text-accent-foreground">
+                <Search className="mr-2 h-4 w-4" /> Search
+            </Button>
         </div>
-        
-        {/* Search Button */}
-        <Button type="submit" className="w-full h-12 md:h-10 self-end bg-accent hover:bg-accent/90 text-accent-foreground col-span-1 md:col-span-2 lg:col-span-1">
-          <Search className="mr-2 h-4 w-4" /> Search
-        </Button>
       </form>
     </Form>
   );
