@@ -119,13 +119,13 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end p-0 bg-card rounded-lg">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end p-0 bg-card rounded-lg">
         {/* Destination */}
         <FormField
           control={form.control}
           name="destination"
           render={({ field }) => (
-            <FormItem className="col-span-1 md:col-span-4 lg:col-span-2">
+            <FormItem className="col-span-1 md:col-span-12 lg:col-span-3">
               <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Destination</FormLabel>
               <FormControl>
                 <Input placeholder="e.g., Paris, France" {...field} value={field.value || ''} />
@@ -139,7 +139,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           control={form.control}
           name="dateRange"
           render={({ field }) => (
-            <FormItem className="flex flex-col col-span-1 md:col-span-2 lg:col-span-2">
+            <FormItem className="flex flex-col col-span-1 md:col-span-6 lg:col-span-3">
               <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Check-in - Check-out</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -187,7 +187,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           control={form.control}
           name="adults" 
           render={() => ( 
-            <FormItem className="flex flex-col col-span-1 md:col-span-2 lg:col-span-2">
+            <FormItem className="flex flex-col col-span-1 md:col-span-6 lg:col-span-2">
               <FormLabel className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests & Rooms</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -212,20 +212,18 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           )}
         />
         
-        <div className="col-span-1 md:col-span-2 lg:col-span-3">
-          <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="propertyType" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="HOTEL">Hotel</SelectItem><SelectItem value="RENTAL">Rental</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
-              <FormField control={form.control} name="mood" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-primary" />Mood</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="PEACEFUL">Peaceful</SelectItem><SelectItem value="ROMANTIC">Romantic</SelectItem><SelectItem value="ADVENTUROUS">Adventurous</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
-          </div>
+        <div className="col-span-1 md:col-span-6 lg:col-span-2 grid grid-cols-2 gap-4">
+          <FormField control={form.control} name="propertyType" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="HOTEL">Hotel</SelectItem><SelectItem value="RENTAL">Rental</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
+          <FormField control={form.control} name="mood" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-primary" />Mood</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="PEACEFUL">Peaceful</SelectItem><SelectItem value="ROMANTIC">Romantic</SelectItem><SelectItem value="ADVENTUROUS">Adventurous</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
         </div>
 
-        <div className="col-span-1 md:col-span-2 lg:col-span-2 pt-2 md:pt-8 flex items-center gap-4">
+        <div className="col-span-1 md:col-span-6 lg:col-span-2 pt-2 md:pt-8 flex items-center gap-4">
             <FormField control={form.control} name="wheelchairAccessible" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-2 text-sm"><Accessibility className="h-4 w-4 text-primary"/>Accessible</FormLabel></FormItem> )}/>
             <FormField control={form.control} name="ecoFriendly" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-2 text-sm"><Leaf className="h-4 w-4 text-primary"/>Eco-Friendly</FormLabel></FormItem> )}/>
         </div>
         
-        <div className="col-span-1 md:col-span-4 lg:col-span-1">
-            <Button type="submit" className="w-full h-12 md:h-10 bg-accent hover:bg-accent/90 text-accent-foreground">
+        <div className="col-span-1 md:col-span-12 lg:col-span-12">
+            <Button type="submit" className="w-full h-12 bg-accent hover:bg-accent/90 text-accent-foreground">
                 <Search className="mr-2 h-4 w-4" /> Search
             </Button>
         </div>
