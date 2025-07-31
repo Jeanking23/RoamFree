@@ -124,7 +124,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           control={form.control}
           name="destination"
           render={({ field }) => (
-            <FormItem className="lg:col-span-2 xl:col-span-1">
+            <FormItem className="md:col-span-2 lg:col-span-1">
               <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Destination</FormLabel>
               <FormControl>
                 <Input placeholder="e.g., Paris, France" {...field} value={field.value || ''} />
@@ -291,7 +291,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
             )}
             />
         </div>
-        <div className="grid grid-cols-2 gap-4 pt-6"> 
+        <div className="grid grid-cols-2 gap-4 pt-6 md:col-span-full xl:col-span-2"> 
             <FormField
             control={form.control}
             name="wheelchairAccessible"
@@ -324,7 +324,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
             />
         </div>
 
-        <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground md:col-span-2 lg:col-span-3 xl:col-span-4">
+        <Button type="submit" className="w-full self-end bg-accent hover:bg-accent/90 text-accent-foreground md:col-span-full xl:col-span-2">
           <Search className="mr-2 h-4 w-4" /> Search
         </Button>
       </form>
