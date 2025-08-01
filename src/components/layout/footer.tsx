@@ -40,9 +40,9 @@ const footerSections = [
   {
     title: 'Partners',
     links: [
+      { label: 'Become a Partner', href: '/for-partners' },
       { label: 'List Your Property', href: '/list-property' },
-      { label: 'Become a Transport Partner', href: '/dashboard', isDemo: true },
-      { label: 'Affiliate Program', href: '#!', isDemo: true },
+      { label: 'Owner Dashboard', href: '/dashboard' },
       { label: 'Business Solutions', href: '/corporate-solutions-demo' },
     ]
   },
