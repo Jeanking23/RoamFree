@@ -115,28 +115,32 @@ export default function CarsForSalePage() {
                     <p className="text-muted-foreground"><ShieldCheck className="inline h-4 w-4 mr-1 text-green-600"/>Seller Rating: {car.sellerRating}/5 (Demo)</p>
                     <p className="text-xs text-muted-foreground">{car.historyHighlights}</p>
                   </CardContent>
-                  <CardFooter className="flex flex-col gap-2">
-                    <div className="flex items-center space-x-2 w-full justify-start">
-                        <Checkbox
-                            id={`compare-car-${car.id}`}
-                            checked={selectedToCompare.includes(car.id)}
-                            onCheckedChange={() => handleToggleCompare(car.id)}
-                        />
-                        <Label htmlFor={`compare-car-${car.id}`} className="font-normal text-sm">Compare</Label>
-                    </div>
-                    <Button variant="link" size="sm" onClick={() => handleViewCarHistory(car.vin)}>View Full Car History (Demo)</Button>
-                    <div className="grid grid-cols-2 gap-2 w-full">
-                        <Button variant="accent" onClick={() => handleMakeOffer(car.name)}>
-                         <DollarSign className="mr-2 h-4 w-4" /> Make Offer (Demo)
+                  <CardFooter className="flex flex-col gap-3 p-4">
+                    <div className="flex justify-between items-center w-full">
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id={`compare-car-${car.id}`}
+                                checked={selectedToCompare.includes(car.id)}
+                                onCheckedChange={() => handleToggleCompare(car.id)}
+                            />
+                            <Label htmlFor={`compare-car-${car.id}`} className="font-normal text-sm">Compare</Label>
+                        </div>
+                        <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => handleViewCarHistory(car.vin)}>
+                            View History
                         </Button>
-                        <Button variant="outline" onClick={() => handleRequestTestDrive(car.name)}>
-                         <CarFront className="mr-2 h-4 w-4" /> Test Drive (Demo)
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 w-full">
+                        <Button variant="accent" size="lg" onClick={() => handleMakeOffer(car.name)}>
+                         <DollarSign className="mr-2 h-4 w-4" /> Offer
+                        </Button>
+                        <Button variant="outline" size="lg" onClick={() => handleRequestTestDrive(car.name)}>
+                         <CarFront className="mr-2 h-4 w-4" /> Test Drive
                         </Button>
                     </div>
                     <Button variant="secondary" className="w-full" onClick={() => toast({title: "Chat with Seller (Demo)", description: "Opening secure chat..."})}>
-                      <MessageCircle className="mr-2 h-4 w-4"/> Chat with Seller (Demo)
+                      <MessageCircle className="mr-2 h-4 w-4"/> Chat with Seller
                     </Button>
-                     <p className="text-xs text-muted-foreground text-center mt-1">Secure Escrow Payment Available (Demo)</p>
+                     <p className="text-xs text-muted-foreground text-center pt-1">Secure Escrow Payment Available</p>
                   </CardFooter>
                 </Card>
               ))}
