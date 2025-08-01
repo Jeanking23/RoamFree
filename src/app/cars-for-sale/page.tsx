@@ -130,10 +130,10 @@ export default function CarsForSalePage() {
                         </Button>
                     </div>
                     <div className="grid grid-cols-2 gap-2 w-full">
-                        <Button variant="accent" size="lg" onClick={() => handleMakeOffer(car.name)}>
-                         <DollarSign className="mr-2 h-4 w-4" /> Offer
+                        <Button variant="accent" size="default" className="w-full" onClick={() => handleMakeOffer(car.name)}>
+                         <DollarSign className="mr-2 h-4 w-4" /> Make Offer
                         </Button>
-                        <Button variant="outline" size="lg" onClick={() => handleRequestTestDrive(car.name)}>
+                        <Button variant="outline" size="default" className="w-full" onClick={() => handleRequestTestDrive(car.name)}>
                          <CarFront className="mr-2 h-4 w-4" /> Test Drive
                         </Button>
                     </div>
