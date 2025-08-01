@@ -126,7 +126,7 @@ export default function CarsForSalePage() {
                     </div>
                     <Button variant="link" size="sm" onClick={() => handleViewCarHistory(car.vin)}>View Full Car History (Demo)</Button>
                     <div className="grid grid-cols-2 gap-2 w-full">
-                        <Button className="bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => handleMakeOffer(car.name)}>
+                        <Button variant="accent" onClick={() => handleMakeOffer(car.name)}>
                          <DollarSign className="mr-2 h-4 w-4" /> Make Offer (Demo)
                         </Button>
                         <Button variant="outline" onClick={() => handleRequestTestDrive(car.name)}>
