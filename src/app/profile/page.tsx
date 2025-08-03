@@ -94,7 +94,7 @@ const translations = {
   viewAndUpdate: { 'en-US': 'View and update your personal details.', 'es-ES': 'Ver y actualizar tus datos personales.', 'fr-FR': 'Voir et mettre à jour vos informations personnelles.' },
   fullName: { 'en-US': 'Full Name', 'es-ES': 'Nombre Completo', 'fr-FR': 'Nom Complet' },
   emailAddress: { 'en-US': 'Email Address', 'es-ES': 'Dirección de Email', 'fr-FR': 'Adresse E-mail' },
-  joinedDate: { 'en-US': 'Joined RoamFree', 'es-ES': 'Miembro desde', 'fr-FR': 'Membre depuis' },
+  joinedDate: { 'en-US': 'Joined RoamFree', 'es-ES': 'Miembro desde', 'fr-FR': 'Membre desde' },
   driversLicense: { 'en-US': "Driver's License (for Car Rentals)", 'es-ES': 'Licencia de Conducir (para Alquiler de Coches)', 'fr-FR': "Permis de Conduire (pour Location de Voiture)" },
   uploadLicense: { 'en-US': "Upload License", 'es-ES': 'Subir Licencia', 'fr-FR': 'Télécharger le Permis' },
   saveChanges: { 'en-US': 'Save Changes', 'es-ES': 'Guardar Cambios', 'fr-FR': 'Enregistrer les Modifications' },
@@ -232,17 +232,17 @@ const ProfileTab = ({ t }: { t: (key: keyof typeof translations) => string }) =>
       </Card>
       <Card className="bg-muted/30 border-dashed">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Briefcase className="h-5 w-5 text-primary"/>Partner Account</CardTitle>
-          <CardDescription>Manage your listings, view analytics, and access tools for hosts and sellers.</CardDescription>
+          <CardTitle className="flex items-center gap-2"><Briefcase className="h-5 w-5 text-primary"/>Become a Partner</CardTitle>
+          <CardDescription>Ready to start earning with RoamFree? Create a partner account to list properties, cars, and more.</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-4">
-            Whether you're listing a property, renting out a car, or offering other services, the Partner Dashboard is your command center.
+           Unlock powerful tools to manage your business, track earnings, and connect with a global audience of travelers.
           </p>
         </CardContent>
         <CardFooter>
           <Button asChild>
-            <Link href="/dashboard">Go to Partner Dashboard</Link>
+            <Link href="/for-partners">Get Started</Link>
           </Button>
         </CardFooter>
       </Card>

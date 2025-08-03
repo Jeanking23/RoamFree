@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Mail, Lock, UserPlus } from 'lucide-react';
+import { Mail, Lock, UserPlus, Briefcase } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createUser } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
@@ -23,11 +23,13 @@ import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const signUpSchema = z.object({
   email: z.string().email('Invalid email address.'),
   password: z.string().min(6, 'Password must be at least 6 characters.'),
   confirmPassword: z.string(),
+  isPartner: z.boolean().default(false).optional(),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
@@ -56,11 +58,13 @@ export default function SignUpPage() {
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
-    defaultValues: { email: '', password: '', confirmPassword: '' },
+    defaultValues: { email: '', password: '', confirmPassword: '', isPartner: false },
   });
 
   async function onSubmit(values: SignUpFormValues) {
     setIsLoading(true);
+    // In a real app, the `isPartner` value would be sent to the backend to create the appropriate account type.
+    console.log("Signing up with partner flag:", values.isPartner);
     const result = await createUser(values.email, values.password);
     setIsLoading(false);
 
@@ -73,9 +77,10 @@ export default function SignUpPage() {
     } else {
       toast({
         title: 'Account Created',
-        description: 'Welcome! You have been signed in.',
+        description: `Welcome! ${values.isPartner ? "Your partner account is ready." : "You have been signed in."}`,
       });
-      router.push('/');
+      // Redirect partners to their dashboard to get started
+      router.push(values.isPartner ? '/dashboard' : '/');
     }
   }
 
@@ -145,6 +150,29 @@ export default function SignUpPage() {
                       <Input type="password" placeholder="••••••••" icon={<Lock className="h-4 w-4 text-muted-foreground" />} {...field} />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="isPartner"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="font-normal flex items-center gap-2">
+                        <Briefcase className="h-4 w-4" />
+                        Sign up as a Partner
+                      </FormLabel>
+                      <FormDescription className="text-xs">
+                        Check this box if you want to list properties, cars, or other services.
+                      </FormDescription>
+                    </div>
                   </FormItem>
                 )}
               />

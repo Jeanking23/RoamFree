@@ -12,8 +12,8 @@ const partnerSections = [
     icon: Building,
     title: "Property & Rental Owners",
     description: "List your homes, villas, apartments, or land. Reach a global audience and manage your listings with our powerful dashboard, pricing tools, and booking calendar.",
-    cta: "List Your Property",
-    link: "/list-property",
+    cta: "Become a Property Partner",
+    link: "/signup",
     image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxob3VzZSUyMGV4dGVyaW9yfGVufDB8fHx8MTc1Mzg3OTU3MXww&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "house exterior"
   },
@@ -21,8 +21,8 @@ const partnerSections = [
     icon: Car,
     title: "Vehicle & Transport Partners",
     description: "Whether you're listing a car for sale, offering rental vehicles, or providing ride services, our platform connects you with customers who need to get around.",
-    cta: "Manage Your Fleet",
-    link: "/dashboard",
+    cta: "Join as a Transport Partner",
+    link: "/signup",
     image: "https://images.unsplash.com/photo-1554224024-81a1b8a24c25?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjYXIlMjBmbGVldHxlbnwwfHx8fDE3NTM4Nzk1NzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "car fleet"
   },
@@ -32,7 +32,7 @@ const partnerSections = [
     description: "Streamline your company's travel with our business solutions. Get access to exclusive discounts, comprehensive reporting, and centralized billing.",
     cta: "Contact Corporate Sales",
     link: "/corporate-solutions-demo",
-    image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxidXNpbmVzcyUyMG1lZXRpbmd8ZW58MHx8fHwxNzUzODc5NTcxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxidXNpbmVzcyUyMG1lZXRpbmd8ZW58MHx8fHwxNzUzODc5NTcxfDA&ixlib-rb-4.1.0&q=80&w=1080",
     dataAiHint: "business meeting"
   },
   {
@@ -41,7 +41,7 @@ const partnerSections = [
     description: "Join our affiliate program to earn commissions by promoting RoamFree. Get access to marketing materials and track your performance with our dedicated portal.",
     cta: "Join the Program (Soon)",
     link: "#!",
-    image: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhZmZpbGlhdGUlMjBtYXJrZXRpbmd8ZW58MHx8fHwxNzUzODc5NTcxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhZmZpbGlhdGUlMjBtYXJrZXRpbmd8ZW58MHx8fHwxNzUzODc5NTcxfDA&ixlib-rb-4.1.0&q=80&w=1080",
     dataAiHint: "affiliate marketing"
   },
 ];
