@@ -53,10 +53,10 @@ function DashboardPage() {
         <CardHeader className="bg-primary/10">
           <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
             <LayoutDashboard className="h-10 w-10" />
-            Dashboard
+            Partner Dashboard
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Manage your property, car rentals, and sale listings. Track performance and utilize host/seller tools.
+            Manage your listings and services. Access tools and analytics to grow your business with RoamFree.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0 md:p-6">
@@ -66,7 +66,7 @@ function DashboardPage() {
               <TabsTrigger value="listings" className="py-2"><ListPlus className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Listings</TabsTrigger>
               <TabsTrigger value="bookings" className="py-2"><CalendarCheck2 className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Bookings/Offers</TabsTrigger>
               <TabsTrigger value="messages" className="py-2"><MessageSquare className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Messages</TabsTrigger>
-              <TabsTrigger value="tools" className="py-2"><Settings className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Host/Seller Tools</TabsTrigger>
+              <TabsTrigger value="tools" className="py-2"><Settings className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Partner Tools</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="p-4 md:p-0">
@@ -206,7 +206,7 @@ function DashboardPage() {
             <TabsContent value="tools" className="p-4 md:p-0">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Host &amp; Seller Tools</CardTitle>
+                        <CardTitle>Partner Tools</CardTitle>
                         <CardDescription>Access tools to optimize your listings and manage operations.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">

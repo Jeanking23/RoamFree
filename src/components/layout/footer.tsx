@@ -42,7 +42,7 @@ const footerSections = [
     links: [
       { label: 'Become a Partner', href: '/for-partners' },
       { label: 'List Your Property', href: '/list-property' },
-      { label: 'Owner Dashboard', href: '/dashboard' },
+      { label: 'Partner Dashboard', href: '/dashboard' },
       { label: 'Business Solutions', href: '/corporate-solutions-demo' },
     ]
   },

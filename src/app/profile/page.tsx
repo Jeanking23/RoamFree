@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building, CreditCard, Video, Bell, Car, Receipt, ThumbsUp, Star, FileUp, PlusCircle, MoreHorizontal, AlertCircle, Lock, Smartphone } from 'lucide-react'; 
+import { UserCircle, History, Settings, ShieldCheck, FileText, Heart, KeyRound, Building, CreditCard, Video, Bell, Car, Receipt, ThumbsUp, Star, FileUp, PlusCircle, MoreHorizontal, AlertCircle, Lock, Smartphone, Briefcase } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -171,64 +171,82 @@ const ProfileTab = ({ t }: { t: (key: keyof typeof translations) => string }) =>
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('personalInfo')}</CardTitle>
-        <CardDescription>{t('viewAndUpdate')}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <Label htmlFor="name">{t('fullName')}</Label>
-          <Input id="name" defaultValue={user?.displayName || ''} />
-        </div>
-        <div>
-          <Label htmlFor="email">{t('emailAddress')}</Label>
-          <Input id="email" type="email" defaultValue={user?.email || ''} readOnly />
-            <p className="text-xs text-muted-foreground mt-1">Email cannot be changed here.</p>
-        </div>
-        <div>
-          <Label htmlFor="joinDate">{t('joinedDate')}</Label>
-          <Input id="joinDate" defaultValue={user?.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : ''} readOnly />
-        </div>
-          <div className="pt-2">
-          <Label htmlFor="driverLicense">{t('driversLicense')}</Label>
-          {isLicenseUploaded ? (
-              <p className="text-sm text-green-600 flex items-center mt-2"><ShieldCheck className="h-4 w-4 mr-1"/>License on File</p>
-          ) : (
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="mt-1">
-                        <FileUp className="mr-2 h-4 w-4"/> {t('uploadLicense')}
-                    </Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Upload Driver's License</DialogTitle>
-                        <DialogDescription>
-                            Please upload a clear photo of your driver's license for car rental verification. This is a simulation.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleLicenseSubmit}>
-                        <div className="space-y-4 py-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="license-photo">Upload Photo</Label>
-                                <Input id="license-photo" type="file" required />
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
-                            <DialogClose asChild><Button type="submit">Upload</Button></DialogClose>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
-          )}
-        </div>
-      </CardContent>
-      <CardFooter className="border-t px-6 py-4">
-          <Button onClick={() => handleSaveChanges("personal information")}>{t('saveChanges')}</Button>
-      </CardFooter>
-    </Card>
+    <div className="grid md:grid-cols-2 gap-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('personalInfo')}</CardTitle>
+          <CardDescription>{t('viewAndUpdate')}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="name">{t('fullName')}</Label>
+            <Input id="name" defaultValue={user?.displayName || ''} />
+          </div>
+          <div>
+            <Label htmlFor="email">{t('emailAddress')}</Label>
+            <Input id="email" type="email" defaultValue={user?.email || ''} readOnly />
+              <p className="text-xs text-muted-foreground mt-1">Email cannot be changed here.</p>
+          </div>
+          <div>
+            <Label htmlFor="joinDate">{t('joinedDate')}</Label>
+            <Input id="joinDate" defaultValue={user?.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : ''} readOnly />
+          </div>
+            <div className="pt-2">
+            <Label htmlFor="driverLicense">{t('driversLicense')}</Label>
+            {isLicenseUploaded ? (
+                <p className="text-sm text-green-600 flex items-center mt-2"><ShieldCheck className="h-4 w-4 mr-1"/>License on File</p>
+            ) : (
+              <Dialog>
+                  <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="mt-1">
+                          <FileUp className="mr-2 h-4 w-4"/> {t('uploadLicense')}
+                      </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                      <DialogHeader>
+                          <DialogTitle>Upload Driver's License</DialogTitle>
+                          <DialogDescription>
+                              Please upload a clear photo of your driver's license for car rental verification. This is a simulation.
+                          </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={handleLicenseSubmit}>
+                          <div className="space-y-4 py-4">
+                              <div className="space-y-2">
+                                  <Label htmlFor="license-photo">Upload Photo</Label>
+                                  <Input id="license-photo" type="file" required />
+                              </div>
+                          </div>
+                          <DialogFooter>
+                              <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                              <DialogClose asChild><Button type="submit">Upload</Button></DialogClose>
+                          </DialogFooter>
+                      </form>
+                  </DialogContent>
+              </Dialog>
+            )}
+          </div>
+        </CardContent>
+        <CardFooter className="border-t px-6 py-4">
+            <Button onClick={() => handleSaveChanges("personal information")}>{t('saveChanges')}</Button>
+        </CardFooter>
+      </Card>
+      <Card className="bg-muted/30 border-dashed">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Briefcase className="h-5 w-5 text-primary"/>Partner Account</CardTitle>
+          <CardDescription>Manage your listings, view analytics, and access tools for hosts and sellers.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Whether you're listing a property, renting out a car, or offering other services, the Partner Dashboard is your command center.
+          </p>
+        </CardContent>
+        <CardFooter>
+          <Button asChild>
+            <Link href="/dashboard">Go to Partner Dashboard</Link>
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   );
 };
 
