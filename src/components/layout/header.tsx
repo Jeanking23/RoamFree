@@ -162,8 +162,8 @@ export default function Header() {
   };
 
   const t = (key: keyof typeof sosTranslations) => {
-    const langCode = sosTranslations[key][language.code as keyof typeof sosTranslations[keyof typeof sosTranslations]];
-    return langCode || sosTranslations[key]['en-US'];
+    const langCode = language.code as keyof typeof sosTranslations[keyof typeof sosTranslations];
+    return sosTranslations[key][langCode] || sosTranslations[key]['en-US'];
   };
 
   const handleSosClick = () => {
