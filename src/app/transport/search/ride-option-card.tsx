@@ -3,19 +3,32 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { User, Clock, Star, PawPrint, TrendingUp, Briefcase } from 'lucide-react';
+import { User, Clock, Star, TrendingUp } from 'lucide-react';
 
 // Simplified Ride Icons for a cleaner look
-const CarStandardIcon = () => (
+const CarStandardIcon = () => ( // Economy
     <svg width="80" height="40" viewBox="0 0 100 50" className="opacity-80">
         <path d="M 85,25 A 15 15, 0, 0, 1, 70, 40 L 30, 40 A 15 15, 0, 0, 1, 15, 25 L 25,10 A 10 10, 0, 0, 1, 35, 5 L 65, 5 A 10 10, 0, 0, 1, 75, 10 Z" fill="currentColor"/>
         <path d="M 75, 10 L 65, 25 L 35, 25 L 25,10 Z" fill="hsl(var(--background))" opacity="0.3"/>
     </svg>
 );
-const CarBlackIcon = () => (
+const CarComfortIcon = () => ( // Comfort
      <svg width="80" height="40" viewBox="0 0 100 50">
         <path d="M 85,25 A 15 15, 0, 0, 1, 70, 40 L 30, 40 A 15 15, 0, 0, 1, 15, 25 L 25,10 A 10 10, 0, 0, 1, 35, 5 L 65, 5 A 10 10, 0, 0, 1, 75, 10 Z" fill="currentColor"/>
         <path d="M 75, 10 L 65, 25 L 35, 25 L 25,10 Z" fill="hsl(var(--background))" opacity="0.3"/>
+    </svg>
+);
+const CarPremiumIcon = () => ( // Premium / Business
+    <svg width="80" height="40" viewBox="0 0 100 50">
+        <path d="M 90,25 A 15 15, 0, 0, 1, 75, 40 L 25, 40 A 15 15, 0, 0, 1, 10, 25 L 20,10 A 10 10, 0, 0, 1, 30, 5 L 70, 5 A 10 10, 0, 0, 1, 80, 10 Z" fill="currentColor"/>
+        <path d="M 80, 10 L 70, 25 L 30, 25 L 20,10 Z" fill="hsl(var(--background))" opacity="0.3"/>
+    </svg>
+);
+const CarVIPicon = () => ( // VIP
+     <svg width="80" height="40" viewBox="0 0 100 50">
+        <path d="M 90,25 A 15 15, 0, 0, 1, 75, 40 L 25, 40 A 15 15, 0, 0, 1, 10, 25 L 20,10 A 10 10, 0, 0, 1, 30, 5 L 70, 5 A 10 10, 0, 0, 1, 80, 10 Z" fill="currentColor"/>
+        <path d="M 80, 10 L 70, 25 L 30, 25 L 20,10 Z" fill="hsl(var(--background))" opacity="0.3"/>
+        <polygon points="45,0 55,0 52,5 48,5" fill="currentColor" stroke="hsl(var(--background))" strokeWidth="1"/>
     </svg>
 );
 const CarSuvIcon = () => (
@@ -23,6 +36,27 @@ const CarSuvIcon = () => (
         <path d="M 90,30 A 15 15, 0, 0, 1, 75, 45 L 25, 45 A 15 15, 0, 0, 1, 10, 30 L 15,20 L 25,10 A 10 10, 0, 0, 1, 35, 5 L 75, 5 A 10 10, 0, 0, 1, 85, 10 L 90,25 Z" fill="currentColor"/>
         <path d="M 85, 10 L 75, 30 L 50, 30 L 45,10 Z" fill="hsl(var(--background))" opacity="0.3"/>
         <path d="M 45,10 L 25, 30 L 20, 30 L 25, 10 Z" fill="hsl(var(--background))" opacity="0.3"/>
+    </svg>
+);
+const VanIcon = () => (
+    <svg width="80" height="40" viewBox="0 0 100 50">
+        <path d="M 90,40 L 90,20 A 10 10 0 0 0 80,10 L 30,10 A 10 10 0 0 0 20,20 L 15,40 L 10,40 A 15 15 0 0 0 10,45 L 20,45 A 5 5 0 0 0 25,40 L 75,40 A 5 5 0 0 0 80,45 L 90,45 A 15 15 0 0 0 90,40 Z" fill="currentColor" />
+        <rect x="35" y="15" width="15" height="15" rx="2" fill="hsl(var(--background))" opacity="0.3" />
+        <rect x="55" y="15" width="15" height="15" rx="2" fill="hsl(var(--background))" opacity="0.3" />
+    </svg>
+);
+const MinibusIcon = () => (
+    <svg width="80" height="40" viewBox="0 0 100 50">
+        <path d="M 95,40 L 95,20 A 10 10 0 0 0 85,10 L 20,10 A 10 10 0 0 0 10,20 L 5,30 L 5,40 A 15 15 0 0 0 5,45 L 15,45 A 5 5 0 0 0 20,40 L 80,40 A 5 5 0 0 0 85,45 L 95,45 A 15 15 0 0 0 95,40 Z" fill="currentColor" />
+        <rect x="25" y="15" width="15" height="15" rx="2" fill="hsl(var(--background))" opacity="0.3" />
+        <rect x="45" y="15" width="15" height="15" rx="2" fill="hsl(var(--background))" opacity="0.3" />
+        <rect x="65" y="15" width="15" height="15" rx="2" fill="hsl(var(--background))" opacity="0.3" />
+    </svg>
+);
+const BusIcon = () => (
+    <svg width="80" height="40" viewBox="0 0 100 50">
+        <path d="M 98,35 A 10 10 0 0 0 88,25 L 88,15 A 10 10 0 0 0 78,5 L 22,5 A 10 10 0 0 0 12,15 L 12,25 A 10 10 0 0 0 2,35 L 2,40 A 15 15 0 0 0 2,45 L 12,45 A 5 5 0 0 0 17,40 L 83,40 A 5 5 0 0 0 88,45 L 98,45 A 15 15 0 0 0 98,40 Z" fill="currentColor" />
+        <rect x="20" y="10" width="56" height="12" fill="hsl(var(--background))" opacity="0.3" />
     </svg>
 );
 const MotorbikeIcon = () => (
@@ -33,15 +67,6 @@ const MotorbikeIcon = () => (
         <path d="M 40,25 L 50,10 L 60,10" fill="none" stroke="currentColor" strokeWidth="6" />
     </svg>
 );
-
-const BusinessIcon = () => (
-    <svg width="80" height="40" viewBox="0 0 100 50">
-        <path d="M 85,25 A 15 15, 0, 0, 1, 70, 40 L 30, 40 A 15 15, 0, 0, 1, 15, 25 L 25,10 A 10 10, 0, 0, 1, 35, 5 L 65, 5 A 10 10, 0, 0, 1, 75, 10 Z" fill="currentColor"/>
-        <path d="M 75, 10 L 65, 25 L 35, 25 L 25,10 Z" fill="hsl(var(--background))" opacity="0.3"/>
-        <rect x="42" y="0" width="16" height="8" rx="2" fill="currentColor" stroke="hsl(var(--background))" stroke-width="1"/>
-    </svg>
-);
-
 
 const PopularBadge = () => (
     <div className="absolute top-1 right-2 bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-semibold flex items-center gap-1">
@@ -57,7 +82,27 @@ const SurgeBadge = () => (
 
 export const rideOptions = [
     { 
-        id: 'standard',
+        id: 'economy_motorbike',
+        name: 'Motorbike Economy', 
+        icon: MotorbikeIcon,
+        capacity: 1, 
+        eta: '4:36 PM', 
+        price: 15.50,
+        originalPrice: null,
+        description: 'Quickest way there, basic ride'
+    },
+     { 
+        id: 'comfort_motorbike',
+        name: 'Motorbike Comfort', 
+        icon: MotorbikeIcon,
+        capacity: 1, 
+        eta: '4:35 PM', 
+        price: 18.25,
+        originalPrice: null,
+        description: 'More experienced riders'
+    },
+    { 
+        id: 'economy',
         name: 'Economy', 
         icon: CarStandardIcon,
         capacity: 4, 
@@ -70,37 +115,17 @@ export const rideOptions = [
     { 
         id: 'comfort',
         name: 'Comfort', 
-        icon: CarBlackIcon,
+        icon: CarComfortIcon,
         capacity: 4, 
         eta: '4:38 PM', 
         price: 39.53,
         originalPrice: 42.10,
         description: 'Newer cars with extra legroom'
     },
-    { 
-        id: 'moto',
-        name: 'Moto',
-        icon: MotorbikeIcon,
-        capacity: 1,
-        eta: '4:36 PM',
-        price: 15.50,
-        originalPrice: null,
-        description: 'Quickest way there'
-    },
-    { 
-        id: 'xl',
-        name: 'XL', 
-        icon: CarSuvIcon,
-        capacity: 6, 
-        eta: '4:42 PM',
-        price: 50.49,
-        originalPrice: 55.00,
-        description: 'Affordable rides for groups up to 6'
-    },
-    { 
+     { 
         id: 'business',
         name: 'Business', 
-        icon: BusinessIcon,
+        icon: CarPremiumIcon,
         capacity: 3, 
         eta: '4:41 PM',
         price: 65.20,
@@ -108,9 +133,9 @@ export const rideOptions = [
         description: 'Premium cars for business travel'
     },
     { 
-        id: 'black',
-        name: 'Black', 
-        icon: CarBlackIcon,
+        id: 'premium',
+        name: 'Premium', 
+        icon: CarPremiumIcon,
         capacity: 4, 
         eta: '4:43 PM',
         price: 71.68,
@@ -119,25 +144,54 @@ export const rideOptions = [
         isSurge: true,
     },
     { 
-        id: 'black_suv',
-        name: 'Black SUV', 
-        icon: CarSuvIcon,
-        capacity: 6, 
-        eta: '4:49 PM',
-        price: 89.13,
+        id: 'vip',
+        name: 'VIP', 
+        icon: CarVIPicon,
+        capacity: 4, 
+        eta: '4:45 PM',
+        price: 95.50,
         originalPrice: null,
-        description: 'Premium rides for groups up to 6',
-        isSurge: true,
+        description: 'Luxury cars and top-rated drivers'
     },
     { 
-        id: 'pet',
-        name: 'Pet', 
-        icon: CarStandardIcon,
-        capacity: 4, 
-        eta: '4:39 PM',
-        price: 36.68,
+        id: 'suv',
+        name: 'SUV', 
+        icon: CarSuvIcon,
+        capacity: 6, 
+        eta: '4:42 PM',
+        price: 50.49,
+        originalPrice: 55.00,
+        description: 'Affordable rides for groups up to 6'
+    },
+    { 
+        id: 'van',
+        name: 'Van', 
+        icon: VanIcon,
+        capacity: 8, 
+        eta: '4:48 PM',
+        price: 68.75,
         originalPrice: null,
-        description: 'Ride with your furry friend'
+        description: 'For larger groups and luggage'
+    },
+    { 
+        id: 'minibus',
+        name: 'Minibus', 
+        icon: MinibusIcon,
+        capacity: 12, 
+        eta: '4:52 PM',
+        price: 85.00,
+        originalPrice: null,
+        description: 'Ideal for small corporate or family groups'
+    },
+    { 
+        id: 'bus',
+        name: 'Bus', 
+        icon: BusIcon,
+        capacity: 20, 
+        eta: '4:55 PM',
+        price: 120.00,
+        originalPrice: null,
+        description: 'Private bus for large events'
     },
 ];
 
