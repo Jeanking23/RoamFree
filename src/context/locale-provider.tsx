@@ -4,7 +4,7 @@
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { languages, currencies, type Language, type Currency } from '@/lib/locales';
 
-// Default values, will be used on server and before client-side hydration
+// Default values, will be used on server and for the initial client render
 const defaultLanguage = languages[0];
 const defaultCurrency = currencies.find(c => c.code === 'USD') || currencies[0];
 
@@ -13,6 +13,7 @@ interface LocaleContextType {
   setLanguage: (language: Language) => void;
   currency: Currency;
   setCurrency: (currency: Currency) => void;
+  isLocaleLoaded: boolean; // Add a flag to track client-side loading
 }
 
 const LocaleContext = createContext<LocaleContextType>({
@@ -20,14 +21,17 @@ const LocaleContext = createContext<LocaleContextType>({
     setLanguage: () => {},
     currency: defaultCurrency,
     setCurrency: () => {},
+    isLocaleLoaded: false, // Default to false
 });
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>(defaultLanguage);
   const [currency, setCurrency] = useState<Currency>(defaultCurrency);
+  const [isLocaleLoaded, setIsLocaleLoaded] = useState(false);
 
   useEffect(() => {
-    // This effect runs only on the client, after hydration.
+    // This effect runs only on the client, after the initial render (hydration).
+    // Now we can safely access localStorage.
     try {
         const storedLangCode = localStorage.getItem('roamfree-lang');
         const storedCurrencyCode = localStorage.getItem('roamfree-currency');
@@ -43,6 +47,9 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
         }
     } catch (error) {
         console.error("Could not access localStorage:", error);
+    } finally {
+        // Mark that we have attempted to load from localStorage.
+        setIsLocaleLoaded(true);
     }
   }, []);
 
@@ -64,7 +71,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const value = { language, setLanguage: handleSetLanguage, currency, setCurrency: handleSetCurrency };
+  const value = { language, setLanguage: handleSetLanguage, currency, setCurrency: handleSetCurrency, isLocaleLoaded };
   
   return (
     <LocaleContext.Provider value={value}>
