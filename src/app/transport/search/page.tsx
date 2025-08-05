@@ -59,16 +59,14 @@ function RideSearchResults() {
     const dragControls = useDragControls();
     const sheetRef = useRef<HTMLDivElement>(null);
 
-     const handleDragEnd = (event: any, info: any) => {
+    const handleDragEnd = (event: any, info: any) => {
         const offset = info.offset.y;
         const velocity = info.velocity.y;
         const sheetHeight = sheetRef.current?.offsetHeight || window.innerHeight;
 
         if (offset > sheetHeight * 0.4 || velocity > 400) {
-            // Dragged down enough, close it (partially)
             controls.start({ y: "65%" });
         } else {
-            // Not dragged enough, snap back open
             controls.start({ y: 0 });
         }
     };
@@ -268,16 +266,15 @@ function RideSearchResults() {
                 onDragEnd={handleDragEnd}
                 animate={controls}
                 initial={{ y: "65%" }}
-                transition={{ type: "spring", stiffness: 400, damping: 40 }}
+                transition={{ type: "spring", stiffness: 400, damping: 40, mass: 0.5 }}
             >
-                <div className="flex-shrink-0">
-                    <div onPointerDown={(e) => dragControls.start(e)} className="p-4 cursor-grab active:cursor-grabbing">
-                        <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
-                    </div>
-                    <div className="text-center w-full px-4 pb-2">
-                        <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
-                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
-                    </div>
+                 <div onPointerDown={(e) => dragControls.start(e)} className="p-4 cursor-grab active:cursor-grabbing">
+                    <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
+                </div>
+                
+                <div className="px-4 pb-2 flex-shrink-0">
+                    <CardTitle className="text-xl font-bold text-center w-full">Choose a ride</CardTitle>
+                    {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary text-center">ETA: {selectedRideDetails.eta}</p>}
                 </div>
                 
                 <div className="px-4 space-y-2 overflow-y-auto no-scrollbar flex-grow">
