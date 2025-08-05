@@ -4,26 +4,9 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { User, Clock, Star, TrendingUp } from 'lucide-react';
+import Image from 'next/image';
 
 // Simplified Ride Icons for a cleaner look
-const CarStandardIcon = () => ( // Economy
-    <svg width="80" height="40" viewBox="0 0 100 50" className="opacity-80">
-        <path d="M 85,25 A 15 15, 0, 0, 1, 70, 40 L 30, 40 A 15 15, 0, 0, 1, 15, 25 L 25,10 A 10 10, 0, 0, 1, 35, 5 L 65, 5 A 10 10, 0, 0, 1, 75, 10 Z" fill="currentColor"/>
-        <path d="M 75, 10 L 65, 25 L 35, 25 L 25,10 Z" fill="hsl(var(--background))" opacity="0.3"/>
-    </svg>
-);
-const CarComfortIcon = () => ( // Comfort
-     <svg width="80" height="40" viewBox="0 0 100 50">
-        <path d="M 85,25 A 15 15, 0, 0, 1, 70, 40 L 30, 40 A 15 15, 0, 0, 1, 15, 25 L 25,10 A 10 10, 0, 0, 1, 35, 5 L 65, 5 A 10 10, 0, 0, 1, 75, 10 Z" fill="currentColor"/>
-        <path d="M 75, 10 L 65, 25 L 35, 25 L 25,10 Z" fill="hsl(var(--background))" opacity="0.3"/>
-    </svg>
-);
-const CarPremiumIcon = () => ( // Premium / Business
-    <svg width="80" height="40" viewBox="0 0 100 50">
-        <path d="M 90,25 A 15 15, 0, 0, 1, 75, 40 L 25, 40 A 15 15, 0, 0, 1, 10, 25 L 20,10 A 10 10, 0, 0, 1, 30, 5 L 70, 5 A 10 10, 0, 0, 1, 80, 10 Z" fill="currentColor"/>
-        <path d="M 80, 10 L 70, 25 L 30, 25 L 20,10 Z" fill="hsl(var(--background))" opacity="0.3"/>
-    </svg>
-);
 const CarVIPicon = () => ( // VIP
      <svg width="80" height="40" viewBox="0 0 100 50">
         <path d="M 90,25 A 15 15, 0, 0, 1, 75, 40 L 25, 40 A 15 15, 0, 0, 1, 10, 25 L 20,10 A 10 10, 0, 0, 1, 30, 5 L 70, 5 A 10 10, 0, 0, 1, 80, 10 Z" fill="currentColor"/>
@@ -79,6 +62,13 @@ const SurgeBadge = () => (
     </div>
 );
 
+// Generic Car Image Component
+const CarImage = ({ src, 'data-ai-hint': dataAiHint }: { src: string; 'data-ai-hint': string }) => (
+    <div className="relative w-full h-full">
+        <Image src={src} alt="Car" fill className="object-contain" data-ai-hint={dataAiHint} />
+    </div>
+);
+
 
 export const rideOptions = [
     { 
@@ -104,7 +94,7 @@ export const rideOptions = [
     { 
         id: 'economy',
         name: 'Economy', 
-        icon: CarStandardIcon,
+        icon: () => <CarImage src="https://placehold.co/120x60.png" data-ai-hint="economy sedan" />,
         capacity: 4, 
         eta: '4:39 PM', 
         price: 32.84,
@@ -115,7 +105,7 @@ export const rideOptions = [
     { 
         id: 'comfort',
         name: 'Comfort', 
-        icon: CarComfortIcon,
+        icon: () => <CarImage src="https://placehold.co/120x60.png" data-ai-hint="comfort sedan" />,
         capacity: 4, 
         eta: '4:38 PM', 
         price: 39.53,
@@ -125,7 +115,7 @@ export const rideOptions = [
      { 
         id: 'business',
         name: 'Business', 
-        icon: CarPremiumIcon,
+        icon: () => <CarImage src="https://placehold.co/120x60.png" data-ai-hint="business sedan" />,
         capacity: 3, 
         eta: '4:41 PM',
         price: 65.20,
@@ -135,7 +125,7 @@ export const rideOptions = [
     { 
         id: 'premium',
         name: 'Premium', 
-        icon: CarPremiumIcon,
+        icon: () => <CarImage src="https://placehold.co/120x60.png" data-ai-hint="premium luxury sedan" />,
         capacity: 4, 
         eta: '4:43 PM',
         price: 71.68,
