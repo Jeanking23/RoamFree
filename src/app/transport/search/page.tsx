@@ -264,20 +264,19 @@ function RideSearchResults() {
                 initial={{ y: "65%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-                <div
-                    onPointerDown={(e) => dragControls.start(e)}
-                    className="p-4 flex-shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center"
-                >
-                    <div className="w-8 h-1.5 bg-muted-foreground/50 rounded-full mb-2"></div>
-                </div>
-
-                <div className="overflow-y-auto no-scrollbar flex-1">
-                    <div className="px-4">
-                        <CardTitle className="text-xl font-bold text-center w-full">Choose a ride</CardTitle>
-                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary text-center">ETA: {selectedRideDetails.eta}</p>}
+                <div className="overflow-y-auto no-scrollbar flex-1 flex flex-col">
+                    <div
+                        onPointerDown={(e) => dragControls.start(e)}
+                        className="p-4 flex-shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center"
+                    >
+                        <div className="w-8 h-1.5 bg-muted-foreground/50 rounded-full mb-2"></div>
+                         <div className="text-center w-full">
+                            <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
+                            {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
+                        </div>
                     </div>
 
-                    <div className="px-4 space-y-2 py-4">
+                    <div className="px-4 space-y-2 pb-4">
                         {rideOptions.map((ride) => (
                             <RideOptionCard
                                 key={ride.id}
