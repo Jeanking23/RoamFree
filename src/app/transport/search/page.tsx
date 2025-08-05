@@ -265,23 +265,25 @@ function RideSearchResults() {
                 initial={{ y: "65%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-                <div 
-                    onPointerDown={(e) => dragControls.start(e)}
-                    className="p-4 flex-shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center"
-                >
-                    <div className="w-8 h-1.5 bg-muted-foreground/50 rounded-full mb-2"></div>
-                    <CardTitle className="text-xl font-bold text-center w-full">Choose a ride</CardTitle>
-                    {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
-                </div>
-                <div className="px-4 overflow-y-auto space-y-2 no-scrollbar flex-grow">
-                     {rideOptions.map((ride) => (
-                        <RideOptionCard
-                            key={ride.id}
-                            ride={ride}
-                            isSelected={selectedRide === ride.id}
-                            onSelect={handleRideSelection}
-                        />
-                    ))}
+                <div className="overflow-y-auto no-scrollbar flex-grow">
+                    <div 
+                        onPointerDown={(e) => dragControls.start(e)}
+                        className="p-4 flex-shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center"
+                    >
+                        <div className="w-8 h-1.5 bg-muted-foreground/50 rounded-full mb-2"></div>
+                        <CardTitle className="text-xl font-bold text-center w-full">Choose a ride</CardTitle>
+                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
+                    </div>
+                    <div className="px-4 space-y-2 pb-4">
+                        {rideOptions.map((ride) => (
+                            <RideOptionCard
+                                key={ride.id}
+                                ride={ride}
+                                isSelected={selectedRide === ride.id}
+                                onSelect={handleRideSelection}
+                            />
+                        ))}
+                    </div>
                 </div>
                  <div className="p-4 border-t flex items-center justify-between flex-shrink-0">
                     <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
