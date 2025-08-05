@@ -3,7 +3,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { User, Clock, Star, PawPrint, TrendingUp } from 'lucide-react';
+import { User, Clock, Star, PawPrint, TrendingUp, Briefcase } from 'lucide-react';
 
 // Simplified Ride Icons for a cleaner look
 const CarStandardIcon = () => (
@@ -34,6 +34,14 @@ const MotorbikeIcon = () => (
     </svg>
 );
 
+const BusinessIcon = () => (
+    <svg width="80" height="40" viewBox="0 0 100 50">
+        <path d="M 85,25 A 15 15, 0, 0, 1, 70, 40 L 30, 40 A 15 15, 0, 0, 1, 15, 25 L 25,10 A 10 10, 0, 0, 1, 35, 5 L 65, 5 A 10 10, 0, 0, 1, 75, 10 Z" fill="currentColor"/>
+        <path d="M 75, 10 L 65, 25 L 35, 25 L 25,10 Z" fill="hsl(var(--background))" opacity="0.3"/>
+        <rect x="42" y="0" width="16" height="8" rx="2" fill="currentColor" stroke="hsl(var(--background))" stroke-width="1"/>
+    </svg>
+);
+
 
 const PopularBadge = () => (
     <div className="absolute top-1 right-2 bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-semibold flex items-center gap-1">
@@ -50,7 +58,7 @@ const SurgeBadge = () => (
 export const rideOptions = [
     { 
         id: 'standard',
-        name: 'Standard', 
+        name: 'Economy', 
         icon: CarStandardIcon,
         capacity: 4, 
         eta: '4:39 PM', 
@@ -62,7 +70,7 @@ export const rideOptions = [
     { 
         id: 'comfort',
         name: 'Comfort', 
-        icon: CarStandardIcon,
+        icon: CarBlackIcon,
         capacity: 4, 
         eta: '4:38 PM', 
         price: 39.53,
@@ -88,6 +96,16 @@ export const rideOptions = [
         price: 50.49,
         originalPrice: 55.00,
         description: 'Affordable rides for groups up to 6'
+    },
+    { 
+        id: 'business',
+        name: 'Business', 
+        icon: BusinessIcon,
+        capacity: 3, 
+        eta: '4:41 PM',
+        price: 65.20,
+        originalPrice: null,
+        description: 'Premium cars for business travel'
     },
     { 
         id: 'black',
