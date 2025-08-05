@@ -278,7 +278,11 @@ function RideSearchResults() {
                     </div>
                 </div>
                 
-                <div className="px-4 space-y-2 pb-4 overflow-y-auto no-scrollbar flex-1">
+                <div 
+                    className="px-4 space-y-2 pb-4 overflow-y-auto no-scrollbar flex-1"
+                    // Stop drag gesture from firing when scrolling the list
+                    onPointerDown={(e) => e.stopPropagation()}
+                >
                     {rideOptions.map((ride) => (
                         <RideOptionCard
                             key={ride.id}
