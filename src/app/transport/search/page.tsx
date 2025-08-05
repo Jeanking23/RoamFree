@@ -61,10 +61,13 @@ function RideSearchResults() {
     const handleDragEnd = (event: any, info: any) => {
         const offset = info.offset.y;
         const velocity = info.velocity.y;
+        const sheetHeight = window.innerHeight * 0.9; // max-h-[90vh]
 
-        if (offset > 100 || velocity > 500) {
+        if (offset > sheetHeight * 0.3 || velocity > 500) {
+            // Dragged down enough, close it (partially)
             controls.start({ y: "65%" });
         } else {
+            // Not dragged enough, snap back open
             controls.start({ y: 0 });
         }
     };
@@ -264,28 +267,26 @@ function RideSearchResults() {
                 initial={{ y: "65%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-                <div className="overflow-y-auto no-scrollbar flex-1 flex flex-col">
-                    <div
-                        onPointerDown={(e) => dragControls.start(e)}
-                        className="p-4 flex-shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center"
-                    >
-                        <div className="w-8 h-1.5 bg-muted-foreground/50 rounded-full mb-2"></div>
-                         <div className="text-center w-full">
-                            <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
-                            {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
-                        </div>
+                <div
+                    onPointerDown={(e) => dragControls.start(e)}
+                    className="p-4 flex-shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center"
+                >
+                    <div className="w-8 h-1.5 bg-muted-foreground/50 rounded-full mb-2"></div>
+                     <div className="text-center w-full">
+                        <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
+                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
                     </div>
-
-                    <div className="px-4 space-y-2 pb-4">
-                        {rideOptions.map((ride) => (
-                            <RideOptionCard
-                                key={ride.id}
-                                ride={ride}
-                                isSelected={selectedRide === ride.id}
-                                onSelect={handleRideSelection}
-                            />
-                        ))}
-                    </div>
+                </div>
+                
+                <div className="px-4 space-y-2 pb-4 overflow-y-auto no-scrollbar flex-1">
+                    {rideOptions.map((ride) => (
+                        <RideOptionCard
+                            key={ride.id}
+                            ride={ride}
+                            isSelected={selectedRide === ride.id}
+                            onSelect={handleRideSelection}
+                        />
+                    ))}
                 </div>
 
                  <div className="p-4 border-t flex items-center justify-between flex-shrink-0">
