@@ -10,7 +10,6 @@ import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import RideOptionCard, { rideOptions } from './ride-option-card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from "@/components/ui/dialog";
@@ -254,27 +253,31 @@ function RideSearchResults() {
             </div>
             
             <motion.div
-                className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col"
+                className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col max-h-[90vh]"
                 drag="y"
                 dragControls={dragControls}
                 dragListener={false}
-                dragConstraints={{ top: window.innerHeight * 0.1, bottom: window.innerHeight * 0.65 }}
-                dragElastic={0.1}
+                dragConstraints={{ top: 0, bottom: window.innerHeight * 0.65 }}
+                dragElastic={{ top: 0.05, bottom: 0.2 }}
                 onDragEnd={handleDragEnd}
                 animate={controls}
                 initial={{ y: "65%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-                <div className="overflow-y-auto no-scrollbar flex-grow">
-                    <div 
-                        onPointerDown={(e) => dragControls.start(e)}
-                        className="p-4 flex-shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center"
-                    >
-                        <div className="w-8 h-1.5 bg-muted-foreground/50 rounded-full mb-2"></div>
+                <div
+                    onPointerDown={(e) => dragControls.start(e)}
+                    className="p-4 flex-shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center"
+                >
+                    <div className="w-8 h-1.5 bg-muted-foreground/50 rounded-full mb-2"></div>
+                </div>
+
+                <div className="overflow-y-auto no-scrollbar flex-1">
+                    <div className="px-4">
                         <CardTitle className="text-xl font-bold text-center w-full">Choose a ride</CardTitle>
-                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
+                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary text-center">ETA: {selectedRideDetails.eta}</p>}
                     </div>
-                    <div className="px-4 space-y-2 pb-4">
+
+                    <div className="px-4 space-y-2 py-4">
                         {rideOptions.map((ride) => (
                             <RideOptionCard
                                 key={ride.id}
@@ -285,6 +288,7 @@ function RideSearchResults() {
                         ))}
                     </div>
                 </div>
+
                  <div className="p-4 border-t flex items-center justify-between flex-shrink-0">
                     <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
                         <DialogTrigger asChild>
