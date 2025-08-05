@@ -57,13 +57,14 @@ function RideSearchResults() {
     // Drag controls for the bottom sheet
     const controls = useAnimation();
     const dragControls = useDragControls();
+    const sheetRef = useRef<HTMLDivElement>(null);
 
-    const handleDragEnd = (event: any, info: any) => {
+     const handleDragEnd = (event: any, info: any) => {
         const offset = info.offset.y;
         const velocity = info.velocity.y;
-        const sheetHeight = window.innerHeight * 0.9; // max-h-[90vh]
+        const sheetHeight = sheetRef.current?.offsetHeight || window.innerHeight;
 
-        if (offset > sheetHeight * 0.3 || velocity > 500) {
+        if (offset > sheetHeight * 0.4 || velocity > 400) {
             // Dragged down enough, close it (partially)
             controls.start({ y: "65%" });
         } else {
@@ -256,28 +257,30 @@ function RideSearchResults() {
             </div>
             
             <motion.div
+                ref={sheetRef}
                 className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col max-h-[90vh]"
                 drag="y"
                 dragControls={dragControls}
                 dragListener={false}
                 dragConstraints={{ top: 0, bottom: window.innerHeight * 0.65 }}
-                dragElastic={{ top: 0.05, bottom: 0.2 }}
+                dragElastic={0.2}
+                dragMomentum={false}
                 onDragEnd={handleDragEnd}
                 animate={controls}
                 initial={{ y: "65%" }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                transition={{ type: "spring", stiffness: 400, damping: 40 }}
             >
-                <div onPointerDown={(e) => dragControls.start(e)} className="flex-shrink-0 cursor-grab active:cursor-grabbing">
-                    <div className="p-4 flex flex-col items-center">
-                        <div className="w-8 h-1.5 bg-muted-foreground/50 rounded-full mb-2"></div>
-                        <div className="text-center w-full">
-                            <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
-                            {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
-                        </div>
+                <div className="flex-shrink-0">
+                    <div onPointerDown={(e) => dragControls.start(e)} className="p-4 cursor-grab active:cursor-grabbing">
+                        <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
+                    </div>
+                    <div className="text-center w-full px-4 pb-2">
+                        <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
+                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
                     </div>
                 </div>
                 
-                <div className="px-4 space-y-2 pb-4 overflow-y-auto no-scrollbar flex-grow" onPointerDown={(e) => e.stopPropagation()}>
+                <div className="px-4 space-y-2 overflow-y-auto no-scrollbar flex-grow">
                     {rideOptions.map((ride) => (
                         <RideOptionCard
                             key={ride.id}
@@ -288,7 +291,7 @@ function RideSearchResults() {
                     ))}
                 </div>
 
-                 <div className="p-4 border-t flex items-center justify-between flex-shrink-0">
+                <div className="p-4 border-t flex items-center justify-between flex-shrink-0">
                     <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
                         <DialogTrigger asChild>
                             {paymentTriggerButton}
