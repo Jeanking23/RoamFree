@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { motion, useAnimation, useDragControls } from 'framer-motion';
+import { motion, useAnimation, useDragControls, PanInfo } from 'framer-motion';
 
 type PaymentMethodType = 'wallet' | 'card' | 'mobile_money';
 interface PaymentMethod {
@@ -59,7 +59,7 @@ function RideSearchResults() {
     const dragControls = useDragControls();
     const sheetRef = useRef<HTMLDivElement>(null);
 
-    const handleDragEnd = (event: any, info: any) => {
+    const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         const offset = info.offset.y;
         const velocity = info.velocity.y;
         const sheetHeight = sheetRef.current?.offsetHeight || window.innerHeight;
@@ -259,7 +259,7 @@ function RideSearchResults() {
                 className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col max-h-[90vh]"
                 drag="y"
                 dragControls={dragControls}
-                dragListener={false}
+                dragListener={false} // Important: We only drag with the handle
                 dragConstraints={{ top: 0, bottom: window.innerHeight * 0.65 }}
                 dragElastic={0.2}
                 dragMomentum={false}
@@ -268,7 +268,7 @@ function RideSearchResults() {
                 initial={{ y: "65%" }}
                 transition={{ type: "spring", stiffness: 400, damping: 40, mass: 0.5 }}
             >
-                 <div onPointerDown={(e) => dragControls.start(e)} className="p-4 cursor-grab active:cursor-grabbing">
+                <div onPointerDown={(e) => dragControls.start(e)} className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0">
                     <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
                 </div>
                 
