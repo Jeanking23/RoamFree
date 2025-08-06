@@ -2,7 +2,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useState, useEffect, useRef } from 'react';
+import { Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
 import { ArrowLeft, CreditCard, ChevronDown, Check, Wallet, Smartphone, PlusCircle } from 'lucide-react';
@@ -57,29 +57,31 @@ function RideSearchResults() {
     // Drag controls for the bottom sheet
     const controls = useAnimation();
     const y = useMotionValue(0);
-    const dragControls = useDragControls();
     const sheetRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
-    const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         const velocity = info.velocity.y;
         const offset = info.point.y;
         const sheetHeight = sheetRef.current?.clientHeight || 0;
         const screenHeight = window.innerHeight;
+        const openThreshold = screenHeight * 0.2; // 20% of screen height to open fully
+        const closeThreshold = screenHeight * 0.7; // 70% of screen height to close to initial state
 
-        y.set(offset);
+        const finalY = offset + velocity * 0.3; // Project final position
 
-        if (velocity > 500) {
-            // Dragged down fast, close it
+        if (velocity > 800) { // Fast swipe down
             controls.start({ y: screenHeight * 0.65 });
-        } else if (offset > screenHeight * 0.5) {
-            // Dragged more than halfway down
-            controls.start({ y: screenHeight * 0.65 });
+        } else if (velocity < -800) { // Fast swipe up
+            controls.start({ y: openThreshold });
         } else {
-            // Otherwise, open it fully
-            controls.start({ y: 0 });
+             if (finalY < (screenHeight * 0.45)) { // Dragged more than halfway up
+                controls.start({ y: openThreshold });
+            } else { // Dragged down or not far enough up
+                controls.start({ y: screenHeight * 0.65 });
+            }
         }
-    };
+    }, [controls]);
     
     useEffect(() => {
         setHasMounted(true);
@@ -273,25 +275,33 @@ function RideSearchResults() {
                 className="absolute left-0 right-0 bottom-0 bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col max-h-[90vh]"
                 style={{ y }}
                 drag="y"
-                dragControls={dragControls}
                 dragListener={false}
+                onPointerDown={(e) => {
+                    // Check if the event target is inside the scrollable content
+                    if (contentRef.current && contentRef.current.contains(e.target as Node)) {
+                        // Let the content handle scrolling
+                    } else {
+                        // Allow dragging the sheet
+                        const controls = useDragControls();
+                        controls.start(e);
+                    }
+                }}
                 dragConstraints={{ top: 0, bottom: window.innerHeight }}
-                dragElastic={0.1}
+                dragElastic={{ top: 0.1, bottom: 0.5 }}
                 onDragEnd={handleDragEnd}
                 animate={controls}
                 transition={{ type: "spring", stiffness: 400, damping: 50 }}
             >
-                <div onPointerDown={(e) => dragControls.start(e)} className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0">
+                <div className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0">
                     <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
                 </div>
                 
                 <div ref={contentRef} className="flex-grow flex flex-col min-h-0">
-                    <div className="px-4 space-y-2 overflow-y-auto no-scrollbar flex-grow">
-                        <div className="pb-2 text-center">
-                            <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
-                            {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
-                        </div>
-
+                    <div className="px-4 pb-2 text-center">
+                        <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
+                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
+                    </div>
+                    <div className="px-4 overflow-y-auto space-y-2 no-scrollbar flex-grow">
                         {rideOptions.map((ride) => (
                             <RideOptionCard
                                 key={ride.id}
@@ -302,7 +312,7 @@ function RideSearchResults() {
                         ))}
                     </div>
 
-                    <div className="p-4 border-t flex items-center justify-between flex-shrink-0 mt-2">
+                    <div className="p-4 border-t flex items-center justify-between flex-shrink-0 mt-auto">
                         <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
                             <DialogTrigger asChild>
                                 {paymentTriggerButton}
