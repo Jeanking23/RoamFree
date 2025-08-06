@@ -6,17 +6,16 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
-import { ArrowLeft, CreditCard, ChevronDown, Check, Wallet, Smartphone, PlusCircle, User, Star, Car, Clock } from 'lucide-react';
+import { ArrowLeft, CreditCard, Check, Wallet, Smartphone, PlusCircle, User, Star, Car, Clock, ShieldCheck, HelpCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import RideOptionCard, { rideOptions } from './ride-option-card';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent, CardTitle, CardDescription, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { motion, useAnimation, useDragControls, PanInfo, useMotionValue } from 'framer-motion';
+import { motion, useAnimation, useDragControls, PanInfo } from 'framer-motion';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 
@@ -68,31 +67,27 @@ function RideSearchResults() {
 
     // Drag controls for the bottom sheet
     const controls = useAnimation();
-    const y = useMotionValue(0);
-    const sheetRef = useRef<HTMLDivElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
     const dragControls = useDragControls();
+    const sheetRef = useRef<HTMLDivElement>(null);
 
 
-     const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+        const sheetHeight = sheetRef.current?.offsetHeight || window.innerHeight;
         const velocity = info.velocity.y;
-        const offset = info.point.y;
-        
-        // Allow the sheet to settle at the release point, adjusted by velocity
-        controls.start({ 
-            y: offset + velocity * 0.2, 
-            transition: { type: "spring", stiffness: 400, damping: 40 } 
-        });
+        const offset = info.offset.y;
 
-    }, [controls]);
+        if (offset > sheetHeight * 0.4 && velocity > 20) {
+            // Dragged down far/fast enough, close it (go back)
+            router.back();
+        } else {
+            // Snap back to its original position
+            controls.start({ y: 0, transition: { type: "spring", stiffness: 400, damping: 40 } });
+        }
+    }, [controls, router]);
     
     useEffect(() => {
         setHasMounted(true);
-        const initialY = window.innerHeight * 0.65;
-        controls.set({ y: initialY });
-        y.set(initialY);
-
-    }, [controls, y]);
+    }, []);
 
     const handleRideSelection = (rideId: string) => {
         setSelectedRide(rideId);
@@ -196,45 +191,53 @@ function RideSearchResults() {
         <>
             <DialogHeader>
                 <DialogTitle>Confirm your ride</DialogTitle>
-                <DialogDescription>Review the details before confirming your booking.</DialogDescription>
+                <DialogDescription>Review the details below before confirming your booking.</DialogDescription>
             </DialogHeader>
             <div className="py-4 space-y-4">
                  <Card>
-                    <CardContent className="p-4 space-y-3">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-base">Trip Details</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3 text-sm">
                          <div className="flex items-start gap-3">
-                            <div className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-primary"></div>
-                            <p className="font-medium text-sm">{from}</p>
+                            <div className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                            <div>
+                                <p className="text-muted-foreground text-xs">From</p>
+                                <p className="font-medium">{from}</p>
+                            </div>
                         </div>
                          <div className="flex items-start gap-3">
                             <div className="mt-1 flex-shrink-0 w-2 h-2 bg-foreground"></div>
-                            <p className="font-medium text-sm">{to}</p>
-                        </div>
-                        <Separator />
-                         <div className="flex items-center justify-between text-sm">
-                            <p className="text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Est. Trip Duration</p>
-                            <p className="font-semibold">25-30 min</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="p-4">
-                        <div className="flex items-center gap-4">
-                            <div className="flex-shrink-0 w-24 h-12 text-primary">
-                                {selectedRideDetails && <selectedRideDetails.icon />}
+                             <div>
+                                <p className="text-muted-foreground text-xs">To</p>
+                                <p className="font-medium">{to}</p>
                             </div>
-                            <div className="flex-grow">
-                                <h4 className="font-bold">{selectedRideDetails?.name}</h4>
-                                <p className="text-sm text-muted-foreground">{selectedRideDetails?.description}</p>
-                            </div>
-                            <p className="font-bold text-lg">${selectedRideDetails?.price.toFixed(2)}</p>
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardContent className="p-4 flex items-center gap-4">
+                        <div className="flex-shrink-0 w-24 h-12 text-primary">
+                            {selectedRideDetails && <selectedRideDetails.icon />}
+                        </div>
+                        <div className="flex-grow">
+                            <h4 className="font-bold text-lg">{selectedRideDetails?.name}</h4>
+                            <p className="text-sm text-muted-foreground">{selectedRideDetails?.description}</p>
+                        </div>
+                        <div className="text-right">
+                           <p className="font-bold text-lg">${selectedRideDetails?.price.toFixed(2)}</p>
+                           {selectedRideDetails?.originalPrice && <p className="text-xs text-muted-foreground line-through">${selectedRideDetails.originalPrice.toFixed(2)}</p>}
+                        </div>
+                    </CardContent>
+                </Card>
+                 <Card>
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-base">Your Driver</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex items-center gap-4">
                         <Image src={mockDriver.avatar} alt={mockDriver.name} width={60} height={60} className="rounded-full" data-ai-hint={mockDriver.dataAiHint} />
                         <div>
-                            <p className="font-semibold">Your driver: {mockDriver.name}</p>
+                            <p className="font-semibold">{mockDriver.name}</p>
                             <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" /> {mockDriver.rating}
                             </div>
@@ -246,6 +249,19 @@ function RideSearchResults() {
                     <h4 className="font-semibold mb-2">Payment</h4>
                     <PaymentOptionsDialogContent />
                 </div>
+                 <Separator/>
+                 <div>
+                    <h4 className="font-semibold mb-2">Price Breakdown (Demo)</h4>
+                    <div className="text-sm space-y-1 text-muted-foreground">
+                        <div className="flex justify-between"><span>Base Fare</span><span>${(selectedRideDetails?.price * 0.8).toFixed(2)}</span></div>
+                        <div className="flex justify-between"><span>Taxes & Fees</span><span>${(selectedRideDetails?.price * 0.2).toFixed(2)}</span></div>
+                        <div className="flex justify-between font-bold text-foreground pt-1 border-t mt-1"><span>Total</span><span>${selectedRideDetails?.price.toFixed(2)}</span></div>
+                    </div>
+                 </div>
+                 <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
+                    <ShieldCheck className="h-4 w-4 text-green-500" />
+                    <p>Your safety is our priority. You can share your trip status with friends and family once the ride starts.</p>
+                 </div>
             </div>
             <DialogFooter>
                 <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
@@ -295,7 +311,7 @@ function RideSearchResults() {
                     ))}
                 </div>
                 <div className="p-4 border-t mt-auto flex-shrink-0">
-                    <Button onClick={() => setIsConfirmationOpen(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full" size="lg">
+                    <Button onClick={() => setIsConfirmationOpen(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full" size="lg" disabled={!selectedRide}>
                        Confirm {selectedRideDetails?.name}
                     </Button>
                 </div>
@@ -321,32 +337,31 @@ function RideSearchResults() {
                 </div>
             </div>
             
-            <motion.div
+             <motion.div
                 ref={sheetRef}
-                className="absolute left-0 right-0 bottom-0 bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col max-h-[90vh]"
-                style={{ y }}
+                className="absolute left-0 right-0 bottom-0 bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col max-h-[85vh]"
                 drag="y"
                 dragListener={false}
                 dragControls={dragControls}
                 dragConstraints={{ top: 0, bottom: window.innerHeight }}
-                dragElastic={{ top: 0.1, bottom: 0.5 }}
+                dragElastic={{ top: 0.1, bottom: 0.8 }}
                 onDragEnd={handleDragEnd}
                 animate={controls}
-                transition={{ type: "spring", stiffness: 400, damping: 40 }}
+                initial={{ y: "80%" }}
             >
-                <div 
+                <div
                     onPointerDown={(e) => dragControls.start(e)}
                     className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0"
                 >
                     <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
                 </div>
                 
-                 <div className="px-4 pb-2 text-center flex-shrink-0">
+                <div className="px-4 text-center flex-shrink-0">
                     <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
                     {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
                 </div>
                 
-                <div ref={contentRef} className="px-4 overflow-y-auto space-y-2 no-scrollbar flex-grow">
+                <div className="px-4 py-2 overflow-y-auto space-y-2 no-scrollbar flex-grow">
                     {rideOptions.map((ride) => (
                         <RideOptionCard
                             key={ride.id}
@@ -356,18 +371,12 @@ function RideSearchResults() {
                         />
                     ))}
                 </div>
-
-                <div className="p-4 border-t mt-auto flex-shrink-0">
-                    <Button onClick={() => setIsConfirmationOpen(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full" size="lg">
-                        Confirm {selectedRideDetails?.name}
-                    </Button>
-                </div>
             </motion.div>
         </div>
         
         {/* Confirmation Dialog */}
         <Dialog open={isConfirmationOpen} onOpenChange={setIsConfirmationOpen}>
-            <DialogContent>
+            <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <ConfirmationDialogContent />
             </DialogContent>
         </Dialog>
