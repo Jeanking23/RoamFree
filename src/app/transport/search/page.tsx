@@ -1,3 +1,4 @@
+
 // src/app/transport/search/page.tsx
 'use client';
 
@@ -5,18 +6,19 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
-import { ArrowLeft, CreditCard, ChevronDown, Check, Wallet, Smartphone, PlusCircle, User, Star, Car } from 'lucide-react';
+import { ArrowLeft, CreditCard, ChevronDown, Check, Wallet, Smartphone, PlusCircle, User, Star, Car, Clock } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import RideOptionCard, { rideOptions } from './ride-option-card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Card, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardTitle, CardDescription, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion, useAnimation, useDragControls, PanInfo, useMotionValue } from 'framer-motion';
 import Image from 'next/image';
+import { Separator } from '@/components/ui/separator';
 
 type PaymentMethodType = 'wallet' | 'card' | 'mobile_money';
 interface PaymentMethod {
@@ -69,24 +71,30 @@ function RideSearchResults() {
     const y = useMotionValue(0);
     const sheetRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
+    const dragControls = useDragControls();
 
-    const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+
+     const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         const velocity = info.velocity.y;
         const offset = info.point.y;
         const sheetHeight = sheetRef.current?.clientHeight || 0;
         const screenHeight = window.innerHeight;
-        
-        const finalY = offset + velocity * 0.3; 
-        
-        if (velocity > 800) { 
-            controls.start({ y: screenHeight * 0.65 });
-        } else if (velocity < -800) { 
-            controls.start({ y: screenHeight * 0.2 });
+
+        const finalY = offset + velocity * 0.3;
+
+        // If dragging with significant velocity, snap to top or bottom
+        if (Math.abs(velocity) > 500) {
+            if (velocity > 0) {
+                 controls.start({ y: screenHeight * 0.65, transition: { type: "spring", stiffness: 400, damping: 40 } });
+            } else {
+                 controls.start({ y: screenHeight * 0.1, transition: { type: "spring", stiffness: 400, damping: 40 } });
+            }
         } else {
-             if (finalY < (screenHeight * 0.45)) { 
-                controls.start({ y: screenHeight * 0.2 });
-            } else { 
-                controls.start({ y: screenHeight * 0.65 });
+            // Snap based on position
+            if (finalY < (screenHeight * 0.45)) { // Snap to top
+                controls.start({ y: screenHeight * 0.1, transition: { type: "spring", stiffness: 400, damping: 40 } });
+            } else { // Snap to bottom (partially visible)
+                controls.start({ y: screenHeight * 0.65, transition: { type: "spring", stiffness: 400, damping: 40 } });
             }
         }
     }, [controls]);
@@ -203,6 +211,23 @@ function RideSearchResults() {
                 <DialogDescription>Review the details before confirming your booking.</DialogDescription>
             </DialogHeader>
             <div className="py-4 space-y-4">
+                 <Card>
+                    <CardContent className="p-4 space-y-3">
+                         <div className="flex items-start gap-3">
+                            <div className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-primary"></div>
+                            <p className="font-medium text-sm">{from}</p>
+                        </div>
+                         <div className="flex items-start gap-3">
+                            <div className="mt-1 flex-shrink-0 w-2 h-2 bg-foreground"></div>
+                            <p className="font-medium text-sm">{to}</p>
+                        </div>
+                        <Separator />
+                         <div className="flex items-center justify-between text-sm">
+                            <p className="text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Est. Trip Duration</p>
+                            <p className="font-semibold">25-30 min</p>
+                        </div>
+                    </CardContent>
+                </Card>
                 <Card>
                     <CardContent className="p-4">
                         <div className="flex items-center gap-4">
@@ -247,31 +272,31 @@ function RideSearchResults() {
     return (
       <>
         {/* Desktop View */}
-        <div className="hidden lg:grid lg:grid-cols-3 gap-8 items-start">
-            <div className="lg:col-span-2 rounded-lg overflow-hidden h-full">
+        <div className="hidden lg:grid lg:grid-cols-[2fr,1fr] h-screen">
+            <div className="h-full">
                  <InteractiveMapPlaceholder pickup={from} dropoff={to} />
             </div>
-            <div className="lg:col-span-1">
-                 <div className="p-4 border-b">
+            <div className="flex flex-col h-full bg-background border-l">
+                 <div className="p-4 border-b flex-shrink-0">
                     <Button variant="ghost" onClick={() => router.back()} className="mb-2 -ml-4">
                         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Search
                     </Button>
                     <div className="space-y-1">
                         <div className="flex items-start gap-2">
-                            <div className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-primary"></div>
-                            <p className="font-medium">{from}</p>
+                            <div className="mt-1.5 flex-shrink-0 w-2 h-2 rounded-full bg-primary"></div>
+                            <p className="font-medium text-sm">{from}</p>
                         </div>
                         <div className="flex items-start gap-2">
-                            <div className="mt-1 flex-shrink-0 w-2 h-2 bg-foreground"></div>
-                            <p className="font-medium">{to}</p>
+                            <div className="mt-1.5 flex-shrink-0 w-2 h-2 bg-foreground"></div>
+                            <p className="font-medium text-sm">{to}</p>
                         </div>
                     </div>
                  </div>
-                <div className="p-4">
+                <div className="p-4 flex-shrink-0">
                     <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
-                    {selectedRideDetails && <p className="text-lg font-semibold pt-2">ETA: {selectedRideDetails.eta}</p>}
+                    {selectedRideDetails && <p className="text-lg font-semibold pt-2 text-primary">ETA: {selectedRideDetails.eta}</p>}
                 </div>
-                <div className="space-y-2 max-h-[calc(100vh-350px)] overflow-y-auto px-4">
+                <div className="space-y-2 overflow-y-auto px-4 flex-grow no-scrollbar">
                     {rideOptions.map((ride) => (
                         <RideOptionCard
                             key={ride.id}
@@ -281,7 +306,7 @@ function RideSearchResults() {
                         />
                     ))}
                 </div>
-                <div className="p-4 border-t mt-2">
+                <div className="p-4 border-t mt-auto flex-shrink-0">
                     <Button onClick={() => setIsConfirmationOpen(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full" size="lg">
                        Confirm {selectedRideDetails?.name}
                     </Button>
@@ -314,46 +339,40 @@ function RideSearchResults() {
                 style={{ y }}
                 drag="y"
                 dragListener={false}
-                dragControls={useDragControls()}
-                onPointerDown={(e) => {
-                    const controls = useDragControls();
-                    const target = e.target as HTMLElement;
-                    // Only allow dragging from the drag handle area
-                    if (target.closest('[data-drag-handle="true"]')) {
-                        controls.start(e);
-                    }
-                }}
+                dragControls={dragControls}
                 dragConstraints={{ top: 0, bottom: window.innerHeight }}
                 dragElastic={{ top: 0.1, bottom: 0.5 }}
                 onDragEnd={handleDragEnd}
                 animate={controls}
-                transition={{ type: "spring", stiffness: 400, damping: 50 }}
+                transition={{ type: "spring", stiffness: 400, damping: 40 }}
             >
-                <div data-drag-handle="true" className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0">
+                <div 
+                    onPointerDown={(e) => dragControls.start(e)}
+                    className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0"
+                >
                     <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
                 </div>
                 
-                <div className="flex-grow flex flex-col min-h-0">
-                    <div className="px-4 pb-2 text-center flex-shrink-0">
-                        <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
-                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
-                    </div>
-                    <div ref={contentRef} className="px-4 overflow-y-auto space-y-2 no-scrollbar flex-grow">
-                        {rideOptions.map((ride) => (
-                            <RideOptionCard
-                                key={ride.id}
-                                ride={ride}
-                                isSelected={selectedRide === ride.id}
-                                onSelect={handleRideSelection}
-                            />
-                        ))}
-                    </div>
+                <div className="px-4 pb-2 text-center flex-shrink-0">
+                    <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
+                    {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
+                </div>
+                
+                <div ref={contentRef} className="px-4 overflow-y-auto space-y-2 no-scrollbar flex-grow">
+                    {rideOptions.map((ride) => (
+                        <RideOptionCard
+                            key={ride.id}
+                            ride={ride}
+                            isSelected={selectedRide === ride.id}
+                            onSelect={handleRideSelection}
+                        />
+                    ))}
+                </div>
 
-                    <div className="p-4 border-t flex items-center justify-between flex-shrink-0 mt-auto">
-                        <Button onClick={() => setIsConfirmationOpen(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full" size="lg">
-                           Confirm {selectedRideDetails?.name}
-                        </Button>
-                    </div>
+                <div className="p-4 border-t mt-auto flex-shrink-0">
+                    <Button onClick={() => setIsConfirmationOpen(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full" size="lg">
+                        Confirm {selectedRideDetails?.name}
+                    </Button>
                 </div>
             </motion.div>
         </div>
