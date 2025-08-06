@@ -299,7 +299,7 @@ function RideSearchResults() {
                     <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
                     {selectedRideDetails && <p className="text-lg font-semibold pt-2 text-primary">ETA: {selectedRideDetails.eta}</p>}
                 </div>
-                <div className="space-y-2 overflow-y-auto px-4 flex-grow no-scrollbar">
+                <div className="space-y-2 overflow-y-auto px-4 flex-grow">
                     {rideOptions.map((ride) => (
                         <RideOptionCard
                             key={ride.id}
