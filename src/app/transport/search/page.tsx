@@ -5,17 +5,18 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
-import { ArrowLeft, CreditCard, ChevronDown, Check, Wallet, Smartphone, PlusCircle } from 'lucide-react';
+import { ArrowLeft, CreditCard, ChevronDown, Check, Wallet, Smartphone, PlusCircle, User, Star, Car } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import RideOptionCard, { rideOptions } from './ride-option-card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CardTitle } from '@/components/ui/card';
+import { Card, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion, useAnimation, useDragControls, PanInfo, useMotionValue } from 'framer-motion';
+import Image from 'next/image';
 
 type PaymentMethodType = 'wallet' | 'card' | 'mobile_money';
 interface PaymentMethod {
@@ -31,6 +32,15 @@ const initialPaymentOptions: PaymentMethod[] = [
     { id: 'mobile_money', name: 'Mobile Money', icon: Smartphone },
 ];
 
+const mockDriver = {
+    name: 'John D.',
+    rating: 4.9,
+    vehicle: 'Toyota Camry',
+    licensePlate: 'ABC-123',
+    avatar: 'https://placehold.co/100x100.png',
+    dataAiHint: 'man portrait',
+};
+
 function RideSearchResults() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -42,7 +52,7 @@ function RideSearchResults() {
     const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>(paymentOptions[0]);
     
     // Dialog states
-    const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+    const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
     const [isAddCardOpen, setIsAddCardOpen] = useState(false);
     const [isMobileMoneyOpen, setIsMobileMoneyOpen] = useState(false);
 
@@ -65,19 +75,17 @@ function RideSearchResults() {
         const offset = info.point.y;
         const sheetHeight = sheetRef.current?.clientHeight || 0;
         const screenHeight = window.innerHeight;
-        const openThreshold = screenHeight * 0.2; // 20% of screen height to open fully
-        const closeThreshold = screenHeight * 0.7; // 70% of screen height to close to initial state
-
-        const finalY = offset + velocity * 0.3; // Project final position
-
-        if (velocity > 800) { // Fast swipe down
+        
+        const finalY = offset + velocity * 0.3; 
+        
+        if (velocity > 800) { 
             controls.start({ y: screenHeight * 0.65 });
-        } else if (velocity < -800) { // Fast swipe up
-            controls.start({ y: openThreshold });
+        } else if (velocity < -800) { 
+            controls.start({ y: screenHeight * 0.2 });
         } else {
-             if (finalY < (screenHeight * 0.45)) { // Dragged more than halfway up
-                controls.start({ y: openThreshold });
-            } else { // Dragged down or not far enough up
+             if (finalY < (screenHeight * 0.45)) { 
+                controls.start({ y: screenHeight * 0.2 });
+            } else { 
                 controls.start({ y: screenHeight * 0.65 });
             }
         }
@@ -85,7 +93,6 @@ function RideSearchResults() {
     
     useEffect(() => {
         setHasMounted(true);
-         // Set initial position after mount
         const initialY = window.innerHeight * 0.65;
         controls.set({ y: initialY });
         y.set(initialY);
@@ -97,12 +104,13 @@ function RideSearchResults() {
     };
 
     const handleConfirmRide = () => {
-         const ride = rideOptions.find(r => r.id === selectedRide);
+        setIsConfirmationOpen(false); // Close the confirmation dialog
+        const ride = rideOptions.find(r => r.id === selectedRide);
         toast({
-            title: `Confirming ${ride?.name} Ride`,
-            description: `Proceeding to payment for ride from ${from} to ${to}. Payment via ${selectedPayment.name}.`,
+            title: `Ride Confirmed!`,
+            description: `${ride?.name} is on the way. Driver: ${mockDriver.name}.`,
         });
-        // In a real app, this would trigger the payment processing flow and navigate to a confirmation/tracking page.
+        // In a real app, navigate to a live tracking page.
     }
     
     const handleAddCard = () => {
@@ -120,6 +128,7 @@ function RideSearchResults() {
         setSelectedPayment(newCard);
         toast({ title: "Card Added", description: `Visa ending in ${last4} has been saved.` });
         setIsAddCardOpen(false);
+        setIsConfirmationOpen(true); // Re-open confirmation dialog
         setCardNumber(''); setCardExpiry(''); setCardCVC('');
     };
     
@@ -132,7 +141,6 @@ function RideSearchResults() {
         setPaymentOptions(prev => {
             const existing = prev.find(p => p.id === 'mobile_money' && p.details === mobileMoneyNumber);
             if(existing) return prev;
-            // Replace placeholder if it exists, otherwise add new.
             const placeholderExists = prev.some(p => p.name === 'Mobile Money' && !p.details);
             if(placeholderExists) {
                 return prev.map(p => p.id === 'mobile_money' ? newMobileMoney : p);
@@ -142,14 +150,16 @@ function RideSearchResults() {
         setSelectedPayment(newMobileMoney);
         toast({ title: "Mobile Money Added", description: `Using number: ${mobileMoneyNumber}.` });
         setIsMobileMoneyOpen(false);
+        setIsConfirmationOpen(true); // Re-open confirmation dialog
         setMobileMoneyNumber('');
     };
     
     const handlePaymentSelect = (option: PaymentMethod) => {
-        setIsPaymentDialogOpen(false); // Close main payment dialog first
         if (option.name === 'Add Credit/Debit Card') {
+            setIsConfirmationOpen(false);
             setIsAddCardOpen(true);
-        } else if (option.name === 'Mobile Money' && !option.details) { // The initial placeholder
+        } else if (option.name === 'Mobile Money' && !option.details) {
+            setIsConfirmationOpen(false);
             setIsMobileMoneyOpen(true);
         } else {
             setSelectedPayment(option);
@@ -157,10 +167,9 @@ function RideSearchResults() {
     };
 
     const selectedRideDetails = rideOptions.find(r => r.id === selectedRide);
-    const SelectedPaymentIcon = selectedPayment.icon || Wallet;
-
+    
     if (!hasMounted) {
-        return null; // Or a loading spinner
+        return null; 
     }
 
     const PaymentOptionsDialogContent = () => (
@@ -186,14 +195,54 @@ function RideSearchResults() {
             ))}
         </div>
     );
+    
+    const ConfirmationDialogContent = () => (
+        <>
+            <DialogHeader>
+                <DialogTitle>Confirm your ride</DialogTitle>
+                <DialogDescription>Review the details before confirming your booking.</DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+                <Card>
+                    <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                            <div className="flex-shrink-0 w-24 h-12 text-primary">
+                                {selectedRideDetails && <selectedRideDetails.icon />}
+                            </div>
+                            <div className="flex-grow">
+                                <h4 className="font-bold">{selectedRideDetails?.name}</h4>
+                                <p className="text-sm text-muted-foreground">{selectedRideDetails?.description}</p>
+                            </div>
+                            <p className="font-bold text-lg">${selectedRideDetails?.price.toFixed(2)}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="p-4 flex items-center gap-4">
+                        <Image src={mockDriver.avatar} alt={mockDriver.name} width={60} height={60} className="rounded-full" data-ai-hint={mockDriver.dataAiHint} />
+                        <div>
+                            <p className="font-semibold">Your driver: {mockDriver.name}</p>
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" /> {mockDriver.rating}
+                            </div>
+                            <p className="text-xs text-muted-foreground">{mockDriver.vehicle} • {mockDriver.licensePlate}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <div>
+                    <h4 className="font-semibold mb-2">Payment</h4>
+                    <PaymentOptionsDialogContent />
+                </div>
+            </div>
+            <DialogFooter>
+                <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
+                    Confirm & Request Ride
+                </Button>
+            </DialogFooter>
+        </>
+    );
 
-    const paymentTriggerButton = (
-         <Button variant="ghost" className="p-1 h-auto text-left">
-            <SelectedPaymentIcon className="mr-2 h-5 w-5 text-primary"/>
-            <span className="font-semibold">{selectedPayment.name.split(' ')[0]}</span>
-            <ChevronDown className="h-4 w-4 ml-1 opacity-50"/>
-        </Button>
-    )
 
     return (
       <>
@@ -232,19 +281,8 @@ function RideSearchResults() {
                         />
                     ))}
                 </div>
-                <div className="p-4 border-t flex items-center justify-between mt-2">
-                    <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
-                        <DialogTrigger asChild>
-                            {paymentTriggerButton}
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Select Payment Method</DialogTitle>
-                            </DialogHeader>
-                            <PaymentOptionsDialogContent />
-                        </DialogContent>
-                    </Dialog>
-                    <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
+                <div className="p-4 border-t mt-2">
+                    <Button onClick={() => setIsConfirmationOpen(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full" size="lg">
                        Confirm {selectedRideDetails?.name}
                     </Button>
                 </div>
@@ -276,13 +314,12 @@ function RideSearchResults() {
                 style={{ y }}
                 drag="y"
                 dragListener={false}
+                dragControls={useDragControls()}
                 onPointerDown={(e) => {
-                    // Check if the event target is inside the scrollable content
-                    if (contentRef.current && contentRef.current.contains(e.target as Node)) {
-                        // Let the content handle scrolling
-                    } else {
-                        // Allow dragging the sheet
-                        const controls = useDragControls();
+                    const controls = useDragControls();
+                    const target = e.target as HTMLElement;
+                    // Only allow dragging from the drag handle area
+                    if (target.closest('[data-drag-handle="true"]')) {
                         controls.start(e);
                     }
                 }}
@@ -292,16 +329,16 @@ function RideSearchResults() {
                 animate={controls}
                 transition={{ type: "spring", stiffness: 400, damping: 50 }}
             >
-                <div className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0">
+                <div data-drag-handle="true" className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0">
                     <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
                 </div>
                 
-                <div ref={contentRef} className="flex-grow flex flex-col min-h-0">
-                    <div className="px-4 pb-2 text-center">
+                <div className="flex-grow flex flex-col min-h-0">
+                    <div className="px-4 pb-2 text-center flex-shrink-0">
                         <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
                         {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
                     </div>
-                    <div className="px-4 overflow-y-auto space-y-2 no-scrollbar flex-grow">
+                    <div ref={contentRef} className="px-4 overflow-y-auto space-y-2 no-scrollbar flex-grow">
                         {rideOptions.map((ride) => (
                             <RideOptionCard
                                 key={ride.id}
@@ -313,25 +350,20 @@ function RideSearchResults() {
                     </div>
 
                     <div className="p-4 border-t flex items-center justify-between flex-shrink-0 mt-auto">
-                        <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
-                            <DialogTrigger asChild>
-                                {paymentTriggerButton}
-                            </DialogTrigger>
-                            <DialogContent className="max-w-[90vw] rounded-lg">
-                                <DialogHeader>
-                                    <DialogTitle>Select Payment Method</DialogTitle>
-                                </DialogHeader>
-                                <PaymentOptionsDialogContent />
-                            </DialogContent>
-                        </Dialog>
-                        
-                        <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
+                        <Button onClick={() => setIsConfirmationOpen(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full" size="lg">
                            Confirm {selectedRideDetails?.name}
                         </Button>
                     </div>
                 </div>
             </motion.div>
         </div>
+        
+        {/* Confirmation Dialog */}
+        <Dialog open={isConfirmationOpen} onOpenChange={setIsConfirmationOpen}>
+            <DialogContent>
+                <ConfirmationDialogContent />
+            </DialogContent>
+        </Dialog>
 
 
         {/* Add Card Dialog */}
@@ -358,7 +390,7 @@ function RideSearchResults() {
                     </div>
                 </div>
                 <DialogFooter>
-                    <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                    <Button type="button" variant="outline" onClick={() => { setIsAddCardOpen(false); setIsConfirmationOpen(true); }}>Cancel</Button>
                     <Button type="button" onClick={handleAddCard}>Save Card</Button>
                 </DialogFooter>
             </DialogContent>
@@ -378,7 +410,7 @@ function RideSearchResults() {
                     </div>
                 </div>
                 <DialogFooter>
-                    <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                    <Button type="button" variant="outline" onClick={() => { setIsMobileMoneyOpen(false); setIsConfirmationOpen(true); }}>Cancel</Button>
                     <Button type="button" onClick={handleAddMobileMoney}>Confirm Number</Button>
                 </DialogFooter>
             </DialogContent>
