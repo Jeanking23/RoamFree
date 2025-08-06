@@ -77,26 +77,13 @@ function RideSearchResults() {
      const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         const velocity = info.velocity.y;
         const offset = info.point.y;
-        const sheetHeight = sheetRef.current?.clientHeight || 0;
-        const screenHeight = window.innerHeight;
+        
+        // Allow the sheet to settle at the release point, adjusted by velocity
+        controls.start({ 
+            y: offset + velocity * 0.2, 
+            transition: { type: "spring", stiffness: 400, damping: 40 } 
+        });
 
-        const finalY = offset + velocity * 0.3;
-
-        // If dragging with significant velocity, snap to top or bottom
-        if (Math.abs(velocity) > 500) {
-            if (velocity > 0) {
-                 controls.start({ y: screenHeight * 0.65, transition: { type: "spring", stiffness: 400, damping: 40 } });
-            } else {
-                 controls.start({ y: screenHeight * 0.1, transition: { type: "spring", stiffness: 400, damping: 40 } });
-            }
-        } else {
-            // Snap based on position
-            if (finalY < (screenHeight * 0.45)) { // Snap to top
-                controls.start({ y: screenHeight * 0.1, transition: { type: "spring", stiffness: 400, damping: 40 } });
-            } else { // Snap to bottom (partially visible)
-                controls.start({ y: screenHeight * 0.65, transition: { type: "spring", stiffness: 400, damping: 40 } });
-            }
-        }
     }, [controls]);
     
     useEffect(() => {
@@ -109,6 +96,7 @@ function RideSearchResults() {
 
     const handleRideSelection = (rideId: string) => {
         setSelectedRide(rideId);
+        setIsConfirmationOpen(true); // Open confirmation dialog on ride selection
     };
 
     const handleConfirmRide = () => {
@@ -353,7 +341,7 @@ function RideSearchResults() {
                     <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
                 </div>
                 
-                <div className="px-4 pb-2 text-center flex-shrink-0">
+                 <div className="px-4 pb-2 text-center flex-shrink-0">
                     <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
                     {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
                 </div>
