@@ -47,7 +47,7 @@ function RideSearchResults() {
     const from = searchParams.get('from') || 'your location';
     const to = searchParams.get('to') || 'your destination';
 
-    const [selectedRide, setSelectedRide] = useState<string | null>(rideOptions[0].id);
+    const [selectedRide, setSelectedRide] = useState<string | null>(null);
     const [paymentOptions, setPaymentOptions] = useState<PaymentMethod[]>(initialPaymentOptions);
     const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>(paymentOptions[0]);
     
@@ -76,17 +76,17 @@ function RideSearchResults() {
         const offset = info.offset.y;
 
         if (offset > sheetHeight * 0.4 || velocity > 500) {
-            // Dragged down far/fast enough, close it (go back)
-            router.back();
+            controls.start({ y: "80%", transition: { type: "spring", stiffness: 400, damping: 40 } });
         } else {
-            // Snap back to its original position
             controls.start({ y: 0, transition: { type: "spring", stiffness: 400, damping: 40 } });
         }
-    }, [controls, router]);
+    }, [controls]);
     
     useEffect(() => {
         setHasMounted(true);
-    }, []);
+        // Animate the sheet to its initial "peeking" state
+        controls.start({ y: "80%", transition: { duration: 0.5, ease: "easeOut" } });
+    }, [controls]);
 
     const handleRideSelection = (rideId: string) => {
         setSelectedRide(rideId);
@@ -192,77 +192,79 @@ function RideSearchResults() {
                 <DialogTitle>Confirm your ride</DialogTitle>
                 <DialogDescription>Review the details below before confirming your booking.</DialogDescription>
             </DialogHeader>
-            <div className="py-4 space-y-4">
-                 <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-base">Trip Details</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3 text-sm">
-                         <div className="flex items-start gap-3">
-                            <div className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+            <div className="flex-grow overflow-y-auto pr-4 -mr-4">
+                <div className="py-4 space-y-4">
+                    <Card>
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-base">Trip Details</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3 text-sm">
+                            <div className="flex items-start gap-3">
+                                <div className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                                <div>
+                                    <p className="text-muted-foreground text-xs">From</p>
+                                    <p className="font-medium">{from}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="mt-1 flex-shrink-0 w-2 h-2 bg-foreground"></div>
+                                <div>
+                                    <p className="text-muted-foreground text-xs">To</p>
+                                    <p className="font-medium">{to}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent className="p-4 flex items-center gap-4">
+                            <div className="flex-shrink-0 w-24 h-12 text-primary">
+                                {selectedRideDetails && <selectedRideDetails.icon />}
+                            </div>
+                            <div className="flex-grow">
+                                <h4 className="font-bold text-lg">{selectedRideDetails?.name}</h4>
+                                <p className="text-sm text-muted-foreground">{selectedRideDetails?.description}</p>
+                            </div>
+                            <div className="text-right">
+                            <p className="font-bold text-lg">${selectedRideDetails?.price.toFixed(2)}</p>
+                            {selectedRideDetails?.originalPrice && <p className="text-xs text-muted-foreground line-through">${selectedRideDetails.originalPrice.toFixed(2)}</p>}
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-base">Your Driver</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex items-center gap-4">
+                            <Image src={mockDriver.avatar} alt={mockDriver.name} width={60} height={60} className="rounded-full" data-ai-hint={mockDriver.dataAiHint} />
                             <div>
-                                <p className="text-muted-foreground text-xs">From</p>
-                                <p className="font-medium">{from}</p>
+                                <p className="font-semibold">{mockDriver.name}</p>
+                                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                    <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" /> {mockDriver.rating}
+                                </div>
+                                <p className="text-xs text-muted-foreground">{mockDriver.vehicle} • {mockDriver.licensePlate}</p>
                             </div>
-                        </div>
-                         <div className="flex items-start gap-3">
-                            <div className="mt-1 flex-shrink-0 w-2 h-2 bg-foreground"></div>
-                             <div>
-                                <p className="text-muted-foreground text-xs">To</p>
-                                <p className="font-medium">{to}</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="p-4 flex items-center gap-4">
-                        <div className="flex-shrink-0 w-24 h-12 text-primary">
-                            {selectedRideDetails && <selectedRideDetails.icon />}
-                        </div>
-                        <div className="flex-grow">
-                            <h4 className="font-bold text-lg">{selectedRideDetails?.name}</h4>
-                            <p className="text-sm text-muted-foreground">{selectedRideDetails?.description}</p>
-                        </div>
-                        <div className="text-right">
-                           <p className="font-bold text-lg">${selectedRideDetails?.price.toFixed(2)}</p>
-                           {selectedRideDetails?.originalPrice && <p className="text-xs text-muted-foreground line-through">${selectedRideDetails.originalPrice.toFixed(2)}</p>}
-                        </div>
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-base">Your Driver</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex items-center gap-4">
-                        <Image src={mockDriver.avatar} alt={mockDriver.name} width={60} height={60} className="rounded-full" data-ai-hint={mockDriver.dataAiHint} />
-                        <div>
-                            <p className="font-semibold">{mockDriver.name}</p>
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" /> {mockDriver.rating}
-                            </div>
-                            <p className="text-xs text-muted-foreground">{mockDriver.vehicle} • {mockDriver.licensePlate}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <div>
-                    <h4 className="font-semibold mb-2">Payment</h4>
-                    <PaymentOptionsDialogContent />
-                </div>
-                 <Separator/>
-                 <div>
-                    <h4 className="font-semibold mb-2">Price Breakdown (Demo)</h4>
-                    <div className="text-sm space-y-1 text-muted-foreground">
-                        <div className="flex justify-between"><span>Base Fare</span><span>${(selectedRideDetails?.price * 0.8).toFixed(2)}</span></div>
-                        <div className="flex justify-between"><span>Taxes & Fees</span><span>${(selectedRideDetails?.price * 0.2).toFixed(2)}</span></div>
-                        <div className="flex justify-between font-bold text-foreground pt-1 border-t mt-1"><span>Total</span><span>${selectedRideDetails?.price.toFixed(2)}</span></div>
+                        </CardContent>
+                    </Card>
+                    <div>
+                        <h4 className="font-semibold mb-2">Payment</h4>
+                        <PaymentOptionsDialogContent />
                     </div>
-                 </div>
-                 <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
-                    <ShieldCheck className="h-4 w-4 text-green-500" />
-                    <p>Your safety is our priority. You can share your trip status with friends and family once the ride starts.</p>
-                 </div>
+                    <Separator/>
+                    <div>
+                        <h4 className="font-semibold mb-2">Price Breakdown (Demo)</h4>
+                        <div className="text-sm space-y-1 text-muted-foreground">
+                            <div className="flex justify-between"><span>Base Fare</span><span>${(selectedRideDetails?.price * 0.8).toFixed(2)}</span></div>
+                            <div className="flex justify-between"><span>Taxes & Fees</span><span>${(selectedRideDetails?.price * 0.2).toFixed(2)}</span></div>
+                            <div className="flex justify-between font-bold text-foreground pt-1 border-t mt-1"><span>Total</span><span>${selectedRideDetails?.price.toFixed(2)}</span></div>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
+                        <ShieldCheck className="h-4 w-4 text-green-500" />
+                        <p>Your safety is our priority. You can share your trip status with friends and family once the ride starts.</p>
+                    </div>
+                </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex-shrink-0 pt-4 border-t -mx-6 px-6 -mb-6 pb-6 bg-background">
                 <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
                 <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
                     Confirm & Request Ride
@@ -350,37 +352,42 @@ function RideSearchResults() {
                 initial={{ y: "80%" }}
             >
                 <div
-                    onPointerDown={(e) => dragControls.start(e)}
+                    onPointerDown={(e) => {
+                        // Allow dragging only on this handle
+                        dragControls.start(e);
+                    }}
                     className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0"
                     style={{ touchAction: 'none' }}
                 >
                     <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
                 </div>
                 
-                <div className="px-4 text-center flex-shrink-0 pb-2">
-                    <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
-                    {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
-                </div>
-                
-                <div 
-                    className="px-4 py-2 overflow-y-auto space-y-2 no-scrollbar flex-grow"
-                    style={{ touchAction: 'auto' }}
-                >
-                    {rideOptions.map((ride) => (
-                        <RideOptionCard
-                            key={ride.id}
-                            ride={ride}
-                            isSelected={selectedRide === ride.id}
-                            onSelect={handleRideSelection}
-                        />
-                    ))}
+                <div className="flex-grow flex flex-col min-h-0">
+                     <div className="px-4 text-center flex-shrink-0 pb-2">
+                        <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
+                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
+                    </div>
+                    
+                    <div 
+                        className="px-4 py-2 overflow-y-auto space-y-2 no-scrollbar flex-grow"
+                        style={{ touchAction: 'auto' }} // Allow normal scrolling for this content
+                    >
+                        {rideOptions.map((ride) => (
+                            <RideOptionCard
+                                key={ride.id}
+                                ride={ride}
+                                isSelected={selectedRide === ride.id}
+                                onSelect={handleRideSelection}
+                            />
+                        ))}
+                    </div>
                 </div>
             </motion.div>
         </div>
         
         {/* Confirmation Dialog */}
         <Dialog open={isConfirmationOpen} onOpenChange={setIsConfirmationOpen}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-h-[90vh] flex flex-col">
                 <ConfirmationDialogContent />
             </DialogContent>
         </Dialog>
