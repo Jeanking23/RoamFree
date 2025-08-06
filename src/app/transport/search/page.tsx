@@ -343,8 +343,9 @@ function RideSearchResults() {
                 drag="y"
                 dragListener={false}
                 dragControls={dragControls}
-                dragConstraints={{ top: 0, bottom: window.innerHeight }}
-                dragElastic={{ top: 0.1, bottom: 0.8 }}
+                dragConstraints={{ top: 0, bottom: 0 }}
+                dragElastic={{ top: 0.05, bottom: 1 }}
+                dragTransition={{ bounceStiffness: 600, bounceDamping: 30 }}
                 onDragEnd={handleDragEnd}
                 animate={controls}
                 initial={{ y: "80%" }}
@@ -356,7 +357,7 @@ function RideSearchResults() {
                     <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
                 </div>
                 
-                <div className="px-4 text-center flex-shrink-0">
+                <div className="px-4 text-center flex-shrink-0 pb-2">
                     <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
                     {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
                 </div>
