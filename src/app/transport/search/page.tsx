@@ -1,4 +1,3 @@
-
 // src/app/transport/search/page.tsx
 'use client';
 
@@ -76,7 +75,7 @@ function RideSearchResults() {
         const velocity = info.velocity.y;
         const offset = info.offset.y;
 
-        if (offset > sheetHeight * 0.4 && velocity > 20) {
+        if (offset > sheetHeight * 0.4 || velocity > 500) {
             // Dragged down far/fast enough, close it (go back)
             router.back();
         } else {
@@ -341,10 +340,10 @@ function RideSearchResults() {
                 ref={sheetRef}
                 className="absolute left-0 right-0 bottom-0 bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col max-h-[85vh]"
                 drag="y"
-                dragListener={false}
                 dragControls={dragControls}
+                dragListener={false} 
                 dragConstraints={{ top: 0, bottom: 0 }}
-                dragElastic={{ top: 0.05, bottom: 1 }}
+                dragElastic={{ top: 0.05, bottom: 0.5 }}
                 dragTransition={{ bounceStiffness: 600, bounceDamping: 30 }}
                 onDragEnd={handleDragEnd}
                 animate={controls}
@@ -353,6 +352,7 @@ function RideSearchResults() {
                 <div
                     onPointerDown={(e) => dragControls.start(e)}
                     className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0"
+                    style={{ touchAction: 'none' }}
                 >
                     <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
                 </div>
@@ -362,7 +362,10 @@ function RideSearchResults() {
                     {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
                 </div>
                 
-                <div className="px-4 py-2 overflow-y-auto space-y-2 no-scrollbar flex-grow">
+                <div 
+                    className="px-4 py-2 overflow-y-auto space-y-2 no-scrollbar flex-grow"
+                    style={{ touchAction: 'auto' }}
+                >
                     {rideOptions.map((ride) => (
                         <RideOptionCard
                             key={ride.id}
