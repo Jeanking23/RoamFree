@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { motion, useAnimation, useDragControls, PanInfo, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useAnimation, useDragControls, PanInfo, useMotionValue } from 'framer-motion';
 
 type PaymentMethodType = 'wallet' | 'card' | 'mobile_money';
 interface PaymentMethod {
@@ -67,6 +67,8 @@ function RideSearchResults() {
         const sheetHeight = sheetRef.current?.clientHeight || 0;
         const screenHeight = window.innerHeight;
 
+        y.set(offset);
+
         if (velocity > 500) {
             // Dragged down fast, close it
             controls.start({ y: screenHeight * 0.65 });
@@ -79,20 +81,6 @@ function RideSearchResults() {
         }
     };
     
-    // This allows scrolling inside the content without dragging the sheet
-    const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-        const content = contentRef.current;
-        if (content) {
-            if (content.scrollTop > 0 || e.deltaY < 0) {
-                // If content is scrolled or we are scrolling up, don't drag
-                return;
-            }
-        }
-        // If content is at the top and we scroll down, start dragging
-        dragControls.start(e);
-    };
-
-
     useEffect(() => {
         setHasMounted(true);
          // Set initial position after mount
@@ -288,23 +276,22 @@ function RideSearchResults() {
                 dragControls={dragControls}
                 dragListener={false}
                 dragConstraints={{ top: 0, bottom: window.innerHeight }}
-                dragElastic={{ top: 0, bottom: 0.5 }}
-                dragMomentum={false}
+                dragElastic={0.1}
                 onDragEnd={handleDragEnd}
                 animate={controls}
-                transition={{ type: "spring", stiffness: 400, damping: 40, mass: 0.5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 50 }}
             >
-                 <div onPointerDown={(e) => dragControls.start(e)} onWheelCapture={onWheel} className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0">
+                <div onPointerDown={(e) => dragControls.start(e)} className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0">
                     <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
                 </div>
                 
-                <div className="flex-grow flex flex-col min-h-0">
-                    <div className="px-4 pb-2 flex-shrink-0">
-                        <CardTitle className="text-xl font-bold text-center w-full">Choose a ride</CardTitle>
-                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary text-center">ETA: {selectedRideDetails.eta}</p>}
-                    </div>
-                    
-                    <div ref={contentRef} className="px-4 space-y-2 overflow-y-auto no-scrollbar flex-grow">
+                <div ref={contentRef} className="flex-grow flex flex-col min-h-0">
+                    <div className="px-4 space-y-2 overflow-y-auto no-scrollbar flex-grow">
+                        <div className="pb-2 text-center">
+                            <CardTitle className="text-xl font-bold">Choose a ride</CardTitle>
+                            {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary">ETA: {selectedRideDetails.eta}</p>}
+                        </div>
+
                         {rideOptions.map((ride) => (
                             <RideOptionCard
                                 key={ride.id}
