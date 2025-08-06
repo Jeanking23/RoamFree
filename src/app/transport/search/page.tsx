@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { motion, useAnimation, useDragControls, PanInfo } from 'framer-motion';
+import { motion, useAnimation, useDragControls, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 
 type PaymentMethodType = 'wallet' | 'card' | 'mobile_money';
 interface PaymentMethod {
@@ -56,25 +56,51 @@ function RideSearchResults() {
 
     // Drag controls for the bottom sheet
     const controls = useAnimation();
+    const y = useMotionValue(0);
     const dragControls = useDragControls();
     const sheetRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
 
     const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-        const offset = info.offset.y;
         const velocity = info.velocity.y;
-        const sheetHeight = sheetRef.current?.offsetHeight || window.innerHeight;
+        const offset = info.point.y;
+        const sheetHeight = sheetRef.current?.clientHeight || 0;
+        const screenHeight = window.innerHeight;
 
-        if (offset > sheetHeight * 0.4 || velocity > 400) {
-            controls.start({ y: "65%" });
+        if (velocity > 500) {
+            // Dragged down fast, close it
+            controls.start({ y: screenHeight * 0.65 });
+        } else if (offset > screenHeight * 0.5) {
+            // Dragged more than halfway down
+            controls.start({ y: screenHeight * 0.65 });
         } else {
+            // Otherwise, open it fully
             controls.start({ y: 0 });
         }
+    };
+    
+    // This allows scrolling inside the content without dragging the sheet
+    const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+        const content = contentRef.current;
+        if (content) {
+            if (content.scrollTop > 0 || e.deltaY < 0) {
+                // If content is scrolled or we are scrolling up, don't drag
+                return;
+            }
+        }
+        // If content is at the top and we scroll down, start dragging
+        dragControls.start(e);
     };
 
 
     useEffect(() => {
         setHasMounted(true);
-    }, []);
+         // Set initial position after mount
+        const initialY = window.innerHeight * 0.65;
+        controls.set({ y: initialY });
+        y.set(initialY);
+
+    }, [controls, y]);
 
     const handleRideSelection = (rideId: string) => {
         setSelectedRide(rideId);
@@ -236,7 +262,7 @@ function RideSearchResults() {
         </div>
 
         {/* Mobile View */}
-        <div className="lg:hidden h-screen w-screen fixed inset-0">
+        <div className="lg:hidden h-screen w-screen fixed inset-0 overflow-hidden">
             <div className="h-full w-full">
                 <InteractiveMapPlaceholder pickup={from} dropoff={to} />
             </div>
@@ -256,54 +282,56 @@ function RideSearchResults() {
             
             <motion.div
                 ref={sheetRef}
-                className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col max-h-[90vh]"
+                className="absolute left-0 right-0 bottom-0 bg-background rounded-t-2xl shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.3)] flex flex-col max-h-[90vh]"
+                style={{ y }}
                 drag="y"
                 dragControls={dragControls}
-                dragListener={false} // Important: We only drag with the handle
-                dragConstraints={{ top: 0, bottom: window.innerHeight * 0.65 }}
-                dragElastic={0.2}
+                dragListener={false}
+                dragConstraints={{ top: 0, bottom: window.innerHeight }}
+                dragElastic={{ top: 0, bottom: 0.5 }}
                 dragMomentum={false}
                 onDragEnd={handleDragEnd}
                 animate={controls}
-                initial={{ y: "65%" }}
                 transition={{ type: "spring", stiffness: 400, damping: 40, mass: 0.5 }}
             >
-                <div onPointerDown={(e) => dragControls.start(e)} className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0">
+                 <div onPointerDown={(e) => dragControls.start(e)} onWheelCapture={onWheel} className="p-4 cursor-grab active:cursor-grabbing flex-shrink-0">
                     <div className="mx-auto w-8 h-1.5 bg-muted-foreground/50 rounded-full" />
                 </div>
                 
-                <div className="px-4 pb-2 flex-shrink-0">
-                    <CardTitle className="text-xl font-bold text-center w-full">Choose a ride</CardTitle>
-                    {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary text-center">ETA: {selectedRideDetails.eta}</p>}
-                </div>
-                
-                <div className="px-4 space-y-2 overflow-y-auto no-scrollbar flex-grow">
-                    {rideOptions.map((ride) => (
-                        <RideOptionCard
-                            key={ride.id}
-                            ride={ride}
-                            isSelected={selectedRide === ride.id}
-                            onSelect={handleRideSelection}
-                        />
-                    ))}
-                </div>
-
-                <div className="p-4 border-t flex items-center justify-between flex-shrink-0">
-                    <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
-                        <DialogTrigger asChild>
-                            {paymentTriggerButton}
-                        </DialogTrigger>
-                        <DialogContent className="max-w-[90vw] rounded-lg">
-                            <DialogHeader>
-                                <DialogTitle>Select Payment Method</DialogTitle>
-                            </DialogHeader>
-                            <PaymentOptionsDialogContent />
-                        </DialogContent>
-                    </Dialog>
+                <div className="flex-grow flex flex-col min-h-0">
+                    <div className="px-4 pb-2 flex-shrink-0">
+                        <CardTitle className="text-xl font-bold text-center w-full">Choose a ride</CardTitle>
+                        {selectedRideDetails && <p className="text-base font-semibold pt-1 text-primary text-center">ETA: {selectedRideDetails.eta}</p>}
+                    </div>
                     
-                    <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
-                       Confirm {selectedRideDetails?.name}
-                    </Button>
+                    <div ref={contentRef} className="px-4 space-y-2 overflow-y-auto no-scrollbar flex-grow">
+                        {rideOptions.map((ride) => (
+                            <RideOptionCard
+                                key={ride.id}
+                                ride={ride}
+                                isSelected={selectedRide === ride.id}
+                                onSelect={handleRideSelection}
+                            />
+                        ))}
+                    </div>
+
+                    <div className="p-4 border-t flex items-center justify-between flex-shrink-0 mt-2">
+                        <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+                            <DialogTrigger asChild>
+                                {paymentTriggerButton}
+                            </DialogTrigger>
+                            <DialogContent className="max-w-[90vw] rounded-lg">
+                                <DialogHeader>
+                                    <DialogTitle>Select Payment Method</DialogTitle>
+                                </DialogHeader>
+                                <PaymentOptionsDialogContent />
+                            </DialogContent>
+                        </Dialog>
+                        
+                        <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold" size="lg">
+                           Confirm {selectedRideDetails?.name}
+                        </Button>
+                    </div>
                 </div>
             </motion.div>
         </div>
