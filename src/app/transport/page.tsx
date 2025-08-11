@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown, Wand2, Map as MapIcon, Navigation, Trash2, UserPlus, Sparkles } from 'lucide-react';
+import { Car, Bus, CarFront, Plane, MapPin, Search, Clock, CalendarDays, LocateFixed, Compass, Star, Home, Briefcase, Plus, ArrowLeft, Building, Users, Check, ChevronsUpDown, Wand2, Map as MapIcon, Navigation, Trash2, UserPlus, Sparkles, MessageSquare, Repeat } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
@@ -24,6 +24,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Textarea } from '@/components/ui/textarea';
 
 
 const serviceCategories = [
@@ -44,7 +45,7 @@ const suggestionItems = [
     {
       title: 'Reserve',
       description: 'Advance book a ride up to 30 days.',
-      imageSrc: 'https://images.unsplash.com/photo-1614189839508-8261411697b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjYWxlbmRhciUyMGNhcnxlbnwwfHx8fDE3NTI3Mjc2MDd8MA&ixlib-rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1614189839508-8261411697b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjYWxlbmRhciUyMGNhcnxlbnwwfHx8fDE3NTI3Mjc2MDd8MA&ixlib=rb-4.1.0&q=80&w=1080',
       dataAiHint: 'calendar car',
       link: '#ride-booking',
     },
@@ -58,14 +59,14 @@ const suggestionItems = [
     {
       title: 'Courier',
       description: 'Send packages to friends and family.',
-      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
       dataAiHint: 'delivery package',
       link: '/courier-delivery',
     },
     {
       title: 'Food',
       description: 'Get your favorite meals delivered.',
-      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
       dataAiHint: 'food delivery',
       link: '#!', // Placeholder link
     },
@@ -298,6 +299,14 @@ export default function TransportPage() {
     const { isLoaded } = useGoogleMaps();
     const mapClickListener = useRef<google.maps.MapsEventListener | null>(null);
     const [hasMounted, setHasMounted] = useState(false);
+    
+    // New state for added fields
+    const [isRoundTrip, setIsRoundTrip] = useState(false);
+    const [returnDate, setReturnDate] = useState<Date | undefined>();
+    const [returnTime, setReturnTime] = useState('10:00');
+    const [adults, setAdults] = useState(1);
+    const [children, setChildren] = useState(0);
+    const [comment, setComment] = useState('');
 
     const [showLocationPrompt, setShowLocationPrompt] = useState(false);
     const [fieldToSetFromLocation, setFieldToSetFromLocation] = useState<'pickup' | 'dropoff'>('pickup');
@@ -400,7 +409,15 @@ export default function TransportPage() {
             to: dropoffLocation,
             date: date ? date.toISOString() : new Date().toISOString(),
             time: time,
+            adults: adults.toString(),
+            children: children.toString(),
         });
+
+        if (comment) query.set('comment', comment);
+        if (isRoundTrip && returnDate) {
+            query.set('returnDate', returnDate.toISOString());
+            query.set('returnTime', returnTime);
+        }
 
         if (rideForSomeoneElse) {
             query.set('forSomeoneElse', 'true');
@@ -570,6 +587,44 @@ export default function TransportPage() {
                         />
                     </div>
                 </div>
+
+                <div className="flex items-center space-x-2 pt-2">
+                    <Switch id="round-trip" checked={isRoundTrip} onCheckedChange={setIsRoundTrip} />
+                    <Label htmlFor="round-trip" className="flex items-center gap-2"><Repeat className="h-4 w-4" />Round Trip / Return Way</Label>
+                </div>
+                
+                <AnimatePresence>
+                {isRoundTrip && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="grid grid-cols-2 gap-4 pt-2 overflow-hidden border-t"
+                    >
+                         <div>
+                            <Label>Return Date</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal",!returnDate && "text-muted-foreground")}>
+                                        <CalendarDays className="mr-2 h-4 w-4" />
+                                        {returnDate ? format(returnDate, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar mode="single" selected={returnDate} onSelect={setReturnDate} disabled={(d) => d < (date || new Date(new Date().setHours(0,0,0,0)))} initialFocus/>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                        <div>
+                            <Label>Return Time</Label>
+                            <Input type="time" value={returnTime} onChange={(e) => setReturnTime(e.target.value)} />
+                        </div>
+                    </motion.div>
+                )}
+                </AnimatePresence>
+
+
                  <div className="grid grid-cols-2 gap-4">
                     <div>
                         <Label>Date</Label>
@@ -606,6 +661,31 @@ export default function TransportPage() {
                         />
                     </div>
                 </div>
+
+                <div>
+                    <Label>Passengers</Label>
+                    <div className="flex gap-4">
+                        <div className="flex-1">
+                            <Label htmlFor="adults" className="text-xs text-muted-foreground">Adults</Label>
+                            <Input id="adults" type="number" min="1" value={adults} onChange={e => setAdults(Number(e.target.value))} />
+                        </div>
+                        <div className="flex-1">
+                            <Label htmlFor="children" className="text-xs text-muted-foreground">Children</Label>
+                            <Input id="children" type="number" min="0" value={children} onChange={e => setChildren(Number(e.target.value))} />
+                        </div>
+                    </div>
+                </div>
+
+                 <div>
+                    <Label htmlFor="comment" className="flex items-center gap-2"><MessageSquare className="h-4 w-4"/>Comment (Optional)</Label>
+                    <Textarea 
+                        id="comment"
+                        placeholder="Luggage information, special needs, or tasks for the driver..."
+                        value={comment}
+                        onChange={e => setComment(e.target.value)}
+                    />
+                </div>
+
                 <div className="flex items-center space-x-2 pt-2">
                     <Switch id="ride-for-other" checked={rideForSomeoneElse} onCheckedChange={setRideForSomeoneElse} />
                     <Label htmlFor="ride-for-other" className="flex items-center gap-2"><UserPlus className="h-4 w-4" />Ride for someone else</Label>
@@ -655,7 +735,7 @@ export default function TransportPage() {
        
       <Card className="relative overflow-hidden group rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
         <Image 
-          src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib-rb-4.1.0&q=80&w=1080"
+          src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080"
           alt="AI Trip Planner background"
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
