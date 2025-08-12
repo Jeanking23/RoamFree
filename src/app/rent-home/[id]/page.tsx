@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Users, DollarSign, MapPin, Bed, Bath, Smile, TvIcon, Layers, FileText, Phone, HomeIcon as HomeIconLucide, School, Building as BuildingIconLucide, Leaf, CheckCircle, Info, AlertTriangle, MessageSquare, Heart, Share2, Wallet, UserCheck, Clock, Calendar as CalendarIcon } from 'lucide-react';
+import { CalendarDays, Users, DollarSign, MapPin, Bed, Bath, Smile, TvIcon, Layers, FileText, Phone, HomeIcon as HomeIconLucide, School, Building as BuildingIconLucide, Leaf, CheckCircle, Info, AlertTriangle, MessageSquare, Heart, Share2, Wallet, UserCheck, Clock, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
@@ -25,7 +25,7 @@ export default function RentalPropertyProfilePage() {
   const router = useRouter();
   const [property, setProperty] = useState<MockStay | null | undefined>(undefined);
   const [isFavorited, setIsFavorited] = useState(false);
-  const [currentImage, setCurrentImage] = useState<{ id: string; src: string; alt: string; dataAiHint: string } | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   const [tourDate, setTourDate] = useState<Date | undefined>(new Date());
   const [selectedTime, setSelectedTime] = useState<string>('');
@@ -37,12 +37,23 @@ export default function RentalPropertyProfilePage() {
       const foundProperty = findRentalPropertyById(propertyId);
       if (foundProperty) {
         setProperty(foundProperty);
-        setCurrentImage(foundProperty.photos && foundProperty.photos.length > 0 ? foundProperty.photos[0] : { id: 'main', src: foundProperty.image, alt: foundProperty.name, dataAiHint: foundProperty.dataAiHint });
       } else {
         setProperty(null); // Not found
       }
     }
   }, [params.id]);
+
+  const displayPhotos = property?.photos && property.photos.length > 0 ? property.photos : property ? [{id: 'main', src: property.image, alt: property.name, dataAiHint: property.dataAiHint}] : [];
+  const currentImage = displayPhotos[currentImageIndex];
+
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % displayPhotos.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + displayPhotos.length) % displayPhotos.length);
+  };
+
   
   const handleScheduleTour = () => {
     if (!property || !tourDate || !selectedTime) {
@@ -94,8 +105,6 @@ export default function RentalPropertyProfilePage() {
     );
   }
   
-  const displayPhotos = property.photos && property.photos.length > 0 ? property.photos : [{id: 'main', src: property.image, alt: property.name, dataAiHint: property.dataAiHint}];
-
 
   return (
     <div className="space-y-8">
@@ -123,21 +132,45 @@ export default function RentalPropertyProfilePage() {
 
         <CardContent className="px-0 md:px-6 pt-0">
           {/* Image Gallery */}
-          <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2 md:max-h-[500px] overflow-hidden rounded-md">
-            <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer" onClick={() => currentImage && setCurrentImage(displayPhotos[0])}>
-              {currentImage && <Image src={currentImage.src} alt={currentImage.alt} fill className="object-cover rounded-l-md" data-ai-hint={currentImage.dataAiHint} />}
+          <div className="relative w-full max-w-4xl mx-auto">
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+              {currentImage && (
+                <Image
+                  src={currentImage.src}
+                  alt={currentImage.alt}
+                  fill
+                  className="object-cover transition-transform duration-500 ease-in-out"
+                  data-ai-hint={currentImage.dataAiHint}
+                />
+              )}
             </div>
-            {displayPhotos.slice(1, 5).map((photo, index) => (
-              <div key={photo.id} className={`relative aspect-[4/3] md:aspect-auto cursor-pointer ${index > 1 ? 'hidden md:block' : ''}`} onClick={() => setCurrentImage(photo)}>
-                <Image src={photo.src} alt={photo.alt} fill className={`object-cover ${index === 1 ? "md:rounded-tr-md" : index === 3 ? "md:rounded-br-md" : ""}`} data-ai-hint={photo.dataAiHint} />
-              </div>
-            ))}
+             {displayPhotos.length > 1 && (
+              <>
+                <Button variant="outline" size="icon" className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 bg-background/50 hover:bg-background/80" onClick={prevImage}>
+                  <ChevronLeft className="h-5 w-5" /><span className="sr-only">Previous image</span>
+                </Button>
+                <Button variant="outline" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 bg-background/50 hover:bg-background/80" onClick={nextImage}>
+                  <ChevronRight className="h-5 w-5" /><span className="sr-only">Next image</span>
+                </Button>
+              </>
+            )}
           </div>
-          <div className="mt-2 flex gap-2 overflow-x-auto p-2 md:hidden">
-             {displayPhotos.map(photo => (
-                 <Image key={photo.id} src={photo.src} alt={photo.alt} width={80} height={60} className={`rounded object-cover cursor-pointer ${currentImage?.id === photo.id ? 'ring-2 ring-primary' : ''}`} onClick={() => setCurrentImage(photo)} data-ai-hint={photo.dataAiHint}/>
-             ))}
-          </div>
+          {displayPhotos.length > 1 && (
+            <div className="mt-4 flex justify-center gap-2 overflow-x-auto p-2">
+              {displayPhotos.map((photo, index) => (
+                <Image
+                  key={photo.id}
+                  src={photo.src}
+                  alt={photo.alt}
+                  width={80}
+                  height={60}
+                  className={`rounded object-cover cursor-pointer transition-all ${currentImageIndex === index ? 'ring-2 ring-primary scale-105' : 'opacity-70 hover:opacity-100'}`}
+                  onClick={() => setCurrentImageIndex(index)}
+                  data-ai-hint={photo.dataAiHint}
+                />
+              ))}
+            </div>
+          )}
           <div className="flex flex-wrap gap-2 justify-center mt-4">
              <Button variant="outline" onClick={() => toast({title: "Virtual Tour (Demo)", description:`Starting virtual tour for ${property.name}`})} disabled={!property.virtualTourLink}><TvIcon className="mr-2 h-4 w-4" /> Virtual Tour</Button>
              <Button variant="outline" onClick={() => toast({title: "Floor Plan (Demo)", description:`Showing floor plan for ${property.name}`})} disabled={!property.floorPlanLink}><Layers className="mr-2 h-4 w-4" /> Interactive Floor Plan</Button>
@@ -312,5 +345,3 @@ export default function RentalPropertyProfilePage() {
     </div>
   );
 }
-
-    

@@ -22,7 +22,7 @@ export default function SalePropertyProfilePage() {
   const router = useRouter();
   const [property, setProperty] = useState<MockStay | null | undefined>(undefined);
   const [isFavorited, setIsFavorited] = useState(false);
-  const [currentImage, setCurrentImage] = useState<{ id: string; src: string; alt: string; dataAiHint: string } | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -34,7 +34,6 @@ export default function SalePropertyProfilePage() {
       const foundProperty = findSalePropertyById(propertyId);
       if (foundProperty) {
         setProperty(foundProperty);
-        setCurrentImage(foundProperty.photos && foundProperty.photos.length > 0 ? foundProperty.photos[0] : { id: 'main', src: foundProperty.image, alt: foundProperty.name, dataAiHint: foundProperty.dataAiHint });
       } else {
         setProperty(null); // Not found
       }
@@ -42,6 +41,15 @@ export default function SalePropertyProfilePage() {
   }, [params.id]);
 
   const displayPhotos = property?.photos && property.photos.length > 0 ? property.photos : property ? [{id: 'main', src: property.image, alt: property.name, dataAiHint: property.dataAiHint}] : [];
+  const currentImage = displayPhotos[currentImageIndex];
+
+  const nextImage = useCallback(() => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % displayPhotos.length);
+  }, [displayPhotos.length]);
+
+  const prevImage = useCallback(() => {
+    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + displayPhotos.length) % displayPhotos.length);
+  }, [displayPhotos.length]);
 
 
   const openLightbox = (index: number) => {
@@ -53,11 +61,11 @@ export default function SalePropertyProfilePage() {
     setIsLightboxOpen(false);
   };
 
-  const nextImage = useCallback(() => {
+  const nextLightboxImage = useCallback(() => {
     setLightboxIndex((prevIndex) => (prevIndex + 1) % displayPhotos.length);
   }, [displayPhotos.length]);
 
-  const prevImage = useCallback(() => {
+  const prevLightboxImage = useCallback(() => {
     setLightboxIndex((prevIndex) => (prevIndex - 1 + displayPhotos.length) % displayPhotos.length);
   }, [displayPhotos.length]);
 
@@ -66,12 +74,12 @@ export default function SalePropertyProfilePage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isLightboxOpen) return;
       if (e.key === "Escape") closeLightbox();
-      if (e.key === "ArrowRight") nextImage();
-      if (e.key === "ArrowLeft") prevImage();
+      if (e.key === "ArrowRight") nextLightboxImage();
+      if (e.key === "ArrowLeft") prevLightboxImage();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isLightboxOpen, nextImage, prevImage]);
+  }, [isLightboxOpen, nextLightboxImage, prevLightboxImage]);
 
 
   const handleMakeOffer = () => {
@@ -156,28 +164,49 @@ export default function SalePropertyProfilePage() {
         </CardHeader>
 
         <CardContent className="px-0 md:px-6 pt-0">
-          {/* Image Gallery */}
-           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2 md:max-h-[500px] overflow-hidden rounded-md">
-            <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer group" onClick={() => openLightbox(0)}>
-              {currentImage && <Image src={currentImage.src} alt={currentImage.alt} fill className="object-cover rounded-l-md" data-ai-hint={currentImage.dataAiHint} />}
+           {/* Image Gallery */}
+           <div className="relative w-full max-w-4xl mx-auto">
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg group cursor-pointer" onClick={() => openLightbox(currentImageIndex)}>
+              {currentImage && (
+                <Image
+                  src={currentImage.src}
+                  alt={currentImage.alt}
+                  fill
+                  className="object-cover transition-transform duration-500 ease-in-out"
+                  data-ai-hint={currentImage.dataAiHint}
+                />
+              )}
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <Maximize className="h-12 w-12 text-white" />
               </div>
             </div>
-            {displayPhotos.slice(1, 5).map((photo, index) => (
-              <div key={photo.id} className={`relative aspect-[4/3] md:aspect-auto cursor-pointer group ${index > 1 ? 'hidden md:block' : ''}`} onClick={() => openLightbox(index + 1)}>
-                <Image src={photo.src} alt={photo.alt} fill className={`object-cover ${index === 1 ? "md:rounded-tr-md" : index === 3 ? "md:rounded-br-md" : ""}`} data-ai-hint={photo.dataAiHint} />
-                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Maximize className="h-8 w-8 text-white" />
-                 </div>
-              </div>
-            ))}
+            {displayPhotos.length > 1 && (
+              <>
+                <Button variant="outline" size="icon" className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 bg-background/50 hover:bg-background/80" onClick={prevImage}>
+                  <ChevronLeft className="h-5 w-5" /><span className="sr-only">Previous image</span>
+                </Button>
+                <Button variant="outline" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 bg-background/50 hover:bg-background/80" onClick={nextImage}>
+                  <ChevronRight className="h-5 w-5" /><span className="sr-only">Next image</span>
+                </Button>
+              </>
+            )}
           </div>
-          <div className="mt-2 flex gap-2 overflow-x-auto p-2 md:hidden">
-             {displayPhotos.map((photo, index) => (
-                 <Image key={photo.id} src={photo.src} alt={photo.alt} width={80} height={60} className={`rounded object-cover cursor-pointer ${currentImage?.id === photo.id ? 'ring-2 ring-primary' : ''}`} onClick={() => openLightbox(index)} data-ai-hint={photo.dataAiHint}/>
-             ))}
-          </div>
+          {displayPhotos.length > 1 && (
+            <div className="mt-4 flex justify-center gap-2 overflow-x-auto p-2">
+              {displayPhotos.map((photo, index) => (
+                <Image
+                  key={photo.id}
+                  src={photo.src}
+                  alt={photo.alt}
+                  width={80}
+                  height={60}
+                  className={`rounded object-cover cursor-pointer transition-all ${currentImageIndex === index ? 'ring-2 ring-primary scale-105' : 'opacity-70 hover:opacity-100'}`}
+                  onClick={() => setCurrentImageIndex(index)}
+                  data-ai-hint={photo.dataAiHint}
+                />
+              ))}
+            </div>
+          )}
           <div className="flex flex-wrap gap-2 justify-center mt-4">
              <Button variant="outline" onClick={() => handleMediaTool("Virtual Walkthrough", property.name)}><TvIcon className="mr-2 h-4 w-4" /> Virtual Walkthrough</Button>
              <Button variant="outline" onClick={() => handleMediaTool("Drone View", property.name)}><Plane className="mr-2 h-4 w-4" /> Drone View</Button>
@@ -334,11 +363,11 @@ export default function SalePropertyProfilePage() {
             <X className="h-8 w-8" />
           </Button>
 
-          <Button variant="ghost" size="icon" className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-white hover:bg-white/10" onClick={prevImage}>
+          <Button variant="ghost" size="icon" className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-white hover:bg-white/10" onClick={prevLightboxImage}>
             <ChevronLeft className="h-10 w-10" />
           </Button>
 
-          <Button variant="ghost" size="icon" className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-white hover:bg-white/10" onClick={nextImage}>
+          <Button variant="ghost" size="icon" className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-white hover:bg-white/10" onClick={nextLightboxImage}>
             <ChevronRight className="h-10 w-10" />
           </Button>
         </motion.div>
