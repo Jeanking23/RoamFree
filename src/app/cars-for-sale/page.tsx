@@ -197,7 +197,7 @@ const FilterContent = () => {
         </Accordion>
     </div>
     );
-};
+}
 
 export default function CarsForSalePage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -224,10 +224,14 @@ export default function CarsForSalePage() {
   };
 
 
-  const handleMakeOffer = (carName: string) => {
+  const handleMakeOffer = (e: React.MouseEvent, carName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
     toast({ title: "Make Offer (Demo)", description: `Initiating offer process for ${carName}. You can negotiate price here.` });
   };
-  const handleRequestTestDrive = (carName: string) => {
+  const handleRequestTestDrive = (e: React.MouseEvent, carName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
     toast({ title: "Test Drive Request (Demo)", description: `Scheduling test drive for ${carName}.` });
   };
 
@@ -365,7 +369,7 @@ export default function CarsForSalePage() {
                     <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full shrink-0">Sunroof / Moonroof</Button>
                      <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full shrink-0">Apple CarPlay</Button>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                 <div className="flex items-center gap-2 shrink-0">
                     <p className="text-sm font-semibold">{filteredCars.length} cars found</p>
                 </div>
             </div>
@@ -374,29 +378,31 @@ export default function CarsForSalePage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCars.map(car => (
-              <Card key={car.id} className="flex flex-col overflow-hidden">
-                <CarImageSlider car={car} />
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xl hover:text-primary">
-                      <Link href={`/cars-for-sale/${car.id}`}>{car.name}</Link>
-                  </CardTitle>
-                  <CardDescription className="text-lg font-bold text-primary">${car.price.toLocaleString()}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow space-y-2">
-                  <div className="text-sm text-muted-foreground flex items-center justify-between">
-                    <span><Gauge className="inline h-4 w-4 mr-1"/>{car.mileage}</span>
-                    <span><CalendarDays className="inline h-4 w-4 mr-1"/>{car.year}</span>
-                    <span><MapPin className="inline h-4 w-4 mr-1"/>{car.location}</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    <p><Info className="inline h-3 w-3 mr-1"/>{car.historyHighlights}</p>
-                    <p><ShieldCheck className="inline h-3 w-3 mr-1"/>Seller Rating: {car.sellerRating}/5</p>
-                  </div>
-                </CardContent>
+              <Card key={car.id} className="flex flex-col overflow-hidden group hover:shadow-lg transition-shadow">
+                <Link href={`/cars-for-sale/${car.id}`} className="block">
+                    <CarImageSlider car={car} />
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                          {car.name}
+                      </CardTitle>
+                      <CardDescription className="text-lg font-bold text-primary">${car.price.toLocaleString()}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-grow space-y-2">
+                      <div className="text-sm text-muted-foreground flex items-center justify-between">
+                        <span><Gauge className="inline h-4 w-4 mr-1"/>{car.mileage}</span>
+                        <span><CalendarDays className="inline h-4 w-4 mr-1"/>{car.year}</span>
+                        <span><MapPin className="inline h-4 w-4 mr-1"/>{car.location}</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        <p><Info className="inline h-3 w-3 mr-1"/>{car.historyHighlights}</p>
+                        <p><ShieldCheck className="inline h-3 w-3 mr-1"/>Seller Rating: {car.sellerRating}/5</p>
+                      </div>
+                    </CardContent>
+                </Link>
                 <CardFooter className="flex flex-col gap-2 pt-4 border-t">
                   <div className="flex w-full gap-2">
-                     <Button variant="outline" size="sm" className="flex-1" onClick={() => handleRequestTestDrive(car.name)}>Test Drive</Button>
-                     <Button variant="outline" size="sm" className="flex-1" onClick={() => handleMakeOffer(car.name)}>Make Offer</Button>
+                     <Button variant="outline" size="sm" className="flex-1" onClick={(e) => handleRequestTestDrive(e, car.name)}>Test Drive</Button>
+                     <Button variant="outline" size="sm" className="flex-1" onClick={(e) => handleMakeOffer(e, car.name)}>Make Offer</Button>
                   </div>
                    <Button asChild variant="link" size="sm" className="w-full">
                      <Link href={`/cars-for-sale/history/${car.vin}`}>
