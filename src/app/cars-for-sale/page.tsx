@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CarFront, Search, DollarSign, Gauge, CalendarDays, Info, ShieldCheck, MessageCircle, GitCompareArrows, Users, ChevronLeft, ChevronRight, SlidersHorizontal, MapPin, Heart } from 'lucide-react';
+import { CarFront, Search, DollarSign, Gauge, CalendarDays, Info, ShieldCheck, MessageCircle, GitCompareArrows, Users, ChevronLeft, ChevronRight, SlidersHorizontal, MapPin, Heart, Filter } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -14,11 +14,13 @@ import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from '@/components/ui/sheet';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const mockCarsForSale = [
-  { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
-  { id: "carSale2", name: "Ford F-150 XLT 2020", price: 32000, location: "Suburbia", mileage: "30,000 miles", year: 2020, image: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck", vin: "DEMOVIN67890", historyHighlights: "One owner, Clean title", sellerRating: 4.5, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck"}, {id: 'p2', src: "https://images.unsplash.com/photo-1656110073986-ccf23039e402?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dHJ1Y2slMjBiZWR8ZW58MHx8fHwxNzU1MDIzMjYxfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "truck bed"}] },
-  { id: "carSale3", name: "Honda Civic LX 2019", price: 17500, location: "Townsburd", mileage: "38,000 miles", year: 2019, image: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda", vin: "DEMOVIN11223", historyHighlights: "Fuel efficient, Great condition", sellerRating: 4.9, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda"}, {id: 'p2', src: "https://images.unsplash.com/photo-1549064233-945d7063292f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjYXIlMjBpbnRlcmlvcnxlbnwwfHx8fDE3NTUwMjMzNTl8MA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "car interior"}] },
+  { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
+  { id: "carSale2", name: "Ford F-150 XLT 2020", price: 32000, location: "Suburbia", mileage: "30,000 miles", year: 2020, image: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck", vin: "DEMOVIN67890", historyHighlights: "One owner, Clean title", sellerRating: 4.5, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck"}, {id: 'p2', src: "https://images.unsplash.com/photo-1656110073986-ccf23039e402?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dHJ1Y2slMjBiZWR8ZW58MHx8fHwxNzU1MDIzMjYxfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "truck bed"}] },
+  { id: "carSale3", name: "Honda Civic LX 2019", price: 17500, location: "Townsburd", mileage: "38,000 miles", year: 2019, image: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda", vin: "DEMOVIN11223", historyHighlights: "Fuel efficient, Great condition", sellerRating: 4.9, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda"}, {id: 'p2', src: "https://images.unsplash.com/photo-1549064233-945d7063292f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjYXIlMjBpbnRlcmlvcnxlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "car interior"}] },
 ];
 
 function CarImageSlider({ car }: { car: typeof mockCarsForSale[0] }) {
@@ -73,6 +75,79 @@ function CarImageSlider({ car }: { car: typeof mockCarsForSale[0] }) {
     </div>
   );
 }
+
+const FilterContent = ({ closeSheet }: { closeSheet?: () => void }) => (
+    <div className="space-y-4">
+        <Accordion type="multiple" defaultValue={['payment_price', 'make_model', 'body_type']} className="w-full">
+            <AccordionItem value="payment_price">
+                <AccordionTrigger>Payment & Price</AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>Price Range</Label>
+                        <div className="flex gap-2">
+                            <Input type="number" placeholder="Min" />
+                            <Input type="number" placeholder="Max" />
+                        </div>
+                    </div>
+                </AccordionContent>
+            </AccordionItem>
+             <AccordionItem value="make_model">
+                <AccordionTrigger>Make & Model</AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                    <Input placeholder="Search Make (e.g., Toyota)" />
+                    <Input placeholder="Search Model (e.g., Camry)" />
+                </AccordionContent>
+            </AccordionItem>
+             <AccordionItem value="body_type">
+                <AccordionTrigger>Body Type</AccordionTrigger>
+                <AccordionContent className="space-y-2">
+                    {['SUV', 'Sedan', 'Truck', 'Coupe', 'Convertible', 'Hatchback', 'Van'].map(type => (
+                        <div key={type} className="flex items-center space-x-2"><Checkbox id={`body-${type}`} /><Label htmlFor={`body-${type}`}>{type}</Label></div>
+                    ))}
+                </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="year_mileage">
+                <AccordionTrigger>Year & Mileage</AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                    <div className="space-y-2"><Label>Year</Label><div className="flex gap-2"><Select><SelectTrigger><SelectValue placeholder="Min"/></SelectTrigger></Select><Select><SelectTrigger><SelectValue placeholder="Max"/></SelectTrigger></Select></div></div>
+                    <div className="space-y-2"><Label>Mileage</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
+                </AccordionContent>
+            </AccordionItem>
+             <AccordionItem value="great_deals">
+                <AccordionTrigger>Great Deals</AccordionTrigger>
+                <AccordionContent className="space-y-2">
+                    <div className="flex items-center space-x-2"><Checkbox id="deals-price"/><Label htmlFor="deals-price">Good/Great Price</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox id="deals-specials"/><Label htmlFor="deals-specials">Dealer Specials</Label></div>
+                </AccordionContent>
+            </AccordionItem>
+             <AccordionItem value="fuel_type">
+                <AccordionTrigger>Fuel Type & MPG</AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                     <div className="space-y-2"><Label>Fuel Type</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
+                     <div className="space-y-2"><Label>MPG (City/Hwy)</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
+                </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="features">
+                <AccordionTrigger>Features & Colors</AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                     <div className="space-y-2"><Label>Features</Label><Input placeholder="e.g., Sunroof, AWD"/></div>
+                     <div className="space-y-2"><Label>Exterior Color</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
+                     <div className="space-y-2"><Label>Interior Color</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
+                </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="specs">
+                <AccordionTrigger>Seating, Drivetrain & More</AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                     <div className="space-y-2"><Label>Seating Capacity</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
+                     <div className="space-y-2"><Label>Drivetrain</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
+                     <div className="space-y-2"><Label>Transmission</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
+                     <div className="space-y-2"><Label>Cylinders</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+    </div>
+);
+
 
 export default function CarsForSalePage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -142,9 +217,30 @@ export default function CarsForSalePage() {
                         />
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     </div>
-                    <Button variant="outline" className="h-10 rounded-full text-sm shrink-0">
-                        <SlidersHorizontal className="mr-2 h-4 w-4" /> Filter
-                    </Button>
+                     <Sheet>
+                        <SheetTrigger asChild>
+                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0">
+                                <Filter className="mr-2 h-4 w-4" /> Filter
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent className="w-full sm:max-w-md">
+                            <SheetHeader>
+                                <SheetTitle>Filters</SheetTitle>
+                                <SheetDescription>
+                                    Refine your search to find the perfect car.
+                                </SheetDescription>
+                            </SheetHeader>
+                            <div className="py-4 h-[calc(100vh-150px)] overflow-y-auto pr-6">
+                                <FilterContent />
+                            </div>
+                            <SheetFooter className="absolute bottom-0 right-0 w-full p-4 bg-background border-t">
+                                <Button variant="outline" className="flex-1">Clear all</Button>
+                                <SheetClose asChild>
+                                    <Button type="submit" className="flex-1">View Results</Button>
+                                </SheetClose>
+                            </SheetFooter>
+                        </SheetContent>
+                    </Sheet>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Price (Demo)"})} className="rounded-full">Price Range &gt;</Button>
@@ -155,7 +251,7 @@ export default function CarsForSalePage() {
             </Tabs>
           </div>
           
-          <div className="my-6">
+          <div className="mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <div className="flex items-center gap-4 flex-wrap">
                     <div className="flex items-center gap-1 text-sm">
