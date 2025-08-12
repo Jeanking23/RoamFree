@@ -52,28 +52,28 @@ const suggestionItems = [
     {
       title: 'Rental Cars',
       description: 'Rent a car from a variety of models.',
-      imageSrc: 'https://images.unsplash.com/photo-1581966451257-a5c7c5afa833?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZW50YWwlMjBjYXJzfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1581966451257-a5c7c5afa833?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZW50YWwlMjBjYXJzfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'rental cars',
       link: '/car-rent',
     },
     {
       title: 'Courier',
       description: 'Send packages to friends and family.',
-      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'delivery package',
       link: '/courier-delivery',
     },
     {
       title: 'Food',
       description: 'Get your favorite meals delivered.',
-      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'food delivery',
       link: '#!', // Placeholder link
     },
     {
       title: 'Grocery',
       description: 'Have groceries delivered to your door.',
-      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'grocery bag',
       link: '#!', // Placeholder link
     },
@@ -527,7 +527,7 @@ export default function TransportPage() {
             Your one-stop solution for getting around.
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-4 md:p-6">
           <div className="grid lg:grid-cols-2 gap-8 items-start">
             <div className="h-96 md:h-full min-h-[400px]">
                 <InteractiveMapPlaceholder 
@@ -540,7 +540,7 @@ export default function TransportPage() {
                 />
             </div>
             <div className="space-y-4">
-               <div className="hidden lg:grid grid-cols-4 gap-4 mb-4">
+               <div className="hidden lg:grid grid-cols-4 gap-4">
                   {serviceCategories.map((service) => (
                     <Link key={service.name} href={service.link} passHref>
                       <Card className="text-center p-3 hover:bg-accent/10 hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-center items-center">
@@ -550,7 +550,7 @@ export default function TransportPage() {
                     </Link>
                   ))}
               </div>
-               <div className="lg:hidden grid grid-cols-4 gap-2 mb-6">
+               <div className="lg:hidden grid grid-cols-4 gap-2 mb-4">
                   {serviceCategories.map((service) => (
                     <Link key={service.name} href={service.link} passHref>
                       <Card className="text-center p-2 hover:bg-accent/10 transition-all cursor-pointer h-full flex flex-col justify-center items-center">
@@ -561,9 +561,9 @@ export default function TransportPage() {
                   ))}
               </div>
               <Card id="ride-booking">
-                <CardContent className="p-3">
-                  <h3 className="text-lg font-semibold mb-3">Book a Ride</h3>
-                  <div className="space-y-3">
+                <CardContent className="p-2">
+                  <h3 className="text-lg font-semibold mb-2">Book a Ride</h3>
+                  <div className="space-y-2">
                     <div className="relative">
                         <div className="absolute left-[23px] top-[18px] h-[calc(100%-36px)] w-px bg-muted-foreground"></div>
                         <div className="space-y-2">
@@ -734,7 +734,7 @@ export default function TransportPage() {
         
         <Card className="relative overflow-hidden group rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
           <Image 
-            src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+            src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib-rb-4.1.0&q=80&w=1080"
             alt="AI Trip Planner background"
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
