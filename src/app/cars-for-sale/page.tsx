@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CarFront, Search, DollarSign, Gauge, CalendarDays, Info, ShieldCheck, MessageCircle, GitCompareArrows, Users, ChevronLeft, ChevronRight, SlidersHorizontal, MapPin, Heart, Filter } from 'lucide-react';
+import { CarFront, Search, DollarSign, Gauge, CalendarDays, Info, ShieldCheck, MessageCircle, GitCompareArrows, Users, ChevronLeft, ChevronRight, SlidersHorizontal, MapPin, Heart, Filter, X, Building, List, Map as MapIcon, Plus, Check } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -20,6 +20,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { cn } from '@/lib/utils';
 
 const mockCarsForSale = [
   { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
@@ -200,7 +201,8 @@ const FilterContent = () => {
             </AccordionItem>
         </Accordion>
     </div>
-);
+    );
+};
 
 
 export default function CarsForSalePage() {
@@ -281,8 +283,8 @@ export default function CarsForSalePage() {
               </TabsList>
               <TabsContent value="search" className="space-y-4">
                 <h4 className="font-semibold text-foreground">USED CARS IN YOUR AREA</h4>
-                <div className="flex items-center gap-2">
-                    <div className="relative flex-grow">
+                 <div className="flex flex-col sm:flex-row gap-4 items-center">
+                    <div className="relative flex-grow w-full">
                         <Input
                         id="search-cars"
                         type="text"
@@ -295,7 +297,7 @@ export default function CarsForSalePage() {
                     </div>
                      <Sheet>
                         <SheetTrigger asChild>
-                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0">
+                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0 w-full sm:w-auto">
                                 <Filter className="mr-2 h-4 w-4" /> Filter
                             </Button>
                         </SheetTrigger>
@@ -362,7 +364,7 @@ export default function CarsForSalePage() {
             </Tabs>
           </div>
           
-          <div className="my-6">
+           <div className="my-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <div className="flex items-center gap-4 flex-wrap">
                     <div className="flex items-center gap-1 text-sm">
@@ -382,15 +384,13 @@ export default function CarsForSalePage() {
                     </Select>
                     <Button variant="ghost" size="sm" onClick={() => toast({title: "Saved!"})}><Heart className="mr-2 h-4 w-4"/>Save</Button>
                 </div>
-                 <div className="flex flex-wrap gap-2">
-                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Third Row Seat</Button>
-                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Under $25,000</Button>
-                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">SUVs</Button>
-                </div>
             </div>
             
-            <div className="mt-4">
-                <p className="text-sm text-muted-foreground font-medium">{filteredCars.length} cars found</p>
+            <div className="flex flex-wrap gap-2">
+                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Third Row Seat</Button>
+                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Under $25,000</Button>
+                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">SUVs</Button>
+                 <p className="text-sm text-muted-foreground font-medium self-end">{filteredCars.length} cars found</p>
             </div>
           </div>
 
@@ -399,7 +399,7 @@ export default function CarsForSalePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCars.map(item => (
                 <Card key={item.id} className="flex flex-col overflow-hidden">
-                  <WishlistItemImageSlider item={item} />
+                  <CarImageSlider car={item} />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl hover:text-primary">
                         <Link href={`/cars-for-sale/${item.id}`}>{item.name}</Link>
@@ -458,60 +458,6 @@ export default function CarsForSalePage() {
            </div>
         </CardContent>
       </Card>
-    </div>
-  );
-}
-
-// Renamed component to avoid conflict
-function WishlistItemImageSlider({ item }: { item: typeof mockCarsForSale[0] }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const nextSlide = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % item.photos.length);
-  };
-
-  const prevSlide = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + item.photos.length) % item.photos.length);
-  };
-
-  return (
-    <div className="relative w-full h-48 group">
-      <Link href={`/cars-for-sale/${item.id}`} className="block w-full h-full">
-        <Image 
-          src={item.photos[currentIndex].src} 
-          alt={item.name} 
-          fill 
-          className="object-cover" 
-          data-ai-hint={item.photos[currentIndex].dataAiHint}
-        />
-      </Link>
-      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-        <Search className="h-10 w-10 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
-      </div>
-       {item.photos.length > 1 && (
-        <>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 hover:bg-background/80"
-            onClick={prevSlide}
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 hover:bg-background/80"
-            onClick={nextSlide}
-          >
-            <ChevronRight className="h-5 w-5" />
-          </Button>
-        </>
-      )}
     </div>
   );
 }
