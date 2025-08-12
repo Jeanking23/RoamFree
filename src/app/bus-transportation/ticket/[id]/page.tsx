@@ -4,7 +4,7 @@
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TicketIcon, User, MapPin, Clock, BusIcon, QrCode, Download, Share2 } from 'lucide-react';
+import { TicketIcon, User, MapPin, Clock, BusIcon, QrCode, Download, Share2, ArrowLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -105,7 +105,12 @@ export default function BusTicketPage() {
                         </div>
                     </div>
                 </CardContent>
-                <CardFooter className="bg-muted/50 p-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <CardFooter className="bg-muted/50 p-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                     <Button variant="outline" asChild className="col-span-2 sm:col-span-1">
+                        <Link href="/bus-transportation">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Search
+                        </Link>
+                    </Button>
                     <Button variant="outline" onClick={handleDownload}><Download className="mr-2 h-4 w-4"/> Download PDF</Button>
                     <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4"/> Share Ticket</Button>
                     <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
