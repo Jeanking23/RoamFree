@@ -290,13 +290,13 @@ export default function CarsForSalePage() {
                         placeholder="Search Make, Model, or Keyword"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pr-10 h-9 rounded-full pl-10"
+                        className="pr-10 h-11 rounded-full pl-10"
                         />
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     </div>
                      <Sheet>
                         <SheetTrigger asChild>
-                             <Button variant="outline" className="h-9 rounded-full text-sm shrink-0">
+                             <Button variant="outline" className="h-11 rounded-full text-sm shrink-0">
                                 <Filter className="mr-2 h-4 w-4" />
                                 <span className="hidden sm:inline">Filter</span>
                             </Button>
@@ -382,17 +382,15 @@ export default function CarsForSalePage() {
                 <Button variant="ghost" size="sm" onClick={() => toast({title: "Saved!"})} className="shrink-0"><Heart className="mr-2 h-4 w-4"/>Save</Button>
             </div>
             
-            <div className="flex flex-wrap gap-2 items-center justify-between mt-4">
+            <div className="flex flex-nowrap gap-2 items-center justify-between mt-4">
                 <div className="flex flex-nowrap gap-2 items-center overflow-x-auto no-scrollbar">
                     <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full shrink-0">Third Row Seating</Button>
                     <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full shrink-0">All-Wheel Drive</Button>
                     <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full shrink-0">Sunroof / Moonroof</Button>
                      <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full shrink-0">Apple CarPlay</Button>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button onClick={handleCompareSelected} disabled={selectedToCompare.length < 2} size="sm">
-                        <GitCompareArrows className="mr-2 h-4 w-4" /> Compare ({selectedToCompare.length})
-                    </Button>
+                <div className="flex items-center gap-2 shrink-0">
+                    <p className="text-sm font-semibold">{filteredCars.length} cars found</p>
                 </div>
             </div>
           </div>
