@@ -74,7 +74,7 @@ const suggestionItems = [
     {
       title: 'Grocery',
       description: 'Have groceries delivered to your door.',
-      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'grocery bag',
       link: '#!', // Placeholder link
     },
@@ -540,12 +540,12 @@ export default function TransportPage() {
             />
           </div>
 
-          <div className="lg:hidden grid grid-cols-1 gap-4 mb-8">
+          <div className="lg:hidden grid grid-cols-4 gap-4 mb-8">
             {serviceCategories.map((service) => (
               <Link key={service.name} href={service.link} passHref>
-                 <Card className="text-center p-4 hover:bg-accent/10 hover:shadow-md transition-all cursor-pointer h-full flex flex-row justify-start items-center">
-                  <service.icon className="h-8 w-8 text-primary mr-4" />
-                  <p className="font-semibold text-lg">{service.name}</p>
+                 <Card className="text-center p-2 hover:bg-accent/10 hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-center items-center">
+                  <service.icon className="h-8 w-8 text-primary mx-auto mb-1" />
+                  <p className="font-semibold text-xs text-center">{service.name}</p>
                 </Card>
               </Link>
             ))}
