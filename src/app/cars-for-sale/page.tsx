@@ -55,11 +55,11 @@ function CarImageSlider({ car }: { car: typeof mockCarsForSale[0] }) {
     <div className="relative w-full h-48 group">
       <Link href={`/cars-for-sale/${car.id}`} className="block w-full h-full">
         <Image 
-          src={item.photos[currentIndex].src} 
-          alt={item.name} 
+          src={car.photos[currentIndex].src} 
+          alt={car.name} 
           fill 
           className="object-cover" 
-          data-ai-hint={item.photos[currentIndex].dataAiHint}
+          data-ai-hint={car.photos[currentIndex].dataAiHint}
         />
       </Link>
       <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
@@ -240,8 +240,8 @@ export default function CarsForSalePage() {
               </TabsList>
               <TabsContent value="search" className="space-y-4">
                 <h4 className="font-semibold text-foreground">USED CARS IN YOUR AREA</h4>
-                <div className="flex flex-col sm:flex-row gap-4 items-center">
-                    <div className="relative flex-grow w-full">
+                <div className="flex items-center gap-2">
+                    <div className="relative flex-grow">
                         <Input
                         id="search-cars"
                         type="text"
@@ -254,7 +254,7 @@ export default function CarsForSalePage() {
                     </div>
                      <Sheet>
                         <SheetTrigger asChild>
-                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0 w-full sm:w-auto">
+                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0">
                                 <Filter className="mr-2 h-4 w-4" /> Filter
                             </Button>
                         </SheetTrigger>
@@ -321,7 +321,7 @@ export default function CarsForSalePage() {
             </Tabs>
           </div>
           
-          <div className="mb-6">
+          <div className="my-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <div className="flex items-center gap-4 flex-wrap">
                     <div className="flex items-center gap-1 text-sm">
