@@ -550,7 +550,7 @@ export default function TransportPage() {
                     </Link>
                   ))}
               </div>
-               <div className="lg:hidden grid grid-cols-4 gap-4 mb-8">
+               <div className="lg:hidden grid grid-cols-4 gap-2 mb-6">
                   {serviceCategories.map((service) => (
                     <Link key={service.name} href={service.link} passHref>
                       <Card className="text-center p-2 hover:bg-accent/10 transition-all cursor-pointer h-full flex flex-col justify-center items-center">
@@ -561,9 +561,9 @@ export default function TransportPage() {
                   ))}
               </div>
               <Card id="ride-booking">
-                <CardContent className="p-4 md:p-6">
-                  <h3 className="text-xl font-semibold mb-4">Book a Ride</h3>
-                  <div className="space-y-4">
+                <CardContent className="p-3">
+                  <h3 className="text-lg font-semibold mb-3">Book a Ride</h3>
+                  <div className="space-y-3">
                     <div className="relative">
                         <div className="absolute left-[23px] top-[18px] h-[calc(100%-36px)] w-px bg-muted-foreground"></div>
                         <div className="space-y-2">
@@ -586,9 +586,9 @@ export default function TransportPage() {
                         </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 pt-2">
+                    <div className="flex items-center space-x-2">
                         <Switch id="round-trip" checked={isRoundTrip} onCheckedChange={setIsRoundTrip} />
-                        <Label htmlFor="round-trip" className="flex items-center gap-2"><Repeat className="h-4 w-4" />Round Trip / Return Way</Label>
+                        <Label htmlFor="round-trip" className="flex items-center gap-2 text-sm"><Repeat className="h-4 w-4" />Round Trip / Return Way</Label>
                     </div>
                     
                     <AnimatePresence>
@@ -598,13 +598,13 @@ export default function TransportPage() {
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="grid grid-cols-2 gap-4 pt-2 overflow-hidden border-t"
+                            className="grid grid-cols-2 gap-2 pt-2 overflow-hidden border-t"
                         >
                             <div>
-                                <Label>Return Date</Label>
+                                <Label className="text-xs">Return Date</Label>
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal",!returnDate && "text-muted-foreground")}>
+                                        <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal",!returnDate && "text-muted-foreground")}>
                                             <CalendarDays className="mr-2 h-4 w-4" />
                                             {returnDate ? format(returnDate, "PPP") : <span>Pick a date</span>}
                                         </Button>
@@ -615,7 +615,7 @@ export default function TransportPage() {
                                 </Popover>
                             </div>
                             <div>
-                                <Label>Return Time</Label>
+                                <Label className="text-xs">Return Time</Label>
                                 <Input type="time" value={returnTime} onChange={(e) => setReturnTime(e.target.value)} />
                             </div>
                         </motion.div>
@@ -623,12 +623,13 @@ export default function TransportPage() {
                     </AnimatePresence>
 
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-2">
                         <div>
-                            <Label>Date</Label>
+                            <Label className="text-xs">Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
+                                        size="sm"
                                         variant={"outline"}
                                         className={cn(
                                             "w-full justify-start text-left font-normal",
@@ -651,7 +652,7 @@ export default function TransportPage() {
                             </Popover>
                         </div>
                         <div>
-                            <Label>Time</Label>
+                            <Label className="text-xs">Time</Label>
                             <Input
                                 type="time"
                                 value={time}
@@ -661,8 +662,8 @@ export default function TransportPage() {
                     </div>
 
                     <div>
-                        <Label>Passengers</Label>
-                        <div className="flex gap-4">
+                        <Label className="text-xs">Passengers</Label>
+                        <div className="flex gap-2">
                             <div className="flex-1">
                                 <Label htmlFor="adults" className="text-xs text-muted-foreground">Adults</Label>
                                 <Input id="adults" type="number" min="1" value={adults} onChange={e => setAdults(Number(e.target.value))} />
@@ -675,41 +676,42 @@ export default function TransportPage() {
                     </div>
 
                     <div>
-                        <Label htmlFor="comment" className="flex items-center gap-2"><MessageSquare className="h-4 w-4"/>Comment (Optional)</Label>
+                        <Label htmlFor="comment" className="flex items-center gap-2 text-xs"><MessageSquare className="h-4 w-4"/>Comment (Optional)</Label>
                         <Textarea 
                             id="comment"
-                            placeholder="Luggage information, special needs, or tasks for the driver..."
+                            placeholder="Luggage info, special needs..."
                             value={comment}
                             onChange={e => setComment(e.target.value)}
+                            className="text-sm"
                         />
                     </div>
 
-                    <div className="flex items-center space-x-2 pt-2">
+                    <div className="flex items-center space-x-2">
                         <Switch id="ride-for-other" checked={rideForSomeoneElse} onCheckedChange={setRideForSomeoneElse} />
-                        <Label htmlFor="ride-for-other" className="flex items-center gap-2"><UserPlus className="h-4 w-4" />Ride for someone else</Label>
+                        <Label htmlFor="ride-for-other" className="flex items-center gap-2 text-sm"><UserPlus className="h-4 w-4" />Ride for someone else</Label>
                     </div>
 
                     <AnimatePresence>
                         {rideForSomeoneElse && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
-                                animate={{ opacity: 1, height: 'auto', marginTop: '1rem', paddingTop: '1rem', paddingBottom: '1rem' }}
+                                animate={{ opacity: 1, height: 'auto', marginTop: '0.75rem', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
                                 exit={{ opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
                                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                                className="space-y-4 pt-4 border-t overflow-hidden p-4 border rounded-md"
+                                className="space-y-3 pt-3 border-t overflow-hidden p-3 border rounded-md"
                             >
-                                <h4 className="font-semibold text-foreground">Rider's Details</h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <h4 className="font-semibold text-foreground text-sm">Rider's Details</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     <div>
                                         <div className="flex justify-between items-center mb-1">
-                                            <Label htmlFor="riderName">Rider's Name</Label>
+                                            <Label htmlFor="riderName" className="text-xs">Rider's Name</Label>
                                             <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={handleFromContacts}>From Contacts</Button>
                                         </div>
                                         <Input id="riderName" placeholder="e.g., Jane Doe" value={riderName} onChange={(e) => setRiderName(e.target.value)} />
                                     </div>
                                     <div>
-                                        <Label htmlFor="riderPhone">Rider's Phone Number</Label>
-                                        <Input id="riderPhone" type="tel" placeholder="e.g., +1 555-123-4567" value={riderPhone} onChange={(e) => setRiderPhone(e.target.value)} />
+                                        <Label htmlFor="riderPhone" className="text-xs">Rider's Phone</Label>
+                                        <Input id="riderPhone" type="tel" placeholder="+1 555-123-4567" value={riderPhone} onChange={(e) => setRiderPhone(e.target.value)} />
                                     </div>
                                 </div>
                             </motion.div>
