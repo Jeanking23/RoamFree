@@ -133,7 +133,7 @@ export const allMockStays: MockStay[] = [
     name: "Sunny Beachfront Villa",
     location: "Bali, Indonesia",
     pricePerNight: 250,
-    image: "https://images.unsplash.com/photo-1668277155756-0ebb2801f6b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxiZWFjaCUyMHZpbGxhJTIwYmFsaXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1668277155756-0ebb2801f6b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxiZWFjaCUyMHZpbGxhJTIwYmFsaXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "beach villa bali",
     rating: 4.8,
     category: "Villa",
@@ -166,7 +166,7 @@ export const allMockStays: MockStay[] = [
     name: "Cozy Mountain Cabin",
     location: "Aspen, Colorado",
     pricePerNight: 180,
-    image: "https://images.unsplash.com/photo-1610301349088-1d7ec5a1d961?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtb3VudGFpbiUyMGNhYmluJTIwc25vd3xlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1610301349088-1d7ec5a1d961?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtb3VudGFpbiUyMGNhYmluJTIwc25vd3xlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
     dataAiHint: "mountain cabin snow",
     rating: 4.9,
     category: "Cabin",
@@ -181,8 +181,8 @@ export const allMockStays: MockStay[] = [
     description: "A charming and cozy cabin nestled in the Aspen mountains. Features a fireplace, hot tub, and stunning forest views. Ideal for ski trips or summer hiking.",
     amenities: ["Hot Tub", "Fireplace", "WiFi", "Kitchenette", "Ski-in/Ski-out Access (nearby)"],
      photos: [
-      { id: "p1s2", src: "https://images.unsplash.com/photo-1669394478167-a4965c32a98e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjYWJpbiUyMHNub3d8ZW58MHx8fHwxNzUyNzI4NDI0fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Cabin exterior in snow", dataAiHint: "cabin snow" },
-      { id: "p2s2", src: "https://images.unsplash.com/photo-1697807713050-b0e7d00956a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjYWJpbiUyMGZpcmVwbGFjZXxlbnwwfHx8fDE3NTI3Mjg0MjR8MA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Cozy cabin interior with fireplace", dataAiHint: "cabin fireplace" },
+      { id: "p1s2", src: "https://images.unsplash.com/photo-1669394478167-a4965c32a98e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjYWJpbiUyMHNub3d8ZW58MHx8fHwxNzUyNzI4NDI0fDA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Cabin exterior in snow", dataAiHint: "cabin snow" },
+      { id: "p2s2", src: "https://images.unsplash.com/photo-1697807713050-b0e7d00956a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjYWJpbiUyMGZpcmVwbGFjZXxlbnwwfHx8fDE3NTI3Mjg0MjR8MA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Cozy cabin interior with fireplace", dataAiHint: "cabin fireplace" },
     ],
     host: { name: "Mike R.", avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
     guestReviews: [
@@ -196,7 +196,7 @@ export const allMockStays: MockStay[] = [
     name: "Urban Chic Hotel Room",
     location: "Paris, France",
     pricePerNight: 150,
-    image: "https://images.unsplash.com/photo-1694637768991-0397391eb557?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtb2Rlcm4lMjBob3RlbCUyMHJvb20lMjBwYXJpc3xlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1694637768991-0397391eb557?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtb2Rlcm4lMjBob3RlbCUyMHJvb20lMjBwYXJpc3xlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
     dataAiHint: "modern hotel room paris",
     rating: 4.7,
     category: "Hotel Room",
@@ -209,7 +209,7 @@ export const allMockStays: MockStay[] = [
     description: "Stylish hotel room in the heart of Paris, close to major attractions. Features a comfortable king bed, city views, and daily breakfast.",
     amenities: ["Daily Breakfast", "Concierge", "WiFi", "Air Conditioning", "Ensuite Bathroom"],
     photos: [
-      { id: "p1s3", src: "https://images.unsplash.com/photo-1694637768991-0397391eb557?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtb2Rlcm4lMjBob3RlbCUyMHJvb20lMjBwYXJpc3xlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Paris hotel room view", dataAiHint: "hotel room paris" },
+      { id: "p1s3", src: "https://images.unsplash.com/photo-1694637768991-0397391eb557?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtb2Rlcm4lMjBob3RlbCUyMHJvb20lMjBwYXJpc3xlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Paris hotel room view", dataAiHint: "hotel room paris" },
       { id: "p2s3", src: "https://placehold.co/800x600.png", alt: "Hotel lobby Paris", dataAiHint: "hotel lobby chic" },
     ],
     host: { name: "Hotel Le Grand", avatar: "https://placehold.co/100x100.png", dataAiHint: "hotel logo" },
@@ -224,7 +224,7 @@ export const allMockStays: MockStay[] = [
     name: "Riverside Lodge Escape",
     location: "Scottish Highlands",
     pricePerNight: 220,
-    image: "https://images.unsplash.com/photo-1668597354945-b67f6a77ded5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyaXZlciUyMGxvZGdlJTIwc2NvdGxhbmR8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1668597354945-b67f6a77ded5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyaXZlciUyMGxvZGdlJTIwc2NvdGxhbmR8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib-rb-4.1.0&q=80&w=1080",
     dataAiHint: "river lodge scotland",
     rating: 4.6,
     category: "Lodge",
@@ -237,7 +237,7 @@ export const allMockStays: MockStay[] = [
     reviewsCount: 95,
     description: "A beautiful lodge by the river in the Scottish Highlands. Perfect for fishing, hiking, and relaxing in nature. Offers 3 bedrooms and a cozy fireplace.",
     amenities: ["River Access", "Fishing Gear (rental)", "WiFi", "Full Kitchen", "Log Burner"],
-    photos: [ { id: "p1s4", src: "https://images.unsplash.com/photo-1668597354945-b67f6a77ded5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyaXZlciUyMGxvZGdlJTIwc2NvdGxhbmR8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Lodge exterior", dataAiHint: "lodge highlands river" } ],
+    photos: [ { id: "p1s4", src: "https://images.unsplash.com/photo-1668597354945-b67f6a77ded5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyaXZlciUyMGxvZGdlJTIwc2NvdGxhbmR8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Lodge exterior", dataAiHint: "lodge highlands river" } ],
     host: { name: "Angus McTavish", avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
     guestReviews: [ { id: "gr1s4", user: "Emily R.", rating: 5, comment: "Stunning location, very peaceful.", date: "2024-03-20", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar"} ],
     policies: { checkIn: "After 4:00 PM", checkOut: "Before 10:00 AM", cancellation: "Moderate - Full refund 14 days prior." },
@@ -248,7 +248,7 @@ export const allMockStays: MockStay[] = [
     name: "Desert Oasis Hotel",
     location: "Sedona, Arizona",
     pricePerNight: 300,
-    image: "https://images.unsplash.com/photo-1605474231454-4c006ed61ae4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxkZXNlcnQlMjBob3RlbCUyMGFyaXpvbmF8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1605474231454-4c006ed61ae4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxkZXNlcnQlMjBob3RlbCUyMGFyaXpvbmF8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib-rb-4.1.0&q=80&w=1080",
     dataAiHint: "desert hotel arizona",
     rating: 4.8,
     category: "Hotel",
@@ -258,7 +258,7 @@ export const allMockStays: MockStay[] = [
     reviewsCount: 210,
     description: "Luxury hotel offering stunning red rock views, spa services, and gourmet dining. Perfect for a rejuvenating escape.",
     amenities: ["Spa", "Pool", "Restaurant", "WiFi", "Air Conditioning", "Fitness Center"],
-    photos: [ { id: "p1s5", src: "https://images.unsplash.com/photo-1605474231454-4c006ed61ae4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxkZXNlcnQlMjBob3RlbCUyMGFyaXpvbmF8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Sedona hotel with view", dataAiHint: "hotel desert view" } ],
+    photos: [ { id: "p1s5", src: "https://images.unsplash.com/photo-1605474231454-4c006ed61ae4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxkZXNlcnQlMjBob3RlbCUyMGFyaXpvbmF8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Sedona hotel with view", dataAiHint: "hotel desert view" } ],
     host: { name: "Enchantment Resort", avatar: "https://placehold.co/100x100.png", dataAiHint: "resort logo" },
     guestReviews: [ { id: "gr1s5", user: "Michael C.", rating: 5, comment: "Unforgettable views and top-notch service.", date: "2024-04-15", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar"} ],
     policies: { checkIn: "After 3:00 PM", checkOut: "Before 11:00 AM", cancellation: "Free cancellation up to 48 hours before check-in." },
@@ -269,7 +269,7 @@ export const allMockStays: MockStay[] = [
     name: "Historic City Center Flat",
     location: "Rome, Italy",
     pricePerNight: 120,
-    image: "https://images.unsplash.com/photo-1724020538147-da2fe0a93751?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoaXN0b3JpYyUyMGJ1aWxkaW5nJTIwcm9tZXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1724020538147-da2fe0a93751?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoaXN0b3JpYyUyMGJ1aWxkaW5nJTIwcm9tZXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
     dataAiHint: "historic building rome",
     rating: 4.5,
     category: "Flat",
@@ -282,7 +282,7 @@ export const allMockStays: MockStay[] = [
     reviewsCount: 155,
     description: "Charming flat in a historic building, steps away from ancient Roman landmarks. Features one bedroom, a small kitchen, and traditional decor.",
     amenities: ["Central Location", "WiFi", "Kitchenette", "Air Conditioning"],
-    photos: [ { id: "p1s6", src: "https://images.unsplash.com/photo-1724020538147-da2fe0a93751?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoaXN0b3JpYyUyMGJ1aWxkaW5nJTIwcm9tZXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Rome flat interior", dataAiHint: "apartment rome interior" } ],
+    photos: [ { id: "p1s6", src: "https://images.unsplash.com/photo-1724020538147-da2fe0a93751?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoaXN0b3JpYyUyMGJ1aWxkaW5nJTIwcm9tZXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Rome flat interior", dataAiHint: "apartment rome interior" } ],
     host: { name: "Marco Rossi", avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
     guestReviews: [ { id: "gr1s6", user: "Jessica B.", rating: 4, comment: "Amazing location for sightseeing!", date: "2024-03-05", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar"} ],
     policies: { checkIn: "After 2:00 PM", checkOut: "Before 10:00 AM", cancellation: "Non-refundable." },
@@ -303,7 +303,7 @@ export const carListings: CarListing[] = [
     pricePerWeek: 350,
     image: "https://images.unsplash.com/photo-1607928086418-95fc643a0e0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c2VkYW4lMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
     photos: [
-      { id: "car1p1", src: "https://images.unsplash.com/photo-1607928086418-95fc643a0e0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c2VkYW4lMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Camry front view", dataAiHint: "sedan front" },
+      { id: "car1p1", src: "https://images.unsplash.com/photo-1607928086418-95fc643a0e0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c2VkYW4lMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Camry front view", dataAiHint: "sedan front" },
       { id: "car1p2", src: "https://placehold.co/800x600.png", alt: "Camry interior", dataAiHint: "car dashboard" },
       { id: "car1p3", src: "https://placehold.co/800x600.png", alt: "Camry side view", dataAiHint: "sedan side" },
     ],
@@ -331,7 +331,7 @@ export const carListings: CarListing[] = [
     pricePerWeek: 550,
     image: "https://images.unsplash.com/photo-1618353482480-61ca5a9a7879?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzdXYlMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
     photos: [
-      { id: "car2p1", src: "https://images.unsplash.com/photo-1618353482480-61ca5a9a7879?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzdXYlMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Explorer front view", dataAiHint: "suv front" },
+      { id: "car2p1", src: "https://images.unsplash.com/photo-1618353482480-61ca5a9a7879?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzdXYlMjBjYXJ8ZW58MHx8fHwxNzUyNzIyMTg5fDA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Explorer front view", dataAiHint: "suv front" },
       { id: "car2p2", src: "https://placehold.co/800x600.png", alt: "Explorer interior with third row", dataAiHint: "suv interior seats" },
     ],
     dataAiHint: "suv car",
@@ -356,9 +356,9 @@ export const carListings: CarListing[] = [
     pricePerDay: 150,
     pricePerHour: 30,
     pricePerWeek: 950,
-    image: "https://images.unsplash.com/photo-1635714612847-a515e7939326?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx2YW4lMjB2ZWhpY2xlfGVufDB8fHx8MTc1MjcyMjE4OXww&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1635714612847-a515e7939326?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx2YW4lMjB2ZWhpY2xlfGVufDB8fHx8MTc1MjcyMjE4OXww&ixlib-rb-4.1.0&q=80&w=1080",
      photos: [
-      { id: "car3p1", src: "https://images.unsplash.com/photo-1635714612847-a515e7939326?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx2YW4lMjB2ZWhpY2xlfGVufDB8fHx8MTc1MjcyMjE4OXww&ixlib=rb-4.1.0&q=80&w=1080", alt: "Sprinter van exterior", dataAiHint: "white van" },
+      { id: "car3p1", src: "https://images.unsplash.com/photo-1635714612847-a515e7939326?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx2YW4lMjB2ZWhpY2xlfGVufDB8fHx8MTc1MjcyMjE4OXww&ixlib-rb-4.1.0&q=80&w=1080", alt: "Sprinter van exterior", dataAiHint: "white van" },
       { id: "car3p2", src: "https://placehold.co/800x600.png", alt: "Sprinter van interior seating", dataAiHint: "van interior" },
     ],
     dataAiHint: "van vehicle",
@@ -519,9 +519,15 @@ export const mockSaleProperties: MockStay[] = [
         dataAiHint: "two story house", 
         rating: 4.3,
         photos: [
-            { id: "p1s3", src: "https://images.unsplash.com/photo-1600585152915-d208bec867a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0d28lMjBzdG9yeSUyMGhvdXNlfGVufDB8fHx8MTc1MjgxMjQwMnww&ixlib=rb-4.1.0&q=80&w=1080", alt: "two story house front", dataAiHint: "two story house" },
+            { id: "p1s3", src: "https://images.unsplash.com/photo-1600585152915-d208bec867a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0d28lMjBzdG9yeSUyMGhvdXNlfGVufDB8fHx8MTc1MjgxMjQwMnww&ixlib-rb-4.1.0&q=80&w=1080", alt: "two story house front", dataAiHint: "two story house" },
         ]
     },
+];
+
+export const mockCarsForSale = [
+  { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
+  { id: "carSale2", name: "Ford F-150 XLT 2020", price: 32000, location: "Suburbia", mileage: "30,000 miles", year: 2020, image: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck", vin: "DEMOVIN67890", historyHighlights: "One owner, Clean title", sellerRating: 4.5, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck"}, {id: 'p2', src: "https://images.unsplash.com/photo-1656110073986-ccf23039e402?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dHJ1Y2slMjBiZWR8ZW58MHx8fHwxNzU1MDIzMjYxfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "truck bed"}] },
+  { id: "carSale3", name: "Honda Civic LX 2019", price: 17500, location: "Townsburd", mileage: "38,000 miles", year: 2019, image: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda", vin: "DEMOVIN11223", historyHighlights: "Fuel efficient, Great condition", sellerRating: 4.9, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda"}, {id: 'p2', src: "https://images.unsplash.com/photo-1549064233-945d7063292f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjYXIlMjBpbnRlcmlvcnxlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "car interior"}] },
 ];
 
 
