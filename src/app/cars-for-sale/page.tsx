@@ -123,13 +123,13 @@ export default function CarsForSalePage() {
         <CardContent className="p-6">
           <div className="mb-8 p-4 border rounded-lg bg-muted/30">
             <Tabs defaultValue="search" className="w-full">
-              <TabsList className="mb-4">
-                <TabsTrigger value="search">Search</TabsTrigger>
-                <TabsTrigger value="sell_trade" onClick={() => toast({title: "Feature Coming Soon"})}>Sell/Trade</TabsTrigger>
-                <TabsTrigger value="financing" onClick={() => toast({title: "Feature Coming Soon"})}>Financing</TabsTrigger>
+              <TabsList className="mb-4 bg-transparent p-0 h-auto">
+                <TabsTrigger value="search" className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2"><Search className="mr-2 h-4 w-4"/>Search</TabsTrigger>
+                <TabsTrigger value="sell_trade" onClick={() => toast({title: "Feature Coming Soon"})} className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Sell/Trade</TabsTrigger>
+                <TabsTrigger value="financing" onClick={() => toast({title: "Feature Coming Soon"})} className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Financing</TabsTrigger>
               </TabsList>
               <TabsContent value="search" className="space-y-4">
-                <h4 className="font-semibold text-foreground">Used Cars in Your Area</h4>
+                <h4 className="font-semibold text-foreground">USED CARS IN YOUR AREA</h4>
                 <div className="flex flex-col sm:flex-row gap-4 items-center">
                   <div className="relative flex-grow w-full">
                     <Input
@@ -138,18 +138,18 @@ export default function CarsForSalePage() {
                       placeholder="Search Make, Model, or Keyword"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pr-10 h-12 text-base"
+                      className="pr-10 h-12 text-base rounded-full"
                     />
-                    <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   </div>
-                  <Button variant="outline" className="w-full sm:w-auto h-12">
+                  <Button variant="outline" className="w-full sm:w-auto h-12 rounded-full text-base">
                     <SlidersHorizontal className="mr-2 h-4 w-4" /> Filter
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Price (Demo)"})}>Price Range &gt;</Button>
-                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Make/Model (Demo)"})}>Make/Model &gt;</Button>
-                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Body Type (Demo)"})}>Body Type &gt;</Button>
+                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Price (Demo)"})} className="rounded-full">Price Range &gt;</Button>
+                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Make/Model (Demo)"})} className="rounded-full">Make/Model &gt;</Button>
+                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Body Type (Demo)"})} className="rounded-full">Body Type &gt;</Button>
                 </div>
               </TabsContent>
             </Tabs>
@@ -181,9 +181,9 @@ export default function CarsForSalePage() {
             </div>
             
              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})}>Third Row Seat</Button>
-                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})}>Under $25,000</Button>
-                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})}>SUVs</Button>
+                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Third Row Seat</Button>
+                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Under $25,000</Button>
+                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">SUVs</Button>
             </div>
           </div>
 
