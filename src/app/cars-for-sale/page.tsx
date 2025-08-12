@@ -16,12 +16,25 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from '@/components/ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 
 const mockCarsForSale = [
   { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
   { id: "carSale2", name: "Ford F-150 XLT 2020", price: 32000, location: "Suburbia", mileage: "30,000 miles", year: 2020, image: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck", vin: "DEMOVIN67890", historyHighlights: "One owner, Clean title", sellerRating: 4.5, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck"}, {id: 'p2', src: "https://images.unsplash.com/photo-1656110073986-ccf23039e402?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dHJ1Y2slMjBiZWR8ZW58MHx8fHwxNzU1MDIzMjYxfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "truck bed"}] },
   { id: "carSale3", name: "Honda Civic LX 2019", price: 17500, location: "Townsburd", mileage: "38,000 miles", year: 2019, image: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda", vin: "DEMOVIN11223", historyHighlights: "Fuel efficient, Great condition", sellerRating: 4.9, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda"}, {id: 'p2', src: "https://images.unsplash.com/photo-1549064233-945d7063292f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjYXIlMjBpbnRlcmlvcnxlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "car interior"}] },
 ];
+
+const sellCarSchema = z.object({
+  vin: z.string().length(17, "VIN must be 17 characters."),
+  make: z.string().min(2, "Make is required."),
+  model: z.string().min(1, "Model is required."),
+  year: z.coerce.number().min(1900, "Invalid year.").max(new Date().getFullYear() + 1, "Invalid year."),
+  mileage: z.coerce.number().min(0, "Mileage must be positive."),
+});
+type SellCarFormValues = z.infer<typeof sellCarSchema>;
 
 function CarImageSlider({ car }: { car: typeof mockCarsForSale[0] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -42,11 +55,11 @@ function CarImageSlider({ car }: { car: typeof mockCarsForSale[0] }) {
     <div className="relative w-full h-48 group">
       <Link href={`/cars-for-sale/${car.id}`} className="block w-full h-full">
         <Image 
-          src={car.photos[currentIndex].src} 
-          alt={car.name} 
+          src={item.photos[currentIndex].src} 
+          alt={item.name} 
           fill 
           className="object-cover" 
-          data-ai-hint={car.photos[currentIndex].dataAiHint}
+          data-ai-hint={item.photos[currentIndex].dataAiHint}
         />
       </Link>
       <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
@@ -152,6 +165,28 @@ const FilterContent = ({ closeSheet }: { closeSheet?: () => void }) => (
 export default function CarsForSalePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedToCompare, setSelectedToCompare] = useState<string[]>([]);
+  const [offerValue, setOfferValue] = useState<number | null>(null);
+  const [isOfferLoading, setIsOfferLoading] = useState(false);
+
+  const sellCarForm = useForm<SellCarFormValues>({
+    resolver: zodResolver(sellCarSchema),
+  });
+
+  const handleGetOffer = async (values: SellCarFormValues) => {
+    setIsOfferLoading(true);
+    setOfferValue(null);
+    console.log("Getting offer for:", values);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const basePrice = 20000;
+    const yearFactor = (values.year - 2018) * 1000;
+    const mileageFactor = values.mileage * -0.1;
+    const randomFactor = (Math.random() - 0.5) * 2000;
+    const calculatedOffer = basePrice + yearFactor + mileageFactor + randomFactor;
+    setOfferValue(Math.max(500, Math.round(calculatedOffer / 100) * 100)); // Round to nearest 100
+    setIsOfferLoading(false);
+  };
+
 
   const handleMakeOffer = (carName: string) => {
     toast({ title: "Make Offer (Demo)", description: `Initiating offer process for ${carName}. You can negotiate price here.` });
@@ -200,13 +235,13 @@ export default function CarsForSalePage() {
             <Tabs defaultValue="search" className="w-full">
               <TabsList className="mb-4 bg-transparent p-0 h-auto">
                 <TabsTrigger value="search" className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2"><Search className="mr-2 h-4 w-4"/>Search</TabsTrigger>
-                <TabsTrigger value="sell_trade" onClick={() => toast({title: "Feature Coming Soon"})} className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Sell/Trade</TabsTrigger>
+                <TabsTrigger value="sell_trade" className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Sell/Trade</TabsTrigger>
                 <TabsTrigger value="financing" onClick={() => toast({title: "Feature Coming Soon"})} className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Financing</TabsTrigger>
               </TabsList>
               <TabsContent value="search" className="space-y-4">
                 <h4 className="font-semibold text-foreground">USED CARS IN YOUR AREA</h4>
-                <div className="flex gap-2 items-center">
-                    <div className="relative flex-grow">
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                    <div className="relative flex-grow w-full">
                         <Input
                         id="search-cars"
                         type="text"
@@ -219,7 +254,7 @@ export default function CarsForSalePage() {
                     </div>
                      <Sheet>
                         <SheetTrigger asChild>
-                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0">
+                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0 w-full sm:w-auto">
                                 <Filter className="mr-2 h-4 w-4" /> Filter
                             </Button>
                         </SheetTrigger>
@@ -242,10 +277,45 @@ export default function CarsForSalePage() {
                         </SheetContent>
                     </Sheet>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Price (Demo)"})} className="rounded-full">Price Range &gt;</Button>
-                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Make/Model (Demo)"})} className="rounded-full">Make/Model &gt;</Button>
-                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Body Type (Demo)"})} className="rounded-full">Body Type &gt;</Button>
+              </TabsContent>
+              <TabsContent value="sell_trade">
+                <div className="grid md:grid-cols-2 gap-8 items-center">
+                  <div>
+                    <h4 className="font-semibold text-foreground text-xl mb-2">Get a Real Offer in Minutes</h4>
+                    <p className="text-muted-foreground mb-4">Tell us about your car and we'll provide a competitive offer. It's fast, easy, and free.</p>
+                    <Form {...sellCarForm}>
+                        <form onSubmit={sellCarForm.handleSubmit(handleGetOffer)} className="space-y-4">
+                            <FormField control={sellCarForm.control} name="vin" render={({ field }) => (<FormItem><FormLabel>VIN</FormLabel><FormControl><Input placeholder="Enter 17-character VIN" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                            <div className="grid grid-cols-2 gap-4">
+                               <FormField control={sellCarForm.control} name="make" render={({ field }) => (<FormItem><FormLabel>Make</FormLabel><FormControl><Input placeholder="e.g., Toyota" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                               <FormField control={sellCarForm.control} name="model" render={({ field }) => (<FormItem><FormLabel>Model</FormLabel><FormControl><Input placeholder="e.g., Camry" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                            </div>
+                             <div className="grid grid-cols-2 gap-4">
+                                <FormField control={sellCarForm.control} name="year" render={({ field }) => (<FormItem><FormLabel>Year</FormLabel><FormControl><Input type="number" placeholder="e.g., 2022" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                                <FormField control={sellCarForm.control} name="mileage" render={({ field }) => (<FormItem><FormLabel>Mileage</FormLabel><FormControl><Input type="number" placeholder="e.g., 30000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                            </div>
+                            <Button type="submit" className="w-full" disabled={isOfferLoading}>
+                               {isOfferLoading ? 'Calculating...' : 'Get My Offer'}
+                            </Button>
+                        </form>
+                    </Form>
+                  </div>
+                  <div className="text-center p-8 bg-background rounded-lg border">
+                    {offerValue ? (
+                      <>
+                        <p className="text-muted-foreground">Your Estimated Offer</p>
+                        <p className="text-4xl font-bold text-primary my-2">${offerValue.toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground mb-4">This offer is valid for 7 days. We will contact you to schedule a quick inspection and finalize the sale.</p>
+                        <Button className="w-full" onClick={() => toast({title: "Sale Initiated!", description: "We will contact you shortly."})}>Accept & Continue</Button>
+                      </>
+                    ) : (
+                      <>
+                        <DollarSign className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4"/>
+                        <p className="font-semibold">Your offer will appear here.</p>
+                        <p className="text-sm text-muted-foreground">Fill out the form to see your car's estimated value.</p>
+                      </>
+                    )}
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
@@ -271,13 +341,13 @@ export default function CarsForSalePage() {
                     </Select>
                     <Button variant="ghost" size="sm" onClick={() => toast({title: "Saved!"})}><Heart className="mr-2 h-4 w-4"/>Save</Button>
                 </div>
+                 <div className="flex flex-wrap gap-2">
+                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Third Row Seat</Button>
+                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Under $25,000</Button>
+                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">SUVs</Button>
+                </div>
             </div>
             
-             <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Third Row Seat</Button>
-                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Under $25,000</Button>
-                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">SUVs</Button>
-            </div>
             <div className="mt-4">
                 <p className="text-sm text-muted-foreground font-medium">{filteredCars.length} cars found</p>
             </div>
@@ -286,43 +356,43 @@ export default function CarsForSalePage() {
 
           {filteredCars.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCars.map(car => (
-                <Card key={car.id} className="flex flex-col overflow-hidden">
-                  <WishlistItemImageSlider item={car} />
+              {filteredCars.map(item => (
+                <Card key={item.id} className="flex flex-col overflow-hidden">
+                  <WishlistItemImageSlider item={item} />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl hover:text-primary">
-                        <Link href={`/cars-for-sale/${car.id}`}>{car.name}</Link>
+                        <Link href={`/cars-for-sale/${item.id}`}>{item.name}</Link>
                     </CardTitle>
                     <CardDescription className="flex items-center text-sm">
-                        <DollarSign className="h-4 w-4 mr-1 text-primary" /> ${car.price.toLocaleString()}
+                        <DollarSign className="h-4 w-4 mr-1 text-primary" /> ${item.price.toLocaleString()}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="flex-grow space-y-1 text-sm">
-                    <p className="text-muted-foreground"><Gauge className="inline h-4 w-4 mr-1"/>Mileage: {car.mileage}</p>
-                    <p className="text-muted-foreground"><CalendarDays className="inline h-4 w-4 mr-1"/>Year: {car.year}</p>
-                    <p className="text-muted-foreground"><Info className="inline h-4 w-4 mr-1"/>VIN: {car.vin} (Demo)</p>
-                    <p className="text-muted-foreground"><ShieldCheck className="inline h-4 w-4 mr-1 text-green-600"/>Seller Rating: {car.sellerRating}/5 (Demo)</p>
-                    <p className="text-xs text-muted-foreground">{car.historyHighlights}</p>
+                    <p className="text-muted-foreground"><Gauge className="inline h-4 w-4 mr-1"/>Mileage: {item.mileage}</p>
+                    <p className="text-muted-foreground"><CalendarDays className="inline h-4 w-4 mr-1"/>Year: {item.year}</p>
+                    <p className="text-muted-foreground"><Info className="inline h-4 w-4 mr-1"/>VIN: {item.vin} (Demo)</p>
+                    <p className="text-muted-foreground"><ShieldCheck className="inline h-4 w-4 mr-1 text-green-600"/>Seller Rating: {item.sellerRating}/5 (Demo)</p>
+                    <p className="text-xs text-muted-foreground">{item.historyHighlights}</p>
                   </CardContent>
                   <CardFooter className="flex flex-col gap-3 p-4">
                     <div className="flex justify-between items-center w-full">
                         <div className="flex items-center space-x-2">
                             <Checkbox
-                                id={`compare-car-${car.id}`}
-                                checked={selectedToCompare.includes(car.id)}
-                                onCheckedChange={() => handleToggleCompare(car.id)}
+                                id={`compare-car-${item.id}`}
+                                checked={selectedToCompare.includes(item.id)}
+                                onCheckedChange={() => handleToggleCompare(item.id)}
                             />
-                            <Label htmlFor={`compare-car-${car.id}`} className="font-normal text-sm">Compare</Label>
+                            <Label htmlFor={`compare-car-${item.id}`} className="font-normal text-sm">Compare</Label>
                         </div>
-                        <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => handleViewCarHistory(car.vin)}>
+                        <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => handleViewCarHistory(item.vin)}>
                             View History
                         </Button>
                     </div>
                     <div className="grid grid-cols-2 gap-2 w-full">
-                        <Button variant="accent" size="default" className="w-full" onClick={() => handleMakeOffer(car.name)}>
+                        <Button variant="accent" size="default" className="w-full" onClick={() => handleMakeOffer(item.name)}>
                          <DollarSign className="mr-2 h-4 w-4" /> Make Offer
                         </Button>
-                        <Button variant="outline" size="default" className="w-full" onClick={() => handleRequestTestDrive(car.name)}>
+                        <Button variant="outline" size="default" className="w-full" onClick={() => handleRequestTestDrive(item.name)}>
                          <CarFront className="mr-2 h-4 w-4" /> Test Drive
                         </Button>
                     </div>
