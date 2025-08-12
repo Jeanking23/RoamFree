@@ -94,7 +94,7 @@ export const rideOptions = [
     { 
         id: 'economy',
         name: 'Economy', 
-        icon: () => <CarImage src="https://placehold.co/120x60/000000/FFFFFF/png?text=Economy" data-ai-hint="economy sedan" />,
+        icon: () => <CarImage src="https://storage.googleapis.com/idx-dev-creatives/b69e5a10-2b9a-4a6c-a496-7c08a47081e7.png" data-ai-hint="economy sedan" />,
         capacity: 4, 
         eta: '4:39 PM', 
         price: 32.84,
