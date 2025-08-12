@@ -155,9 +155,7 @@ export default function CarsForSalePage() {
             </Tabs>
           </div>
           
-          <Separator />
-
-          <div className="my-6">
+          <div className="mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
               <div className="flex items-center gap-4 flex-wrap order-1 sm:order-2">
                 <div className="flex items-center gap-1 text-sm">
