@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Building, DollarSign, Bed, Bath, MapPin, ImageIcon, CalendarCheck2, FileText, Users, Sparkles, X } from "lucide-react";
+import { Building, DollarSign, Bed, Bath, MapPin, ImageIcon, CalendarCheck2, FileText, Users, Sparkles, X, Home as HomeIcon, LandPlot, Landmark as AttractionIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox"; 
 import { toast } from "@/hooks/use-toast"; 
 import { useState, useEffect } from "react";
@@ -122,7 +122,7 @@ export default function ListPropertyPage() {
     }
   };
 
-  const showResidentialFields = !["LAND", "ATTRACTION", "EVENT_CENTER"].includes(propertyType);
+  const showResidentialFields = ["APARTMENT", "HOUSE", "VILLA"].includes(propertyType);
   const showLandFields = propertyType === "LAND";
   const showFeatureFields = ["ATTRACTION", "EVENT_CENTER"].includes(propertyType);
 
@@ -133,7 +133,7 @@ export default function ListPropertyPage() {
         <CardHeader className="bg-primary/10">
           <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
             <Building className="h-8 w-8" />
-            List Your Property, Land, or Rental
+            List Your Property, Land, or Venue
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
             Reach millions of potential buyers or renters by listing with RoamFree.
@@ -143,13 +143,13 @@ export default function ListPropertyPage() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="grid md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="propertyName" render={({ field }) => ( <FormItem> <FormLabel className="flex items-center gap-1"><MapPin className="h-4 w-4 text-primary" />Property Name/Title</FormLabel> <FormControl><Input placeholder="e.g., Sunny Beachfront Villa or Prime Commercial Plot" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                <FormField control={form.control} name="propertyType" render={({ field }) => ( <FormItem> <FormLabel className="flex items-center gap-1"><Building className="h-4 w-4 text-primary" />Property Type</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}> <FormControl><SelectTrigger><SelectValue placeholder="Select property type" /></SelectTrigger></FormControl> <SelectContent> <SelectItem value="HOUSE">House</SelectItem> <SelectItem value="APARTMENT">Apartment</SelectItem> <SelectItem value="VILLA">Villa</SelectItem> <SelectItem value="LAND">Land</SelectItem> <SelectItem value="ATTRACTION">Attraction</SelectItem> <SelectItem value="EVENT_CENTER">Event Center</SelectItem> <SelectItem value="OTHER">Other</SelectItem> </SelectContent> </Select> <FormMessage /> </FormItem> )}/>
                 <FormField control={form.control} name="listingType" render={({ field }) => ( <FormItem> <FormLabel className="flex items-center gap-1"><DollarSign className="h-4 w-4 text-primary" />Listing Type</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}> <FormControl><SelectTrigger><SelectValue placeholder="Select listing type" /></SelectTrigger></FormControl> <SelectContent> <SelectItem value="RENT">For Rent</SelectItem> <SelectItem value="SALE">For Sale</SelectItem> </SelectContent> </Select> <FormMessage /> </FormItem> )}/>
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="propertyType" render={({ field }) => ( <FormItem> <FormLabel className="flex items-center gap-1"><Building className="h-4 w-4 text-primary" />Property Type</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}> <FormControl><SelectTrigger><SelectValue placeholder="Select property type" /></SelectTrigger></FormControl> <SelectContent> <SelectItem value="APARTMENT">Apartment</SelectItem> <SelectItem value="HOUSE">House</SelectItem> <SelectItem value="VILLA">Villa</SelectItem> <SelectItem value="LAND">Land</SelectItem> <SelectItem value="ATTRACTION">Attraction</SelectItem> <SelectItem value="EVENT_CENTER">Event Center</SelectItem> <SelectItem value="OTHER">Other</SelectItem> </SelectContent> </Select> <FormMessage /> </FormItem> )}/>
-                <FormField control={form.control} name="location" render={({ field }) => ( <FormItem> <FormLabel className="flex items-center gap-1"><MapPin className="h-4 w-4 text-primary" />Location / Address</FormLabel> <FormControl><Input placeholder="e.g., 123 Ocean Drive, Miami, FL" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-              </div>
+
+              <FormField control={form.control} name="propertyName" render={({ field }) => ( <FormItem> <FormLabel className="flex items-center gap-1"><MapPin className="h-4 w-4 text-primary" />Listing Title</FormLabel> <FormControl><Input placeholder="e.g., Sunny Beachfront Villa or Prime Commercial Plot" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+              
+              <FormField control={form.control} name="location" render={({ field }) => ( <FormItem> <FormLabel className="flex items-center gap-1"><MapPin className="h-4 w-4 text-primary" />Location / Address</FormLabel> <FormControl><Input placeholder="e.g., 123 Ocean Drive, Miami, FL" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
               
               <div className="grid md:grid-cols-2 gap-6">
                 <FormField control={form.control} name="price" render={({ field }) => ( <FormItem> <FormLabel className="flex items-center gap-1"><DollarSign className="h-4 w-4 text-primary" />Price (USD)</FormLabel> <FormControl><Input type="number" placeholder={listingType === 'RENT' ? "e.g., 150 or 2500" : "e.g., 250000"} {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
@@ -157,27 +157,25 @@ export default function ListPropertyPage() {
               </div>
 
               {showResidentialFields && (
-                <div className="grid md:grid-cols-3 gap-6">
-                    <FormField control={form.control} name="bedrooms" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Bed className="h-4 w-4 text-primary" />Bedrooms</FormLabel><FormControl><Input type="number" placeholder="e.g., 3" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="bathrooms" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Bath className="h-4 w-4 text-primary" />Bathrooms</FormLabel><FormControl><Input type="number" placeholder="e.g., 2" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <Card><CardHeader><CardTitle className="text-xl flex items-center gap-2"><HomeIcon className="h-5 w-5 text-primary"/>Residential Details</CardTitle></CardHeader><CardContent className="grid md:grid-cols-3 gap-6">
+                    <FormField control={form.control} name="bedrooms" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Bed className="h-4 w-4" />Bedrooms</FormLabel><FormControl><Input type="number" placeholder="e.g., 3" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="bathrooms" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Bath className="h-4 w-4" />Bathrooms</FormLabel><FormControl><Input type="number" placeholder="e.g., 2" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="sizeSqft" render={({ field }) => (<FormItem><FormLabel>Size (sqft)</FormLabel><FormControl><Input type="number" placeholder="e.g., 1200" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                </div>
+                </CardContent></Card>
               )}
 
               {showLandFields && (
-                 <div className="grid md:grid-cols-2 gap-6">
+                 <Card><CardHeader><CardTitle className="text-xl flex items-center gap-2"><LandPlot className="h-5 w-5 text-primary"/>Land Details</CardTitle></CardHeader><CardContent className="grid md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="sizeAcres" render={({ field }) => (<FormItem><FormLabel>Size (Acres)</FormLabel><FormControl><Input type="number" step="0.01" placeholder="e.g., 2.5" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="zoning" render={({ field }) => (<FormItem><FormLabel>Zoning</FormLabel><FormControl><Input placeholder="e.g., Residential, Commercial" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                 </div>
+                 </CardContent></Card>
               )}
-
-              <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Property Description</FormLabel><FormControl><Textarea placeholder="Detailed description of your property, amenities, nearby attractions, etc." rows={6} {...field} /></FormControl><FormDescription>Provide as much detail as possible to attract buyers/renters.</FormDescription><FormMessage /></FormItem>)} />
               
               {showFeatureFields && (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-xl flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary"/>Features & Amenities</CardTitle>
-                        <CardDescription>Add custom features for your {propertyType === "ATTRACTION" ? "Attraction" : "Event Center"}.</CardDescription>
+                        <CardTitle className="text-xl flex items-center gap-2"><AttractionIcon className="h-5 w-5 text-primary"/>Venue Features</CardTitle>
+                        <CardDescription>Add features for your {propertyType === "ATTRACTION" ? "Attraction" : "Event Center"}.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="flex gap-2">
@@ -197,11 +195,13 @@ export default function ListPropertyPage() {
                     </CardContent>
                 </Card>
               )}
+
+              <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Detailed description of your listing, amenities, nearby attractions, etc." rows={6} {...field} /></FormControl><FormDescription>Provide as much detail as possible to attract buyers/renters.</FormDescription><FormMessage /></FormItem>)} />
               
               <FormItem>
-                <FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-primary" />Property Photo</FormLabel>
+                <FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-primary" />Main Photo</FormLabel>
                 <FormControl><Input type="file" accept="image/*" onChange={handlePhotoChange} /></FormControl>
-                <FormDescription>Upload a main photo for your listing. Virtual tour and 3D floorplan uploads coming soon.</FormDescription>
+                <FormDescription>Upload a primary photo. More can be added from the partner dashboard.</FormDescription>
                 <FormMessage />
               </FormItem>
 
@@ -216,24 +216,22 @@ export default function ListPropertyPage() {
 
              {listingType === "RENT" && (
                 <Card>
-                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><CalendarCheck2 className="h-5 w-5 text-primary"/>Rental Availability & Settings (Demo)</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><CalendarCheck2 className="h-5 w-5 text-primary"/>Rental Settings (Demo)</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
                         <FormField control={form.control} name="instantBooking" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Enable Instant Booking</FormLabel></FormItem>)} />
                         <FormField control={form.control} name="requestToBook" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Require Request to Book</FormLabel></FormItem>)} />
-                        <FormField control={form.control} name="blackoutDates" render={({ field }) => (<FormItem><FormLabel>Blackout Dates</FormLabel><FormControl><Input placeholder="e.g., 12/24/2024, 01/01/2025-01/07/2025" {...field} /></FormControl><FormDescription>Enter dates or date ranges separated by commas. Calendar sync with Airbnb/Booking.com (Demo).</FormDescription><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="enableTenantScreening" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-1"><Users className="h-4 w-4"/>Enable Tenant Screening Options (ID, income, rental history - Demo)</FormLabel></FormItem>)} />
-                        <p className="text-xs text-muted-foreground">Lease management (digital signing, rent payment reminders) available in dashboard (Demo).</p>
+                        <FormField control={form.control} name="blackoutDates" render={({ field }) => (<FormItem><FormLabel>Blackout Dates</FormLabel><FormControl><Input placeholder="e.g., 12/24/2024, 01/01/2025-01/07/2025" {...field} /></FormControl><FormDescription>Enter dates or date ranges separated by commas.</FormDescription><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="enableTenantScreening" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-1"><Users className="h-4 w-4"/>Enable Tenant Screening Options (ID, income, etc.)</FormLabel></FormItem>)} />
                     </CardContent>
                 </Card>
              )}
 
             {listingType === "SALE" && (
                  <Card>
-                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/>Property Sale Details (Demo)</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/>Sale Details (Demo)</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
-                        <FormField control={form.control} name="legalDocs" render={({ field }) => (<FormItem><FormLabel>Legal Documents (Placeholder)</FormLabel><FormControl><Input type="file" multiple disabled /></FormControl><FormDescription>Upload land title, ownership proof, zoning certificate, etc. (Demo)</FormDescription><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="legalDocs" render={({ field }) => (<FormItem><FormLabel>Legal Documents</FormLabel><FormControl><Input type="file" multiple disabled /></FormControl><FormDescription>Upload land title, ownership proof, zoning certificate, etc.</FormDescription><FormMessage /></FormItem>)} />
                         <FormField control={form.control} name="propertyStatus" render={({ field }) => (<FormItem><FormLabel>Property Status</FormLabel><FormControl><Input placeholder="e.g., Freehold, Leasehold, Verified" {...field} /></FormControl><FormDescription>Indicate current legal status.</FormDescription><FormMessage /></FormItem>)} />
-                        <p className="text-xs text-muted-foreground">Blockchain verification for ownership (Future Feature).</p>
                     </CardContent>
                 </Card>
             )}
