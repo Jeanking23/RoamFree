@@ -202,11 +202,9 @@ const FilterContent = () => {
         </Accordion>
     </div>
     );
-};
-
+}
 export default function CarsForSalePage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedToCompare, setSelectedToCompare] = useState<string[]>([]);
   const [offerValue, setOfferValue] = useState<number | null>(null);
   const [isOfferLoading, setIsOfferLoading] = useState(false);
 
@@ -239,21 +237,6 @@ export default function CarsForSalePage() {
   const handleViewCarHistory = (vin: string) => {
     toast({ title: "Car History (Demo)", description: `Displaying full vehicle history report for VIN: ${vin}. (Includes accidents, repairs, past owners)` });
   };
-   const handleToggleCompare = (itemId: string) => {
-    setSelectedToCompare(prev =>
-      prev.includes(itemId) ? prev.filter(id => id !== itemId) : [...prev, itemId]
-    );
-  };
-
-  const handleCompareSelected = () => {
-    if (selectedToCompare.length < 2) {
-      toast({ title: "Select More Cars", description: "Please select at least two cars to compare.", variant: "destructive" });
-      return;
-    }
-    toast({ title: "Compare Cars (Demo)", description: `Comparing ${selectedToCompare.length} cars. Showing specs, price, mileage side-by-side.` });
-    console.log("Comparing items:", selectedToCompare);
-  };
-
 
   const filteredCars = mockCarsForSale.filter(car =>
     car.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -425,12 +408,6 @@ export default function CarsForSalePage() {
                    <Button variant="link" size="sm" className="w-full" onClick={() => handleViewCarHistory(car.vin)}>
                      View Car History (Demo)
                   </Button>
-                   <div className="w-full flex justify-end">
-                     <div className="flex items-center space-x-2 pt-2">
-                        <Checkbox id={`compare-${car.id}`} checked={selectedToCompare.includes(car.id)} onCheckedChange={() => handleToggleCompare(car.id)} />
-                        <Label htmlFor={`compare-${car.id}`} className="text-sm font-medium">Compare</Label>
-                      </div>
-                   </div>
                 </CardFooter>
               </Card>
             ))}
