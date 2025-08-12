@@ -283,7 +283,7 @@ export default function CarsForSalePage() {
               </TabsList>
               <TabsContent value="search" className="space-y-4">
                 <h4 className="font-semibold text-foreground">USED CARS IN YOUR AREA</h4>
-                 <div className="flex flex-col sm:flex-row gap-4 items-center">
+                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative flex-grow w-full">
                         <Input
                         id="search-cars"
@@ -297,7 +297,7 @@ export default function CarsForSalePage() {
                     </div>
                      <Sheet>
                         <SheetTrigger asChild>
-                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0 w-full sm:w-auto">
+                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0">
                                 <Filter className="mr-2 h-4 w-4" /> Filter
                             </Button>
                         </SheetTrigger>
@@ -313,9 +313,7 @@ export default function CarsForSalePage() {
                             </div>
                             <SheetFooter className="p-6 pt-4 bg-background border-t">
                                 <Button variant="outline" className="flex-1">Clear all</Button>
-                                <SheetClose asChild>
-                                    <Button type="submit" className="flex-1">View Results</Button>
-                                </SheetClose>
+                                <SheetClose asChild><Button type="submit" className="flex-1">View Results</Button></SheetClose>
                             </SheetFooter>
                         </SheetContent>
                     </Sheet>
@@ -364,7 +362,7 @@ export default function CarsForSalePage() {
             </Tabs>
           </div>
           
-           <div className="my-6">
+           <div className="mb-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <div className="flex items-center gap-4 flex-wrap">
                     <div className="flex items-center gap-1 text-sm">
@@ -386,11 +384,11 @@ export default function CarsForSalePage() {
                 </div>
             </div>
             
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 items-center">
                 <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Third Row Seat</Button>
                 <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Under $25,000</Button>
                 <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">SUVs</Button>
-                 <p className="text-sm text-muted-foreground font-medium self-end">{filteredCars.length} cars found</p>
+                 <p className="text-sm text-muted-foreground font-medium self-end ml-auto">{filteredCars.length} cars found</p>
             </div>
           </div>
 
