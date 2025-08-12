@@ -282,7 +282,7 @@ export default function AttractionProfilePage() {
             ))}
              <Card className="bg-muted/30">
                 <CardHeader className="pb-2">
-                     <p className="font-semibold">Top Tips from Travelers (Demo)</p>
+                     <p className="font-semibold">Top Tips from Travelers</p>
                 </CardHeader>
                 <CardContent>
                     <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
