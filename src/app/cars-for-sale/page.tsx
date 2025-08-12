@@ -378,7 +378,7 @@ export default function CarsForSalePage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCars.map(car => (
-              <Card key={car.id} className="flex flex-col overflow-hidden group hover:shadow-lg transition-shadow">
+              <Card key={car.id} className="flex flex-col overflow-hidden group hover:shadow-lg transition-shadow shadow-md">
                 <Link href={`/cars-for-sale/${car.id}`} className="block">
                     <CarImageSlider car={car} />
                     <CardHeader className="pb-2">
