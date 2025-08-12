@@ -144,9 +144,9 @@ export default function CarsForSalePage() {
           </div>
 
           {filteredCars.length > 0 ? (
-            <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-x-visible no-scrollbar">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCars.map(car => (
-                <Card key={car.id} className="flex flex-col overflow-hidden w-[85vw] sm:w-[50vw] md:w-full flex-shrink-0">
+                <Card key={car.id} className="flex flex-col overflow-hidden">
                   <CarImageSlider car={car} />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl hover:text-primary">
