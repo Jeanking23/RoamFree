@@ -21,6 +21,7 @@ export default function AttractionProfilePage() {
   const [currentImage, setCurrentImage] = useState(attraction?.photos[0] || null);
   const [isArViewActive, setIsArViewActive] = useState(false);
   const [isAudioGuideActive, setIsAudioGuideActive] = useState(false);
+  const [formattedDates, setFormattedDates] = useState<Record<string, string>>({});
   
   useEffect(() => {
     // In a real app, this would be the place to fetch data based on params.id if it wasn't pre-loaded
@@ -30,6 +31,16 @@ export default function AttractionProfilePage() {
        console.log("Looking for attraction with ID:", params.id);
     }
   }, [params.id, attraction]);
+
+  useEffect(() => {
+    if (attraction?.userReviews) {
+        const newFormattedDates: Record<string, string> = {};
+        attraction.userReviews.forEach(review => {
+            newFormattedDates[review.id] = new Date(review.date).toLocaleDateString();
+        });
+        setFormattedDates(newFormattedDates);
+    }
+  }, [attraction]);
 
 
   const handleBookTickets = () => {
@@ -207,7 +218,7 @@ export default function AttractionProfilePage() {
                     <div>
                       <p className="font-semibold">{review.user}</p>
                       <div className="flex items-center">
-                        <p className="text-xs text-muted-foreground">{new Date(review.date).toLocaleDateString()}</p>
+                        <p className="text-xs text-muted-foreground">{formattedDates[review.id] || '...'}</p>
                         <BadgeCheck className="h-4 w-4 ml-1 text-green-500" title="Verified Review"/>
                       </div>
                     </div>
