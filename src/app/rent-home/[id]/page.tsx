@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Users, DollarSign, MapPin, Bed, Bath, Smile, TvIcon, Layers, FileText, Phone, HomeIcon as HomeIconLucide, School, Building as BuildingIconLucide, Leaf, CheckCircle, Info, AlertTriangle, MessageSquare, Heart, Share2, Wallet, UserCheck, Clock, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarDays, Users, DollarSign, MapPin, Bed, Bath, Smile, TvIcon, Layers, FileText, Phone, HomeIcon as HomeIconLucide, School, Building as BuildingIconLucide, Leaf, CheckCircle, Info, AlertTriangle, MessageSquare, Heart, Share2, Wallet, UserCheck, Clock, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Checkbox as CheckboxIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
@@ -18,6 +18,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
+import { Progress } from '@/components/ui/progress';
+import { Checkbox } from '@/components/ui/checkbox';
 
 
 export default function RentalPropertyProfilePage() {
@@ -29,6 +31,13 @@ export default function RentalPropertyProfilePage() {
   
   const [tourDate, setTourDate] = useState<Date | undefined>(new Date());
   const [selectedTime, setSelectedTime] = useState<string>('');
+  
+  // State for Tenant Screening
+  const [isScreeningOpen, setIsScreeningOpen] = useState(false);
+  const [screeningConsent, setScreeningConsent] = useState(false);
+  const [screeningProgress, setScreeningProgress] = useState(0);
+  const [screeningStatus, setScreeningStatus] = useState("");
+  const [isScreeningComplete, setIsScreeningComplete] = useState(false);
 
 
   useEffect(() => {
@@ -42,6 +51,24 @@ export default function RentalPropertyProfilePage() {
       }
     }
   }, [params.id]);
+  
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (screeningProgress > 0 && screeningProgress < 100) {
+      timer = setTimeout(() => {
+        const newProgress = screeningProgress + 25;
+        setScreeningProgress(newProgress);
+        if (newProgress === 25) setScreeningStatus("Running background check...");
+        if (newProgress === 50) setScreeningStatus("Checking credit history...");
+        if (newProgress === 75) setScreeningStatus("Verifying rental history...");
+        if (newProgress === 100) {
+            setScreeningStatus("Screening complete!");
+            setIsScreeningComplete(true);
+        }
+      }, 1500);
+    }
+    return () => clearTimeout(timer);
+  }, [screeningProgress]);
 
   const displayPhotos = property?.photos && property.photos.length > 0 ? property.photos : property ? [{id: 'main', src: property.image, alt: property.name, dataAiHint: property.dataAiHint}] : [];
   const currentImage = displayPhotos[currentImageIndex];
@@ -90,6 +117,23 @@ export default function RentalPropertyProfilePage() {
     } else {
       toast({ title: "Share", description: "Web Share API not supported. You can copy the URL."});
     }
+  };
+  
+  const startScreening = () => {
+    if (!screeningConsent) {
+        toast({ title: "Consent Required", description: "You must agree to the screening before proceeding.", variant: "destructive" });
+        return;
+    }
+    setScreeningProgress(1); // Start the progress
+    setScreeningStatus("Initiating screening process...");
+  };
+
+  const resetScreening = () => {
+    setIsScreeningOpen(false);
+    setScreeningConsent(false);
+    setScreeningProgress(0);
+    setScreeningStatus("");
+    setIsScreeningComplete(false);
   };
 
   if (property === undefined) {
@@ -276,7 +320,35 @@ export default function RentalPropertyProfilePage() {
                                 <Label htmlFor="appMessage">Message to Host (Optional)</Label>
                                 <Textarea id="appMessage" placeholder="Tell the host a bit about yourself."/>
                             </div>
-                            <Button variant="outline" size="sm"><UserCheck className="mr-2 h-4 w-4"/>Run Tenant Screening (Demo)</Button>
+                            <Dialog open={isScreeningOpen} onOpenChange={setIsScreeningOpen}>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm"><UserCheck className="mr-2 h-4 w-4"/>Run Tenant Screening</Button>
+                                </DialogTrigger>
+                                <DialogContent onInteractOutside={(e) => e.preventDefault()}>
+                                    <DialogHeader>
+                                        <DialogTitle>Tenant Screening</DialogTitle>
+                                        <DialogDescription>This process includes background, credit, and rental history checks.</DialogDescription>
+                                    </DialogHeader>
+                                    {screeningProgress === 0 ? (
+                                        <div className="py-4 space-y-4">
+                                            <p className="text-sm text-muted-foreground">Please review and consent to the screening process. This is a simulation and no real data will be collected.</p>
+                                            <div className="flex items-center space-x-2">
+                                                <Checkbox id="consent" checked={screeningConsent} onCheckedChange={(checked) => setScreeningConsent(checked as boolean)} />
+                                                <Label htmlFor="consent">I consent to the background and credit check.</Label>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="py-4 space-y-4">
+                                            <Progress value={screeningProgress} className="w-full" />
+                                            <p className="text-sm text-muted-foreground text-center">{screeningStatus}</p>
+                                        </div>
+                                    )}
+                                    <DialogFooter>
+                                        <Button variant="outline" onClick={resetScreening} disabled={screeningProgress > 0 && !isScreeningComplete}>Close</Button>
+                                        {screeningProgress === 0 && <Button onClick={startScreening} disabled={!screeningConsent}>Start Screening</Button>}
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                         <DialogFooter>
                             <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
@@ -345,3 +417,4 @@ export default function RentalPropertyProfilePage() {
     </div>
   );
 }
+
