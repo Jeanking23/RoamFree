@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CarFront, Search, DollarSign, Gauge, CalendarDays, Info, ShieldCheck, MessageCircle, GitCompareArrows, Users } from 'lucide-react';
+import { CarFront, Search, DollarSign, Gauge, CalendarDays, Info, ShieldCheck, MessageCircle, GitCompareArrows, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -14,10 +14,63 @@ import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 
 const mockCarsForSale = [
-  { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://placehold.co/600x400.png", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8 },
-  { id: "carSale2", name: "Ford F-150 XLT 2020", price: 32000, location: "Suburbia", mileage: "30,000 miles", year: 2020, image: "https://placehold.co/600x400.png", dataAiHint: "pickup truck", vin: "DEMOVIN67890", historyHighlights: "One owner, Clean title", sellerRating: 4.5 },
-  { id: "carSale3", name: "Honda Civic LX 2019", price: 17500, location: "Townsburd", mileage: "38,000 miles", year: 2019, image: "https://placehold.co/600x400.png", dataAiHint: "sedan honda", vin: "DEMOVIN11223", historyHighlights: "Fuel efficient, Great condition", sellerRating: 4.9 },
+  { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://placehold.co/600x400.png?text=Corolla", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, photos: [{id: 'p1', src: "https://placehold.co/600x400.png?text=Corolla+Front", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://placehold.co/600x400.png?text=Corolla+Side", dataAiHint: "sedan side"}] },
+  { id: "carSale2", name: "Ford F-150 XLT 2020", price: 32000, location: "Suburbia", mileage: "30,000 miles", year: 2020, image: "https://placehold.co/600x400.png?text=F-150", dataAiHint: "pickup truck", vin: "DEMOVIN67890", historyHighlights: "One owner, Clean title", sellerRating: 4.5, photos: [{id: 'p1', src: "https://placehold.co/600x400.png?text=F-150+Front", dataAiHint: "pickup truck"}, {id: 'p2', src: "https://placehold.co/600x400.png?text=F-150+Bed", dataAiHint: "truck bed"}] },
+  { id: "carSale3", name: "Honda Civic LX 2019", price: 17500, location: "Townsburd", mileage: "38,000 miles", year: 2019, image: "https://placehold.co/600x400.png?text=Civic", dataAiHint: "sedan honda", vin: "DEMOVIN11223", historyHighlights: "Fuel efficient, Great condition", sellerRating: 4.9, photos: [{id: 'p1', src: "https://placehold.co/600x400.png?text=Civic+Front", dataAiHint: "sedan honda"}, {id: 'p2', src: "https://placehold.co/600x400.png?text=Civic+Interior", dataAiHint: "car interior"}] },
 ];
+
+function CarImageSlider({ car }: { car: typeof mockCarsForSale[0] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextSlide = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % car.photos.length);
+  };
+
+  const prevSlide = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + car.photos.length) % car.photos.length);
+  };
+
+  return (
+    <div className="relative w-full h-48 group">
+      <Link href={`/cars-for-sale/${car.id}`} className="block w-full h-full">
+        <Image 
+          src={car.photos[currentIndex].src} 
+          alt={car.name} 
+          fill 
+          className="object-cover" 
+          data-ai-hint={car.photos[currentIndex].dataAiHint}
+        />
+      </Link>
+      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+        <Search className="h-10 w-10 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
+      </div>
+       {car.photos.length > 1 && (
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 hover:bg-background/80"
+            onClick={prevSlide}
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 hover:bg-background/80"
+            onClick={nextSlide}
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function CarsForSalePage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -94,12 +147,7 @@ export default function CarsForSalePage() {
             <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-x-visible no-scrollbar">
               {filteredCars.map(car => (
                 <Card key={car.id} className="flex flex-col overflow-hidden w-[85vw] sm:w-[50vw] md:w-full flex-shrink-0">
-                  <Link href={`/cars-for-sale/${car.id}`} className="block relative w-full h-48 group">
-                    <Image src={car.image} alt={car.name} fill className="object-cover" data-ai-hint={car.dataAiHint}/>
-                     <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                        <Search className="h-10 w-10 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
-                    </div>
-                  </Link>
+                  <CarImageSlider car={car} />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl hover:text-primary">
                         <Link href={`/cars-for-sale/${car.id}`}>{car.name}</Link>

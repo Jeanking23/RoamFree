@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { KeyRound, Car, User, CheckCircle, CalendarDays, Users, Briefcase, ShieldCheck, Star, Luggage, TvIcon, Settings, FileText, MapPin, Edit, AlertTriangle, Camera, X, Search } from 'lucide-react';
+import { KeyRound, Car, User, CheckCircle, CalendarDays, Users, Briefcase, ShieldCheck, Star, Luggage, TvIcon, Settings, FileText, MapPin, Edit, AlertTriangle, Camera, X, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,61 @@ import { addDays, format, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+
+
+function CarImageSlider({ car }: { car: CarListing }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextSlide = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % car.photos.length);
+  };
+
+  const prevSlide = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + car.photos.length) % car.photos.length);
+  };
+
+  return (
+    <div className="relative w-full h-56 group">
+      <Link href={`/car-rent/${car.id}`} className="block w-full h-full">
+        <Image 
+          src={car.photos[currentIndex].src} 
+          alt={car.photos[currentIndex].alt} 
+          fill 
+          className="object-cover transition-transform duration-300 ease-in-out" 
+          data-ai-hint={car.photos[currentIndex].dataAiHint}
+        />
+      </Link>
+      {car.ecoFriendly && <Badge variant="secondary" className="absolute top-2 right-2 bg-green-500 text-white border-green-600">Eco-Friendly</Badge>}
+      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+        <span className="text-white font-bold">View Details</span>
+      </div>
+      {car.photos.length > 1 && (
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 hover:bg-background/80"
+            onClick={prevSlide}
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 hover:bg-background/80"
+            onClick={nextSlide}
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </>
+      )}
+    </div>
+  );
+}
 
 
 export default function CarRentPage() {
@@ -222,13 +277,7 @@ export default function CarRentPage() {
             <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-x-visible no-scrollbar">
               {filteredCarListings.map((car) => (
                 <Card key={car.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 w-[85vw] sm:w-[50vw] md:w-full flex-shrink-0">
-                  <Link href={`/car-rent/${car.id}`} className="block relative w-full h-56 group">
-                    <Image src={car.image} alt={car.name} fill className="object-cover" data-ai-hint={car.dataAiHint} />
-                    {car.ecoFriendly && <Badge variant="secondary" className="absolute top-2 right-2 bg-green-500 text-white border-green-600">Eco-Friendly</Badge>}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-white font-bold">View Details</span>
-                    </div>
-                  </Link>
+                  <CarImageSlider car={car} />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl font-semibold hover:text-primary"><Link href={`/car-rent/${car.id}`}>{car.name}</Link></CardTitle>
                     <CardDescription className="text-sm text-muted-foreground">{car.year} &bull; {car.type} &bull; {car.mileage}</CardDescription>

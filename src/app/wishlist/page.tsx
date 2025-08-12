@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Trash2, Search, Building, CarFront, MapPin, DollarSign, GitCompareArrows, LandPlot } from 'lucide-react';
+import { Heart, Trash2, Search, Building, CarFront, MapPin, DollarSign, GitCompareArrows, LandPlot, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -12,10 +12,64 @@ import { toast } from '@/hooks/use-toast';
 
 // Mock data - replace with actual data from user's wishlist
 const mockWishlistItems = [
-  { id: "stay001", type: "Stay", name: "Mountain Cabin Retreat", location: "Aspen, CO", price: "250/night", image: "https://placehold.co/600x400.png?text=Cabin+Wishlist", dataAiHint: "cabin mountain", link: "/stays/stay001" },
-  { id: "car002", type: "Car", name: "Jeep Wrangler Unlimited", location: "Moab, UT", price: "120/day", image: "https://placehold.co/600x400.png?text=Jeep+Wishlist", dataAiHint: "jeep offroad", link: "/car-rent#car002" }, // Assuming car details are on car-rent page
-  { id: "land003", type: "Land", name: "Coastal Plot with Ocean View", location: "Big Sur, CA", price: "750,000", image: "https://placehold.co/600x400.png?text=Land+Wishlist", dataAiHint: "coastal land", link: "/buy-property#land003" }, // Assuming land details are on buy-property page
+  { id: "stay001", type: "Stay", name: "Mountain Cabin Retreat", location: "Aspen, CO", price: "250/night", image: "https://placehold.co/600x400.png?text=Cabin+Wishlist", dataAiHint: "cabin mountain", link: "/stays/stay001", photos: [{id: 'p1', src: "https://placehold.co/600x400.png?text=Cabin+1", dataAiHint: "cabin mountain"}, {id: 'p2', src: "https://placehold.co/600x400.png?text=Cabin+2", dataAiHint: "cabin interior"}] },
+  { id: "car002", type: "Car", name: "Jeep Wrangler Unlimited", location: "Moab, UT", price: "120/day", image: "https://placehold.co/600x400.png?text=Jeep+Wishlist", dataAiHint: "jeep offroad", link: "/car-rent#car002", photos: [{id: 'p1', src: "https://placehold.co/600x400.png?text=Jeep+1", dataAiHint: "jeep offroad"}, {id: 'p2', src: "https://placehold.co/600x400.png?text=Jeep+2", dataAiHint: "jeep interior"}] },
+  { id: "land003", type: "Land", name: "Coastal Plot with Ocean View", location: "Big Sur, CA", price: "750,000", image: "https://placehold.co/600x400.png?text=Land+Wishlist", dataAiHint: "coastal land", link: "/buy-property#land003", photos: [{id: 'p1', src: "https://placehold.co/600x400.png?text=Land+1", dataAiHint: "coastal land"}, {id: 'p2', src: "https://placehold.co/600x400.png?text=Land+2", dataAiHint: "ocean view"}] },
 ];
+
+function WishlistItemImageSlider({ item }: { item: typeof mockWishlistItems[0] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextSlide = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % item.photos.length);
+  };
+
+  const prevSlide = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + item.photos.length) % item.photos.length);
+  };
+
+  return (
+    <div className="relative w-full h-56 group">
+      <Link href={item.link} className="block w-full h-full">
+        <Image 
+          src={item.photos[currentIndex].src} 
+          alt={item.name} 
+          fill 
+          className="object-cover" 
+          data-ai-hint={item.photos[currentIndex].dataAiHint}
+        />
+      </Link>
+      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+        <Search className="h-12 w-12 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
+      </div>
+       {item.photos.length > 1 && (
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 hover:bg-background/80"
+            onClick={prevSlide}
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 hover:bg-background/80"
+            onClick={nextSlide}
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </>
+      )}
+    </div>
+  );
+}
+
 
 export default function WishlistPage() {
   const [wishlist, setWishlist] = useState(mockWishlistItems);
@@ -74,12 +128,7 @@ export default function WishlistPage() {
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {wishlist.map(item => (
                   <Card key={item.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-                     <Link href={item.link} className="block relative w-full h-56 group">
-                        <Image src={item.image} alt={item.name} fill className="object-cover" data-ai-hint={item.dataAiHint} />
-                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                            <Search className="h-12 w-12 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
-                        </div>
-                    </Link>
+                     <WishlistItemImageSlider item={item} />
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
                         <CardTitle className="text-xl font-semibold hover:text-primary">
