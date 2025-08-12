@@ -255,7 +255,7 @@ export default function RentalPropertyProfilePage() {
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg py-3">
-                            <FileText className="mr-2 h-5 w-5" /> Apply Now (Demo)
+                            <FileText className="mr-2 h-5 w-5" /> Apply Now
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
@@ -288,7 +288,7 @@ export default function RentalPropertyProfilePage() {
                 <Dialog>
                     <DialogTrigger asChild>
                          <Button variant="outline" className="w-full">
-                            <CalendarDays className="mr-2 h-4 w-4" /> Schedule In-Person Tour (Demo)
+                            <CalendarDays className="mr-2 h-4 w-4" /> Schedule In-Person Tour
                         </Button>
                     </DialogTrigger>
                      <DialogContent>
