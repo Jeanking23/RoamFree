@@ -5,17 +5,18 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Star, MapPin, Ticket, MessageSquare, Share2, Heart, AlertTriangle, Clock, Users, ExternalLink, Camera, Users2, Wifi, Moon, Sun, CloudSun, Calendar, Info, Landmark as LandmarkIcon, BadgeCheck, Percent, Ear, X, ThumbsUp, Plus, Minus } from 'lucide-react';
+import { CalendarDays, Star, MapPin, Ticket, MessageSquare, Share2, Heart, AlertTriangle, Clock, Users, ExternalLink, Camera, Users2, Wifi, Moon, Sun, CloudSun, Calendar, Info, Landmark as LandmarkIcon, BadgeCheck, Percent, Ear, X, ThumbsUp, Plus, Minus, Maximize, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { mockAttractionDetails, type MockAttraction } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { format } from 'date-fns';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export default function AttractionProfilePage() {
   const params = useParams();
@@ -29,6 +30,10 @@ export default function AttractionProfilePage() {
   // State for booking dialog
   const [ticketCount, setTicketCount] = useState(1);
   const [visitDate, setVisitDate] = useState<string>('');
+  
+  // State for lightbox
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     // Set a default visit date for the booking dialog
@@ -43,6 +48,36 @@ export default function AttractionProfilePage() {
        console.log("Looking for attraction with ID:", params.id);
     }
   }, [params.id, attraction]);
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setIsLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setIsLightboxOpen(false);
+  };
+  
+  const displayPhotos = attraction?.photos || [];
+
+  const nextLightboxImage = useCallback(() => {
+    setLightboxIndex((prevIndex) => (prevIndex + 1) % displayPhotos.length);
+  }, [displayPhotos.length]);
+
+  const prevLightboxImage = useCallback(() => {
+    setLightboxIndex((prevIndex) => (prevIndex - 1 + displayPhotos.length) % displayPhotos.length);
+  }, [displayPhotos.length]);
+
+   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isLightboxOpen) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") nextLightboxImage();
+      if (e.key === "ArrowLeft") prevLightboxImage();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isLightboxOpen, nextLightboxImage, prevLightboxImage]);
 
 
   const handleBookTickets = () => {
@@ -76,7 +111,7 @@ export default function AttractionProfilePage() {
 
   const handleReportAttraction = () => {
     toast({
-      title: "Report Submitted (Demo)",
+      title: "Report Submitted",
       description: `Thank you for your feedback. Our team will review the report for ${attraction?.name}.`,
     });
   };
@@ -127,18 +162,24 @@ export default function AttractionProfilePage() {
 
         <CardContent className="px-0 md:px-6 pt-0">
           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2 md:max-h-[500px] overflow-hidden rounded-md">
-            <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer" onClick={() => setCurrentImage(attraction.photos[0])}>
+            <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer group" onClick={() => openLightbox(0)}>
               {currentImage && <Image src={currentImage.src} alt={currentImage.alt} fill className="object-cover rounded-l-md" data-ai-hint={currentImage.dataAiHint} />}
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Maximize className="h-12 w-12 text-white" />
+              </div>
             </div>
             {attraction.photos.slice(1, 5).map((photo, index) => (
-              <div key={photo.id} className={`relative aspect-[4/3] md:aspect-auto cursor-pointer ${index > 1 ? 'hidden md:block' : ''}`} onClick={() => setCurrentImage(photo)}>
+              <div key={photo.id} className={`relative aspect-[4/3] md:aspect-auto cursor-pointer group ${index > 1 ? 'hidden md:block' : ''}`} onClick={() => openLightbox(index + 1)}>
                 <Image src={photo.src} alt={photo.alt} fill className={`object-cover ${index === 1 ? "md:rounded-tr-md" : index === 3 ? "md:rounded-br-md" : ""}`} data-ai-hint={photo.dataAiHint} />
+                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Maximize className="h-8 w-8 text-white" />
+                 </div>
               </div>
             ))}
           </div>
            <div className="mt-2 flex gap-2 overflow-x-auto p-2 md:hidden">
-             {attraction.photos.map(photo => (
-                 <Image key={photo.id} src={photo.src} alt={photo.alt} width={80} height={60} className={`rounded object-cover cursor-pointer ${currentImage?.id === photo.id ? 'ring-2 ring-primary' : ''}`} onClick={() => setCurrentImage(photo)} data-ai-hint={photo.dataAiHint}/>
+             {attraction.photos.map((photo, index) => (
+                 <Image key={photo.id} src={photo.src} alt={photo.alt} width={80} height={60} className={`rounded object-cover cursor-pointer ${currentImage?.id === photo.id ? 'ring-2 ring-primary' : ''}`} onClick={() => openLightbox(index)} data-ai-hint={photo.dataAiHint}/>
              ))}
           </div>
            <div className="text-center mt-2 flex justify-center gap-2">
@@ -335,6 +376,45 @@ export default function AttractionProfilePage() {
         </CardContent>
         </Card>
     </div>
+    
+    <AnimatePresence>
+      {isLightboxOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          <motion.div
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0.95 }}
+            className="relative w-full h-full max-w-5xl max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on image
+          >
+            <Image
+              src={displayPhotos[lightboxIndex].src}
+              alt={displayPhotos[lightboxIndex].alt}
+              fill
+              className="object-contain"
+            />
+          </motion.div>
+
+          <Button variant="ghost" size="icon" className="absolute top-4 right-4 text-white hover:text-white hover:bg-white/10" onClick={closeLightbox}>
+            <X className="h-8 w-8" />
+          </Button>
+
+          <Button variant="ghost" size="icon" className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-white hover:bg-white/10" onClick={prevLightboxImage}>
+            <ChevronLeft className="h-10 w-10" />
+          </Button>
+
+          <Button variant="ghost" size="icon" className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-white hover:bg-white/10" onClick={nextLightboxImage}>
+            <ChevronRight className="h-10 w-10" />
+          </Button>
+        </motion.div>
+      )}
+    </AnimatePresence>
     </>
   );
 }
