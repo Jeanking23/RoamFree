@@ -28,6 +28,7 @@ export default function CarRentalDetailsPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isDamageDialogOpen, setIsDamageDialogOpen] = useState(false);
   const [is360DialogOpen, setIs360DialogOpen] = useState(false);
+  const [rentalDuration, setRentalDuration] = useState("daily");
 
   const handleShare = () => {
     if (!car) return;
@@ -52,11 +53,11 @@ export default function CarRentalDetailsPage() {
       setIs360DialogOpen(true);
   };
   
-  const handleRentNow = () => {
+  const handleConfirmRental = () => {
     if (!car) return;
     toast({
-      title: "Rental Initiated (Demo)",
-      description: `You've started the rental process for ${car.name}. Driver's license upload would be required here.`,
+      title: "Rental Confirmed! (Demo)",
+      description: `Your rental for ${car.name} is confirmed. Driver's license upload and payment would be the next steps.`,
     });
   };
 
@@ -222,7 +223,7 @@ export default function CarRentalDetailsPage() {
               <CardContent className="space-y-3">
                 <div>
                   <Label htmlFor="rental-duration-details">Rental Duration</Label>
-                  <Select defaultValue="daily">
+                  <Select value={rentalDuration} onValueChange={setRentalDuration}>
                     <SelectTrigger id="rental-duration-details">
                       <SelectValue placeholder="Select duration" />
                     </SelectTrigger>
@@ -234,9 +235,34 @@ export default function CarRentalDetailsPage() {
                   </Select>
                 </div>
                 <p className="text-xs text-muted-foreground">Short-term & Long-term rental discounts available.</p>
-                <Button variant="accent" size="lg" className="w-full" onClick={handleRentNow}>
-                  <CalendarDays className="mr-2 h-5 w-5" /> Reserve Now (Demo)
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="accent" size="lg" className="w-full">
+                      <CalendarDays className="mr-2 h-5 w-5" /> Reserve Now
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Confirm Your Reservation</DialogTitle>
+                      <DialogDescription>
+                        Review the details of your rental for the {car.name}.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-2">
+                      <p><strong>Vehicle:</strong> {car.name}</p>
+                      <p><strong>Duration:</strong> <span className="capitalize">{rentalDuration}</span></p>
+                      <p className="text-lg font-semibold">This is a demo. No payment will be processed.</p>
+                    </div>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                      </DialogClose>
+                      <DialogClose asChild>
+                        <Button onClick={handleConfirmRental}>Confirm Reservation</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
                 <p className="text-xs text-muted-foreground text-center">You won't be charged yet. This is a demo.</p>
               </CardContent>
             </Card>
