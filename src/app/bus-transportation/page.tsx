@@ -20,7 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon, Filter, CircleDollarSign, TicketIcon } from 'lucide-react';
+import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon, Filter, CircleDollarSign, TicketIcon, PlusCircle } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "@/hooks/use-toast";
@@ -28,6 +28,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
+import { Textarea } from "@/components/ui/textarea";
 
 const busSearchSchema = z.object({
   originCity: z.string().min(2, "Origin city is required."),
@@ -65,8 +67,15 @@ interface BusRoute {
   departureStation: string;
   arrivalStation: string;
   stops?: number;
-  totalSeats?: number; 
-  seatsLayout?: { rows: number, cols: number, aisleAfter: number }; 
+  totalSeats?: number;
+  seatsLayout?: { rows: number, cols: number, aisleAfter: number };
+}
+
+interface Passenger {
+    id: number;
+    name: string;
+    idType: "Passport" | "National ID" | "Driver's License";
+    idNumber: string;
 }
 
 const mockBusRoutes: BusRoute[] = [
@@ -148,26 +157,38 @@ const mockBusRoutes: BusRoute[] = [
     arrivalStation: "Capital Square, Yaoundé",
     stops: 0,
     totalSeats: 20,
-    seatsLayout: { rows: 5, cols: 4, aisleAfter: 2 }, 
+    seatsLayout: { rows: 5, cols: 4, aisleAfter: 2 },
   },
 ];
 
 const getSeatLabel = (rowIndex: number, colIndex: number, layout: {cols: number, aisleAfter: number}) => {
   const row = rowIndex + 1;
-  let letter = String.fromCharCode(65 + colIndex); 
+  let letter = String.fromCharCode(65 + colIndex);
   if (colIndex >= layout.aisleAfter) {
-      letter = String.fromCharCode(65 + colIndex); 
+      letter = String.fromCharCode(65 + colIndex);
   }
   return `${row}${letter}`;
 };
+
+const savedPassengers: Passenger[] = [
+    { id: 1, name: "Alex Johnson", idType: "Passport", idNumber: "A12345678" }
+];
 
 
 export default function BusTransportationPage() {
   const [searchResults, setSearchResults] = useState<BusRoute[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRouteForSeats, setSelectedRouteForSeats] = useState<BusRoute | null>(null);
-  const [isSeatSelectionDialogOpen, setIsSeatSelectionDialogOpen] = useState(false);
-  const [currentSelectedSeats, setCurrentSelectedSeats] = useState<string[]>([]);
+  const [selectedRoute, setSelectedRoute] = useState<BusRoute | null>(null);
+  const [currentStep, setCurrentStep] = useState(1); // 1: Select Seats, 2: Passenger Details, 3: Add-ons & Pay
+  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [passengers, setPassengers] = useState<Passenger[]>([]);
+  const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
+
+  // Add-ons state
+  const [extraLuggage, setExtraLuggage] = useState(0);
+  const [travelInsurance, setTravelInsurance] = useState(false);
+  
+  const router = useRouter();
 
 
   const form = useForm<BusSearchFormValues>({
@@ -182,9 +203,8 @@ export default function BusTransportationPage() {
       tripType: "ANY",
     },
   });
-  
+
   useEffect(() => {
-    // Set default departure date on client-side to avoid hydration mismatch
     if (!form.getValues("departureDate")) {
         form.setValue("departureDate", new Date(), { shouldValidate: true });
     }
@@ -195,7 +215,7 @@ export default function BusTransportationPage() {
     setIsLoading(true);
     setSearchResults([]);
     console.log("Bus Search Submitted:", data);
-    
+
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     const filteredResults = mockBusRoutes.filter(route => {
@@ -216,15 +236,20 @@ export default function BusTransportationPage() {
     }
   }
 
-  const handleViewSeats = (route: BusRoute) => {
-    setSelectedRouteForSeats(route);
-    setCurrentSelectedSeats([]); 
-    setIsSeatSelectionDialogOpen(true);
+  const handleStartBooking = (route: BusRoute) => {
+    setSelectedRoute(route);
+    const passengerCount = form.getValues("passengers");
+    setPassengers(Array.from({ length: passengerCount }, (_, i) => ({ id: i, name: '', idType: 'National ID', idNumber: '' })));
+    setSelectedSeats([]);
+    setExtraLuggage(0);
+    setTravelInsurance(false);
+    setCurrentStep(1);
+    setIsBookingDialogOpen(true);
   }
 
   const toggleSeatSelection = (seatId: string) => {
     const passengerCount = form.getValues("passengers") || 1;
-    setCurrentSelectedSeats(prev => {
+    setSelectedSeats(prev => {
       if (prev.includes(seatId)) {
         return prev.filter(s => s !== seatId); // Deselect
       } else {
@@ -233,30 +258,60 @@ export default function BusTransportationPage() {
         }
         toast({
           title: "Seat Limit Reached",
-          description: `You can only select up to ${passengerCount} seat(s). Please deselect a seat if you want to choose a different one.`,
-          variant: "default",
+          description: `You can only select up to ${passengerCount} seat(s).`,
         });
         return prev; // Limit reached, do not add new seat
       }
     });
   };
-
-  const handleConfirmSeats = () => {
-    const passengerCount = form.getValues("passengers") || 1;
-    if (currentSelectedSeats.length === 0) {
-        toast({ title: "No Seats Selected", description: "Please select your seat(s).", variant: "destructive" });
-        return;
-    }
-    if (currentSelectedSeats.length !== passengerCount) {
-        toast({ title: "Seat Count Mismatch", description: `Please select exactly ${passengerCount} seat(s) for ${passengerCount} passenger(s).`, variant: "destructive" });
-        return;
-    }
-    toast({
-        title: "Seats Confirmed (Demo)",
-        description: `Selected seats: ${currentSelectedSeats.join(', ')}. Proceeding to booking for route ${selectedRouteForSeats?.id}. Group booking for ${passengerCount} passengers: names & IDs input would follow. Fare breakdown with add-ons next.`
+  
+  const handlePassengerDetailChange = (index: number, field: keyof Passenger, value: string) => {
+    setPassengers(prev => {
+        const newPassengers = [...prev];
+        (newPassengers[index] as any)[field] = value;
+        return newPassengers;
     });
-    setIsSeatSelectionDialogOpen(false);
-  }
+  };
+
+  const handleUseSavedPassenger = (index: number, passenger: Passenger) => {
+      setPassengers(prev => {
+          const newPassengers = [...prev];
+          newPassengers[index] = { ...passenger, id: index };
+          return newPassengers;
+      });
+  };
+
+  const handleNextStep = () => {
+    if (currentStep === 1) { // Seat selection
+      const passengerCount = form.getValues("passengers");
+      if (selectedSeats.length !== passengerCount) {
+        toast({ title: "Seat Count Mismatch", description: `Please select exactly ${passengerCount} seat(s).`, variant: "destructive" });
+        return;
+      }
+    }
+    if (currentStep === 2) { // Passenger details
+        const allPassengersValid = passengers.every(p => p.name.trim() !== '' && p.idNumber.trim() !== '');
+        if (!allPassengersValid) {
+            toast({ title: "Incomplete Details", description: "Please fill in the name and ID number for all passengers.", variant: "destructive" });
+            return;
+        }
+    }
+    setCurrentStep(prev => prev + 1);
+  };
+
+  const handlePrevStep = () => setCurrentStep(prev => prev - 1);
+  
+  const handleConfirmBooking = () => {
+      const bookingId = `RFBUS${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+      toast({
+          title: "Booking Confirmed!",
+          description: `Your booking ID is ${bookingId}. Your e-ticket has been generated.`,
+      });
+      setIsBookingDialogOpen(false);
+      
+      // Navigate to a ticket page and tracking page
+      router.push(`/bus-transportation/ticket/${bookingId}?routeId=${selectedRoute?.id}`);
+  };
 
   return (
     <div className="space-y-8">
@@ -405,13 +460,13 @@ export default function BusTransportationPage() {
                   <div className="flex flex-col sm:flex-row justify-between items-baseline gap-1">
                     <div className="font-semibold text-lg flex items-center">
                         {route.departureTime}
-                        <MapPin className="inline h-4 w-4 text-muted-foreground mx-1"/> 
+                        <MapPin className="inline h-4 w-4 text-muted-foreground mx-1"/>
                         <span className="text-sm text-muted-foreground font-normal">{route.departureStation}</span>
                     </div>
                     <div className="text-sm text-muted-foreground hidden sm:block self-center">➔</div>
                     <div className="font-semibold text-lg flex items-center">
                         {route.arrivalTime}
-                        <MapPin className="inline h-4 w-4 text-muted-foreground mx-1"/> 
+                        <MapPin className="inline h-4 w-4 text-muted-foreground mx-1"/>
                         <span className="text-sm text-muted-foreground font-normal">{route.arrivalStation}</span>
                     </div>
                   </div>
@@ -431,15 +486,12 @@ export default function BusTransportationPage() {
                 </div>
                 <div className="md:col-span-3 flex flex-col items-center md:items-end justify-center space-y-2 pt-2 md:pt-0">
                   <p className="text-2xl font-bold text-primary">${route.price.toFixed(2)}</p>
-                  <Button className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => handleViewSeats(route)}>
-                    <Armchair className="mr-2 h-4 w-4"/>View Seats &amp; Book
+                  <Button className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => handleStartBooking(route)}>
+                    <Armchair className="mr-2 h-4 w-4"/>Select Seats &amp; Book
                   </Button>
                   <p className="text-xs text-muted-foreground">Price per passenger</p>
                 </div>
               </div>
-              <CardFooter className="bg-muted/30 p-3 text-xs text-muted-foreground">
-                Fare includes base fare, taxes. Additional luggage fees may apply. Reserve now, pay later option available (Demo).
-              </CardFooter>
             </Card>
           ))}
         </div>
@@ -455,121 +507,145 @@ export default function BusTransportationPage() {
         </Card>
       )}
 
-      {selectedRouteForSeats && (
-        <Dialog open={isSeatSelectionDialogOpen} onOpenChange={setIsSeatSelectionDialogOpen}>
-          <DialogContent className="sm:max-w-2xl md:max-w-3xl">
+      {selectedRoute && (
+        <Dialog open={isBookingDialogOpen} onOpenChange={setIsBookingDialogOpen}>
+          <DialogContent className="sm:max-w-4xl">
             <DialogHeader>
-              <DialogTitle>Select Your Seats for {selectedRouteForSeats.operator}</DialogTitle>
+              <DialogTitle>Book your trip with {selectedRoute.operator}</DialogTitle>
               <DialogDescription>
-                Bus Type: {selectedRouteForSeats.busType}. 
-                Please select {form.getValues("passengers") || 1} seat(s).
-                Seat availability updates in real-time (Demo).
-                Hover over a seat for details (e.g., recliner, extra legroom - Demo Feature).
+                Step {currentStep} of 3: {currentStep === 1 ? 'Select Your Seats' : currentStep === 2 ? 'Enter Passenger Details' : 'Add-ons & Payment'}
               </DialogDescription>
             </DialogHeader>
             <div className="py-4">
-            <div className="mb-4 flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-sm">
-                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-green-500" /> Available</span>
-                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-yellow-400" /> Reserved (Demo)</span>
-                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-blue-500" /> Selected</span>
-                <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-red-500 opacity-50" /> Taken</span>
-            </div>
-            <div className="w-16 h-8 bg-gray-300 rounded-t-md mx-auto mb-2 flex items-center justify-center text-xs">Front</div>
-            <div className="bg-muted/30 p-2 sm:p-4 rounded-md flex justify-center">
-                <div className="grid gap-1 sm:gap-1.5" style={{ gridTemplateColumns: `repeat(${selectedRouteForSeats.seatsLayout?.cols || 4}, minmax(0, 1fr))` }}>
-                {Array.from({ length: selectedRouteForSeats.totalSeats || 40 }).map((_, index) => {
-                    const layout = selectedRouteForSeats.seatsLayout || { rows: 10, cols: 4, aisleAfter: 2 };
-                    const rowIndex = Math.floor(index / layout.cols);
-                    const colIndex = index % layout.cols;
-                    const seatId = getSeatLabel(rowIndex, colIndex, layout);
-                    
-                    const isTaken = index % 5 === 0 || ["2A", "3C"].includes(seatId); // Simulate some taken seats
-                    const isSelected = currentSelectedSeats.includes(seatId);
-                    const isReserved = ["1D"].includes(seatId) && !isSelected && !isTaken;
+              {currentStep === 1 && (
+                  <div>
+                    <div className="mb-4 flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-sm">
+                        <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-green-500" /> Available</span>
+                        <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-blue-500" /> Selected</span>
+                        <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-red-500 opacity-50" /> Taken</span>
+                    </div>
+                    <div className="w-16 h-8 bg-gray-300 rounded-t-md mx-auto mb-2 flex items-center justify-center text-xs">Front</div>
+                    <div className="bg-muted/30 p-2 sm:p-4 rounded-md flex justify-center">
+                        <div className="grid gap-1 sm:gap-1.5" style={{ gridTemplateColumns: `repeat(${selectedRoute.seatsLayout?.cols || 4}, minmax(0, 1fr))` }}>
+                        {Array.from({ length: selectedRoute.totalSeats || 40 }).map((_, index) => {
+                            const layout = selectedRoute.seatsLayout || { rows: 10, cols: 4, aisleAfter: 2 };
+                            const rowIndex = Math.floor(index / layout.cols);
+                            const colIndex = index % layout.cols;
+                            const seatId = getSeatLabel(rowIndex, colIndex, layout);
+                            const isTaken = index % 5 === 0 || ["2A", "3C"].includes(seatId);
+                            const isSelected = selectedSeats.includes(seatId);
+                            const isWindow = colIndex === 0 || colIndex === layout.cols - 1;
+                            const isAisle = colIndex === layout.aisleAfter - 1 || colIndex === layout.aisleAfter;
 
-                    let seatVariant: "default" | "destructive" | "secondary" | "outline" = "outline";
-                    let seatDisabled = false;
-                    let seatColorClass = "border-green-500 text-green-600 hover:bg-green-100 focus-visible:ring-green-400";
-
-                    if (isTaken) {
-                    seatVariant = "secondary";
-                    seatDisabled = true;
-                    seatColorClass = "border-destructive/30 text-destructive/50 opacity-60 cursor-not-allowed bg-destructive/10";
-                    } else if (isReserved) {
-                    seatVariant = "secondary";
-                    seatDisabled = true;
-                    seatColorClass = "border-yellow-500/50 text-yellow-600/70 opacity-70 cursor-not-allowed bg-yellow-400/20";
-                    } else if (isSelected) {
-                    seatVariant = "default";
-                    seatColorClass = "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary";
-                    }
-
-                    return (
-                        <Button
-                        key={seatId}
-                        variant={seatVariant}
-                        size="icon"
-                        className={cn(
-                            "h-8 w-8 sm:h-10 sm:w-10 transition-all duration-150", 
-                            seatColorClass, 
-                            colIndex === layout.aisleAfter -1 ? "mr-3 sm:mr-6" : "" // Aisle spacing
-                        )}
-                        onClick={() => !isTaken && !isReserved && toggleSeatSelection(seatId)}
-                        disabled={seatDisabled}
-                        aria-label={`Seat ${seatId}${isTaken ? ' (Taken)' : isReserved ? ' (Reserved)' : isSelected ? ' (Selected)' : ' (Available)'}`}
-                        >
-                        <Armchair className="h-4 w-4 sm:h-5 sm:w-5" />
-                        <span className="sr-only">{seatId}</span>
-                        </Button>
-                    );
-                })}
-                </div>
-            </div>
-            <div className="mt-6">
-                <Label className="text-sm font-medium flex items-center gap-1 mb-2"><Filter className="h-4 w-4"/>Seat Preference Filters (Demo)</Label>
-                <div className="flex flex-wrap gap-3">
-                    <div className="flex items-center space-x-2"><Checkbox id="filter-window" disabled /><Label htmlFor="filter-window" className="text-xs text-muted-foreground">Window</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox id="filter-aisle" disabled /><Label htmlFor="filter-aisle" className="text-xs text-muted-foreground">Aisle</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox id="filter-front" disabled /><Label htmlFor="filter-front" className="text-xs text-muted-foreground">Front Row</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox id="filter-exit" disabled /><Label htmlFor="filter-exit" className="text-xs text-muted-foreground">Exit Row</Label></div>
-                </div>
-            </div>
+                            return (
+                                <Button
+                                key={seatId}
+                                variant={isSelected ? "default" : "outline"}
+                                size="icon"
+                                className={cn(
+                                    "h-8 w-8 sm:h-10 sm:w-10 transition-all duration-150",
+                                    !isTaken && !isSelected && "border-green-500 text-green-600 hover:bg-green-100",
+                                    isTaken && "border-destructive/30 text-destructive/50 opacity-60 cursor-not-allowed bg-destructive/10",
+                                    isSelected && "bg-primary text-primary-foreground",
+                                    colIndex === layout.aisleAfter -1 ? "mr-3 sm:mr-6" : ""
+                                )}
+                                onClick={() => !isTaken && toggleSeatSelection(seatId)}
+                                disabled={isTaken}
+                                title={`Seat ${seatId}${isWindow ? ' (Window)' : ''}${isAisle ? ' (Aisle)' : ''}`}
+                                >
+                                <Armchair className="h-4 w-4 sm:h-5 sm:w-5" />
+                                <span className="sr-only">{seatId}</span>
+                                </Button>
+                            );
+                        })}
+                        </div>
+                    </div>
+                  </div>
+              )}
+              {currentStep === 2 && (
+                  <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-4">
+                      {passengers.map((p, index) => (
+                          <Card key={index} className="p-4">
+                              <CardTitle className="text-lg mb-2">Passenger {index + 1} (Seat {selectedSeats[index]})</CardTitle>
+                              <div className="grid sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Full Name</Label>
+                                    <Input value={p.name} onChange={e => handlePassengerDetailChange(index, 'name', e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Use Saved Passenger</Label>
+                                    <Select onValueChange={(val) => handleUseSavedPassenger(index, savedPassengers.find(sp => sp.id.toString() === val)!)}>
+                                        <SelectTrigger><SelectValue placeholder="Select a saved passenger" /></SelectTrigger>
+                                        <SelectContent>
+                                            {savedPassengers.map(sp => <SelectItem key={sp.id} value={sp.id.toString()}>{sp.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>ID Type</Label>
+                                    <Select value={p.idType} onValueChange={val => handlePassengerDetailChange(index, 'idType', val)}>
+                                        <SelectTrigger><SelectValue/></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="National ID">National ID</SelectItem>
+                                            <SelectItem value="Passport">Passport</SelectItem>
+                                            <SelectItem value="Driver's License">Driver's License</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>ID Number</Label>
+                                    <Input value={p.idNumber} onChange={e => handlePassengerDetailChange(index, 'idNumber', e.target.value)} />
+                                </div>
+                              </div>
+                          </Card>
+                      ))}
+                  </div>
+              )}
+              {currentStep === 3 && (
+                  <div className="space-y-4">
+                    <Card>
+                        <CardHeader><CardTitle>Add-ons</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="extra-luggage" className="flex items-center gap-2"><BaggageClaim className="h-5 w-5"/>Extra Luggage ($5 per bag)</Label>
+                                <Input id="extra-luggage" type="number" min="0" value={extraLuggage} onChange={e => setExtraLuggage(Number(e.target.value))} className="w-20" />
+                            </div>
+                             <div className="flex items-center justify-between">
+                                <Label htmlFor="travel-insurance" className="flex items-center gap-2"><ShieldCheck className="h-5 w-5"/>Travel Insurance ($2.50 per person)</Label>
+                                <Checkbox id="travel-insurance" checked={travelInsurance} onCheckedChange={(checked) => setTravelInsurance(checked as boolean)} />
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader><CardTitle>Fare Breakdown</CardTitle></CardHeader>
+                        <CardContent className="text-sm space-y-1">
+                            <div className="flex justify-between"><span>Base Fare ({passengers.length} x ${selectedRoute.price})</span><span>${(passengers.length * selectedRoute.price).toFixed(2)}</span></div>
+                            <div className="flex justify-between"><span>Extra Luggage ({extraLuggage} x $5)</span><span>${(extraLuggage * 5).toFixed(2)}</span></div>
+                            {travelInsurance && <div className="flex justify-between"><span>Travel Insurance ({passengers.length} x $2.50)</span><span>${(passengers.length * 2.5).toFixed(2)}</span></div>}
+                            <Separator className="my-2"/>
+                            <div className="flex justify-between font-bold text-lg">
+                                <span>Total</span>
+                                <span>${(passengers.length * selectedRoute.price + extraLuggage * 5 + (travelInsurance ? passengers.length * 2.5 : 0)).toFixed(2)}</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <p className="text-xs text-muted-foreground">You will be redirected to a secure payment gateway. Reserve now, pay later options available.</p>
+                  </div>
+              )}
             </div>
             <DialogFooter className="sm:justify-between items-center">
-                <p className="text-sm text-muted-foreground">Selected: {currentSelectedSeats.length} seat(s) - {currentSelectedSeats.join(', ')}</p>
+                <div>
+                   {currentStep > 1 && <Button type="button" variant="outline" onClick={handlePrevStep}>Back</Button>}
+                </div>
                 <div className="flex gap-2">
-                  <DialogClose asChild>
-                    <Button type="button" variant="outline">Cancel</Button>
-                  </DialogClose>
-                  <Button type="button" onClick={handleConfirmSeats} disabled={currentSelectedSeats.length === 0 || currentSelectedSeats.length !== (form.getValues("passengers") || 1)}>
-                    Confirm Seats &amp; Proceed (Demo)
-                  </Button>
+                  <DialogClose asChild><Button type="button" variant="outline">Cancel Booking</Button></DialogClose>
+                  {currentStep < 3 && <Button type="button" onClick={handleNextStep}>Next</Button>}
+                  {currentStep === 3 && <Button type="button" onClick={handleConfirmBooking}>Confirm & Pay</Button>}
                 </div>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       )}
-
-
-      <Card className="mt-12">
-        <CardHeader>
-          <CardTitle className="text-xl">More Bus Travel Features (Coming Soon / Demo)</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm text-muted-foreground">
-            <p><Armchair className="inline h-4 w-4 mr-1 text-primary"/>Interactive 3D Seat Selection with real-time availability & hover details.</p>
-            <p><TicketIcon className="inline h-4 w-4 mr-1 text-primary"/>E-Ticket & QR Code Boarding Pass generation (email & in-app, offline access, departure countdown).</p>
-            <p><MapPin className="inline h-4 w-4 mr-1 text-primary"/>Station Information (amenities, gates, parking) & Live GPS Navigation to station.</p>
-            <p><Info className="inline h-4 w-4 mr-1 text-primary"/>Bus Operator Profiles with reviews, ratings, punctuality scores, and verified badges.</p>
-            <p><Clock className="inline h-4 w-4 mr-1 text-primary"/>Live Bus Tracking during trip with ETA and delay notifications.</p>
-            <p><Users className="inline h-4 w-4 mr-1 text-primary"/>Save Passenger Profiles for faster bookings (name, ID/passport, preferences). Upload ID/Passport docs.</p>
-            <p><BaggageClaim className="inline h-4 w-4 mr-1 text-primary"/>Add-ons: Snacks, extra luggage, travel insurance, WiFi voucher, pillow/blanket.</p>
-            <p><CircleDollarSign className="inline h-4 w-4 mr-1 text-primary"/>Carbon offset donations.</p>
-            <p><ShieldCheck className="inline h-4 w-4 mr-1 text-primary"/>Safety & Accessibility Filters: Female-only seating, wheelchair accessible, child-friendly seats.</p>
-            <p><MessageSquare className="inline h-4 w-4 mr-1 text-primary"/>Bus Chat (passengers) & Operator Announcements.</p>
-            <p className="text-xs">Fare breakdown (taxes, fees) and advanced payment options (Reserve now/pay later, group bookings) will be integrated into the booking flow.</p>
-        </CardContent>
-      </Card>
-
     </div>
   );
 }

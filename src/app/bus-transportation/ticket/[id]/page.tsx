@@ -1,0 +1,120 @@
+// src/app/bus-transportation/ticket/[id]/page.tsx
+'use client';
+
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { TicketIcon, User, MapPin, Clock, BusIcon, QrCode, Download, Share2 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { toast } from '@/hooks/use-toast';
+import Image from 'next/image';
+import Link from 'next/link';
+
+// Mock data, in a real app this would be fetched from a DB using the ID
+const mockTicketData = {
+    routeId: "route001",
+    operator: "ComfortLines Express",
+    departureStation: "Central Bus Terminal, Douala",
+    arrivalStation: "Main Station, Yaoundé",
+    departureTime: "08:00 AM",
+    arrivalTime: "02:00 PM",
+    date: "2024-08-15",
+    passengers: [{ name: "Alex Johnson", seat: "5A" }],
+    busType: "Luxury AC Coach",
+};
+
+export default function BusTicketPage() {
+    const params = useParams();
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
+    const bookingId = params.id as string;
+    const routeId = searchParams.get('routeId');
+
+    // Here you would fetch ticket details using bookingId and routeId
+    const ticket = mockTicketData;
+
+    const handleDownload = () => {
+        toast({ title: "Downloading Ticket (Demo)", description: "Your ticket would be downloaded as a PDF." });
+    }
+
+    const handleShare = () => {
+        toast({ title: "Sharing Ticket (Demo)", description: "Sharing options for your ticket would appear here." });
+    }
+
+    return (
+        <div className="space-y-8">
+            <Card className="shadow-lg rounded-lg overflow-hidden max-w-2xl mx-auto">
+                <CardHeader className="bg-primary/10">
+                    <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
+                        <TicketIcon className="h-8 w-8" />
+                        Your E-Ticket
+                    </CardTitle>
+                    <CardDescription className="text-lg text-muted-foreground">
+                        Booking ID: {bookingId}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6 space-y-6">
+                    <div className="flex justify-between items-center p-4 bg-muted/50 rounded-lg">
+                        <div>
+                            <p className="text-sm text-muted-foreground">Operator</p>
+                            <p className="font-semibold text-lg">{ticket.operator}</p>
+                        </div>
+                        <BusIcon className="h-10 w-10 text-primary" />
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-6">
+                        <div>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1"><MapPin className="h-4 w-4"/> From</p>
+                            <p className="font-semibold">{ticket.departureStation}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1"><MapPin className="h-4 w-4"/> To</p>
+                            <p className="font-semibold">{ticket.arrivalStation}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Departure</p>
+                            <p className="font-semibold">{new Date(ticket.date).toLocaleDateString()} at {ticket.departureTime}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Arrival (Est.)</p>
+                            <p className="font-semibold">{new Date(ticket.date).toLocaleDateString()} at {ticket.arrivalTime}</p>
+                        </div>
+                    </div>
+
+                    <Separator />
+                    
+                    <div>
+                        <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2"><User className="h-4 w-4"/> Passengers</p>
+                        <div className="space-y-2">
+                        {ticket.passengers.map((p, i) => (
+                             <div key={i} className="flex justify-between items-center">
+                                <p className="font-semibold">{p.name}</p>
+                                <p className="text-sm text-muted-foreground">Seat: <span className="font-bold text-primary">{p.seat}</span></p>
+                            </div>
+                        ))}
+                        </div>
+                    </div>
+                    
+                    <Separator />
+
+                    <div className="text-center">
+                        <p className="text-sm text-muted-foreground mb-2">Scan this QR code at boarding</p>
+                        <div className="p-4 bg-white inline-block rounded-lg shadow-md">
+                             <Image src="https://placehold.co/200x200.png" alt="QR Code" width={200} height={200} data-ai-hint="qr code"/>
+                        </div>
+                    </div>
+                </CardContent>
+                <CardFooter className="bg-muted/50 p-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <Button variant="outline" onClick={handleDownload}><Download className="mr-2 h-4 w-4"/> Download PDF</Button>
+                    <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4"/> Share Ticket</Button>
+                    <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                        <Link href={`/bus-transportation/tracking/${bookingId}?routeId=${routeId}`}>
+                            Track Your Bus
+                        </Link>
+                    </Button>
+                </CardFooter>
+            </Card>
+        </div>
+    );
+}
