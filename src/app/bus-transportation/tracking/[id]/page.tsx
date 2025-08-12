@@ -4,12 +4,13 @@
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MapPin, Clock, BusIcon, Navigation, User, MessageSquare, AlertCircle } from 'lucide-react';
+import { MapPin, Clock, BusIcon, Navigation, User, MessageSquare, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import InteractiveMapPlaceholder from '@/components/map/interactive-map-placeholder';
 import { Progress } from '@/components/ui/progress';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 // Mock data
 const mockTrackingData = {
@@ -29,6 +30,12 @@ const mockTrackingData = {
 
 export default function BusTrackingPage() {
     const params = useParams();
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
+    const bookingId = params.id as string;
+    const routeId = searchParams.get('routeId');
+
     const [trackingInfo, setTrackingInfo] = useState(mockTrackingData);
     const [currentEta, setCurrentEta] = useState(mockTrackingData.initialEta);
 
@@ -122,6 +129,13 @@ export default function BusTrackingPage() {
                         </Card>
                     </div>
                 </CardContent>
+                 <CardFooter className="bg-muted/50 p-4">
+                    <Button variant="outline" asChild>
+                        <Link href={`/bus-transportation/ticket/${bookingId}?routeId=${routeId}`}>
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Ticket
+                        </Link>
+                    </Button>
+                </CardFooter>
             </Card>
         </div>
     );
