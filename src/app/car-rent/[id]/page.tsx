@@ -27,6 +27,7 @@ export default function CarRentalDetailsPage() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isDamageDialogOpen, setIsDamageDialogOpen] = useState(false);
+  const [is360DialogOpen, setIs360DialogOpen] = useState(false);
 
   const handleShare = () => {
     if (!car) return;
@@ -48,7 +49,7 @@ export default function CarRentalDetailsPage() {
   };
   
   const handle360View = () => {
-      toast({ title: `360° View (Demo) - ${car?.name}`, description: "Showing immersive 360° view of the vehicle." });
+      setIs360DialogOpen(true);
   };
   
   const handleRentNow = () => {
@@ -175,7 +176,7 @@ export default function CarRentalDetailsPage() {
             ))}
           </div>
           <div className="text-center mt-4">
-            <Button variant="outline" onClick={handle360View}><TvIcon className="mr-2 h-4 w-4" /> View 360° Interior (Demo)</Button>
+            <Button variant="outline" onClick={handle360View}><TvIcon className="mr-2 h-4 w-4" /> View 360° Interior</Button>
           </div>
         </CardContent>
         
@@ -306,6 +307,22 @@ export default function CarRentalDetailsPage() {
             </form>
         </DialogContent>
     </Dialog>
+    
+    {/* 360 View Dialog */}
+      <Dialog open={is360DialogOpen} onOpenChange={setIs360DialogOpen}>
+          <DialogContent className="max-w-3xl">
+              <DialogHeader>
+                  <DialogTitle>360° Interior View: {car?.name}</DialogTitle>
+                  <DialogDescription>This is a simulation of the 360° vehicle interior view.</DialogDescription>
+              </DialogHeader>
+              <div className="py-4 text-center">
+                  <div className="aspect-video bg-muted rounded-md flex items-center justify-center border">
+                      <Image src="https://placehold.co/800x450.png" alt="360 view placeholder" width={800} height={450} className="w-full h-full object-cover" data-ai-hint="car interior wide"/>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">Drag to explore the vehicle's interior.</p>
+              </div>
+          </DialogContent>
+      </Dialog>
     </>
   );
 }
