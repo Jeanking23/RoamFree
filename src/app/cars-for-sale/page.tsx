@@ -16,9 +16,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 
 const mockCarsForSale = [
-  { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
-  { id: "carSale2", name: "Ford F-150 XLT 2020", price: 32000, location: "Suburbia", mileage: "30,000 miles", year: 2020, image: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck", vin: "DEMOVIN67890", historyHighlights: "One owner, Clean title", sellerRating: 4.5, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck"}, {id: 'p2', src: "https://images.unsplash.com/photo-1656110073986-ccf23039e402?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dHJ1Y2slMjBiZWR8ZW58MHx8fHwxNzU1MDIzMjYxfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "truck bed"}] },
-  { id: "carSale3", name: "Honda Civic LX 2019", price: 17500, location: "Townsburd", mileage: "38,000 miles", year: 2019, image: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda", vin: "DEMOVIN11223", historyHighlights: "Fuel efficient, Great condition", sellerRating: 4.9, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda"}, {id: 'p2', src: "https://images.unsplash.com/photo-1549064233-945d7063292f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjYXIlMjBpbnRlcmlvcnxlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "car interior"}] },
+  { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
+  { id: "carSale2", name: "Ford F-150 XLT 2020", price: 32000, location: "Suburbia", mileage: "30,000 miles", year: 2020, image: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck", vin: "DEMOVIN67890", historyHighlights: "One owner, Clean title", sellerRating: 4.5, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck"}, {id: 'p2', src: "https://images.unsplash.com/photo-1656110073986-ccf23039e402?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dHJ1Y2slMjBiZWR8ZW58MHx8fHwxNzU1MDIzMjYxfDA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "truck bed"}] },
+  { id: "carSale3", name: "Honda Civic LX 2019", price: 17500, location: "Townsburd", mileage: "38,000 miles", year: 2019, image: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda", vin: "DEMOVIN11223", historyHighlights: "Fuel efficient, Great condition", sellerRating: 4.9, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda"}, {id: 'p2', src: "https://images.unsplash.com/photo-1549064233-945d7063292f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjYXIlMjBpbnRlcmlvcnxlbnwwfHx8fDE3NTUwMjMzNTl8MA&lib=rb-4.1.0&q=80&w=1080", dataAiHint: "car interior"}] },
 ];
 
 function CarImageSlider({ car }: { car: typeof mockCarsForSale[0] }) {
@@ -130,21 +130,21 @@ export default function CarsForSalePage() {
               </TabsList>
               <TabsContent value="search" className="space-y-4">
                 <h4 className="font-semibold text-foreground">USED CARS IN YOUR AREA</h4>
-                <div className="flex flex-row gap-2 items-center">
-                  <div className="relative flex-grow">
-                    <Input
-                      id="search-cars"
-                      type="text"
-                      placeholder="Search Make, Model, or Keyword"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pr-10 h-10 rounded-full pl-10"
-                    />
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <Button variant="outline" className="h-10 rounded-full text-sm shrink-0">
-                    <SlidersHorizontal className="mr-2 h-4 w-4" /> Filter
-                  </Button>
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                    <div className="relative flex-grow w-full">
+                        <Input
+                        id="search-cars"
+                        type="text"
+                        placeholder="Search Make, Model, or Keyword"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pr-10 h-10 rounded-full pl-10"
+                        />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <Button variant="outline" className="h-10 rounded-full text-sm shrink-0 w-full sm:w-auto">
+                        <SlidersHorizontal className="mr-2 h-4 w-4" /> Filter
+                    </Button>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Price (Demo)"})} className="rounded-full">Price Range &gt;</Button>
@@ -156,25 +156,25 @@ export default function CarsForSalePage() {
           </div>
           
           <div className="mb-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
-              <div className="flex items-center gap-4 flex-wrap order-1 sm:order-2">
-                <div className="flex items-center gap-1 text-sm">
-                  <MapPin className="h-4 w-4"/>
-                  <span>Your Location (Demo)</span>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                <div className="flex items-center gap-4 flex-wrap">
+                    <div className="flex items-center gap-1 text-sm">
+                        <MapPin className="h-4 w-4"/>
+                        <span>Your Location (Demo)</span>
+                    </div>
+                    <Select defaultValue="best_match">
+                        <SelectTrigger className="w-[180px] h-9 text-sm">
+                            <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="best_match">Sort: Best Match</SelectItem>
+                            <SelectItem value="price_asc">Price: Low to High</SelectItem>
+                            <SelectItem value="price_desc">Price: High to Low</SelectItem>
+                            <SelectItem value="newest">Newest</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Button variant="ghost" size="sm" onClick={() => toast({title: "Saved!"})}><Heart className="mr-2 h-4 w-4"/>Save</Button>
                 </div>
-                <Select defaultValue="best_match">
-                    <SelectTrigger className="w-[180px] h-9 text-sm">
-                        <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="best_match">Sort: Best Match</SelectItem>
-                        <SelectItem value="price_asc">Price: Low to High</SelectItem>
-                        <SelectItem value="price_desc">Price: High to Low</SelectItem>
-                        <SelectItem value="newest">Newest</SelectItem>
-                    </SelectContent>
-                </Select>
-                 <Button variant="ghost" size="sm" onClick={() => toast({title: "Saved!"})}><Heart className="mr-2 h-4 w-4"/>Save</Button>
-              </div>
             </div>
             
              <div className="flex flex-wrap gap-2">
@@ -192,7 +192,7 @@ export default function CarsForSalePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCars.map(car => (
                 <Card key={car.id} className="flex flex-col overflow-hidden">
-                  <CarImageSlider car={car} />
+                  <WishlistItemImageSlider item={car} />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl hover:text-primary">
                         <Link href={`/cars-for-sale/${car.id}`}>{car.name}</Link>
@@ -251,6 +251,60 @@ export default function CarsForSalePage() {
            </div>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// Renamed component to avoid conflict
+function WishlistItemImageSlider({ item }: { item: typeof mockCarsForSale[0] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextSlide = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % item.photos.length);
+  };
+
+  const prevSlide = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + item.photos.length) % item.photos.length);
+  };
+
+  return (
+    <div className="relative w-full h-48 group">
+      <Link href={`/cars-for-sale/${item.id}`} className="block w-full h-full">
+        <Image 
+          src={item.photos[currentIndex].src} 
+          alt={item.name} 
+          fill 
+          className="object-cover" 
+          data-ai-hint={item.photos[currentIndex].dataAiHint}
+        />
+      </Link>
+      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+        <Search className="h-10 w-10 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
+      </div>
+       {item.photos.length > 1 && (
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 hover:bg-background/80"
+            onClick={prevSlide}
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 hover:bg-background/80"
+            onClick={nextSlide}
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </>
+      )}
     </div>
   );
 }
