@@ -38,8 +38,8 @@ const tripPlannerSurveySchema = z.object({
   }),
   budgetLevel: z.enum(["LOW", "MODERATE", "LUXURY"]),
   budgetCustom: z.string().optional(),
-  dateFrom: z.date(),
-  dateTo: z.date(),
+  dateFrom: z.date().optional(),
+  dateTo: z.date().optional(),
   isFlexibleDates: z.boolean().default(false),
   destinationSpecific: z.string().optional(),
   isSurpriseMe: z.boolean().default(false),
@@ -59,6 +59,9 @@ const tripPlannerSurveySchema = z.object({
 }).refine((data) => data.destinationSpecific || data.isSurpriseMe, {
   message: "Either a specific destination or 'Surprise Me' must be selected.",
   path: ["destinationSpecific"],
+}).refine(data => data.dateFrom && data.dateTo, {
+    message: "Both start and end dates are required.",
+    path: ["dateTo"],
 });
 
 type TripPlannerFormValues = z.infer<typeof tripPlannerSurveySchema>;
@@ -145,6 +148,14 @@ export default function AiTripPlannerSurveyPage() {
   }, [form]);
 
   async function processForm(values: TripPlannerFormValues) {
+    if (!values.dateFrom || !values.dateTo) {
+        toast({
+            title: "Dates are required",
+            description: "Please select both a start and end date.",
+            variant: "destructive",
+        });
+        return;
+    }
     setIsLoading(true);
     setError(undefined);
     setTripPlan(null);
