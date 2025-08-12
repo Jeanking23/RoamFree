@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CarFront, Search, DollarSign, Gauge, CalendarDays, Info, ShieldCheck, MessageCircle, GitCompareArrows, Users, ChevronLeft, ChevronRight, SlidersHorizontal, MapPin, Heart, Filter, X, Building, List, Map as MapIcon, Plus, Check } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -22,6 +22,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { cn } from '@/lib/utils';
 import { mockCarsForSale } from '@/lib/mock-data';
+import { useGoogleMaps } from '@/context/google-maps-provider';
 
 const sellCarSchema = z.object({
   vin: z.string().length(17, "VIN must be 17 characters."),
@@ -197,12 +198,45 @@ const FilterContent = () => {
         </Accordion>
     </div>
     );
-}
+};
 
 export default function CarsForSalePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [offerValue, setOfferValue] = useState<number | null>(null);
   const [isOfferLoading, setIsOfferLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState<string>('Your Location...');
+  const { isLoaded } = useGoogleMaps();
+
+  useEffect(() => {
+    if (navigator.geolocation && isLoaded) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const geocoder = new window.google.maps.Geocoder();
+          const latLng = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          geocoder.geocode({ location: latLng }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+              const addressComponents = results[0].address_components;
+              const city = addressComponents.find(c => c.types.includes('locality'))?.long_name;
+              const state = addressComponents.find(c => c.types.includes('administrative_area_level_1'))?.short_name;
+              if (city && state) {
+                setUserLocation(`${city}, ${state}`);
+              } else {
+                setUserLocation('Location Found');
+              }
+            } else {
+              setUserLocation('Could not find address');
+            }
+          });
+        },
+        () => {
+          setUserLocation('Location permission denied');
+        }
+      );
+    }
+  }, [isLoaded]);
 
   const sellCarForm = useForm<SellCarFormValues>({
     resolver: zodResolver(sellCarSchema),
@@ -346,7 +380,7 @@ export default function CarsForSalePage() {
             <div className="flex flex-nowrap items-center gap-2 sm:gap-4 overflow-x-auto no-scrollbar">
                 <div className="flex items-center gap-1 text-sm shrink-0">
                     <MapPin className="h-4 w-4"/>
-                    <span>Your Location (Demo)</span>
+                    <span>{userLocation}</span>
                 </div>
                 <Select defaultValue="best_match">
                     <SelectTrigger className="w-auto sm:w-[180px] h-9 text-sm shrink-0">
@@ -379,7 +413,7 @@ export default function CarsForSalePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCars.map(car => (
               <Card key={car.id} className="flex flex-col overflow-hidden group hover:shadow-lg transition-shadow shadow-md">
-                <Link href={`/cars-for-sale/${car.id}`} className="block">
+                <Link href={`/cars-for-sale/history/${car.vin}`} className="block">
                     <CarImageSlider car={car} />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-xl group-hover:text-primary transition-colors">
