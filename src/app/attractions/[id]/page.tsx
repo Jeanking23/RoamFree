@@ -85,6 +85,13 @@ export default function AttractionProfilePage() {
     }
   };
 
+  const handleReportAttraction = () => {
+    toast({
+      title: "Report Submitted (Demo)",
+      description: `Thank you for your feedback. Our team will review the report for ${attraction?.name}.`,
+    });
+  };
+
 
   if (!attraction) { 
     return <div className="text-center py-10">Attraction not found.</div>; 
@@ -296,7 +303,9 @@ export default function AttractionProfilePage() {
         <CardFooter className="border-t pt-6">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <AlertTriangle className="h-5 w-5 text-orange-500"/>
-                <span>Report this attraction if you find any issues. (Placeholder)</span>
+                <Button variant="link" className="p-0 h-auto text-sm text-muted-foreground" onClick={handleReportAttraction}>
+                    Report this attraction if you find any issues.
+                </Button>
             </div>
         </CardFooter>
       </Card>
