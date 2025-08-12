@@ -89,7 +89,29 @@ function CarImageSlider({ car }: { car: typeof mockCarsForSale[0] }) {
   );
 }
 
-const FilterContent = ({ closeSheet }: { closeSheet?: () => void }) => (
+const carMakesAndModels = {
+  'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander', 'Tacoma'],
+  'Ford': ['F-150', 'Explorer', 'Mustang', 'Escape', 'Bronco'],
+  'Honda': ['Civic', 'Accord', 'CR-V', 'Pilot', 'Odyssey'],
+  'Chevrolet': ['Silverado', 'Equinox', 'Malibu', 'Tahoe', 'Traverse'],
+  'Nissan': ['Altima', 'Rogue', 'Sentra', 'Titan', 'Frontier'],
+  'Jeep': ['Wrangler', 'Grand Cherokee', 'Cherokee'],
+  'Hyundai': ['Elantra', 'Sonata', 'Tucson', 'Santa Fe'],
+  'Kia': ['Forte', 'Optima', 'Sorento', 'Telluride'],
+  'BMW': ['3 Series', '5 Series', 'X3', 'X5'],
+  'Mercedes-Benz': ['C-Class', 'E-Class', 'GLC', 'GLE'],
+};
+
+const FilterContent = () => {
+    const [selectedMakes, setSelectedMakes] = useState<string[]>([]);
+
+    const toggleMake = (make: string) => {
+        setSelectedMakes(prev => 
+            prev.includes(make) ? prev.filter(m => m !== make) : [...prev, make]
+        );
+    };
+
+    return (
     <div className="space-y-4">
         <Accordion type="multiple" defaultValue={['payment_price', 'make_model', 'body_type']} className="w-full">
             <AccordionItem value="payment_price">
@@ -106,9 +128,28 @@ const FilterContent = ({ closeSheet }: { closeSheet?: () => void }) => (
             </AccordionItem>
              <AccordionItem value="make_model">
                 <AccordionTrigger>Make & Model</AccordionTrigger>
-                <AccordionContent className="space-y-4">
-                    <Input placeholder="Search Make (e.g., Toyota)" />
-                    <Input placeholder="Search Model (e.g., Camry)" />
+                <AccordionContent className="space-y-2">
+                    <Input placeholder="Search Make..." />
+                    <div className="max-h-60 overflow-y-auto space-y-1 pr-2">
+                        {Object.keys(carMakesAndModels).map(make => (
+                            <div key={make}>
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox id={`make-${make}`} onCheckedChange={() => toggleMake(make)} />
+                                    <Label htmlFor={`make-${make}`} className="font-medium">{make}</Label>
+                                </div>
+                                {selectedMakes.includes(make) && (
+                                    <div className="pl-6 pt-2 space-y-1">
+                                        {(carMakesAndModels[make as keyof typeof carMakesAndModels]).map(model => (
+                                            <div key={model} className="flex items-center space-x-2">
+                                                <Checkbox id={`model-${make}-${model}`} />
+                                                <Label htmlFor={`model-${make}-${model}`} className="font-normal">{model}</Label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </AccordionContent>
             </AccordionItem>
              <AccordionItem value="body_type">
@@ -258,17 +299,17 @@ export default function CarsForSalePage() {
                                 <Filter className="mr-2 h-4 w-4" /> Filter
                             </Button>
                         </SheetTrigger>
-                        <SheetContent className="w-full sm:max-w-md">
-                            <SheetHeader>
+                        <SheetContent className="w-full sm:max-w-md p-0 flex flex-col">
+                            <SheetHeader className="p-6 pb-4">
                                 <SheetTitle>Filters</SheetTitle>
                                 <SheetDescription>
                                     Refine your search to find the perfect car.
                                 </SheetDescription>
                             </SheetHeader>
-                            <div className="py-4 h-[calc(100vh-150px)] overflow-y-auto pr-6">
+                            <div className="flex-grow overflow-y-auto px-6">
                                 <FilterContent />
                             </div>
-                            <SheetFooter className="absolute bottom-0 right-0 w-full p-4 bg-background border-t">
+                            <SheetFooter className="p-6 pt-4 bg-background border-t">
                                 <Button variant="outline" className="flex-1">Clear all</Button>
                                 <SheetClose asChild>
                                     <Button type="submit" className="flex-1">View Results</Button>
