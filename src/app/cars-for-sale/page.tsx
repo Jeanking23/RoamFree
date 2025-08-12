@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CarFront, Search, DollarSign, Gauge, CalendarDays, Info, ShieldCheck, MessageCircle, GitCompareArrows, Users, ChevronLeft, ChevronRight, SlidersHorizontal, MapPin, Heart, Filter, X, Building, List, Map as MapIcon, Plus, Check } from 'lucide-react';
+import { CarFront, Search, DollarSign, Gauge, CalendarDays, Info, ShieldCheck, MessageCircle, GitCompareArrows, Users, ChevronLeft, ChevronRight, SlidersHorizontal, MapPin, Heart, Filter, X, Building, List, Map as MapIcon, Plus, Check, BadgeCheck } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
@@ -23,6 +23,7 @@ import * as z from 'zod';
 import { cn } from '@/lib/utils';
 import { mockCarsForSale } from '@/lib/mock-data';
 import { useGoogleMaps } from '@/context/google-maps-provider';
+import { Badge } from '@/components/ui/badge';
 
 const sellCarSchema = z.object({
   vin: z.string().length(17, "VIN must be 17 characters."),
@@ -283,7 +284,7 @@ export default function CarsForSalePage() {
             Cars for Sale
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Browse and buy new or used cars. Verified sellers and secure transactions (Demo).
+            Browse and buy new or used cars. Verified sellers and secure transactions.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
@@ -427,9 +428,18 @@ export default function CarsForSalePage() {
                         <span><CalendarDays className="inline h-4 w-4 mr-1"/>{car.year}</span>
                         <span><MapPin className="inline h-4 w-4 mr-1"/>{car.location}</span>
                       </div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-muted-foreground space-y-1">
                         <p><Info className="inline h-3 w-3 mr-1"/>{car.historyHighlights}</p>
-                        <p><ShieldCheck className="inline h-3 w-3 mr-1"/>Seller Rating: {car.sellerRating}/5</p>
+                        <div className="flex flex-wrap gap-2 items-center">
+                            {car.isVerifiedSeller && (
+                                <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-300 text-xs">
+                                    <BadgeCheck className="mr-1 h-3 w-3"/>Verified Seller
+                                </Badge>
+                            )}
+                            <Badge variant="outline" className="text-xs">
+                                <ShieldCheck className="mr-1 h-3 w-3 text-primary"/>Secure Transaction
+                            </Badge>
+                        </div>
                       </div>
                     </CardContent>
                 </Link>
