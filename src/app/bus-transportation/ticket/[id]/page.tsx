@@ -9,6 +9,8 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { format } from 'date-fns';
 
 // Mock data, in a real app this would be fetched from a DB using the ID
 const mockTicketData = {
@@ -27,6 +29,11 @@ export default function BusTicketPage() {
     const params = useParams();
     const searchParams = useSearchParams();
     const router = useRouter();
+    const [hasMounted, setHasMounted] = useState(false);
+
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
 
     const bookingId = params.id as string;
     const routeId = searchParams.get('routeId');
@@ -34,12 +41,18 @@ export default function BusTicketPage() {
     // Here you would fetch ticket details using bookingId and routeId
     const ticket = mockTicketData;
 
+    const formattedDate = hasMounted ? format(new Date(ticket.date), 'PPP') : '';
+
     const handleDownload = () => {
         toast({ title: "Downloading Ticket (Demo)", description: "Your ticket would be downloaded as a PDF." });
     }
 
     const handleShare = () => {
         toast({ title: "Sharing Ticket (Demo)", description: "Sharing options for your ticket would appear here." });
+    }
+
+    if (!hasMounted) {
+        return null; // or a loading skeleton
     }
 
     return (
@@ -74,11 +87,11 @@ export default function BusTicketPage() {
                         </div>
                         <div>
                             <p className="text-sm text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Departure</p>
-                            <p className="font-semibold">{new Date(ticket.date).toLocaleDateString()} at {ticket.departureTime}</p>
+                            <p className="font-semibold">{formattedDate} at {ticket.departureTime}</p>
                         </div>
                         <div>
                             <p className="text-sm text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Arrival (Est.)</p>
-                            <p className="font-semibold">{new Date(ticket.date).toLocaleDateString()} at {ticket.arrivalTime}</p>
+                            <p className="font-semibold">{formattedDate} at {ticket.arrivalTime}</p>
                         </div>
                     </div>
 

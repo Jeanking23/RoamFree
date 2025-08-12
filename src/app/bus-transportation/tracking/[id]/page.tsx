@@ -38,8 +38,15 @@ export default function BusTrackingPage() {
 
     const [trackingInfo, setTrackingInfo] = useState(mockTrackingData);
     const [currentEta, setCurrentEta] = useState(mockTrackingData.initialEta);
+    const [hasMounted, setHasMounted] = useState(false);
 
     useEffect(() => {
+        setHasMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!hasMounted) return;
+
         const interval = setInterval(() => {
             setTrackingInfo(prev => {
                 const newProgress = Math.min(prev.progress + 5, 100);
@@ -47,9 +54,13 @@ export default function BusTrackingPage() {
                 const newDelay = isDelayed ? 15 : 0;
                 
                 // Update ETA based on delay
-                const [hour, minute] = prev.initialEta.split(/:| /);
+                const [hourStr, minuteStr] = prev.initialEta.split(/:| /);
+                const hour = parseInt(hourStr, 10);
+                const minute = parseInt(minuteStr, 10);
+                const isPM = prev.initialEta.toUpperCase().includes('PM');
+
                 let newEtaDate = new Date();
-                newEtaDate.setHours(parseInt(hour) + (prev.initialEta.includes('PM') ? 12 : 0), parseInt(minute), 0, 0);
+                newEtaDate.setHours(isPM && hour !== 12 ? hour + 12 : (isPM === false && hour === 12 ? 0 : hour), minute, 0, 0);
                 newEtaDate.setMinutes(newEtaDate.getMinutes() + newDelay);
                 setCurrentEta(newEtaDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
@@ -63,10 +74,14 @@ export default function BusTrackingPage() {
         }, 3000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [hasMounted]);
 
     const handleContactDriver = () => {
         toast({ title: "Contacting Driver (Demo)", description: "This would open a secure chat with the driver."});
+    }
+
+    if (!hasMounted) {
+        return null; // or a loading skeleton
     }
 
     return (
