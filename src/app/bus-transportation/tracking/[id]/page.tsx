@@ -37,7 +37,7 @@ export default function BusTrackingPage() {
     const routeId = searchParams.get('routeId');
 
     const [trackingInfo, setTrackingInfo] = useState(mockTrackingData);
-    const [currentEta, setCurrentEta] = useState(mockTrackingData.initialEta);
+    const [currentEta, setCurrentEta] = useState<string | null>(null);
     const [hasMounted, setHasMounted] = useState(false);
 
     useEffect(() => {
@@ -46,6 +46,11 @@ export default function BusTrackingPage() {
 
     useEffect(() => {
         if (!hasMounted) return;
+        
+        // Initialize ETA on the client
+        if (currentEta === null) {
+            setCurrentEta(mockTrackingData.initialEta);
+        }
 
         const interval = setInterval(() => {
             setTrackingInfo(prev => {
@@ -74,7 +79,7 @@ export default function BusTrackingPage() {
         }, 3000);
 
         return () => clearInterval(interval);
-    }, [hasMounted]);
+    }, [hasMounted, currentEta]);
 
     const handleContactDriver = () => {
         toast({ title: "Contacting Driver (Demo)", description: "This would open a secure chat with the driver."});
@@ -119,7 +124,7 @@ export default function BusTrackingPage() {
                                 <CardTitle>Estimated Time of Arrival</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-3xl font-bold">{currentEta}</p>
+                                <p className="text-3xl font-bold">{currentEta || 'Calculating...'}</p>
                                 {trackingInfo.delayMinutes > 0 ? (
                                     <p className="text-sm text-orange-500">Delayed by {trackingInfo.delayMinutes} minutes</p>
                                 ) : (
