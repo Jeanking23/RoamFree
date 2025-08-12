@@ -158,9 +158,11 @@ export default function CarsForSalePage() {
           <Separator />
 
           <div className="my-6">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
-              <p className="text-sm text-muted-foreground font-medium">{filteredCars.length} cars found</p>
-              <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+              <div className="flex-1 order-2 sm:order-1">
+                <p className="text-sm text-muted-foreground font-medium">{filteredCars.length} cars found</p>
+              </div>
+              <div className="flex items-center gap-4 flex-wrap order-1 sm:order-2">
                 <div className="flex items-center gap-1 text-sm">
                   <MapPin className="h-4 w-4"/>
                   <span>Your Location (Demo)</span>
