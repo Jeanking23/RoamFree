@@ -94,7 +94,7 @@ export const rideOptions = [
     { 
         id: 'economy',
         name: 'Economy', 
-        icon: () => <CarImage src="https://placehold.co/120x60.png" data-ai-hint="economy sedan" />,
+        icon: () => <CarImage src="https://placehold.co/120x60/000000/FFFFFF/png?text=Economy" data-ai-hint="economy sedan" />,
         capacity: 4, 
         eta: '4:39 PM', 
         price: 32.84,
@@ -105,7 +105,7 @@ export const rideOptions = [
     { 
         id: 'comfort',
         name: 'Comfort', 
-        icon: () => <CarImage src="https://placehold.co/120x60.png" data-ai-hint="comfort sedan" />,
+        icon: () => <CarImage src="https://placehold.co/120x60/000000/FFFFFF/png?text=Comfort" data-ai-hint="comfort sedan" />,
         capacity: 4, 
         eta: '4:38 PM', 
         price: 39.53,
@@ -115,7 +115,7 @@ export const rideOptions = [
      { 
         id: 'business',
         name: 'Business', 
-        icon: () => <CarImage src="https://placehold.co/120x60.png" data-ai-hint="business sedan" />,
+        icon: () => <CarImage src="https://placehold.co/120x60/000000/FFFFFF/png?text=Business" data-ai-hint="business sedan" />,
         capacity: 3, 
         eta: '4:41 PM',
         price: 65.20,
@@ -125,7 +125,7 @@ export const rideOptions = [
     { 
         id: 'premium',
         name: 'Premium', 
-        icon: () => <CarImage src="https://placehold.co/120x60.png" data-ai-hint="premium luxury sedan" />,
+        icon: () => <CarImage src="https://placehold.co/120x60/000000/FFFFFF/png?text=Premium" data-ai-hint="premium luxury sedan" />,
         capacity: 4, 
         eta: '4:43 PM',
         price: 71.68,
