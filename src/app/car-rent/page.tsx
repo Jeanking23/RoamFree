@@ -272,9 +272,9 @@ export default function CarRentPage() {
               </div>
             )}
 
-            <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-x-visible no-scrollbar">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCarListings.map((car) => (
-                <Card key={car.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 w-[85vw] sm:w-[50vw] md:w-full flex-shrink-0">
+                <Card key={car.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
                   <Link href={`/car-rent/${car.id}`} className="block group">
                     <CarImageSlider car={car} />
                     <CardHeader className="pb-2">
