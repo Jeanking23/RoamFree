@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { KeyRound, Car, User, CheckCircle, CalendarDays, Users, Briefcase, ShieldCheck, Star, Luggage, TvIcon, Settings, FileText, MapPin, Edit, AlertTriangle, Camera, X } from 'lucide-react';
+import { KeyRound, Car, User, CheckCircle, CalendarDays, Users, Briefcase, ShieldCheck, Star, Luggage, TvIcon, Settings, FileText, MapPin, Edit, AlertTriangle, Camera, X, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -30,6 +30,7 @@ export default function CarRentPage() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [selectedInsurance, setSelectedInsurance] = useState("basic"); // basic, full
   const [hasMounted, setHasMounted] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   
   // State for dialogs
   const [selectedCarForAction, setSelectedCarForAction] = useState<CarListing | null>(null);
@@ -93,6 +94,11 @@ export default function CarRentPage() {
     setIsDamageDialogOpen(false);
   }
 
+  const filteredCarListings = carListings.filter(car =>
+    car.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    car.type.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <div className="space-y-8">
@@ -109,6 +115,20 @@ export default function CarRentPage() {
           <CardContent className="p-6">
             <div className="mb-6 p-4 border rounded-md bg-muted/30 space-y-4">
               <div className="grid sm:grid-cols-2 gap-4 items-end">
+                  <div>
+                    <Label htmlFor="search-cars">Search by Name or Type</Label>
+                    <div className="relative">
+                      <Input
+                        id="search-cars"
+                        type="text"
+                        placeholder="e.g., Toyota Camry, SUV..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pr-10"
+                      />
+                      <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    </div>
+                  </div>
                   <div>
                     <Label htmlFor="rental-dates">Pickup &amp; Return Dates</Label>
                     <Popover>
@@ -149,18 +169,18 @@ export default function CarRentPage() {
                         </PopoverContent>
                     </Popover>
                   </div>
-                  <div>
-                      <Label htmlFor="insurance-options">Insurance Coverage (Demo)</Label>
-                      <Select value={selectedInsurance} onValueChange={setSelectedInsurance}>
-                          <SelectTrigger id="insurance-options">
-                              <SelectValue placeholder="Select insurance" />
-                          </SelectTrigger>
-                          <SelectContent>
-                              <SelectItem value="basic">Basic (Included where stated)</SelectItem>
-                              <SelectItem value="full">Full Coverage (+$X/day)</SelectItem>
-                          </SelectContent>
-                      </Select>
-                  </div>
+              </div>
+               <div>
+                  <Label htmlFor="insurance-options">Insurance Coverage (Demo)</Label>
+                  <Select value={selectedInsurance} onValueChange={setSelectedInsurance}>
+                      <SelectTrigger id="insurance-options">
+                          <SelectValue placeholder="Select insurance" />
+                      </SelectTrigger>
+                      <SelectContent>
+                          <SelectItem value="basic">Basic (Included where stated)</SelectItem>
+                          <SelectItem value="full">Full Coverage (+$X/day)</SelectItem>
+                      </SelectContent>
+                  </Select>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -200,7 +220,7 @@ export default function CarRentPage() {
             )}
 
             <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-x-visible no-scrollbar">
-              {carListings.map((car) => (
+              {filteredCarListings.map((car) => (
                 <Card key={car.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 w-[85vw] sm:w-[50vw] md:w-full flex-shrink-0">
                   <Link href={`/car-rent/${car.id}`} className="block relative w-full h-56 group">
                     <Image src={car.image} alt={car.name} fill className="object-cover" data-ai-hint={car.dataAiHint} />
