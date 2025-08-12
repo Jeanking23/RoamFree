@@ -284,8 +284,8 @@ export default function CarsForSalePage() {
               </TabsList>
               <TabsContent value="search" className="space-y-4">
                 <h4 className="font-semibold text-foreground">USED CARS IN YOUR AREA</h4>
-                 <div className="flex flex-row gap-2 items-center">
-                    <div className="relative flex-grow">
+                 <div className="flex flex-col sm:flex-row gap-2 items-center">
+                    <div className="relative flex-grow w-full">
                         <Input
                         id="search-cars"
                         type="text"
@@ -298,9 +298,9 @@ export default function CarsForSalePage() {
                     </div>
                      <Sheet>
                         <SheetTrigger asChild>
-                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0">
+                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0 w-full sm:w-auto">
                                 <Filter className="mr-2 h-4 w-4" />
-                                <span className="hidden sm:inline">Filter</span>
+                                <span className="">Filter</span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent className="w-full sm:max-w-md p-0 flex flex-col">
@@ -315,9 +315,7 @@ export default function CarsForSalePage() {
                             </div>
                             <SheetFooter className="p-6 pt-4 bg-background border-t">
                                 <Button variant="outline" className="flex-1">Clear all</Button>
-                                <SheetClose asChild>
-                                    <Button type="submit" className="flex-1 w-full">View Results</Button>
-                                </SheetClose>
+                                <SheetClose asChild><Button type="submit" className="flex-1 w-full">View Results</Button></SheetClose>
                             </SheetFooter>
                         </SheetContent>
                     </Sheet>
@@ -368,13 +366,13 @@ export default function CarsForSalePage() {
           
            <div className="mb-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                <div className="flex items-center gap-4 flex-wrap">
-                    <div className="flex items-center gap-1 text-sm">
+                <div className="flex flex-nowrap items-center gap-2 sm:gap-4 overflow-x-auto">
+                    <div className="flex items-center gap-1 text-sm shrink-0">
                         <MapPin className="h-4 w-4"/>
                         <span>Your Location (Demo)</span>
                     </div>
                     <Select defaultValue="best_match">
-                        <SelectTrigger className="w-[180px] h-9 text-sm">
+                        <SelectTrigger className="w-auto sm:w-[180px] h-9 text-sm shrink-0">
                             <SelectValue placeholder="Sort by" />
                         </SelectTrigger>
                         <SelectContent>
@@ -384,15 +382,17 @@ export default function CarsForSalePage() {
                             <SelectItem value="newest">Newest</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Button variant="ghost" size="sm" onClick={() => toast({title: "Saved!"})}><Heart className="mr-2 h-4 w-4"/>Save</Button>
+                    <Button variant="ghost" size="sm" onClick={() => toast({title: "Saved!"})} className="shrink-0"><Heart className="mr-2 h-4 w-4"/>Save</Button>
                 </div>
             </div>
             
-            <div className="flex flex-wrap gap-2 items-center">
-                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Third Row Seat</Button>
-                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Under $25,000</Button>
-                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">SUVs</Button>
-                 <p className="text-sm text-muted-foreground font-medium self-end ml-auto">{filteredCars.length} cars found</p>
+            <div className="flex flex-wrap gap-2 items-center justify-between">
+                <div className="flex flex-wrap gap-2 items-center">
+                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Third Row Seat</Button>
+                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Under $25,000</Button>
+                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">SUVs</Button>
+                </div>
+                <p className="text-sm text-muted-foreground font-medium self-end">{filteredCars.length} cars found</p>
             </div>
           </div>
 
