@@ -295,7 +295,7 @@ export default function CarsForSalePage() {
                 <TabsTrigger value="financing" onClick={() => toast({title: "Feature Coming Soon"})} className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Financing</TabsTrigger>
               </TabsList>
               <TabsContent value="search" className="space-y-4">
-                <h4 className="font-semibold text-foreground">USED CARS IN YOUR AREA</h4>
+                <h4 className="font-semibold text-foreground">Used & New Cars in your area</h4>
                  <div className="flex items-center gap-2">
                     <div className="relative flex-grow">
                         <Input
