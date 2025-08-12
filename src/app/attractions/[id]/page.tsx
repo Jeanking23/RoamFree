@@ -5,13 +5,17 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Star, MapPin, Ticket, MessageSquare, Share2, Heart, AlertTriangle, Clock, Users, ExternalLink, Camera, Users2, Wifi, Moon, Sun, CloudSun, Calendar, Info, Landmark as LandmarkIcon, BadgeCheck, Percent, Ear, X, ThumbsUp } from 'lucide-react';
+import { CalendarDays, Star, MapPin, Ticket, MessageSquare, Share2, Heart, AlertTriangle, Clock, Users, ExternalLink, Camera, Users2, Wifi, Moon, Sun, CloudSun, Calendar, Info, Landmark as LandmarkIcon, BadgeCheck, Percent, Ear, X, ThumbsUp, Plus, Minus } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { mockAttractionDetails, type MockAttraction } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { format } from 'date-fns';
 
 export default function AttractionProfilePage() {
   const params = useParams();
@@ -22,6 +26,15 @@ export default function AttractionProfilePage() {
   const [isArViewActive, setIsArViewActive] = useState(false);
   const [isAudioGuideActive, setIsAudioGuideActive] = useState(false);
   const [formattedDates, setFormattedDates] = useState<Record<string, string>>({});
+  
+  // State for booking dialog
+  const [ticketCount, setTicketCount] = useState(1);
+  const [visitDate, setVisitDate] = useState<string>('');
+
+  useEffect(() => {
+    // Set a default visit date for the booking dialog
+    setVisitDate(format(new Date(), 'yyyy-MM-dd'));
+  }, []);
   
   useEffect(() => {
     // In a real app, this would be the place to fetch data based on params.id if it wasn't pre-loaded
@@ -44,7 +57,7 @@ export default function AttractionProfilePage() {
 
 
   const handleBookTickets = () => {
-    toast({ title: "Book Tickets (Demo)", description: `Proceeding to ticket booking for ${attraction?.name}. QR code ticketing would be simulated here.` });
+    toast({ title: "Tickets Confirmed! (Demo)", description: `Your ${ticketCount} ticket(s) for ${attraction?.name} on ${format(new Date(visitDate), 'PPP')} are confirmed. A QR code would be sent to your email.` });
   };
   
   const handleShare = () => {
@@ -63,6 +76,13 @@ export default function AttractionProfilePage() {
   const handleToggleFavorite = () => {
     setIsFavorited(!isFavorited);
     toast({ title: isFavorited ? "Removed from Wishlist" : "Added to Wishlist" });
+  };
+  
+  const handleGetDirections = () => {
+    if (attraction) {
+      const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(attraction.location)}`;
+      window.open(googleMapsUrl, '_blank');
+    }
   };
 
 
@@ -180,13 +200,40 @@ export default function AttractionProfilePage() {
                 <CardDescription>Book tickets and find directions.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                 <Button variant="accent" size="lg" className="w-full" onClick={handleBookTickets}>
-                  <Ticket className="mr-2 h-5 w-5" /> Book Tickets (Demo)
+                 <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="accent" size="lg" className="w-full">
+                            <Ticket className="mr-2 h-5 w-5" /> Book Tickets
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Book Tickets for {attraction.name}</DialogTitle>
+                            <DialogDescription>Select number of tickets and visit date.</DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4 space-y-4">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="ticket-count" className="text-lg">Tickets:</Label>
+                                <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="icon" onClick={() => setTicketCount(p => Math.max(1, p-1))}><Minus className="h-4 w-4"/></Button>
+                                    <Input id="ticket-count" type="number" value={ticketCount} readOnly className="w-16 text-center" />
+                                    <Button variant="outline" size="icon" onClick={() => setTicketCount(p => p+1)}><Plus className="h-4 w-4"/></Button>
+                                </div>
+                            </div>
+                            <div>
+                                <Label htmlFor="visit-date">Visit Date:</Label>
+                                <Input id="visit-date" type="date" value={visitDate} onChange={e => setVisitDate(e.target.value)} min={format(new Date(), 'yyyy-MM-dd')} />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                           <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                           <DialogClose asChild><Button onClick={handleBookTickets}>Confirm Tickets</Button></DialogClose>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+                <Button variant="outline" className="w-full" onClick={handleGetDirections}>
+                  <MapPin className="mr-2 h-4 w-4" /> Get Directions
                 </Button>
-                <Button variant="outline" className="w-full">
-                  <MapPin className="mr-2 h-4 w-4" /> Get Directions (Demo)
-                </Button>
-                 <p className="text-xs text-muted-foreground text-center">Ticket booking is a demo feature. QR codes for entry coming soon.</p>
               </CardContent>
             </Card>
              <Card className="shadow-md border">
