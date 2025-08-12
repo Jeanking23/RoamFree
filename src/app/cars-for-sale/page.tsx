@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CarFront, Search, DollarSign, Gauge, CalendarDays, Info, ShieldCheck, MessageCircle, GitCompareArrows, Users, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CarFront, Search, DollarSign, Gauge, CalendarDays, Info, ShieldCheck, MessageCircle, GitCompareArrows, Users, ChevronLeft, ChevronRight, SlidersHorizontal, MapPin, Heart } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
 
 const mockCarsForSale = [
   { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://placehold.co/600x400.png?text=Corolla", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
@@ -119,29 +121,72 @@ export default function CarsForSalePage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="mb-6 p-4 border rounded-lg bg-muted/30">
-            <div className="flex flex-col sm:flex-row gap-4 items-end">
-              <div className="flex-grow">
-                <Label htmlFor="search-cars">Search Cars</Label>
-                <div className="relative">
-                  <Input
-                    id="search-cars"
-                    type="text"
-                    placeholder="e.g., Toyota Corolla, SUV in Cityville..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pr-10"
-                  />
-                  <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <div className="mb-8 p-4 border rounded-lg bg-muted/30">
+            <Tabs defaultValue="search" className="w-full">
+              <TabsList className="mb-4">
+                <TabsTrigger value="search">Search</TabsTrigger>
+                <TabsTrigger value="sell_trade" onClick={() => toast({title: "Feature Coming Soon"})}>Sell/Trade</TabsTrigger>
+                <TabsTrigger value="financing" onClick={() => toast({title: "Feature Coming Soon"})}>Financing</TabsTrigger>
+              </TabsList>
+              <TabsContent value="search" className="space-y-4">
+                <h4 className="font-semibold text-foreground">Used Cars in Your Area</h4>
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                  <div className="relative flex-grow w-full">
+                    <Input
+                      id="search-cars"
+                      type="text"
+                      placeholder="Search Make, Model, or Keyword"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pr-10 h-12 text-base"
+                    />
+                    <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <Button variant="outline" className="w-full sm:w-auto h-12">
+                    <SlidersHorizontal className="mr-2 h-4 w-4" /> Filter
+                  </Button>
                 </div>
-              </div>
-               <Button onClick={handleCompareSelected} disabled={selectedToCompare.length < 2} className="w-full sm:w-auto">
-                  <GitCompareArrows className="mr-2 h-4 w-4" /> Compare Selected ({selectedToCompare.length})
-                </Button>
-            </div>
-             {/* Add more filter options here: Make, Model, Price Range, Year, Mileage etc. (Placeholder) */}
-             <p className="text-xs text-muted-foreground mt-2">Advanced filters for make, model, price, etc. coming soon.</p>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Price (Demo)"})}>Price Range &gt;</Button>
+                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Make/Model (Demo)"})}>Make/Model &gt;</Button>
+                  <Button variant="outline" size="sm" onClick={() => toast({title: "Filter by Body Type (Demo)"})}>Body Type &gt;</Button>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
+          
+          <Separator />
+
+          <div className="my-6">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+              <p className="text-sm text-muted-foreground font-medium">{filteredCars.length} cars found</p>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1 text-sm">
+                  <MapPin className="h-4 w-4"/>
+                  <span>Your Location (Demo)</span>
+                </div>
+                <Select defaultValue="best_match">
+                    <SelectTrigger className="w-[180px] h-9 text-sm">
+                        <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="best_match">Sort: Best Match</SelectItem>
+                        <SelectItem value="price_asc">Price: Low to High</SelectItem>
+                        <SelectItem value="price_desc">Price: High to Low</SelectItem>
+                        <SelectItem value="newest">Newest</SelectItem>
+                    </SelectContent>
+                </Select>
+                 <Button variant="ghost" size="sm" onClick={() => toast({title: "Saved!"})}><Heart className="mr-2 h-4 w-4"/>Save</Button>
+              </div>
+            </div>
+            
+             <div className="flex flex-wrap gap-2">
+                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})}>Third Row Seat</Button>
+                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})}>Under $25,000</Button>
+                <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})}>SUVs</Button>
+            </div>
+          </div>
+
 
           {filteredCars.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
