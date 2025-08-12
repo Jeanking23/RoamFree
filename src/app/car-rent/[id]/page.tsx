@@ -5,15 +5,18 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Gauge, DollarSign, MapPin, CheckCircle, TvIcon, Settings, FileText, User, Share2, Heart, AlertTriangle, Users, Car as CarIcon, Star, KeyRound, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarDays, Gauge, DollarSign, MapPin, CheckCircle, TvIcon, Settings, FileText, User, Share2, Heart, AlertTriangle, Users, Car as CarIcon, Star, KeyRound, ShieldCheck, ChevronLeft, ChevronRight, Unlock, X } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { carListings } from '@/lib/mock-data';
+import { carListings, type CarListing } from '@/lib/mock-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function CarRentalDetailsPage() {
   const params = useParams();
@@ -23,6 +26,7 @@ export default function CarRentalDetailsPage() {
 
   const [isFavorited, setIsFavorited] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isDamageDialogOpen, setIsDamageDialogOpen] = useState(false);
 
   const handleShare = () => {
     if (!car) return;
@@ -55,6 +59,26 @@ export default function CarRentalDetailsPage() {
     });
   };
 
+  const handleDamageReportSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const damageDetails = formData.get('damageDetails');
+    toast({
+        title: "Damage Report Submitted (Demo)",
+        description: `Thank you for reporting. Your notes: "${damageDetails}". This has been logged for car: ${car?.name}`
+    });
+    setIsDamageDialogOpen(false);
+  }
+
+  const handleDigitalKey = () => {
+    toast({ title: "Digital Key Activated (Demo)", description: "Your phone is now the key. Tap to unlock."});
+  }
+
+  const handleRemoteUnlock = () => {
+    toast({ title: "Car Unlocked (Demo)", description: `${car?.name} has been remotely unlocked.`});
+  }
+
+
   if (!car) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
@@ -77,6 +101,7 @@ export default function CarRentalDetailsPage() {
 
 
   return (
+    <>
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
         <CardHeader className="pb-4">
@@ -229,14 +254,58 @@ export default function CarRentalDetailsPage() {
           </div>
         </CardContent>
         
-        <CardFooter className="border-t pt-6 flex flex-col items-start gap-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <AlertTriangle className="h-5 w-5 text-orange-500"/>
-                <span>Report this listing or pre/post-trip damage. (Placeholder)</span>
+        <CardFooter className="border-t pt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-2">
+                <Button variant="destructive" size="sm" onClick={() => setIsDamageDialogOpen(true)}>
+                    <AlertTriangle className="mr-2 h-4 w-4"/> Report Listing or Damage
+                </Button>
+                <p className="text-xs text-muted-foreground">Use this to report listing inaccuracies or pre/post-trip damage.</p>
             </div>
-             <p className="text-xs text-muted-foreground">Digital key and remote unlock features coming soon.</p>
+            <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={handleDigitalKey}><KeyRound className="mr-2 h-4 w-4"/>Digital Key (Demo)</Button>
+                <Button variant="outline" size="sm" onClick={handleRemoteUnlock}><Unlock className="mr-2 h-4 w-4"/>Remote Unlock (Demo)</Button>
+            </div>
         </CardFooter>
       </Card>
     </div>
+
+    {/* Report Damage Dialog */}
+    <Dialog open={isDamageDialogOpen} onOpenChange={setIsDamageDialogOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle className="flex items-center gap-2"><AlertTriangle className="text-destructive"/>Report an Issue</DialogTitle>
+                <DialogDescription>Please describe the issue with the listing or vehicle. This helps us maintain a safe platform.</DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleDamageReportSubmit}>
+              <div className="py-4 space-y-4">
+                  <div>
+                      <Label htmlFor="damage-type">Issue Type (Demo)</Label>
+                      <Select defaultValue="exterior">
+                          <SelectTrigger id="damage-type"><SelectValue/></SelectTrigger>
+                          <SelectContent>
+                              <SelectItem value="listing_inaccuracy">Listing Inaccuracy</SelectItem>
+                              <SelectItem value="pre_trip_damage">Pre-Trip Damage</SelectItem>
+                              <SelectItem value="post_trip_damage">Post-Trip Damage</SelectItem>
+                              <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                      </Select>
+                  </div>
+                  <div>
+                      <Label htmlFor="damageDetails">Description of Issue</Label>
+                      <Textarea id="damageDetails" name="damageDetails" placeholder="e.g., Small scratch on the front passenger door." required />
+                  </div>
+                  <div>
+                      <Label htmlFor="damage-photo">Upload Photo (Demo)</Label>
+                      <Input id="damage-photo" type="file" accept="image/*" />
+                  </div>
+              </div>
+              <DialogFooter>
+                  <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                  <Button type="submit">Submit Report</Button>
+              </DialogFooter>
+            </form>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }
