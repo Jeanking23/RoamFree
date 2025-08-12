@@ -528,7 +528,29 @@ export default function TransportPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="block rounded-lg overflow-hidden h-96 mb-8 lg:hidden">
+             <InteractiveMapPlaceholder 
+                pickup={pickupLocation} 
+                dropoff={dropoffLocation} 
+                setPickup={setPickupLocation}
+                setDropoff={setDropoffLocation}
+                onMapLoad={(map) => { mapRef.current = map; }}
+                availableVehicles={mockVehicles}
+            />
+          </div>
+
+          <div className="lg:hidden grid grid-cols-1 gap-4 mb-8">
+            {serviceCategories.map((service) => (
+              <Link key={service.name} href={service.link} passHref>
+                 <Card className="text-center p-4 hover:bg-accent/10 hover:shadow-md transition-all cursor-pointer h-full flex flex-row justify-start items-center">
+                  <service.icon className="h-8 w-8 text-primary mr-4" />
+                  <p className="font-semibold text-lg">{service.name}</p>
+                </Card>
+              </Link>
+            ))}
+          </div>
+          
+          <div className="hidden lg:grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {serviceCategories.map((service) => (
               <Link key={service.name} href={service.link} passHref>
                  <Card className="text-center p-4 hover:bg-accent/10 hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-center items-center">
@@ -541,17 +563,6 @@ export default function TransportPage() {
           
           <Separator className="my-8" />
           
-           <div className="block rounded-lg overflow-hidden h-96 lg:hidden mb-8">
-             <InteractiveMapPlaceholder 
-                pickup={pickupLocation} 
-                dropoff={dropoffLocation} 
-                setPickup={setPickupLocation}
-                setDropoff={setDropoffLocation}
-                onMapLoad={(map) => { mapRef.current = map; }}
-                availableVehicles={mockVehicles}
-            />
-          </div>
-
           <div id="ride-booking" className="grid lg:grid-cols-2 gap-8 items-start">
             <div className="hidden lg:block rounded-lg overflow-hidden h-96 lg:h-[36rem] lg:sticky lg:top-24">
                 <InteractiveMapPlaceholder 
