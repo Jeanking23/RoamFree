@@ -52,28 +52,28 @@ const suggestionItems = [
     {
       title: 'Rental Cars',
       description: 'Rent a car from a variety of models.',
-      imageSrc: 'https://images.unsplash.com/photo-1581966451257-a5c7c5afa833?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZW50YWwlMjBjYXJzfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1581966451257-a5c7c5afa833?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZW50YWwlMjBjYXJzfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
       dataAiHint: 'rental cars',
       link: '/car-rent',
     },
     {
       title: 'Courier',
       description: 'Send packages to friends and family.',
-      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
       dataAiHint: 'delivery package',
       link: '/courier-delivery',
     },
     {
       title: 'Food',
       description: 'Get your favorite meals delivered.',
-      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
       dataAiHint: 'food delivery',
       link: '#!', // Placeholder link
     },
     {
       title: 'Grocery',
       description: 'Have groceries delivered to your door.',
-      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1617500603321-bcd6286973b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwYmFnfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
       dataAiHint: 'grocery bag',
       link: '#!', // Placeholder link
     },
@@ -540,16 +540,6 @@ export default function TransportPage() {
                 />
             </div>
             <div className="space-y-4">
-               <div className="hidden lg:grid grid-cols-4 gap-4">
-                  {serviceCategories.map((service) => (
-                    <Link key={service.name} href={service.link} passHref>
-                      <Card className="text-center p-3 hover:bg-accent/10 hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-center items-center">
-                        <service.icon className="h-8 w-8 text-primary mx-auto mb-2" />
-                        <p className="font-semibold text-sm">{service.name}</p>
-                      </Card>
-                    </Link>
-                  ))}
-              </div>
                <div className="lg:hidden grid grid-cols-4 gap-2 mb-4">
                   {serviceCategories.map((service) => (
                     <Link key={service.name} href={service.link} passHref>
@@ -560,13 +550,23 @@ export default function TransportPage() {
                     </Link>
                   ))}
               </div>
+               <div className="hidden lg:grid grid-cols-4 gap-4">
+                  {serviceCategories.map((service) => (
+                    <Link key={service.name} href={service.link} passHref>
+                      <Card className="text-center p-3 hover:bg-accent/10 hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-center items-center">
+                        <service.icon className="h-8 w-8 text-primary mx-auto mb-2" />
+                        <p className="font-semibold text-sm">{service.name}</p>
+                      </Card>
+                    </Link>
+                  ))}
+              </div>
               <Card id="ride-booking">
-                <CardContent className="p-2">
-                  <h3 className="text-lg font-semibold mb-2">Book a Ride</h3>
-                  <div className="space-y-2">
-                    <div className="relative">
-                        <div className="absolute left-[23px] top-[18px] h-[calc(100%-36px)] w-px bg-muted-foreground"></div>
-                        <div className="space-y-2">
+                <CardContent className="p-2 space-y-2">
+                  <h3 className="text-lg font-semibold px-2 pt-2">Book a Ride</h3>
+                  <div className="space-y-1">
+                    <div className="relative px-2">
+                        <div className="absolute left-[15px] top-[18px] h-[calc(100%-36px)] w-px bg-muted-foreground/30"></div>
+                        <div className="space-y-1">
                             <LocationInput
                                 value={pickupLocation}
                                 onValueChange={setPickupLocation}
@@ -586,9 +586,11 @@ export default function TransportPage() {
                         </div>
                     </div>
 
-                    <div className="flex items-center space-x-2">
-                        <Switch id="round-trip" checked={isRoundTrip} onCheckedChange={setIsRoundTrip} />
-                        <Label htmlFor="round-trip" className="flex items-center gap-2 text-sm"><Repeat className="h-4 w-4" />Round Trip / Return Way</Label>
+                    <div className="px-2">
+                        <div className="flex items-center space-x-2">
+                            <Switch id="round-trip" checked={isRoundTrip} onCheckedChange={setIsRoundTrip} />
+                            <Label htmlFor="round-trip" className="flex items-center gap-2 text-sm"><Repeat className="h-4 w-4" />Round Trip / Return Way</Label>
+                        </div>
                     </div>
                     
                     <AnimatePresence>
@@ -598,7 +600,7 @@ export default function TransportPage() {
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="grid grid-cols-2 gap-2 pt-2 overflow-hidden border-t"
+                            className="grid grid-cols-2 gap-2 pt-2 overflow-hidden border-t px-2"
                         >
                             <div>
                                 <Label className="text-xs">Return Date</Label>
@@ -623,7 +625,7 @@ export default function TransportPage() {
                     </AnimatePresence>
 
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-2 px-2">
                         <div>
                             <Label className="text-xs">Date</Label>
                             <Popover>
@@ -661,7 +663,7 @@ export default function TransportPage() {
                         </div>
                     </div>
 
-                    <div>
+                    <div className="px-2">
                         <Label className="text-xs">Passengers</Label>
                         <div className="flex gap-2">
                             <div className="flex-1">
@@ -675,7 +677,7 @@ export default function TransportPage() {
                         </div>
                     </div>
 
-                    <div>
+                    <div className="px-2">
                         <Label htmlFor="comment" className="flex items-center gap-2 text-xs"><MessageSquare className="h-4 w-4"/>Comment (Optional)</Label>
                         <Textarea 
                             id="comment"
@@ -686,7 +688,7 @@ export default function TransportPage() {
                         />
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 px-2">
                         <Switch id="ride-for-other" checked={rideForSomeoneElse} onCheckedChange={setRideForSomeoneElse} />
                         <Label htmlFor="ride-for-other" className="flex items-center gap-2 text-sm"><UserPlus className="h-4 w-4" />Ride for someone else</Label>
                     </div>
@@ -695,7 +697,7 @@ export default function TransportPage() {
                         {rideForSomeoneElse && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
-                                animate={{ opacity: 1, height: 'auto', marginTop: '0.75rem', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
+                                animate={{ opacity: 1, height: 'auto', marginTop: '0.5rem', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}
                                 exit={{ opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
                                 transition={{ duration: 0.3, ease: "easeInOut" }}
                                 className="space-y-3 pt-3 border-t overflow-hidden p-3 border rounded-md"
@@ -718,9 +720,11 @@ export default function TransportPage() {
                         )}
                     </AnimatePresence>
 
-                    <Button className="w-full" onClick={handleSearch}>
-                        Search Rides
-                    </Button>
+                    <div className="p-2">
+                        <Button className="w-full" onClick={handleSearch}>
+                            Search Rides
+                        </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -734,7 +738,7 @@ export default function TransportPage() {
         
         <Card className="relative overflow-hidden group rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
           <Image 
-            src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib-rb-4.1.0&q=80&w=1080"
+            src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080"
             alt="AI Trip Planner background"
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
