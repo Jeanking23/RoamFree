@@ -25,7 +25,6 @@ export default function AttractionProfilePage() {
   const [currentImage, setCurrentImage] = useState(attraction?.photos[0] || null);
   const [isArViewActive, setIsArViewActive] = useState(false);
   const [isAudioGuideActive, setIsAudioGuideActive] = useState(false);
-  const [formattedDates, setFormattedDates] = useState<Record<string, string>>({});
   
   // State for booking dialog
   const [ticketCount, setTicketCount] = useState(1);
@@ -44,16 +43,6 @@ export default function AttractionProfilePage() {
        console.log("Looking for attraction with ID:", params.id);
     }
   }, [params.id, attraction]);
-
-  useEffect(() => {
-    if (attraction?.userReviews) {
-        const newFormattedDates: Record<string, string> = {};
-        attraction.userReviews.forEach(review => {
-            newFormattedDates[review.id] = new Date(review.date).toLocaleDateString();
-        });
-        setFormattedDates(newFormattedDates);
-    }
-  }, [attraction]);
 
 
   const handleBookTickets = () => {
@@ -153,8 +142,8 @@ export default function AttractionProfilePage() {
              ))}
           </div>
            <div className="text-center mt-2 flex justify-center gap-2">
-             <Button variant="outline" onClick={() => setIsArViewActive(true)}><Camera className="mr-2 h-4 w-4" /> Try AR Guide (Demo)</Button>
-             <Button variant="outline" onClick={() => setIsAudioGuideActive(true)} className="ml-2"><Ear className="mr-2 h-4 w-4" /> Start Audio Guide (Demo)</Button>
+             <Button variant="outline" onClick={() => setIsArViewActive(true)}><Camera className="mr-2 h-4 w-4" /> Try AR Guide</Button>
+             <Button variant="outline" onClick={() => setIsAudioGuideActive(true)} className="ml-2"><Ear className="mr-2 h-4 w-4" /> Start Audio Guide</Button>
            </div>
         </CardContent>
         
@@ -272,7 +261,7 @@ export default function AttractionProfilePage() {
                     <div>
                       <p className="font-semibold">{review.user}</p>
                       <div className="flex items-center">
-                        <p className="text-xs text-muted-foreground">{formattedDates[review.id] || '...'}</p>
+                        <p className="text-xs text-muted-foreground">{new Date(review.date).toLocaleDateString()}</p>
                         <BadgeCheck className="h-4 w-4 ml-1 text-green-500" title="Verified Review"/>
                       </div>
                     </div>
@@ -316,7 +305,7 @@ export default function AttractionProfilePage() {
       <Card className="w-11/12 max-w-md">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            AR Guide (Demo)
+            AR Guide
             <Button variant="ghost" size="icon" onClick={() => setIsArViewActive(false)}><X className="h-5 w-5"/></Button>
           </CardTitle>
           <CardDescription>This is a simulation of the Augmented Reality guide.</CardDescription>
@@ -334,7 +323,7 @@ export default function AttractionProfilePage() {
         <Card className="w-11/12 max-w-md">
          <CardHeader>
             <CardTitle className="flex items-center justify-between">
-                Audio Guide (Demo)
+                Audio Guide
                 <Button variant="ghost" size="icon" onClick={() => setIsAudioGuideActive(false)}><X className="h-5 w-5"/></Button>
             </CardTitle>
             <CardDescription>This is a simulation of the Audio guide.</CardDescription>
