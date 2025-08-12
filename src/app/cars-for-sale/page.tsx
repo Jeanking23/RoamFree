@@ -159,9 +159,6 @@ export default function CarsForSalePage() {
 
           <div className="my-6">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
-              <div className="flex-1 order-2 sm:order-1">
-                <p className="text-sm text-muted-foreground font-medium">{filteredCars.length} cars found</p>
-              </div>
               <div className="flex items-center gap-4 flex-wrap order-1 sm:order-2">
                 <div className="flex items-center gap-1 text-sm">
                   <MapPin className="h-4 w-4"/>
@@ -186,6 +183,9 @@ export default function CarsForSalePage() {
                 <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Third Row Seat</Button>
                 <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Under $25,000</Button>
                 <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">SUVs</Button>
+            </div>
+            <div className="mt-4">
+                <p className="text-sm text-muted-foreground font-medium">{filteredCars.length} cars found</p>
             </div>
           </div>
 
