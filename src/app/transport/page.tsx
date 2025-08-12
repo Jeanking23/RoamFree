@@ -10,7 +10,7 @@ import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import InteractiveMapPlaceholder, { type AvailableVehicle } from '@/components/map/interactive-map-placeholder';
 import { cn } from '@/lib/utils';
@@ -28,7 +28,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 
 const serviceCategories = [
-  { name: 'Ride', icon: Car, link: '#ride-booking' },
+  { name: 'Ride', icon: Car, link: '/transport' },
   { name: 'Bus Tickets', icon: Bus, link: '/bus-transportation' },
   { name: 'Rental Car', icon: CarFront, link: '/car-rent' },
   { name: 'Flights', icon: Plane, link: '/flights' },
@@ -288,6 +288,7 @@ const mockVehicles: AvailableVehicle[] = [
 
 export default function TransportPage() {
     const router = useRouter();
+    const pathname = usePathname();
     const [pickupLocation, setPickupLocation] = useState('');
     const [dropoffLocation, setDropoffLocation] = useState('');
     const [date, setDate] = useState<Date | undefined>(new Date());
@@ -540,25 +541,31 @@ export default function TransportPage() {
                 />
             </div>
             <div className="space-y-4">
-               <div className="lg:hidden grid grid-cols-4 gap-2 mb-4">
-                  {serviceCategories.map((service) => (
-                    <Link key={service.name} href={service.link} passHref>
-                      <Card className="text-center p-2 hover:bg-accent/10 transition-all cursor-pointer h-full flex flex-col justify-center items-center">
-                        <service.icon className="h-6 w-6 text-primary mx-auto mb-1" />
-                        <p className="font-semibold text-xs text-center">{service.name}</p>
-                      </Card>
-                    </Link>
-                  ))}
+               <div className="lg:hidden grid grid-cols-4 gap-4 mb-8">
+                  {serviceCategories.map((service) => {
+                    const isActive = pathname === service.link;
+                    return (
+                        <Link key={service.name} href={service.link} passHref>
+                        <Card className={cn("text-center p-2 hover:bg-accent/10 transition-all cursor-pointer h-full flex flex-col justify-center items-center", isActive && "bg-accent/10 border-primary")}>
+                            <service.icon className={cn("h-6 w-6 mx-auto mb-1", isActive ? "text-primary" : "text-muted-foreground")} />
+                            <p className={cn("font-semibold text-xs text-center", isActive ? "text-primary" : "text-foreground")}>{service.name}</p>
+                        </Card>
+                        </Link>
+                    );
+                  })}
               </div>
                <div className="hidden lg:grid grid-cols-4 gap-4">
-                  {serviceCategories.map((service) => (
-                    <Link key={service.name} href={service.link} passHref>
-                      <Card className="text-center p-3 hover:bg-accent/10 hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-center items-center">
-                        <service.icon className="h-8 w-8 text-primary mx-auto mb-2" />
-                        <p className="font-semibold text-sm">{service.name}</p>
-                      </Card>
-                    </Link>
-                  ))}
+                  {serviceCategories.map((service) => {
+                    const isActive = pathname === service.link;
+                    return (
+                        <Link key={service.name} href={service.link} passHref>
+                        <Card className={cn("text-center p-3 hover:bg-accent/10 hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-center items-center", isActive && "bg-accent/10 border-primary")}>
+                            <service.icon className={cn("h-8 w-8 mx-auto mb-2", isActive ? "text-primary" : "text-muted-foreground")} />
+                            <p className={cn("font-semibold text-sm", isActive ? "text-primary" : "text-foreground")}>{service.name}</p>
+                        </Card>
+                        </Link>
+                    );
+                  })}
               </div>
               <Card id="ride-booking">
                 <CardContent className="p-2 space-y-2">
