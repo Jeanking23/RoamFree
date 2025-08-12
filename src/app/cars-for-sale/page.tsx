@@ -1,4 +1,3 @@
-
 // src/app/cars-for-sale/page.tsx
 'use client';
 
@@ -24,9 +23,9 @@ import * as z from 'zod';
 import { cn } from '@/lib/utils';
 
 const mockCarsForSale = [
-  { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
+  { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
   { id: "carSale2", name: "Ford F-150 XLT 2020", price: 32000, location: "Suburbia", mileage: "30,000 miles", year: 2020, image: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck", vin: "DEMOVIN67890", historyHighlights: "One owner, Clean title", sellerRating: 4.5, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck"}, {id: 'p2', src: "https://images.unsplash.com/photo-1656110073986-ccf23039e402?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dHJ1Y2slMjBiZWR8ZW58MHx8fHwxNzU1MDIzMjYxfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "truck bed"}] },
-  { id: "carSale3", name: "Honda Civic LX 2019", price: 17500, location: "Townsburd", mileage: "38,000 miles", year: 2019, image: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda", vin: "DEMOVIN11223", historyHighlights: "Fuel efficient, Great condition", sellerRating: 4.9, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda"}, {id: 'p2', src: "https://images.unsplash.com/photo-1549064233-945d7063292f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjYXIlMjBpbnRlcmlvcnxlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "car interior"}] },
+  { id: "carSale3", name: "Honda Civic LX 2019", price: 17500, location: "Townsburd", mileage: "38,000 miles", year: 2019, image: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda", vin: "DEMOVIN11223", historyHighlights: "Fuel efficient, Great condition", sellerRating: 4.9, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda"}, {id: 'p2', src: "https://images.unsplash.com/photo-1549064233-945d7063292f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjYXIlMjBpbnRlcmlvcnxlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "car interior"}] },
 ];
 
 const sellCarSchema = z.object({
@@ -285,7 +284,7 @@ export default function CarsForSalePage() {
               <TabsContent value="search" className="space-y-4">
                 <h4 className="font-semibold text-foreground">USED CARS IN YOUR AREA</h4>
                  <div className="flex flex-col sm:flex-row gap-2">
-                    <div className="relative flex-grow w-full">
+                    <div className="relative flex-grow">
                         <Input
                         id="search-cars"
                         type="text"
@@ -298,9 +297,9 @@ export default function CarsForSalePage() {
                     </div>
                      <Sheet>
                         <SheetTrigger asChild>
-                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0 w-full sm:w-auto">
+                             <Button variant="outline" className="h-10 rounded-full text-sm shrink-0">
                                 <Filter className="mr-2 h-4 w-4" />
-                                <span className="">Filter</span>
+                                <span className="hidden sm:inline">Filter</span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent className="w-full sm:max-w-md p-0 flex flex-col">
@@ -388,4 +387,61 @@ export default function CarsForSalePage() {
             
             <div className="flex flex-wrap gap-2 items-center justify-between">
                 <div className="flex flex-wrap gap-2 items-center">
-                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Third Row
+                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Third Row Seating</Button>
+                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">All-Wheel Drive</Button>
+                    <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Sunroof / Moonroof</Button>
+                     <Button variant="secondary" size="sm" onClick={() => toast({title: "Filter Applied"})} className="rounded-full">Apple CarPlay</Button>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button onClick={handleCompareSelected} disabled={selectedToCompare.length < 2} size="sm">
+                        <GitCompareArrows className="mr-2 h-4 w-4" /> Compare ({selectedToCompare.length})
+                    </Button>
+                </div>
+            </div>
+          </div>
+
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCars.map(car => (
+              <Card key={car.id} className="flex flex-col overflow-hidden">
+                <CarImageSlider car={car} />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl hover:text-primary">
+                      <Link href={`/cars-for-sale/${car.id}`}>{car.name}</Link>
+                  </CardTitle>
+                  <CardDescription className="text-lg font-bold text-primary">${car.price.toLocaleString()}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow space-y-2">
+                  <div className="text-sm text-muted-foreground flex items-center justify-between">
+                    <span><Gauge className="inline h-4 w-4 mr-1"/>{car.mileage}</span>
+                    <span><CalendarDays className="inline h-4 w-4 mr-1"/>{car.year}</span>
+                    <span><MapPin className="inline h-4 w-4 mr-1"/>{car.location}</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    <p><Info className="inline h-3 w-3 mr-1"/>{car.historyHighlights}</p>
+                    <p><ShieldCheck className="inline h-3 w-3 mr-1"/>Seller Rating: {car.sellerRating}/5</p>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-col gap-2 pt-4 border-t">
+                  <div className="flex w-full gap-2">
+                     <Button variant="outline" size="sm" className="flex-1" onClick={() => handleRequestTestDrive(car.name)}>Test Drive</Button>
+                     <Button variant="outline" size="sm" className="flex-1" onClick={() => handleMakeOffer(car.name)}>Make Offer</Button>
+                  </div>
+                   <Button variant="link" size="sm" className="w-full" onClick={() => handleViewCarHistory(car.vin)}>
+                     View Car History (Demo)
+                  </Button>
+                   <div className="w-full flex justify-end">
+                     <div className="flex items-center space-x-2 pt-2">
+                        <Checkbox id={`compare-${car.id}`} checked={selectedToCompare.includes(car.id)} onCheckedChange={() => handleToggleCompare(car.id)} />
+                        <Label htmlFor={`compare-${car.id}`} className="text-sm font-medium">Compare</Label>
+                      </div>
+                   </div>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
