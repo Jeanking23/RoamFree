@@ -645,7 +645,7 @@ export default function RentHomePage() {
                 </div>
             )}
           <div className="mt-8 p-4 border rounded-md bg-muted/30">
-            <h4 className="font-semibold text-foreground mb-2">Tenant & Landlord Features (Demo):</h4>
+            <h4 className="font-semibold text-foreground mb-2">Tenant & Landlord Features:</h4>
             <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
               <li><ShieldCheck className="inline h-4 w-4 mr-1 text-primary"/>Secure Document Upload & E-signature for lease agreements.</li>
               <li><CalendarDays className="inline h-4 w-4 mr-1 text-primary"/>Real-time availability calendar with sync options (Airbnb, Booking.com).</li>
@@ -653,7 +653,7 @@ export default function RentHomePage() {
               <li><Users className="inline h-4 w-4 mr-1 text-primary"/>Optional Tenant Background Checks (ID, income, rental history) for hosts.</li>
               <li><Building className="inline h-4 w-4 mr-1 text-primary"/>Detailed neighborhood insights: crime rates, schools, transport, walkability.</li>
             </ul>
-             <Button variant="link" asChild className="mt-2 px-0"><Link href="/list-property">List Your Rental Property (Demo)</Link></Button>
+             <Button variant="link" asChild className="mt-2 px-0"><Link href="/list-property">List Your Rental Property</Link></Button>
           </div>
 
         </CardContent>
