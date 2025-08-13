@@ -42,7 +42,7 @@ export default function CorporateSolutionsDemoPage() {
     function onSubmit(data: CorporateInquiryFormValues) {
         console.log("Corporate Inquiry:", data);
         toast({
-            title: "Inquiry Submitted (Demo)",
+            title: "Inquiry Submitted",
             description: "Thank you for your interest! Our sales team will contact you shortly."
         });
         form.reset();
@@ -54,7 +54,7 @@ export default function CorporateSolutionsDemoPage() {
         <CardHeader className="bg-primary/10">
           <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
             <Briefcase className="h-10 w-10" />
-            RoamFree for Business (Demo)
+            RoamFree for Business
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
             Streamline your corporate travel and accommodation needs with our tailored, all-in-one solutions.
