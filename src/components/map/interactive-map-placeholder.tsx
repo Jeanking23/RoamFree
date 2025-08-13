@@ -106,12 +106,12 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
             }
         } else if (pickupCoords) {
              setMapCenter(pickupCoords);
-             setZoom(16);
+             setZoom(18);
              setActiveInfoWindow('pickup');
              setDirectionsResult(null);
         } else if (dropoffCoords) {
              setMapCenter(dropoffCoords);
-             setZoom(16);
+             setZoom(18);
              setActiveInfoWindow('dropoff');
              setDirectionsResult(null);
         }
@@ -169,7 +169,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
     const handleMarkerClick = (coords: google.maps.LatLngLiteral, infoWindow: 'pickup' | 'dropoff') => {
         if(mapRef.current) {
             mapRef.current.panTo(coords);
-            mapRef.current.setZoom(17);
+            mapRef.current.setZoom(18);
         }
         setActiveInfoWindow(infoWindow);
     };
@@ -242,6 +242,8 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
                 options={{
                     disableDefaultUI: true,
                     zoomControl: true,
+                    mapId: 'ROAMFREE_MAP_STYLE',
+                    tilt: 45,
                 }}
                 onLoad={onLoad}
             >
@@ -330,5 +332,3 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
         </div>
     );
 }
-
-    
