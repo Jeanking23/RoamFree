@@ -58,7 +58,7 @@ export const currencies: Currency[] = [
   { code: "MWK", name: "Malawian Kwacha", symbol: "MK", rate: 1730.0 },
   { code: "MRU", name: "Mauritanian Ouguiya", symbol: "UM", rate: 39.6 },
   { code: "MUR", name: "Mauritian Rupee", symbol: "₨", rate: 46.5 },
-  { code: "MAD", name: Moroccan Dirham", symbol: "د.م.", rate: 9.9 },
+  { code: "MAD", name: "Moroccan Dirham", symbol: "د.م.", rate: 9.9 },
   { code: "MZN", name: "Mozambican Metical", symbol: "MT", rate: 63.8 },
   { code: "NAD", name: "Namibian Dollar", symbol: "$", rate: 18.5 },
   { code: "RWF", name: "Rwandan Franc", symbol: "R₣", rate: 1300.0 },
