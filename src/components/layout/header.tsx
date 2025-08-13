@@ -8,23 +8,19 @@ import {
   CalendarCheck2, Globe, MapPin, LogOut, Menu, Users, Phone, CarFront, Bus, Truck, Check, LogIn
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { usePathname } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { useState, useCallback } from 'react';
-import { languages, currencies, type Language, type Currency } from '@/lib/locales';
 import { cn } from '@/lib/utils';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocale } from '@/context/locale-provider';
 import { useAuth } from '@/context/auth-provider';
 import { signOut } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import LanguageCurrencySelector from './language-currency-selector';
 
 
 // Main navigation items for desktop view
@@ -60,94 +56,6 @@ const sosTranslations = {
     'fr-FR': "Les services d'urgence sont en cours de contact. Ceci est une simulation.",
   }
 };
-
-
-function LanguageCurrencySelector({ isMobile = false }) {
-  const [open, setOpen] = useState(false);
-  const { language, setLanguage, currency, setCurrency } = useLocale();
-
-  const handleLangSelect = useCallback((lang: Language) => {
-    setLanguage(lang);
-    toast({ title: "Language Updated", description: `Language set to ${lang.name}.` });
-  }, [setLanguage]);
-
-  const handleCurrencySelect = useCallback((currency: Currency) => {
-    setCurrency(currency);
-    toast({ title: "Currency Updated", description: `Currency set to ${currency.name} (${currency.code}).` });
-  }, [setCurrency]);
-
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground">
-          <Globe className="h-5 w-5" />
-          <span className="sr-only">Select Language & Currency</span>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80" align="end">
-        <div className="p-2">
-            <h4 className="font-medium text-sm text-foreground">Language & Currency</h4>
-            <p className="text-xs text-muted-foreground">Choose your preferred language and currency.</p>
-        </div>
-        <Tabs defaultValue="language">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="language">Language</TabsTrigger>
-            <TabsTrigger value="currency">Currency</TabsTrigger>
-          </TabsList>
-          <TabsContent value="language">
-            <Command>
-              <CommandInput placeholder="Search language..." />
-              <CommandList>
-                <CommandEmpty>No results found.</CommandEmpty>
-                <CommandGroup>
-                  {languages.map((lang) => (
-                    <CommandItem
-                      key={lang.code}
-                      value={lang.name}
-                      onSelect={() => {
-                        handleLangSelect(lang);
-                        setOpen(false);
-                      }}
-                    >
-                      <Check className={cn("mr-2 h-4 w-4", language.code === lang.code ? "opacity-100" : "opacity-0")} />
-                      {lang.nativeName}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </TabsContent>
-          <TabsContent value="currency">
-            <Command>
-              <CommandInput placeholder="Search currency..." />
-              <CommandList>
-                <CommandEmpty>No results found.</CommandEmpty>
-                <CommandGroup>
-                  {currencies.map((curr) => (
-                    <CommandItem
-                      key={curr.code}
-                      value={curr.name}
-                      onSelect={() => {
-                        handleCurrencySelect(curr);
-                        setOpen(false);
-                      }}
-                    >
-                      <Check className={cn("mr-2 h-4 w-4", currency.code === curr.code ? "opacity-100" : "opacity-0")} />
-                      <span className="font-mono text-xs w-10">{curr.code}</span>
-                      <span>{curr.name} ({curr.symbol})</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </TabsContent>
-        </Tabs>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
 
 export default function Header() {
   const pathname = usePathname();
@@ -291,12 +199,7 @@ export default function Header() {
                         <Link href="/courier-delivery" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Truck className="h-5 w-5 text-primary" /><span className="text-lg">Courier</span></Link>
                       <Separator className="my-2"/>
                         <div className="px-0">
-                            <Button variant="ghost" className='w-full justify-start flex items-center gap-2 p-2 h-auto text-base' onClick={() => {
-                                const popoverTrigger = document.querySelector('#desktop-lang-currency-selector');
-                                if(popoverTrigger) (popoverTrigger as HTMLElement).click();
-                            }}>
-                              <Globe className="h-5 w-5 text-primary" />Language & Currency
-                            </Button>
+                            <LanguageCurrencySelector isMobile={true} />
                         </div>
                       <Separator className="my-2"/>
                         <Link href="/community-forum-demo" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Users className="h-5 w-5 text-primary" /><span className="text-lg">Forum</span></Link>
@@ -343,9 +246,6 @@ export default function Header() {
               )}
               <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}><ShieldAlert className="h-5 w-5" /></Button>
           </div>
-        </div>
-         <div id="desktop-lang-currency-selector" className="hidden">
-            <LanguageCurrencySelector />
         </div>
       </div>
     </header>

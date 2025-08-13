@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Facebook, Twitter, Instagram, Linkedin, Send } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import LanguageCurrencySelector from './language-currency-selector';
 
 const footerSections = [
   {
@@ -34,7 +35,6 @@ const footerSections = [
       { label: 'Terms of Service', href: '/trust-safety-demo' },
       { label: 'Privacy Policy', href: '/trust-safety-demo' },
       { label: 'Cookie Preferences', href: '/trust-safety-demo' },
-      { label: 'Language & Currency', href: '/settings/locale' },
     ]
   },
   {
@@ -88,6 +88,11 @@ export default function Footer() {
                     </Link>
                   </li>
                 ))}
+                 {section.title === 'Terms & Settings' && (
+                    <li>
+                      <LanguageCurrencySelector isFooter={true} />
+                    </li>
+                 )}
               </ul>
             </div>
           ))}
@@ -111,6 +116,11 @@ export default function Footer() {
                                 </Link>
                               </li>
                             ))}
+                             {section.title === 'Terms & Settings' && (
+                                <li>
+                                  <LanguageCurrencySelector isFooter={true} />
+                                </li>
+                             )}
                           </ul>
                         </AccordionContent>
                     </AccordionItem>
