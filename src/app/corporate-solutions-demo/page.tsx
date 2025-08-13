@@ -36,7 +36,7 @@ const features = [
 export default function CorporateSolutionsDemoPage() {
     const form = useForm<CorporateInquiryFormValues>({
         resolver: zodResolver(corporateInquirySchema),
-        defaultValues: { serviceOfInterest: "ALL" }
+        defaultValues: { serviceOfInterest: "ALL", companyName: "", contactName: "", contactEmail: "", message: "" }
     });
 
     function onSubmit(data: CorporateInquiryFormValues) {
