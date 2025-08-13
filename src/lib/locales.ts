@@ -3,6 +3,7 @@ export interface Language {
   code: string;
   name: string;
   nativeName: string;
+  countryCode: string; // For flag emojis
 }
 
 export interface Currency {
@@ -13,16 +14,16 @@ export interface Currency {
 }
 
 export const languages: Language[] = [
-  { code: 'en-US', name: 'English (US)', nativeName: 'English (US)' },
-  { code: 'es-ES', name: 'Spanish', nativeName: 'Español' },
-  { code: 'fr-FR', name: 'French', nativeName: 'Français' },
-  { code: 'de-DE', name: 'German', nativeName: 'Deutsch' },
-  { code: 'it-IT', name: 'Italian', nativeName: 'Italiano' },
-  { code: 'pt-PT', name: 'Portuguese', nativeName: 'Português' },
-  { code: 'ru-RU', name: 'Russian', nativeName: 'Русский' },
-  { code: 'ja-JP', name: 'Japanese', nativeName: '日本語' },
-  { code: 'zh-CN', name: 'Chinese (Simplified)', nativeName: '简体中文' },
-  { code: 'ar-SA', name: 'Arabic', nativeName: 'العربية' },
+  { code: 'en-US', name: 'English (US)', nativeName: 'English (US)', countryCode: 'US' },
+  { code: 'es-ES', name: 'Spanish', nativeName: 'Español', countryCode: 'ES' },
+  { code: 'fr-FR', name: 'French', nativeName: 'Français', countryCode: 'FR' },
+  { code: 'de-DE', name: 'German', nativeName: 'Deutsch', countryCode: 'DE' },
+  { code: 'it-IT', name: 'Italian', nativeName: 'Italiano', countryCode: 'IT' },
+  { code: 'pt-PT', name: 'Portuguese', nativeName: 'Português', countryCode: 'PT' },
+  { code: 'ru-RU', name: 'Russian', nativeName: 'Русский', countryCode: 'RU' },
+  { code: 'ja-JP', name: 'Japanese', nativeName: '日本語', countryCode: 'JP' },
+  { code: 'zh-CN', name: 'Chinese (Simplified)', nativeName: '简体中文', countryCode: 'CN' },
+  { code: 'ar-SA', name: 'Arabic', nativeName: 'العربية', countryCode: 'SA' },
 ];
 
 export const currencies: Currency[] = [
@@ -57,7 +58,7 @@ export const currencies: Currency[] = [
   { code: "MWK", name: "Malawian Kwacha", symbol: "MK", rate: 1730.0 },
   { code: "MRU", name: "Mauritanian Ouguiya", symbol: "UM", rate: 39.6 },
   { code: "MUR", name: "Mauritian Rupee", symbol: "₨", rate: 46.5 },
-  { code: "MAD", name: "Moroccan Dirham", symbol: "د.م.", rate: 9.9 },
+  { code: "MAD", name: Moroccan Dirham", symbol: "د.م.", rate: 9.9 },
   { code: "MZN", name: "Mozambican Metical", symbol: "MT", rate: 63.8 },
   { code: "NAD", name: "Namibian Dollar", symbol: "$", rate: 18.5 },
   { code: "RWF", name: "Rwandan Franc", symbol: "R₣", rate: 1300.0 },

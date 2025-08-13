@@ -34,7 +34,7 @@ const footerSections = [
       { label: 'Terms of Service', href: '/trust-safety-demo' },
       { label: 'Privacy Policy', href: '/trust-safety-demo' },
       { label: 'Cookie Preferences', href: '/trust-safety-demo' },
-      { label: 'Language & Currency', href: '/profile' },
+      { label: 'Language & Currency', href: '/settings/locale' },
     ]
   },
   {
