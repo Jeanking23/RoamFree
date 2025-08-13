@@ -119,7 +119,7 @@ export default function CarRentPage() {
         }
     }
     toast({
-      title: "Rental Initiated (Demo)",
+      title: "Rental Initiated",
       description: `You've started the rental process for ${selectedCarForAction.name}. ${durationString}. Insurance: ${selectedInsurance}. ${includeDriver ? 'Driver service requested.' : ''} ${baggageAssistance ? 'Baggage assistance requested.' : ''} Driver's license upload would be required here.`,
       duration: 10000,
     });
@@ -141,7 +141,7 @@ export default function CarRentPage() {
     const formData = new FormData(event.currentTarget);
     const damageDetails = formData.get('damageDetails');
     toast({
-        title: "Damage Report Submitted (Demo)",
+        title: "Damage Report Submitted",
         description: `Thank you for reporting. Your notes: "${damageDetails}". This has been logged for car: ${selectedCarForAction?.name}`
     });
     setIsDamageDialogOpen(false);
@@ -224,7 +224,7 @@ export default function CarRentPage() {
                   </div>
               </div>
                <div>
-                  <Label htmlFor="insurance-options">Insurance Coverage (Demo)</Label>
+                  <Label htmlFor="insurance-options">Insurance Coverage</Label>
                   <Select value={selectedInsurance} onValueChange={setSelectedInsurance}>
                       <SelectTrigger id="insurance-options">
                           <SelectValue placeholder="Select insurance" />
@@ -309,11 +309,11 @@ export default function CarRentPage() {
                                 <TvIcon className="mr-2 h-4 w-4" /> 360° View
                             </Button>
                             <Separator className="my-2"/>
-                            <p className="text-xs text-muted-foreground font-medium">Pickup/Drop-off Locations (Demo):</p>
+                            <p className="text-xs text-muted-foreground font-medium">Pickup/Drop-off Locations:</p>
                             <div className="flex flex-wrap gap-1">
                                 {car.pickupLocations.map(loc => <Badge key={loc} variant="outline">{loc}</Badge>)}
                             </div>
-                            <p className="text-xs text-muted-foreground">One-way rentals & delivery options available (Demo).</p>
+                            <p className="text-xs text-muted-foreground">One-way rentals & delivery options available.</p>
                         </CardContent>
                     </Link>
                     <CardFooter className="flex flex-col items-start bg-muted/50 p-4 mt-auto">
@@ -352,7 +352,7 @@ export default function CarRentPage() {
                   <p><strong>Insurance:</strong> {selectedInsurance === 'basic' ? 'Basic Coverage' : 'Full Coverage'}</p>
                   {includeDriver && <p><strong>Add-on:</strong> Professional Driver</p>}
                   {baggageAssistance && <p><strong>Add-on:</strong> Baggage Assistance</p>}
-                  <p className="text-sm text-muted-foreground pt-4">This is a demo. Clicking confirm will simulate the start of the booking process.</p>
+                  <p className="text-sm text-muted-foreground pt-4">Clicking confirm will simulate the start of the booking process.</p>
               </div>
               <DialogFooter>
                   <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
@@ -387,7 +387,7 @@ export default function CarRentPage() {
               <form onSubmit={handleDamageReportSubmit}>
                 <div className="py-4 space-y-4">
                     <div>
-                        <Label htmlFor="damage-type">Damage Type (Demo)</Label>
+                        <Label htmlFor="damage-type">Damage Type</Label>
                         <Select defaultValue="exterior">
                             <SelectTrigger id="damage-type"><SelectValue/></SelectTrigger>
                             <SelectContent>
@@ -402,7 +402,7 @@ export default function CarRentPage() {
                         <Textarea id="damageDetails" name="damageDetails" placeholder="e.g., Small scratch on the front passenger door." required />
                     </div>
                     <div>
-                        <Label htmlFor="damage-photo">Upload Photo (Demo)</Label>
+                        <Label htmlFor="damage-photo">Upload Photo</Label>
                         <Input id="damage-photo" type="file" accept="image/*" />
                     </div>
                 </div>
