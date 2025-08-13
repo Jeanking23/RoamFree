@@ -17,6 +17,17 @@ interface LanguageCurrencySelectorProps {
   isFooter?: boolean;
 }
 
+// Helper to convert country code to flag emoji
+const toFlag = (countryCode: string) => {
+  if (countryCode.length !== 2) return '';
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+};
+
+
 export default function LanguageCurrencySelector({ isMobile = false, isFooter = false }: LanguageCurrencySelectorProps) {
   const [open, setOpen] = useState(false);
   const { language, setLanguage, currency, setCurrency } = useLocale();
@@ -54,7 +65,7 @@ export default function LanguageCurrencySelector({ isMobile = false, isFooter = 
             </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-80" align={isFooter ? "start" : "end"} side={isFooter ? "top" : "bottom"}>
+      <PopoverContent className="w-80 md:w-[400px]" align={isFooter ? "start" : "end"} side={isFooter ? "top" : "bottom"}>
         <div className="p-2">
             <h4 className="font-medium text-sm text-foreground">Language & Currency</h4>
             <p className="text-xs text-muted-foreground">Choose your preferred language and currency.</p>
@@ -78,9 +89,13 @@ export default function LanguageCurrencySelector({ isMobile = false, isFooter = 
                         handleLangSelect(lang);
                         setOpen(false);
                       }}
+                      className="flex items-center justify-between"
                     >
-                      <Check className={cn("mr-2 h-4 w-4", language.code === lang.code ? "opacity-100" : "opacity-0")} />
-                      {lang.nativeName}
+                        <div className="flex items-center gap-2">
+                            <span>{toFlag(lang.countryCode)}</span>
+                            {lang.nativeName}
+                        </div>
+                        <Check className={cn("h-4 w-4", language.code === lang.code ? "opacity-100" : "opacity-0")} />
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -101,10 +116,13 @@ export default function LanguageCurrencySelector({ isMobile = false, isFooter = 
                         handleCurrencySelect(curr);
                         setOpen(false);
                       }}
+                      className="flex items-center justify-between"
                     >
-                      <Check className={cn("mr-2 h-4 w-4", currency.code === curr.code ? "opacity-100" : "opacity-0")} />
-                      <span className="font-mono text-xs w-10">{curr.code}</span>
-                      <span>{curr.name} ({curr.symbol})</span>
+                        <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs w-10">{curr.code}</span>
+                            <span>{curr.name} ({curr.symbol})</span>
+                        </div>
+                        <Check className={cn("h-4 w-4", currency.code === curr.code ? "opacity-100" : "opacity-0")} />
                     </CommandItem>
                   ))}
                 </CommandGroup>
