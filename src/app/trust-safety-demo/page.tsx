@@ -51,7 +51,7 @@ export default function TrustSafetyDemoPage() {
         <CardHeader className="bg-primary/10">
           <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
             <ShieldCheck className="h-10 w-10" />
-            Trust & Safety at RoamFree (Demo)
+            Trust & Safety at RoamFree
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
             Your security and peace of mind are our top priorities. Learn about the measures we take to ensure a safe platform.
