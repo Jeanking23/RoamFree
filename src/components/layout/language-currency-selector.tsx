@@ -1,16 +1,17 @@
 
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
+import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, Globe } from 'lucide-react';
+import { Globe, Check, X } from 'lucide-react';
 import { languages, currencies, type Language, type Currency } from '@/lib/locales';
 import { cn } from '@/lib/utils';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocale } from '@/context/locale-provider';
 import { toast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface LanguageCurrencySelectorProps {
   isMobile?: boolean;
@@ -27,19 +28,22 @@ const toFlag = (countryCode: string) => {
   return String.fromCodePoint(...codePoints);
 };
 
+const suggestedLanguages = languages.filter(l => ['en-US', 'es-ES', 'zh-CN', 'ru-RU', 'ja-JP'].includes(l.code));
 
 export default function LanguageCurrencySelector({ isMobile = false, isFooter = false }: LanguageCurrencySelectorProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
   const { language, setLanguage, currency, setCurrency } = useLocale();
 
-  const handleLangSelect = useCallback((lang: Language) => {
+  const handleLangSelect = React.useCallback((lang: Language) => {
     setLanguage(lang);
     toast({ title: "Language Updated", description: `Language set to ${lang.name}.` });
+    setOpen(false);
   }, [setLanguage]);
 
-  const handleCurrencySelect = useCallback((currency: Currency) => {
+  const handleCurrencySelect = React.useCallback((currency: Currency) => {
     setCurrency(currency);
     toast({ title: "Currency Updated", description: `Currency set to ${currency.name} (${currency.code}).` });
+    setOpen(false);
   }, [setCurrency]);
 
   const triggerContent = isFooter ? (
@@ -54,8 +58,8 @@ export default function LanguageCurrencySelector({ isMobile = false, isFooter = 
   );
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         {isFooter ? (
             <button className="text-sm text-muted-foreground hover:text-primary hover:underline transition-colors text-left w-full">Language & Currency</button>
         ) : (
@@ -64,73 +68,74 @@ export default function LanguageCurrencySelector({ isMobile = false, isFooter = 
                 {isMobile && "Language & Currency"}
             </Button>
         )}
-      </PopoverTrigger>
-      <PopoverContent className="w-80 md:w-[400px]" align={isFooter ? "start" : "end"} side={isFooter ? "top" : "bottom"}>
-        <div className="p-2">
-            <h4 className="font-medium text-sm text-foreground">Language & Currency</h4>
-            <p className="text-xs text-muted-foreground">Choose your preferred language and currency.</p>
-        </div>
-        <Tabs defaultValue="language">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="language">Language</TabsTrigger>
-            <TabsTrigger value="currency">Currency</TabsTrigger>
-          </TabsList>
-          <TabsContent value="language">
-            <Command>
-              <CommandInput placeholder="Search language..." />
-              <CommandList>
-                <CommandEmpty>No results found.</CommandEmpty>
-                <CommandGroup>
-                  {languages.map((lang) => (
-                    <CommandItem
-                      key={lang.code}
-                      value={lang.name}
-                      onSelect={() => {
-                        handleLangSelect(lang);
-                        setOpen(false);
-                      }}
-                      className="flex items-center justify-between"
-                    >
-                        <div className="flex items-center gap-2">
-                            <span>{toFlag(lang.countryCode)}</span>
-                            {lang.nativeName}
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-0">
+          <DialogHeader className="p-6 pb-4 border-b">
+            <DialogTitle className="text-2xl">Select your language & currency</DialogTitle>
+          </DialogHeader>
+          <div className="flex-grow overflow-hidden">
+            <Tabs defaultValue="language" className="flex h-full">
+                <TabsList className="flex flex-col h-full w-48 p-2 border-r bg-muted/50 rounded-none">
+                    <TabsTrigger value="language" className="w-full justify-start text-base py-2">Language</TabsTrigger>
+                    <TabsTrigger value="currency" className="w-full justify-start text-base py-2">Currency</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="language" className="flex-1 overflow-hidden m-0">
+                   <ScrollArea className="h-full">
+                     <div className="p-6">
+                        <h3 className="font-semibold text-foreground mb-4">Suggested for you</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                            {suggestedLanguages.map(lang => (
+                                <button key={lang.code} onClick={() => handleLangSelect(lang)} className={cn("p-3 border rounded-md text-left hover:bg-muted transition-colors flex items-center gap-3", language.code === lang.code && "border-primary ring-2 ring-primary")}>
+                                     <span className="text-2xl">{toFlag(lang.countryCode)}</span>
+                                     <span className="font-medium">{lang.nativeName}</span>
+                                </button>
+                            ))}
                         </div>
-                        <Check className={cn("h-4 w-4", language.code === lang.code ? "opacity-100" : "opacity-0")} />
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </TabsContent>
-          <TabsContent value="currency">
-            <Command>
-              <CommandInput placeholder="Search currency..." />
-              <CommandList>
-                <CommandEmpty>No results found.</CommandEmpty>
-                <CommandGroup>
-                  {currencies.map((curr) => (
-                    <CommandItem
-                      key={curr.code}
-                      value={curr.name}
-                      onSelect={() => {
-                        handleCurrencySelect(curr);
-                        setOpen(false);
-                      }}
-                      className="flex items-center justify-between"
-                    >
-                        <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs w-10">{curr.code}</span>
-                            <span>{curr.name} ({curr.symbol})</span>
+                        <h3 className="font-semibold text-foreground mb-4">All languages</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                             {languages.map(lang => (
+                                <button key={lang.code} onClick={() => handleLangSelect(lang)} className={cn("p-3 border rounded-md text-left hover:bg-muted transition-colors flex items-center gap-3", language.code === lang.code && "border-primary ring-2 ring-primary")}>
+                                     <span className="text-2xl">{toFlag(lang.countryCode)}</span>
+                                     <span className="font-medium">{lang.nativeName}</span>
+                                </button>
+                            ))}
                         </div>
-                        <Check className={cn("h-4 w-4", currency.code === curr.code ? "opacity-100" : "opacity-0")} />
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </TabsContent>
-        </Tabs>
-      </PopoverContent>
-    </Popover>
+                     </div>
+                   </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="currency" className="flex-1 overflow-hidden m-0">
+                   <ScrollArea className="h-full">
+                    <div className="p-6">
+                        <Command className="bg-transparent">
+                            <CommandInput placeholder="Search currency..." />
+                            <CommandList className="max-h-full">
+                                <CommandEmpty>No results found.</CommandEmpty>
+                                <CommandGroup>
+                                {currencies.map((curr) => (
+                                    <CommandItem
+                                    key={curr.code}
+                                    value={`${curr.name} ${curr.code}`}
+                                    onSelect={() => handleCurrencySelect(curr)}
+                                    className="flex items-center justify-between"
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-mono text-xs w-10">{curr.code}</span>
+                                            <span>{curr.name} ({curr.symbol})</span>
+                                        </div>
+                                        <Check className={cn("h-4 w-4", currency.code === curr.code ? "opacity-100" : "opacity-0")} />
+                                    </CommandItem>
+                                ))}
+                                </CommandGroup>
+                            </CommandList>
+                        </Command>
+                    </div>
+                   </ScrollArea>
+                </TabsContent>
+            </Tabs>
+          </div>
+      </DialogContent>
+    </Dialog>
   );
 }
