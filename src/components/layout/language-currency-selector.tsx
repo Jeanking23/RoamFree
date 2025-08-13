@@ -28,7 +28,7 @@ const toFlag = (countryCode: string) => {
   return String.fromCodePoint(...codePoints);
 };
 
-const suggestedLanguages = languages.filter(l => ['en-US', 'es-ES', 'zh-CN', 'ru-RU', 'ja-JP'].includes(l.code));
+const suggestedLanguages = languages.filter(l => ['en-US', 'es-ES', 'fr-FR', 'ru-RU', 'ja-JP', 'zh-CN'].includes(l.code));
 
 export default function LanguageCurrencySelector({ isMobile = false, isFooter = false }: LanguageCurrencySelectorProps) {
   const [open, setOpen] = React.useState(false);
