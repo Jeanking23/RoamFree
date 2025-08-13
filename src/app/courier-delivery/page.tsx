@@ -42,6 +42,7 @@ const courierBookingSchema = z.object({
   pickupTime: z.string().optional(),
   deliveryNotes: z.string().max(300).optional(),
   requireOtpSignature: z.boolean().default(false),
+  servicePoint: z.string().optional(),
 });
 
 type CourierBookingFormValues = z.infer<typeof courierBookingSchema>;
@@ -54,6 +55,12 @@ const mockPackageStatuses = [
     "Nearing Destination",
     "Delivered - Awaiting OTP/Signature",
     "Delivery Confirmed!",
+];
+
+const servicePoints = [
+    { id: 'sp1', name: 'Downtown Service Point', address: '123 Main St, Downtown, Cityville' },
+    { id: 'sp2', name: 'Westside Drop-off Hub', address: '456 Oak Ave, Westside, Cityville' },
+    { id: 'sp3', name: 'Airport Logistics Center', address: '789 Airport Rd, Cityville International' },
 ];
 
 
@@ -139,6 +146,30 @@ export default function CourierDeliveryPage() {
                     <CardContent className="grid md:grid-cols-2 gap-4">
                       <FormField control={form.control} name="senderName" render={({ field }) => (<FormItem><FormLabel>Name</FormLabel><FormControl><Input placeholder="Sender's full name" {...field} /></FormControl><FormMessage /></FormItem>)} />
                       <FormField control={form.control} name="senderContact" render={({ field }) => (<FormItem><FormLabel>Contact (Phone/Email)</FormLabel><FormControl><Input placeholder="Sender's phone or email" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      <FormField
+                        control={form.control}
+                        name="servicePoint"
+                        render={({ field }) => (
+                          <FormItem className="md:col-span-2">
+                            <FormLabel>Pickup from Service Point (Optional)</FormLabel>
+                             <Select onValueChange={(value) => {
+                                field.onChange(value);
+                                const selectedPoint = servicePoints.find(p => p.id === value);
+                                if (selectedPoint) {
+                                    form.setValue('senderAddress', selectedPoint.address, { shouldValidate: true });
+                                }
+                             }} defaultValue={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Or select a drop-off location" /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                {servicePoints.map(point => (
+                                    <SelectItem key={point.id} value={point.id}>{point.name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       <FormField control={form.control} name="senderAddress" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Pickup Address</FormLabel><FormControl><Input placeholder="Full pickup address" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     </CardContent>
                   </Card>
