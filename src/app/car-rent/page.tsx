@@ -275,56 +275,56 @@ export default function CarRentPage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCarListings.map((car) => (
                 <Card key={car.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-                  <Link href={`/car-rent/${car.id}`} className="block group">
-                    <CarImageSlider car={car} />
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-xl font-semibold group-hover:text-primary">{car.name}</CardTitle>
-                      <CardDescription className="text-sm text-muted-foreground">{car.year} &bull; {car.type} &bull; {car.mileage}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex-grow space-y-3">
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Users className="h-4 w-4 mr-2 text-primary" /> {car.seats} Seats
-                        <span className="mx-2">|</span>
-                        <Settings className="h-4 w-4 mr-2 text-primary" /> {car.transmission}
-                      </div>
-                      <ul className="space-y-1 text-sm">
-                        {car.features.slice(0,3).map(feature => (
-                          <li key={feature} className="flex items-center">
-                            <CheckCircle className="h-4 w-4 mr-2 text-green-500 flex-shrink-0" /> {feature}
-                          </li>
-                        ))}
-                        {car.features.length > 3 && <li className="text-xs text-muted-foreground pl-6">...and more</li>}
-                      </ul>
-                      <div className="text-sm space-y-1">
-                            <p><ShieldCheck className={`inline h-4 w-4 mr-1 ${car.insuranceIncluded ? 'text-green-600' : 'text-orange-500'}`} />Insurance: {car.insuranceIncluded ? "Basic Included" : "Available"}</p>
-                            <p><FileText className="inline h-4 w-4 mr-1 text-primary"/>Fuel Policy: {car.fuelPolicy}</p>
-                            <p><User className="inline h-4 w-4 mr-1 text-primary"/>Requirements: {car.licenseRequired}</p>
-                      </div>
-                      <div className="flex items-center">
-                        <Star className="h-5 w-5 text-yellow-400 mr-1" />
-                        <span className="font-semibold">{car.rating}</span>
-                        <span className="text-xs text-muted-foreground ml-1">({car.reviews} reviews)</span>
-                      </div>
-                      <Button variant="outline" size="sm" className="w-full mt-2" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handle360ViewClick(car); }}>
-                        <TvIcon className="mr-2 h-4 w-4" /> 360° View
-                      </Button>
-                      <Separator className="my-2"/>
-                      <p className="text-xs text-muted-foreground font-medium">Pickup/Drop-off Locations (Demo):</p>
-                        <div className="flex flex-wrap gap-1">
-                            {car.pickupLocations.map(loc => <Badge key={loc} variant="outline">{loc}</Badge>)}
-                        </div>
-                        <p className="text-xs text-muted-foreground">One-way rentals & delivery options available (Demo).</p>
-                    </CardContent>
-                  </Link>
-                  <CardFooter className="flex flex-col items-start bg-muted/50 p-4 mt-auto">
-                    <p className="text-2xl font-bold text-primary mb-2">${getPrice(car)}<span className="text-sm font-normal text-muted-foreground">{getPriceSuffix()}</span></p>
-                    <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" onClick={(e) => { e.stopPropagation(); handleRentClick(car); }}>
-                      <CalendarDays className="mr-2 h-4 w-4" /> Rent Now
-                    </Button>
-                    <Button variant="ghost" size="sm" className="w-full mt-1 text-destructive" onClick={(e) => { e.stopPropagation(); handleReportDamageClick(car); }}>
-                      <AlertTriangle className="mr-2 h-4 w-4" /> Report Pre/Post-Trip Damage
-                    </Button>
-                  </CardFooter>
+                    <Link href={`/car-rent/${car.id}`} className="block group flex-grow">
+                        <CarImageSlider car={car} />
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-xl font-semibold group-hover:text-primary">{car.name}</CardTitle>
+                            <CardDescription className="text-sm text-muted-foreground">{car.year} &bull; {car.type} &bull; {car.mileage}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-grow space-y-3">
+                            <div className="flex items-center text-sm text-muted-foreground">
+                                <Users className="h-4 w-4 mr-2 text-primary" /> {car.seats} Seats
+                                <span className="mx-2">|</span>
+                                <Settings className="h-4 w-4 mr-2 text-primary" /> {car.transmission}
+                            </div>
+                            <ul className="space-y-1 text-sm">
+                                {car.features.slice(0, 3).map(feature => (
+                                <li key={feature} className="flex items-center">
+                                    <CheckCircle className="h-4 w-4 mr-2 text-green-500 flex-shrink-0" /> {feature}
+                                </li>
+                                ))}
+                                {car.features.length > 3 && <li className="text-xs text-muted-foreground pl-6">...and more</li>}
+                            </ul>
+                            <div className="text-sm space-y-1">
+                                <p><ShieldCheck className={`inline h-4 w-4 mr-1 ${car.insuranceIncluded ? 'text-green-600' : 'text-orange-500'}`} />Insurance: {car.insuranceIncluded ? "Basic Included" : "Available"}</p>
+                                <p><FileText className="inline h-4 w-4 mr-1 text-primary"/>Fuel Policy: {car.fuelPolicy}</p>
+                                <p><User className="inline h-4 w-4 mr-1 text-primary"/>Requirements: {car.licenseRequired}</p>
+                            </div>
+                            <div className="flex items-center">
+                                <Star className="h-5 w-5 text-yellow-400 mr-1" />
+                                <span className="font-semibold">{car.rating}</span>
+                                <span className="text-xs text-muted-foreground ml-1">({car.reviews} reviews)</span>
+                            </div>
+                            <Button variant="outline" size="sm" className="w-full mt-2" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handle360ViewClick(car); }}>
+                                <TvIcon className="mr-2 h-4 w-4" /> 360° View
+                            </Button>
+                            <Separator className="my-2"/>
+                            <p className="text-xs text-muted-foreground font-medium">Pickup/Drop-off Locations (Demo):</p>
+                            <div className="flex flex-wrap gap-1">
+                                {car.pickupLocations.map(loc => <Badge key={loc} variant="outline">{loc}</Badge>)}
+                            </div>
+                            <p className="text-xs text-muted-foreground">One-way rentals & delivery options available (Demo).</p>
+                        </CardContent>
+                    </Link>
+                    <CardFooter className="flex flex-col items-start bg-muted/50 p-4 mt-auto">
+                        <p className="text-2xl font-bold text-primary mb-2">${getPrice(car)}<span className="text-sm font-normal text-muted-foreground">{getPriceSuffix()}</span></p>
+                        <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" onClick={(e) => { e.stopPropagation(); handleRentClick(car); }}>
+                            <CalendarDays className="mr-2 h-4 w-4" /> Rent Now
+                        </Button>
+                        <Button variant="ghost" size="sm" className="w-full mt-1 text-destructive" onClick={(e) => { e.stopPropagation(); handleReportDamageClick(car); }}>
+                            <AlertTriangle className="mr-2 h-4 w-4" /> Report Pre/Post-Trip Damage
+                        </Button>
+                    </CardFooter>
                 </Card>
               ))}
             </div>
