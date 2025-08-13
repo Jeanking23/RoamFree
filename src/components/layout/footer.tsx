@@ -66,7 +66,7 @@ export default function Footer() {
   
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Subscribed! (Demo)", description: "Thank you for subscribing to our newsletter." });
+    toast({ title: "Subscribed!", description: "Thank you for subscribing to our newsletter." });
   };
 
   return (
