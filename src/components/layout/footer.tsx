@@ -22,10 +22,10 @@ const footerSections = [
   {
     title: 'Discover',
     links: [
-      { label: 'Popular Destinations', href: '/stays/search', isDemo: true, demoFilter: 'destinations' },
-      { label: 'Travel Guides', href: '#!', isDemo: true },
+      { label: 'Popular Destinations', href: '/stays/search' },
+      { label: 'Travel Guides', href: '/community-forum-demo' },
       { label: 'Experiences & Activities', href: '/attractions' },
-      { label: 'Travel Blog', href: '#!', isDemo: true },
+      { label: 'Travel Blog', href: '/community-forum-demo' },
     ]
   },
   {
@@ -33,7 +33,7 @@ const footerSections = [
     links: [
       { label: 'Terms of Service', href: '/trust-safety-demo' },
       { label: 'Privacy Policy', href: '/trust-safety-demo' },
-      { label: 'Cookie Preferences', href: '#!', isDemo: true },
+      { label: 'Cookie Preferences', href: '/trust-safety-demo' },
       { label: 'Language & Currency', href: '/profile' },
     ]
   },
@@ -64,10 +64,6 @@ export default function Footer() {
     setCurrentYear(new Date().getFullYear().toString());
   }, []);
   
-  const handleDemoClick = (label: string) => {
-    toast({ title: "Feature Coming Soon (Demo)", description: `The "${label}" page is currently under development.` });
-  };
-  
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({ title: "Subscribed! (Demo)", description: "Thank you for subscribing to our newsletter." });
@@ -86,7 +82,6 @@ export default function Footer() {
                   <li key={link.label}>
                     <Link 
                       href={link.href} 
-                      onClick={link.isDemo ? () => handleDemoClick(link.label) : undefined}
                       className="text-sm hover:text-primary hover:underline transition-colors"
                     >
                       {link.label}
@@ -110,7 +105,6 @@ export default function Footer() {
                               <li key={link.label}>
                                 <Link 
                                   href={link.href} 
-                                  onClick={link.isDemo ? () => handleDemoClick(link.label) : undefined}
                                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                                 >
                                   {link.label}
