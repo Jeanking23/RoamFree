@@ -3,15 +3,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Info, Users, Rocket, Target, Handshake, ShieldCheck, BedDouble, Car, Ticket, Wand2, Building2, TrendingUp } from 'lucide-react';
+import { Info, Rocket, Target, Handshake, ShieldCheck, BedDouble, Car, Ticket, Wand2, Building2, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
-
-const teamMembers = [
-  { name: 'Alex Chen', role: 'Founder & CEO', image: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwb3J0cmFpdCUyMG1hbnxlbnwwfHx8fDE3NTM5NjU0ODN8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: 'portrait man' },
-  { name: 'Maria Garcia', role: 'Head of Product', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwb3J0cmFpdCUyMHdvbWFufGVufDB8fHx8fDE3NTM5NjU0ODN8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: 'portrait woman' },
-  { name: 'David Lee', role: 'Lead Engineer', image: 'https://images.unsplash.com/photo-1583864697784-a0efc8379f70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwb3J0cmFpdCUyMG1hbnxlbnwwfHx8fDE3NTM5NjU0ODN8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: 'portrait man' },
-];
 
 const offerings = [
     { icon: BedDouble, title: 'Stays', description: 'Find hotels, apartments, villas, and unique rentals.'},
@@ -86,29 +79,6 @@ export default function AboutPage() {
                     <Building2 className="mr-2 h-4 w-4"/> List Your Property
                 </Link>
             </Button>
-          </section>
-
-          {/* Meet The Team Section */}
-          <section>
-             <h2 className="text-2xl font-semibold text-center mb-6 flex items-center justify-center gap-2"><Users className="h-6 w-6 text-accent"/> Meet The Team (Demo)</h2>
-             <div className="flex flex-wrap justify-center gap-8">
-                {teamMembers.map(member => (
-                  <div key={member.name} className="text-center">
-                    <div className="relative h-24 w-24 mx-auto mb-2">
-                        <Image src={member.image} alt={member.name} fill className="rounded-full object-cover" data-ai-hint={member.dataAiHint}/>
-                    </div>
-                    <p className="font-semibold">{member.name}</p>
-                    <p className="text-sm text-muted-foreground">{member.role}</p>
-                  </div>
-                ))}
-             </div>
-             <div className="text-center mt-8">
-                <Button variant="outline" asChild>
-                    <Link href="/careers">
-                       <Users className="mr-2 h-4 w-4"/> Join Our Team
-                    </Link>
-                </Button>
-            </div>
           </section>
         </CardContent>
       </Card>
