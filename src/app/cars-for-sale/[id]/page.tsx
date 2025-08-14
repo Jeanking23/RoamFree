@@ -5,12 +5,17 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Gauge, DollarSign, MapPin, Info, ShieldCheck, MessageSquare, CarFront, FileText, UserCheck, Eye, Share2, Heart, AlertTriangle, Settings, CheckCircle, TvIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarDays, Gauge, DollarSign, MapPin, Info, ShieldCheck, MessageSquare, CarFront, FileText, UserCheck, Eye, Share2, Heart, AlertTriangle, Settings, CheckCircle, TvIcon, ChevronLeft, ChevronRight, Calendar as CalendarIcon, X } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar } from '@/components/ui/calendar';
 
 // Mock data - in a real app, you'd fetch this based on params.id
 const mockCarForSaleDetails = {
@@ -43,6 +48,12 @@ export default function CarSaleProfilePage() {
   const params = useParams();
   const [isFavorited, setIsFavorited] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // State for dialogs
+  const [offerAmount, setOfferAmount] = useState('');
+  const [offerMessage, setOfferMessage] = useState('');
+  const [testDriveDate, setTestDriveDate] = useState<Date | undefined>(new Date());
+  const [testDriveTime, setTestDriveTime] = useState('10:00');
   
   useEffect(() => {
     if (params.id !== mockCarForSaleDetails.id) {
@@ -61,10 +72,22 @@ export default function CarSaleProfilePage() {
   };
 
   const handleMakeOffer = () => {
-    toast({ title: "Make Offer", description: `Initiating offer for ${mockCarForSaleDetails.name}. Negotiation features would be here.` });
+    if (!offerAmount) {
+      toast({ title: "Please enter an offer amount.", variant: "destructive"});
+      return false; // Prevent closing dialog
+    }
+    toast({ title: "Offer Submitted", description: `Your offer of $${offerAmount} for the ${mockCarForSaleDetails.name} has been sent to the seller.` });
+    setOfferAmount('');
+    setOfferMessage('');
+    return true; // Allow closing dialog
   };
   const handleRequestTestDrive = () => {
-    toast({ title: "Test Drive Requested", description: `Requesting a test drive for ${mockCarForSaleDetails.name}. Seller will be notified.` });
+     if (!testDriveDate || !testDriveTime) {
+      toast({ title: "Please select a date and time.", variant: "destructive"});
+      return false; // Prevent closing dialog
+    }
+    toast({ title: "Test Drive Requested", description: `Your request for a test drive on ${testDriveDate.toLocaleDateString()} at ${testDriveTime} has been sent.` });
+    return true;
   };
 
   const handleShare = () => {
@@ -92,6 +115,7 @@ export default function CarSaleProfilePage() {
   }
 
   return (
+    <>
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
         <CardHeader className="pb-4">
@@ -127,7 +151,7 @@ export default function CarSaleProfilePage() {
                   alt={currentImage.alt}
                   fill
                   className="object-cover transition-transform duration-500 ease-in-out"
-                  data-ai-hint={currentImage.dataAiHint}
+                  dataAiHint={currentImage.dataAiHint}
                 />
               )}
             </div>
@@ -160,7 +184,7 @@ export default function CarSaleProfilePage() {
                 height={60}
                 className={`rounded object-cover cursor-pointer transition-all ${currentImageIndex === index ? 'ring-2 ring-primary scale-105' : 'opacity-70 hover:opacity-100'}`}
                 onClick={() => setCurrentImageIndex(index)}
-                data-ai-hint={photo.dataAiHint}
+                dataAiHint={photo.dataAiHint}
               />
             ))}
           </div>
@@ -225,12 +249,59 @@ export default function CarSaleProfilePage() {
                 <CardDescription>Contact seller to make an offer or schedule a test drive.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="accent" size="lg" className="w-full" onClick={handleMakeOffer}>
-                  <DollarSign className="mr-2 h-5 w-5" /> Make an Offer
-                </Button>
-                <Button variant="outline" className="w-full" onClick={handleRequestTestDrive}>
-                  <CarFront className="mr-2 h-4 w-4" /> Request Test Drive
-                </Button>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="accent" size="lg" className="w-full">
+                            <DollarSign className="mr-2 h-5 w-5" /> Make an Offer
+                        </Button>
+                    </DialogTrigger>
+                     <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Make an Offer</DialogTitle>
+                            <DialogDescription>Submit your offer to the seller. All offers are considered.</DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4 space-y-4">
+                             <div>
+                                <Label htmlFor="offer-amount">Your Offer Amount (USD)</Label>
+                                <Input id="offer-amount" type="number" placeholder={`e.g., ${mockCarForSaleDetails.price * 0.95}`} value={offerAmount} onChange={e => setOfferAmount(e.target.value)} />
+                             </div>
+                             <div>
+                                <Label htmlFor="offer-message">Message to Seller (Optional)</Label>
+                                <Textarea id="offer-message" placeholder="Include any questions or comments with your offer." value={offerMessage} onChange={e => setOfferMessage(e.target.value)}/>
+                             </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                            <DialogClose asChild><Button onClick={handleMakeOffer}>Submit Offer</Button></DialogClose>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full">
+                            <CarFront className="mr-2 h-4 w-4" /> Request Test Drive
+                        </Button>
+                    </DialogTrigger>
+                     <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Request a Test Drive</DialogTitle>
+                            <DialogDescription>Select a preferred date and time.</DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4 flex flex-col sm:flex-row gap-4">
+                            <Calendar mode="single" selected={testDriveDate} onSelect={setTestDriveDate} className="rounded-md border"/>
+                            <div className="space-y-2">
+                                <Label>Preferred Time</Label>
+                                {['10:00 AM', '02:00 PM', '05:00 PM'].map(time => (
+                                    <Button key={time} variant={testDriveTime === time ? 'default' : 'outline'} className="w-full" onClick={() => setTestDriveTime(time)}>{time}</Button>
+                                ))}
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                             <DialogClose asChild><Button onClick={handleRequestTestDrive}>Send Request</Button></DialogClose>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
                 <p className="text-xs text-muted-foreground text-center">Secure Escrow Payment Available</p>
                 <p className="text-xs text-muted-foreground text-center">Financing options available through partners.</p>
               </CardContent>
@@ -252,6 +323,7 @@ export default function CarSaleProfilePage() {
         </CardFooter>
       </Card>
     </div>
+    </>
   );
 }
 
