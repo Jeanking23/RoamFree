@@ -27,11 +27,11 @@ export default function AttractionsPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>(["All"]);
 
   const handleBookTickets = (attractionName: string) => {
-    toast({ title: "Book Tickets (Demo)", description: `Proceeding to ticket booking for ${attractionName}.` });
+    toast({ title: "Book Tickets", description: `Proceeding to ticket booking for ${attractionName}.` });
   };
 
   const handleArDiscovery = () => {
-    toast({ title: "AR Discovery Mode (Demo)", description: "Point your phone to discover landmarks! (This is a placeholder)" });
+    toast({ title: "AR Discovery Mode", description: "Point your phone to discover landmarks! (This is a placeholder)" });
   };
 
   const handleCategoryChange = (category: string) => {
@@ -82,7 +82,7 @@ export default function AttractionsPage() {
                 </div>
               </div>
               <Button onClick={handleArDiscovery} variant="outline" className="w-full md:w-auto self-end">
-                <Camera className="mr-2 h-4 w-4" /> Try AR Discovery Mode (Demo)
+                <Camera className="mr-2 h-4 w-4" /> Try AR Discovery Mode
               </Button>
             </div>
             <div>
@@ -126,7 +126,7 @@ export default function AttractionsPage() {
                   </CardContent>
                   <CardFooter>
                     <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => handleBookTickets(attraction.name)}>
-                      <Ticket className="mr-2 h-4 w-4" /> Book Tickets (Demo)
+                      <Ticket className="mr-2 h-4 w-4" /> Book Tickets
                     </Button>
                   </CardFooter>
                 </Card>
