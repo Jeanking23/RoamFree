@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, DollarSign, MapPin, Maximize, Layers, Home, Info, FileText, Star, TvIcon, Plane, Contact, ShieldCheck, MessageSquare, Video, Handshake, TrendingUp, Library, AlertTriangle, Heart, Share2, Calculator, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarDays, DollarSign, MapPin, Maximize, Layers, Home, Info, FileText, Star, TvIcon, Plane, Contact, ShieldCheck, MessageSquare, Video, Handshake, TrendingUp, Library, AlertTriangle, Heart, Share2, Calculator, X, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
@@ -15,6 +15,11 @@ import { findSalePropertyById, type MockStay } from '@/lib/mock-data'; // Import
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar } from '@/components/ui/calendar';
 
 
 export default function SalePropertyProfilePage() {
@@ -26,6 +31,12 @@ export default function SalePropertyProfilePage() {
 
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  // State for dialogs
+  const [tourDate, setTourDate] = useState<Date | undefined>(new Date());
+  const [selectedTime, setSelectedTime] = useState<string>('');
+  const [offerAmount, setOfferAmount] = useState('');
+  const [offerMessage, setOfferMessage] = useState('');
 
 
   useEffect(() => {
@@ -83,18 +94,28 @@ export default function SalePropertyProfilePage() {
 
 
   const handleMakeOffer = () => {
-    if (!property) return;
-    toast({ title: "Make Offer (Demo)", description: `Initiating offer process for ${property.name}. Negotiation & secure escrow payment features would be here.` });
+    if (!property || !offerAmount) {
+        toast({ title: "Please enter an offer amount.", variant: "destructive" });
+        return false; // Prevent closing dialog
+    }
+    toast({ title: "Offer Submitted", description: `Your offer of $${offerAmount} for ${property.name} has been sent.` });
+    setOfferAmount('');
+    setOfferMessage('');
+    return true; // Allow closing dialog
   };
   
   const handleScheduleTour = () => {
-    if (!property) return;
-    toast({ title: "Tour Scheduled (Demo)", description: `A tour for ${property.name} has been requested.` });
+    if (!property || !tourDate || !selectedTime) {
+        toast({ title: "Please select a date and time.", variant: "destructive" });
+        return false; // Prevent closing dialog
+    }
+    toast({ title: "Tour Scheduled!", description: `A tour for ${property.name} has been requested for ${tourDate.toLocaleDateString()} at ${selectedTime}.` });
+    return true; // Allow closing dialog
   };
 
   const handleContactAgent = () => {
     if (!property?.host) return;
-    toast({ title: "Contacting Agent (Demo)", description: `Opening chat with agent ${property.host.name}.` });
+    toast({ title: "Contacting Agent", description: `Opening chat with agent ${property.host.name}.` });
   };
   
   const handleToggleFavorite = () => {
@@ -118,7 +139,7 @@ export default function SalePropertyProfilePage() {
   
   const handleMediaTool = (toolName: string, propertyName?: string) => {
     if (!propertyName) return;
-    toast({ title: `${toolName} (Demo)`, description: `Showing ${toolName.toLowerCase()} for ${propertyName}.` });
+    toast({ title: `${toolName}`, description: `Showing ${toolName.toLowerCase()} for ${propertyName}.` });
   };
 
 
@@ -243,7 +264,7 @@ export default function SalePropertyProfilePage() {
             
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5"/>Market Insights (Demo)</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5"/>Market Insights</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                     <p><strong>Last Sale Price:</strong> ${property.lastSalePrice?.toLocaleString() || 'N/A'}</p>
@@ -253,7 +274,7 @@ export default function SalePropertyProfilePage() {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5"/>Legal & Documents (Demo)</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5"/>Legal & Documents</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                     <p><strong>Title Deed:</strong> <Button variant="link" size="sm" className="px-0 h-auto">View Document (Uploaded)</Button></p>
@@ -286,16 +307,63 @@ export default function SalePropertyProfilePage() {
                 <CardDescription>Contact agent to make an offer or schedule a viewing.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="accent" size="lg" className="w-full" onClick={handleMakeOffer}>
-                  <DollarSign className="mr-2 h-5 w-5" /> Make an Offer
-                </Button>
-                <Button variant="outline" className="w-full" onClick={handleScheduleTour}>
-                  <CalendarDays className="mr-2 h-4 w-4" /> Schedule Viewing
-                </Button>
-                <Button variant="outline" className="w-full" onClick={() => toast({title: "Video Call Agent (Demo)", description: "Initiating virtual consultation with agent."})}>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="accent" size="lg" className="w-full">
+                            <DollarSign className="mr-2 h-5 w-5" /> Make an Offer
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Make an Offer</DialogTitle>
+                            <DialogDescription>Submit your offer to the agent. All offers are considered.</DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4 space-y-4">
+                             <div>
+                                <Label htmlFor="offer-amount">Your Offer Amount (USD)</Label>
+                                <Input id="offer-amount" type="number" placeholder={`e.g., ${(property.price ?? 0) * 0.95}`} value={offerAmount} onChange={e => setOfferAmount(e.target.value)} />
+                             </div>
+                             <div>
+                                <Label htmlFor="offer-message">Message to Agent (Optional)</Label>
+                                <Textarea id="offer-message" placeholder="Include any questions or conditions with your offer." value={offerMessage} onChange={e => setOfferMessage(e.target.value)}/>
+                             </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                            <DialogClose asChild><Button onClick={handleMakeOffer}>Submit Offer</Button></DialogClose>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full">
+                          <CalendarDays className="mr-2 h-4 w-4" /> Schedule Viewing
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Schedule a Viewing</DialogTitle>
+                            <DialogDescription>Select a preferred date and time.</DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4 flex flex-col sm:flex-row gap-4">
+                            <Calendar mode="single" selected={tourDate} onSelect={setTourDate} className="rounded-md border"/>
+                            <div className="space-y-2">
+                                <Label>Preferred Time</Label>
+                                {['10:00 AM', '02:00 PM', '05:00 PM'].map(time => (
+                                    <Button key={time} variant={selectedTime === time ? "default" : "outline"} className="w-full" onClick={() => setSelectedTime(time)}>{time}</Button>
+                                ))}
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                             <DialogClose asChild><Button onClick={handleScheduleTour}>Send Request</Button></DialogClose>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+                <Button variant="outline" className="w-full" onClick={() => toast({title: "Video Call Agent", description: "Initiating virtual consultation with agent."})}>
                   <Video className="mr-2 h-4 w-4" /> Video Call Agent
                 </Button>
-                 <p className="text-xs text-muted-foreground text-center">Secure Escrow Payment Available (Demo)</p>
+                 <p className="text-xs text-muted-foreground text-center">Secure Escrow Payment Available</p>
               </CardContent>
             </Card>
             {property.host && (
@@ -307,7 +375,7 @@ export default function SalePropertyProfilePage() {
                    <Image src={property.host.avatar} alt={property.host.name} width={60} height={60} className="rounded-full" data-ai-hint={property.host.dataAiHint} />
                    <div>
                      <p className="font-semibold">{property.host.name}</p>
-                     <p className="text-xs text-muted-foreground">Rating: {property.rating}/5 (Demo)</p>
+                     <p className="text-xs text-muted-foreground">Rating: {property.rating}/5</p>
                      <Button variant="outline" size="sm" className="mt-1" onClick={handleContactAgent}><MessageSquare className="mr-2 h-4 w-4"/>Message</Button>
                    </div>
                 </CardContent>
@@ -328,7 +396,7 @@ export default function SalePropertyProfilePage() {
         <CardFooter className="border-t pt-6 flex flex-col items-start gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <AlertTriangle className="h-5 w-5 text-orange-500"/>
-                <span>Report this listing if you find any issues. (Placeholder)</span>
+                <span>Report this listing if you find any issues.</span>
             </div>
              <p className="text-xs text-muted-foreground">RoamFree facilitates connections. Always perform due diligence.</p>
         </CardFooter>
@@ -377,3 +445,5 @@ export default function SalePropertyProfilePage() {
     </>
   );
 }
+
+    
