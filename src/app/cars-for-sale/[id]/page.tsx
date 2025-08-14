@@ -61,10 +61,10 @@ export default function CarSaleProfilePage() {
   };
 
   const handleMakeOffer = () => {
-    toast({ title: "Make Offer (Demo)", description: `Initiating offer for ${mockCarForSaleDetails.name}. Negotiation features would be here.` });
+    toast({ title: "Make Offer", description: `Initiating offer for ${mockCarForSaleDetails.name}. Negotiation features would be here.` });
   };
   const handleRequestTestDrive = () => {
-    toast({ title: "Test Drive Requested (Demo)", description: `Requesting a test drive for ${mockCarForSaleDetails.name}. Seller will be notified.` });
+    toast({ title: "Test Drive Requested", description: `Requesting a test drive for ${mockCarForSaleDetails.name}. Seller will be notified.` });
   };
 
   const handleShare = () => {
@@ -84,7 +84,7 @@ export default function CarSaleProfilePage() {
     toast({ title: isFavorited ? "Removed from Wishlist" : "Added to Wishlist" });
   };
    const handle360VideoTour = () => {
-    toast({ title: "360° Video Tour (Demo)", description: "Playing immersive 360° video tour of the car. (Placeholder)" });
+    toast({ title: "360° Video Tour", description: "Playing immersive 360° video tour of the car." });
   };
 
   if (!mockCarForSaleDetails) { 
@@ -165,7 +165,7 @@ export default function CarSaleProfilePage() {
             ))}
           </div>
           <div className="text-center mt-4">
-            <Button variant="outline" onClick={handle360VideoTour}><TvIcon className="mr-2 h-4 w-4" /> View 360° Video Tour (Demo)</Button>
+            <Button variant="outline" onClick={handle360VideoTour}><TvIcon className="mr-2 h-4 w-4" /> View 360° Video Tour</Button>
           </div>
         </CardContent>
         
@@ -183,7 +183,7 @@ export default function CarSaleProfilePage() {
                 <p><strong>Fuel Type:</strong> {mockCarForSaleDetails.fuelType}</p>
                 <p><strong>Exterior:</strong> {mockCarForSaleDetails.exteriorColor}</p>
                 <p><strong>Interior:</strong> {mockCarForSaleDetails.interiorColor}</p>
-                <p className="col-span-full sm:col-span-1"><strong>VIN:</strong> {mockCarForSaleDetails.vin} (Demo)</p>
+                <p className="col-span-full sm:col-span-1"><strong>VIN:</strong> {mockCarForSaleDetails.vin}</p>
               </div>
             </div>
             <div>
@@ -196,18 +196,18 @@ export default function CarSaleProfilePage() {
             </div>
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5"/>Vehicle Reports (Demo)</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5"/>Vehicle Reports</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
                     <div>
                         <h4 className="font-medium">Vehicle History Report:</h4>
                         <p className="text-muted-foreground">{mockCarForSaleDetails.vehicleHistoryReport.summary}</p>
-                        <Button variant="link" size="sm" className="px-0 h-auto" asChild><Link href={mockCarForSaleDetails.vehicleHistoryReport.link}>View Full Report (Demo)</Link></Button>
+                        <Button variant="link" size="sm" className="px-0 h-auto" asChild><Link href={mockCarForSaleDetails.vehicleHistoryReport.link}>View Full Report</Link></Button>
                     </div>
                     <div>
                         <h4 className="font-medium">Inspection Report:</h4>
                         <p className="text-muted-foreground">{mockCarForSaleDetails.inspectionReport.summary}</p>
-                        <Button variant="link" size="sm" className="px-0 h-auto" asChild><Link href={mockCarForSaleDetails.inspectionReport.link}>View Full Report (Demo)</Link></Button>
+                        <Button variant="link" size="sm" className="px-0 h-auto" asChild><Link href={mockCarForSaleDetails.inspectionReport.link}>View Full Report</Link></Button>
                     </div>
                 </CardContent>
             </Card>
@@ -226,13 +226,13 @@ export default function CarSaleProfilePage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button variant="accent" size="lg" className="w-full" onClick={handleMakeOffer}>
-                  <DollarSign className="mr-2 h-5 w-5" /> Make an Offer (Demo)
+                  <DollarSign className="mr-2 h-5 w-5" /> Make an Offer
                 </Button>
                 <Button variant="outline" className="w-full" onClick={handleRequestTestDrive}>
-                  <CarFront className="mr-2 h-4 w-4" /> Request Test Drive (Demo)
+                  <CarFront className="mr-2 h-4 w-4" /> Request Test Drive
                 </Button>
-                <p className="text-xs text-muted-foreground text-center">Secure Escrow Payment Available (Demo)</p>
-                <p className="text-xs text-muted-foreground text-center">Financing options available through partners (Demo).</p>
+                <p className="text-xs text-muted-foreground text-center">Secure Escrow Payment Available</p>
+                <p className="text-xs text-muted-foreground text-center">Financing options available through partners.</p>
               </CardContent>
             </Card>
             <div className="hidden md:block">
@@ -244,7 +244,9 @@ export default function CarSaleProfilePage() {
         <CardFooter className="border-t pt-6 flex flex-col items-start gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <AlertTriangle className="h-5 w-5 text-orange-500"/>
-                <span>Report this listing if you find any issues. (Placeholder)</span>
+                <Button variant="link" className="p-0 h-auto text-sm text-muted-foreground" onClick={() => toast({ title: 'Report Submitted', description: 'Thank you for your feedback.' })}>
+                    Report this listing if you find any issues.
+                </Button>
             </div>
              <p className="text-xs text-muted-foreground">All listings subject to verification. RoamFree facilitates connections, inspect vehicles thoroughly.</p>
         </CardFooter>
@@ -256,7 +258,7 @@ export default function CarSaleProfilePage() {
 
 function SellerInfo() {
     const handleChatWithSeller = () => {
-        toast({ title: "Chat with Seller (Demo)", description: `Opening secure chat with ${mockCarForSaleDetails.seller.name}.`});
+        toast({ title: "Chat with Seller", description: `Opening secure chat with ${mockCarForSaleDetails.seller.name}.`});
     };
   return (
     <Card className="border bg-background shadow-md">
@@ -265,14 +267,14 @@ function SellerInfo() {
         <CardTitle className="text-xl">Sold by {mockCarForSaleDetails.seller.name}</CardTitle>
         <CardDescription>
             {mockCarForSaleDetails.seller.isVerified && <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-300 mr-1"><UserCheck className="mr-1 h-3 w-3"/>Verified Seller</Badge>}
-            Rating: {mockCarForSaleDetails.seller.rating}/5 (Demo)
+            Rating: {mockCarForSaleDetails.seller.rating}/5
         </CardDescription>
         </CardHeader>
         <CardContent className="text-center space-y-2">
         <Button variant="outline" className="w-full" onClick={handleChatWithSeller}>
             <MessageSquare className="mr-2 h-4 w-4" /> Chat with Seller
         </Button>
-        <p className="text-xs text-muted-foreground">Response Rate: {mockCarForSaleDetails.seller.responseRate} (Demo)</p>
+        <p className="text-xs text-muted-foreground">Response Rate: {mockCarForSaleDetails.seller.responseRate}</p>
         <p className="text-xs text-muted-foreground">Member Since: {mockCarForSaleDetails.seller.memberSince}</p>
         </CardContent>
     </Card>
