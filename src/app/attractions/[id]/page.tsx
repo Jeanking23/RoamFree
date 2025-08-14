@@ -93,7 +93,7 @@ export default function AttractionProfilePage() {
 
 
   const handleBookTickets = () => {
-    toast({ title: "Tickets Confirmed! (Demo)", description: `Your ${ticketCount} ticket(s) for ${attraction?.name} on ${format(new Date(visitDate), 'PPP')} are confirmed. A QR code would be sent to your email.` });
+    toast({ title: "Tickets Confirmed!", description: `Your ${ticketCount} ticket(s) for ${attraction?.name} on ${format(new Date(visitDate), 'PPP')} are confirmed. A QR code would be sent to your email.` });
   };
   
   const handleShare = () => {
@@ -237,7 +237,7 @@ export default function AttractionProfilePage() {
               </div>
                <div className="flex items-center gap-2 mt-2">
                 <Button variant="outline" size="sm" onClick={() => toast({title: "Liked!", description:"Thanks for your feedback."})}><ThumbsUp className="h-4 w-4 mr-1"/> Like Gallery</Button>
-                <Button variant="link" size="sm" onClick={() => toast({title: "Upload Photos", description:"Photo upload feature coming soon."})}>+ Add Your Photos</Button>
+                <Button variant="link" size="sm" onClick={() => toast({title: "Upload Photos", description:"This would open a file upload dialog."})}>+ Add Your Photos</Button>
                </div>
             </div>
           </div>
