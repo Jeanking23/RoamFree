@@ -217,7 +217,7 @@ export default function AttractionProfilePage() {
               </div>
             </div>
             <div>
-              <h3 className="text-xl font-semibold mb-3">Visitor Photo Gallery (Demo)</h3>
+              <h3 className="text-xl font-semibold mb-3">Visitor Photo Gallery</h3>
               <div className="grid grid-cols-3 gap-2">
                  {attraction.visitorPhotos.map((photo, i) => (
                     <Image key={`gallery-${i}`} src={photo.src} alt={photo.alt} width={150} height={100} className="rounded-md object-cover" data-ai-hint={photo.dataAiHint}/>
@@ -225,7 +225,7 @@ export default function AttractionProfilePage() {
               </div>
                <div className="flex items-center gap-2 mt-2">
                 <Button variant="outline" size="sm" onClick={() => toast({title: "Liked!", description:"Thanks for your feedback."})}><ThumbsUp className="h-4 w-4 mr-1"/> Like Gallery</Button>
-                <Button variant="link" size="sm" onClick={() => toast({title: "Upload Photos (Demo)", description:"Photo upload feature coming soon."})}>+ Add Your Photos</Button>
+                <Button variant="link" size="sm" onClick={() => toast({title: "Upload Photos", description:"Photo upload feature coming soon."})}>+ Add Your Photos</Button>
                </div>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function AttractionProfilePage() {
             </Card>
              <Card className="shadow-md border">
                 <CardHeader>
-                    <CardTitle className="text-xl flex items-center gap-2"><Percent className="h-5 w-5"/>Deals & Combos (Demo)</CardTitle>
+                    <CardTitle className="text-xl flex items-center gap-2"><Percent className="h-5 w-5"/>Deals & Combos</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {attraction.deals.map(deal => (
@@ -313,7 +313,7 @@ export default function AttractionProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">{review.comment}</p>
-                   <Button variant="link" size="sm" className="px-0 h-auto text-xs">Translate (Demo)</Button>
+                   <Button variant="link" size="sm" className="px-0 h-auto text-xs" onClick={() => toast({title: "Translate", description: "Translation feature coming soon."})}>Translate</Button>
                 </CardContent>
               </Card>
             ))}
