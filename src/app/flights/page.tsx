@@ -1,20 +1,34 @@
-import React, { useState } from 'react';
-import FlightSearchResults from '@/components/flights/flight-search-results'; // Import the results component
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Import Alert component
+// src/app/flights/page.tsx
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import FlightSearchResults from '@/components/flights/flight-search-results';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Plane, Search } from 'lucide-react';
+import { format } from 'date-fns';
 
 const FlightSearchPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [searchResults, setSearchResults] = useState<any[]>([]); // State to store search results
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [departureDate, setDepartureDate] = useState('');
+
+  useEffect(() => {
+    // Set default date on the client to avoid hydration mismatch
+    setDepartureDate(format(new Date(), 'yyyy-MM-dd'));
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     setIsLoading(true);
     setError(null);
-    setSearchResults([]); // Clear previous results
+    setSearchResults([]);
 
-    // Collect form data
     const formData = new FormData(event.currentTarget);
     const origin = formData.get('origin');
     const destination = formData.get('destination');
@@ -31,94 +45,104 @@ const FlightSearchPage = () => {
       passengers,
       cabinClass,
     });
-
-    // Placeholder for API call
-    try {
-      // Replace with your actual API endpoint and method
-      const response = await fetch('/api/search-flights', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          origin,
-          destination,
-          departureDate,
-          returnDate,
-          passengers,
-          cabinClass,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
+    
+    // This is a demo. In a real app, you would fetch from an API.
+    // For now, we'll just show a "no results" message after a delay.
+    setTimeout(() => {
+      // Simulating an API call that returns no results for this demo
+      setSearchResults([]); 
+      if (!origin || !destination) {
+        setError("Please enter both origin and destination.");
+      } else {
+        setError(`No flights found for the selected route. This is a demo feature.`);
       }
-
-      const data = await response.json();
-      console.log('API response:', data);
-
-      // Process and display results here
-      setSearchResults(data); // Store the results in state
-
-    } catch (error: any) {
-      console.error('Error searching for flights:', error);
-      setError(error.message || 'An error occurred during the search.');
-    } finally {
       setIsLoading(false);
-    }
+    }, 1500);
   };
 
   return (
-    <div>
-      <h1>Flight Search</h1>
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="origin" className="block text-sm font-medium text-gray-700">Origin:</label>
-          <input type="text" id="origin" name="origin" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-        </div>
-        <div>
-          <label htmlFor="destination" className="block text-sm font-medium text-gray-700">Destination:</label>
-          <input type="text" id="destination" name="destination" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-        </div>
-        <div>
-          <label htmlFor="departure-date" className="block text-sm font-medium text-gray-700">Departure Date:</label>
-          <input type="date" id="departure-date" name="departure-date" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-        </div>
-        <div>
-          <label htmlFor="return-date" className="block text-sm font-medium text-gray-700">Return Date (Optional):</label>
-          <input type="date" id="return-date" name="return-date" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-        </div>
-        <div>
-          <label htmlFor="passengers" className="block text-sm font-medium text-gray-700">Number of Passengers:</label>
-          <input type="number" id="passengers" name="passengers" min="1" defaultValue={1} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-        </div>
-        <div>
-          <label htmlFor="cabin-class" className="block text-sm font-medium text-gray-700">Cabin Class:</label>
-          <select id="cabin-class" name="cabin-class" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-            <option value="economy">Economy</option>
-            <option value="premium-economy">Premium Economy</option>
-            <option value="business">Business</option>
-            <option value="first">First Class</option>
-          </select>
-        </div>
-        <button type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" disabled={isLoading}>
-          {isLoading ? 'Searching...' : 'Search Flights'}
-        </button>
-      </form>
+    <div className="space-y-8">
+      <Card className="shadow-lg rounded-lg overflow-hidden">
+        <CardHeader className="bg-primary/10">
+          <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
+            <Plane className="h-8 w-8" />
+            Search for Flights
+          </CardTitle>
+          <CardDescription className="text-lg text-muted-foreground">
+            Find the best deals on flights to your next destination.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="origin">Origin</Label>
+                <Input type="text" id="origin" name="origin" placeholder="e.g., New York (JFK)" />
+              </div>
+              <div>
+                <Label htmlFor="destination">Destination</Label>
+                <Input type="text" id="destination" name="destination" placeholder="e.g., London (LHR)" />
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+               <div>
+                <Label htmlFor="departure-date">Departure Date</Label>
+                <Input 
+                    type="date" 
+                    id="departure-date" 
+                    name="departure-date" 
+                    value={departureDate}
+                    onChange={(e) => setDepartureDate(e.target.value)}
+                    min={format(new Date(), 'yyyy-MM-dd')}
+                />
+              </div>
+              <div>
+                <Label htmlFor="return-date">Return Date (Optional)</Label>
+                <Input type="date" id="return-date" name="return-date" min={departureDate} />
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="passengers">Number of Passengers</Label>
+                <Input type="number" id="passengers" name="passengers" min="1" defaultValue={1} />
+              </div>
+              <div>
+                <Label htmlFor="cabin-class">Cabin Class</Label>
+                <Select name="cabin-class" defaultValue="economy">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="economy">Economy</SelectItem>
+                    <SelectItem value="premium-economy">Premium Economy</SelectItem>
+                    <SelectItem value="business">Business</SelectItem>
+                    <SelectItem value="first">First Class</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <Button type="submit" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
+              <Search className="mr-2 h-4 w-4" />
+              {isLoading ? 'Searching...' : 'Search Flights'}
+            </Button>
+          </form>
 
-      {isLoading && <p>Loading...</p>}
+          {isLoading && <p className="text-center mt-6">Loading search results...</p>}
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+          {error && (
+            <Alert variant="destructive" className="mt-6">
+              <AlertTitle>Search Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-      {/* Render search results here */}
-      {!isLoading && !error && searchResults.length > 0 && (
-        <FlightSearchResults results={searchResults} />
-      )}
+          {!isLoading && searchResults.length > 0 && (
+            <div className="mt-6">
+              <FlightSearchResults results={searchResults} />
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
