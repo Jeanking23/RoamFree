@@ -35,10 +35,22 @@ export default function AttractionProfilePage() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
+  // State for formatted dates to prevent hydration errors
+  const [reviewDates, setReviewDates] = useState<{ [key: string]: string }>({});
+
   useEffect(() => {
     // Set a default visit date for the booking dialog
     setVisitDate(format(new Date(), 'yyyy-MM-dd'));
-  }, []);
+
+    // Format review dates on the client side to avoid hydration mismatch
+    if (attraction?.userReviews) {
+        const formattedDates = attraction.userReviews.reduce((acc, review) => {
+            acc[review.id] = new Date(review.date).toLocaleDateString();
+            return acc;
+        }, {} as { [key: string]: string });
+        setReviewDates(formattedDates);
+    }
+  }, [attraction]);
   
   useEffect(() => {
     // In a real app, this would be the place to fetch data based on params.id if it wasn't pre-loaded
@@ -302,7 +314,7 @@ export default function AttractionProfilePage() {
                     <div>
                       <p className="font-semibold">{review.user}</p>
                       <div className="flex items-center">
-                        <p className="text-xs text-muted-foreground">{new Date(review.date).toLocaleDateString()}</p>
+                        <p className="text-xs text-muted-foreground">{reviewDates[review.id] || ''}</p>
                         <BadgeCheck className="h-4 w-4 ml-1 text-green-500" title="Verified Review"/>
                       </div>
                     </div>
