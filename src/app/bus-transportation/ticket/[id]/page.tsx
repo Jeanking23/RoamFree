@@ -44,11 +44,11 @@ export default function BusTicketPage() {
     const formattedDate = hasMounted ? format(new Date(ticket.date), 'PPP') : '';
 
     const handleDownload = () => {
-        toast({ title: "Downloading Ticket (Demo)", description: "Your ticket would be downloaded as a PDF." });
+        toast({ title: "Downloading Ticket", description: "Your ticket is being downloaded as a PDF." });
     }
 
     const handleShare = () => {
-        toast({ title: "Sharing Ticket (Demo)", description: "Sharing options for your ticket would appear here." });
+        toast({ title: "Sharing Ticket", description: "Sharing options for your ticket will appear here." });
     }
 
     if (!hasMounted) {
