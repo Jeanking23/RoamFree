@@ -18,12 +18,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Building, DollarSign, Bed, Bath, MapPin, ImageIcon, CalendarCheck2, FileText, Users, Sparkles, X, Home as HomeIcon, LandPlot, Landmark as AttractionIcon } from "lucide-react";
+import { Building, DollarSign, Bed, Bath, MapPin, ImageIcon, CalendarCheck2, FileText, Users, Sparkles, X, Home as HomeIcon, LandPlot, Landmark as AttractionIcon, CarFront } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox"; 
 import { toast } from "@/hooks/use-toast"; 
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
+import Link from 'next/link';
 
 const propertySchema = z.object({
   propertyName: z.string().min(3, "Property name must be at least 3 characters."),
@@ -131,13 +132,22 @@ export default function ListPropertyPage() {
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
         <CardHeader className="bg-primary/10">
-          <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
-            <Building className="h-8 w-8" />
-            List Your Property, Land, or Venue
-          </CardTitle>
-          <CardDescription className="text-lg text-muted-foreground">
-            Reach millions of potential buyers or renters by listing with RoamFree.
-          </CardDescription>
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center">
+            <div className="mb-4 sm:mb-0">
+              <CardTitle className="flex items-center gap-3 text-3xl font-headline text-primary">
+                <Building className="h-8 w-8" />
+                List Your Property, Land, or Venue
+              </CardTitle>
+              <CardDescription className="text-lg text-muted-foreground mt-1">
+                Reach millions of potential buyers or renters by listing with RoamFree.
+              </CardDescription>
+            </div>
+            <Button asChild variant="outline">
+              <Link href="/cars-for-sale/new" className="flex items-center gap-2">
+                <CarFront className="h-4 w-4" /> List a Car Instead?
+              </Link>
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="p-6">
           <Form {...form}>
