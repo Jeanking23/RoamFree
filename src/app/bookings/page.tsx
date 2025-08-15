@@ -3,13 +3,14 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CalendarCheck2, Ticket, Car, BedDouble } from 'lucide-react';
+import { CalendarCheck2, Ticket, Car, BedDouble, BusIcon } from 'lucide-react';
 import Link from 'next/link';
 
 // Mock data for demonstration
 const mockBookings = [
   { id: 'stay1', type: 'Stay', name: 'Sunny Beachfront Villa', date: '2024-08-15 to 2024-08-22', link: '/stays/stay1' },
-  { id: 'car1', type: 'Car Rental', name: 'Toyota Camry Hybrid', date: '2024-09-01 to 2024-09-05', link: '/car-rent' },
+  { id: 'bus1', type: 'Bus', name: 'ComfortLines: Douala to Yaoundé', date: '2024-08-15', link: '/bus-transportation/ticket/RFBUS123ABC' },
+  { id: 'car1', type: 'Car Rental', name: 'Toyota Camry Hybrid', date: '2024-09-01 to 2024-09-05', link: '/car-rent/1' },
 ];
 
 export default function BookingsPage() {
@@ -22,7 +23,7 @@ export default function BookingsPage() {
             My Bookings
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            View and manage your upcoming and past trips. (This is a placeholder page)
+            View and manage your upcoming and past trips.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
@@ -35,6 +36,7 @@ export default function BookingsPage() {
                       {booking.type === 'Stay' && <BedDouble className="h-8 w-8 text-primary" />}
                       {booking.type === 'Car Rental' && <Car className="h-8 w-8 text-primary" />}
                       {booking.type === 'Attraction' && <Ticket className="h-8 w-8 text-primary" />}
+                      {booking.type === 'Bus' && <BusIcon className="h-8 w-8 text-primary" />}
                       <div>
                         <h4 className="font-semibold">{booking.name}</h4>
                         <p className="text-sm text-muted-foreground">{booking.date}</p>

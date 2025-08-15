@@ -4,7 +4,7 @@
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TicketIcon, User, MapPin, Clock, BusIcon, QrCode, Download, Share2, ArrowLeft } from 'lucide-react';
+import { TicketIcon, User, MapPin, Clock, BusIcon, QrCode, Download, Share2, ArrowLeft, Save } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -48,8 +48,30 @@ export default function BusTicketPage() {
     }
 
     const handleShare = () => {
-        toast({ title: "Sharing Ticket", description: "Sharing options for your ticket will appear here." });
+        if (navigator.share) {
+            navigator.share({
+                title: `Your Bus Ticket: ${bookingId}`,
+                text: `Here is your bus ticket for the trip from ${ticket.departureStation} to ${ticket.arrivalStation}. Booking ID: ${bookingId}`,
+                url: window.location.href,
+            }).then(() => toast({ title: "Shared successfully!"}))
+              .catch(error => console.error('Error sharing:', error));
+        } else {
+            toast({ title: "Sharing Ticket", description: "Sharing options for your ticket will appear here (e.g., Email, SMS)." });
+        }
     }
+    
+    const handleSaveToBookings = () => {
+        // In a real app, this would make an API call to save the ticket to the user's profile.
+        toast({
+            title: "Ticket Saved!",
+            description: "This ticket has been saved to your 'My Bookings' page.",
+            action: (
+                <Button asChild variant="secondary" size="sm">
+                    <Link href="/bookings">View Bookings</Link>
+                </Button>
+            ),
+        });
+    };
 
     if (!hasMounted) {
         return null; // or a loading skeleton
@@ -118,19 +140,22 @@ export default function BusTicketPage() {
                         </div>
                     </div>
                 </CardContent>
-                <CardFooter className="bg-muted/50 p-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <CardFooter className="bg-muted/50 p-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
                      <Button variant="outline" asChild className="col-span-2 sm:col-span-1">
                         <Link href="/bus-transportation">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Search
                         </Link>
                     </Button>
-                    <Button variant="outline" onClick={handleDownload}><Download className="mr-2 h-4 w-4"/> Download PDF</Button>
-                    <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4"/> Share Ticket</Button>
-                    <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                        <Link href={`/bus-transportation/tracking/${bookingId}?routeId=${routeId}`}>
-                            Track Your Bus
-                        </Link>
-                    </Button>
+                    <div className="col-span-2 grid grid-cols-2 gap-2">
+                        <Button variant="outline" onClick={handleDownload}><Download className="mr-2 h-4 w-4"/> Download</Button>
+                        <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4"/> Share</Button>
+                        <Button variant="outline" onClick={handleSaveToBookings}><Save className="mr-2 h-4 w-4"/> Save</Button>
+                        <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                            <Link href={`/bus-transportation/tracking/${bookingId}?routeId=${routeId}`}>
+                                Track Bus
+                            </Link>
+                        </Button>
+                    </div>
                 </CardFooter>
             </Card>
         </div>
