@@ -212,22 +212,24 @@ export default function AiTripPlannerSurveyPage() {
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(step => step - 1);
+      setCurrentStep(step => step + 1);
     }
   };
 
   const handleBookStay = () => {
     if (!tripPlan) return;
-    const accommodationType = tripPlan.accommodationSuggestion.type;
+    const accommodationType = tripPlan.accommodationSuggestion.type.toLowerCase();
     const queryParams = new URLSearchParams();
     
-    if (accommodationType.toLowerCase().includes('hotel') || accommodationType.toLowerCase().includes('resort')) {
+    if (accommodationType.includes('hotel') || accommodationType.includes('resort')) {
       queryParams.set('propertyType', 'HOTEL');
-    } else {
+    } else { // Covers Apartment, Villa, Guest House, etc.
       queryParams.set('propertyType', 'RENTAL');
     }
+    
     router.push(`/stays/search?${queryParams.toString()}`);
   };
+
 
   const progress = ((currentStep + 1) / formSteps.length) * 100;
 
