@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, MessageSquare, BarChart3, Rocket, Home, CarFront, Users } from 'lucide-react';
+import { ShieldCheck, MessageSquare, BarChart3, Rocket, Home, CarFront, Users, DollarSign, Lock, UserCheck, Settings, Upload, CheckCircle, BadgePlus } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const hostBenefits = [
   {
@@ -28,6 +29,51 @@ const hostBenefits = [
     title: "Dynamic Tools",
     description: "We provide smart pricing tools, booking management, and analytics to help you optimize your listing and maximize your earnings.",
   },
+];
+
+const partnerTools = [
+    {
+        id: "financial",
+        title: "Financial & Payment Control",
+        icon: DollarSign,
+        points: [
+            "Choose between instant bookings or a 'Request to Book' option.",
+            "Daily payouts at guest check-in.",
+            "Waived bank transfer fees through 2025.",
+            "The platform facilitates the payment process for you.",
+            "Get group invoicing, reconciliation, and auto-onboarding for new properties."
+        ]
+    },
+    {
+        id: "safety",
+        title: "Protection & Safety",
+        icon: Lock,
+        points: [
+            "Protection against liability claims from guests and neighbors up to $/€/£1,000,000 for every reservation.",
+            "Options for damage protection.",
+        ]
+    },
+    {
+        id: "guest",
+        title: "Guest Management",
+        icon: UserCheck,
+        points: [
+            "Set up clear house rules.",
+            "Pre-booking messaging to chat with guests before accepting their stay.",
+            "Access guest travel history insights."
+        ]
+    },
+    {
+        id: "getting_started",
+        title: "Getting Started",
+        icon: Settings,
+        points: [
+            "Import property details from other travel sites.",
+            "Sync your calendar to avoid double bookings.",
+            "Your review scores from other travel sites can be converted and displayed.",
+            "A 'New to RoamFree' label helps your listing stand out."
+        ]
+    }
 ];
 
 const animatedHeadlines = [
@@ -142,6 +188,35 @@ export default function ForPartnersPage() {
                 <p className="text-muted-foreground mt-2">{benefit.description}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Powerful Tools Section */}
+        <section>
+          <h2 className="text-2xl font-semibold text-center mb-6">Powerful Tools for Partners</h2>
+          <div className="max-w-4xl mx-auto">
+            <Accordion type="single" collapsible className="w-full">
+              {partnerTools.map((tool) => (
+                <AccordionItem value={tool.id} key={tool.id}>
+                  <AccordionTrigger className="text-left hover:no-underline text-lg font-semibold">
+                    <div className="flex items-center gap-3">
+                        <tool.icon className="h-6 w-6 text-primary"/>
+                        {tool.title}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground text-base">
+                    <ul className="space-y-2 pl-4">
+                        {tool.points.map((point, index) => (
+                            <li key={index} className="flex items-start">
+                                <CheckCircle className="h-4 w-4 mr-3 mt-1 text-green-500 flex-shrink-0"/>
+                                <span>{point}</span>
+                            </li>
+                        ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </section>
 
