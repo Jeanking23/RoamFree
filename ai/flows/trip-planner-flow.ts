@@ -41,6 +41,7 @@ const AiTripPlanInputSchema = z.object({
     needsCarRental: z.boolean(),
     needsLocalTransport: z.boolean(),
     needsAiRides: z.boolean(),
+    needsDriver: z.boolean(),
   }).describe("Transportation preferences."),
   extras: z.array(z.string()).describe("Any extra services the user is interested in (e.g., Airport pickup, Local guide)."),
 });
@@ -91,7 +92,7 @@ Here is the user's survey data:
 - Desired Vibe: {{#each tripVibe}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
 - Travel Type: {{{travelType.type}}}{{#if travelType.isPetFriendly}}, with a pet{{/if}}
 - Accommodation Preferences: Types: {{#each accommodation.types}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}. Amenities: {{#each accommodation.amenities}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}.
-- Transport Needs: Flight: {{{transport.needsFlight}}}, Car Rental: {{{transport.needsCarRental}}}, Local Transport: {{{transport.needsLocalTransport}}}, AI Rides: {{{transport.needsAiRides}}}
+- Transport Needs: Flight: {{{transport.needsFlight}}}, Car Rental: {{{transport.needsCarRental}}}, Local Transport: {{{transport.needsLocalTransport}}}, AI Rides: {{{transport.needsAiRides}}}, Driver: {{{transport.needsDriver}}}
 - Extras: {{#if extras}}{{#each extras}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}None{{/if}}
 
 Based on this, generate a comprehensive trip plan.

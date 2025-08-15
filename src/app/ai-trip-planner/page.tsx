@@ -55,6 +55,7 @@ const tripPlannerSurveySchema = z.object({
   needsCarRental: z.boolean().default(false),
   needsLocalTransport: z.boolean().default(false),
   needsAiRides: z.boolean().default(false),
+  needsDriver: z.boolean().default(false),
   extras: z.array(z.string()),
 }).refine((data) => data.destinationSpecific || data.isSurpriseMe, {
   message: "Either a specific destination or 'Surprise Me' must be selected.",
@@ -84,7 +85,7 @@ const formSteps = [
     { title: "The Basics", fields: ["travelPurpose", "budgetLevel", "budgetCustom", "dateFrom", "dateTo", "isFlexibleDates"] },
     { title: "Destination & Vibe", fields: ["destinationSpecific", "isSurpriseMe", "destinationType", "tripVibe"] },
     { title: "Your Preferences", fields: ["travelerType", "isPetFriendly", "accommodationTypes", "accommodationAmenities"] },
-    { title: "Transport & Extras", fields: ["needsFlight", "needsCarRental", "needsLocalTransport", "needsAiRides", "extras"] },
+    { title: "Transport & Extras", fields: ["needsFlight", "needsCarRental", "needsLocalTransport", "needsAiRides", "needsDriver", "extras"] },
 ];
 
 const slideshowImages = [
@@ -131,6 +132,7 @@ export default function AiTripPlannerSurveyPage() {
       needsCarRental: false,
       needsLocalTransport: true,
       needsAiRides: true,
+      needsDriver: false,
       extras: [],
     },
   });
@@ -168,7 +170,7 @@ export default function AiTripPlannerSurveyPage() {
         tripVibe: values.tripVibe,
         travelType: { type: values.travelerType, isPetFriendly: values.isPetFriendly },
         accommodation: { types: values.accommodationTypes, amenities: values.accommodationAmenities },
-        transport: { needsFlight: values.needsFlight, needsCarRental: values.needsCarRental, needsLocalTransport: values.needsLocalTransport, needsAiRides: values.needsAiRides },
+        transport: { needsFlight: values.needsFlight, needsCarRental: values.needsCarRental, needsLocalTransport: values.needsLocalTransport, needsAiRides: values.needsAiRides, needsDriver: values.needsDriver },
         extras: values.extras,
     };
     
@@ -291,7 +293,7 @@ export default function AiTripPlannerSurveyPage() {
 
                     {currentStep === 3 && (
                         <div className="space-y-6">
-                             <FormItem><FormLabel>Transport Preferences</FormLabel><div className="flex flex-wrap gap-4"><FormField control={form.control} name="needsFlight" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Need flight?</FormLabel></FormItem>)} /><FormField control={form.control} name="needsCarRental" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Car rental needed?</FormLabel></FormItem>)} /><FormField control={form.control} name="needsLocalTransport" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Local transport?</FormLabel></FormItem>)} /><FormField control={form.control} name="needsAiRides" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">AI-arranged rides?</FormLabel></FormItem>)} /></div></FormItem>
+                             <FormItem><FormLabel>Transport Preferences</FormLabel><div className="flex flex-wrap gap-4"><FormField control={form.control} name="needsFlight" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Need flight?</FormLabel></FormItem>)} /><FormField control={form.control} name="needsCarRental" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Car rental needed?</FormLabel></FormItem>)} /><FormField control={form.control} name="needsLocalTransport" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Local transport?</FormLabel></FormItem>)} /><FormField control={form.control} name="needsAiRides" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">AI-arranged rides?</FormLabel></FormItem>)} /><FormField control={form.control} name="needsDriver" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Need a driver?</FormLabel></FormItem>)} /></div></FormItem>
                             <FormField control={form.control} name="extras" render={() => (<FormItem><FormLabel>Any Extras?</FormLabel><div className="grid md:grid-cols-2 gap-2">{extraItems.map((item) => (<FormField key={item} control={form.control} name="extras" render={({ field }) => { return (<FormItem key={item} className="flex flex-row items-start space-x-3 space-y-0"><FormControl><Checkbox checked={field.value?.includes(item)} onCheckedChange={(checked) => { return checked ? field.onChange([...field.value, item]) : field.onChange(field.value?.filter((value) => value !== item)) }} /></FormControl><FormLabel className="font-normal">{item}</FormLabel></FormItem>)}} />))}</div><FormMessage /></FormItem>)} />
                         </div>
                     )}
