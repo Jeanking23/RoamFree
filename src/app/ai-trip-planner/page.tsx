@@ -230,6 +230,16 @@ export default function AiTripPlannerSurveyPage() {
     router.push(`/stays/search?${queryParams.toString()}`);
   };
 
+  const handleArrangeTransport = () => {
+    if (!tripPlan) return;
+    const suggestion = tripPlan.transportSuggestion.toLowerCase();
+    if (suggestion.includes('car rental') || suggestion.includes('renting a car')) {
+        router.push('/car-rent');
+    } else {
+        router.push('/transport');
+    }
+  };
+
 
   const progress = ((currentStep + 1) / formSteps.length) * 100;
 
@@ -252,7 +262,7 @@ export default function AiTripPlannerSurveyPage() {
                 
                 <div className="space-y-4">
                     <Progress value={progress} className="w-full" />
-                    <p className="text-sm text-muted-foreground text-center">Step {currentStep + 1} of {formSteps.length}: {formSteps[currentStep].title}</p>
+                    <p className="text-sm text-muted-foreground text-center">Step {currentStep + 1} of {formSteps.length}: {formSteps[currentStep]?.title}</p>
                 </div>
                 
                 <AnimatePresence mode="wait">
@@ -413,10 +423,8 @@ export default function AiTripPlannerSurveyPage() {
                             <CardHeader><CardTitle>Transport Suggestion</CardTitle></CardHeader>
                             <CardContent><p className="text-sm">{tripPlan.transportSuggestion}</p></CardContent>
                             <CardFooter>
-                                <Button asChild className="w-full">
-                                    <Link href="/transport">
-                                        <Car className="mr-2 h-4 w-4"/>Arrange Transport
-                                    </Link>
+                                <Button className="w-full" onClick={handleArrangeTransport}>
+                                    <Car className="mr-2 h-4 w-4"/>Arrange Transport
                                 </Button>
                             </CardFooter>
                         </Card>
