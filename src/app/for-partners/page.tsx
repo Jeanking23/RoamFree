@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, MessageSquare, BarChart3, Rocket, Home, CarFront, Users, DollarSign, Lock, UserCheck, Settings, Upload, CheckCircle, BadgePlus } from 'lucide-react';
+import { ShieldCheck, MessageSquare, BarChart3, Rocket, Home, CarFront, Users, DollarSign, Lock, UserCheck, Settings, Upload, CheckCircle, BadgePlus, UploadCloud, BadgeHelp, Search } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
@@ -252,6 +252,59 @@ export default function ForPartnersPage() {
                 </AccordionItem>
               ))}
             </Accordion>
+          </div>
+        </section>
+
+        {/* Simple to Start Section */}
+        <section className="py-12">
+          <h2 className="text-3xl font-bold text-center mb-8">Simple to start and stay ahead</h2>
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div>
+              <UploadCloud className="h-12 w-12 mx-auto text-primary mb-4" />
+              <h3 className="font-semibold text-xl mb-2">Import your property details</h3>
+              <p className="text-muted-foreground">Seamlessly import your property information from other travel sites and avoid double-bookings with calendar sync.</p>
+            </div>
+            <div>
+              <BadgeHelp className="h-12 w-12 mx-auto text-primary mb-4" />
+              <h3 className="font-semibold text-xl mb-2">Start fast with review scores</h3>
+              <p className="text-muted-foreground">Your review scores from other travel sites are converted and displayed on your property page before your first RoamFree guests leave reviews.</p>
+            </div>
+            <div>
+              <Search className="h-12 w-12 mx-auto text-primary mb-4" />
+              <h3 className="font-semibold text-xl mb-2">Stand out in the market</h3>
+              <p className="text-muted-foreground">The "New to RoamFree" label helps you stand out in our search results.</p>
+            </div>
+          </div>
+           <div className="text-center mt-8">
+                <Button asChild size="lg">
+                    <Link href="/list-property">Get started today</Link>
+                </Button>
+            </div>
+        </section>
+
+        {/* Global Customer Base Section */}
+        <section className="py-12 bg-muted/30 rounded-lg">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-8">Reach a unique global customer base</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div>
+                <p className="text-4xl font-bold text-primary">1.8+ billion</p>
+                <p className="text-muted-foreground mt-2">vacation rental guests since 2010.</p>
+              </div>
+              <div>
+                <p className="text-4xl font-bold text-primary">1 in every 3</p>
+                <p className="text-muted-foreground mt-2">room nights booked in 2024 was a vacation rental.</p>
+              </div>
+              <div>
+                <p className="text-4xl font-bold text-primary">48% of nights</p>
+                <p className="text-muted-foreground mt-2">booked were for international stays at the end of 2023.</p>
+              </div>
+            </div>
+             <div className="text-center mt-8">
+                <Button asChild size="lg">
+                    <Link href="/signup">Reach new guests today</Link>
+                </Button>
+            </div>
           </div>
         </section>
 
