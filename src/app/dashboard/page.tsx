@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building, CarFront, LandPlot, ListPlus, BarChart3, MessageSquare, DollarSign, Eye, Edit3, Trash2, CalendarCheck2, Settings, AlertTriangle, ShieldCheck, Users, FileText, Wrench, LayoutDashboard } from 'lucide-react';
+import { Building, CarFront, LandPlot, ListPlus, BarChart3, MessageSquare, DollarSign, Eye, Edit3, Trash2, CalendarCheck2, Settings, AlertTriangle, ShieldCheck, Users, FileText, Wrench, LayoutDashboard, CheckCircle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Progress } from "@/components/ui/progress";
@@ -74,6 +74,10 @@ function DashboardPage() {
   const handleToolClick = (toolName: string) => {
     toast({ title: `${toolName}`, description: `Accessing the ${toolName.toLowerCase()}.` });
   };
+  
+  const handleBookingAction = (action: string, clientName: string) => {
+    toast({ title: `Action: ${action}`, description: `The request from ${clientName} has been processed.` });
+  }
 
   return (
     <div className="space-y-8">
@@ -215,17 +219,75 @@ function DashboardPage() {
             </TabsContent>
 
             <TabsContent value="bookings" className="p-4 md:p-0">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Manage Bookings &amp; Offers</CardTitle>
-                  <CardDescription>View and manage upcoming/past bookings for rentals, and offers for items for sale.</CardDescription>
-                </CardHeader>
-                <CardContent className="text-center py-12 bg-muted/30 rounded-md">
-                  <CalendarCheck2 className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-                  <p className="text-xl font-semibold">Booking &amp; Offer Management Coming Soon</p>
-                  <p className="text-muted-foreground">You'll be able to see guest/buyer details, manage check-ins, handle modifications, and accept/reject offers here. Digital lease signing and payment reminders for rentals will also be available.</p>
-                </CardContent>
-              </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Manage Bookings &amp; Offers</CardTitle>
+                        <CardDescription>Review and respond to new requests for your listings.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {/* Mock Booking Request */}
+                        <Card className="bg-muted/50">
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-lg font-semibold flex justify-between items-center">
+                                    <span>Booking Request: Sunny Beachfront Villa</span>
+                                    <span className="text-sm font-normal text-muted-foreground">2 hours ago</span>
+                                </CardTitle>
+                                <CardDescription className="flex items-center gap-2 pt-1">
+                                    <Avatar className="h-6 w-6"><AvatarFallback>EM</AvatarFallback></Avatar>
+                                    <span>Emily R. &bull; 2 Guests</span>
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="text-sm space-y-1">
+                                <p><strong className="text-foreground">Dates:</strong> Aug 15, 2024 - Aug 20, 2024</p>
+                                <p><strong className="text-foreground">Payout:</strong> $1,250.00</p>
+                            </CardContent>
+                            <CardFooter className="flex gap-2">
+                                <Button size="sm" onClick={() => handleBookingAction("Approved", "Emily R.")}>Approve</Button>
+                                <Button size="sm" variant="outline" onClick={() => handleBookingAction("Declined", "Emily R.")}>Decline</Button>
+                                <Button size="sm" variant="ghost">Message Emily</Button>
+                            </CardFooter>
+                        </Card>
+                        {/* Mock Offer */}
+                        <Card className="bg-muted/50">
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-lg font-semibold flex justify-between items-center">
+                                    <span>New Offer: Honda Civic 2019</span>
+                                    <span className="text-sm font-normal text-muted-foreground">8 hours ago</span>
+                                </CardTitle>
+                                <CardDescription className="flex items-center gap-2 pt-1">
+                                    <Avatar className="h-6 w-6"><AvatarFallback>MK</AvatarFallback></Avatar>
+                                    <span>Michael K.</span>
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="text-sm space-y-1">
+                                <p><strong className="text-foreground">Offer Amount:</strong> $17,200.00</p>
+                                <p><strong className="text-foreground">Asking Price:</strong> $17,500.00</p>
+                            </CardContent>
+                             <CardFooter className="flex gap-2">
+                                <Button size="sm" onClick={() => handleBookingAction("Accepted", "Michael K.")}>Accept Offer</Button>
+                                <Button size="sm" variant="outline" onClick={() => handleBookingAction("Countered", "Michael K.")}>Counter-offer</Button>
+                                <Button size="sm" variant="ghost">Message Michael</Button>
+                            </CardFooter>
+                        </Card>
+                         {/* Mock Completed Booking */}
+                        <Card className="opacity-70">
+                             <CardHeader className="pb-3">
+                                <CardTitle className="text-lg font-semibold flex justify-between items-center">
+                                    <span className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-600"/>Completed: Toyota Camry 2022</span>
+                                    <span className="text-sm font-normal text-muted-foreground">1 day ago</span>
+                                </CardTitle>
+                                <CardDescription className="flex items-center gap-2 pt-1">
+                                    <Avatar className="h-6 w-6"><AvatarFallback>LD</AvatarFallback></Avatar>
+                                    <span>Linda Davis</span>
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="text-sm">
+                                <p><strong className="text-foreground">Dates:</strong> July 10, 2024 - July 12, 2024</p>
+                                <p><strong className="text-foreground">Payout:</strong> $165.00</p>
+                            </CardContent>
+                        </Card>
+                    </CardContent>
+                </Card>
             </TabsContent>
 
             <TabsContent value="messages" className="p-4 md:p-0">
