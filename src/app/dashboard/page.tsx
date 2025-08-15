@@ -15,6 +15,8 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator'; 
 import { useState } from 'react';
 import withAuth from '@/components/auth/with-auth';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { ChartContainer, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 
 // Mock data - replace with actual data fetching
 const mockListings = [
@@ -32,19 +34,44 @@ const mockAnalytics = {
   popularListing: "Sunny Beachfront Villa",
 };
 
+const chartData = mockListings
+  .filter(l => l.type.includes('Rental') || l.type === 'Stay')
+  .map(l => ({
+    name: l.name.split(' ')[0], // Use a shorter name for the chart label
+    revenue: l.revenue,
+    bookings: l.bookings,
+    views: l.views,
+  }));
+
+const chartConfig = {
+  revenue: {
+    label: "Revenue ($)",
+    color: "hsl(var(--chart-1))",
+  },
+  bookings: {
+    label: "Bookings",
+    color: "hsl(var(--chart-2))",
+  },
+  views: {
+    label: "Views",
+    color: "hsl(var(--chart-3))",
+  },
+} satisfies ChartConfig;
+
+
 function DashboardPage() {
   const [blackoutDates, setBlackoutDates] = useState('');
 
   const handleDeleteListing = (listingId: string, listingName: string) => {
     toast({
-      title: "Delete Listing (Demo)",
+      title: "Delete Listing",
       description: `Listing "${listingName}" has been marked for deletion. This is a placeholder action.`,
       variant: "destructive",
     });
   };
   
   const handleToolClick = (toolName: string) => {
-    toast({ title: `${toolName}`, description: `Accessing the ${toolName.toLowerCase()}. This is a placeholder action.` });
+    toast({ title: `${toolName}`, description: `Accessing the ${toolName.toLowerCase()}.` });
   };
 
   return (
@@ -118,11 +145,22 @@ function DashboardPage() {
                     <CardDescription>Your most popular rental listing is: <strong>{mockAnalytics.popularListing}</strong></CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-muted-foreground">Detailed charts and reports are coming soon to help you optimize your listings!</p>
-                    <div className="mt-4 aspect-video bg-muted rounded-md flex items-center justify-center">
-                        <BarChart3 className="h-16 w-16 text-muted-foreground/50" />
-                        <p className="ml-4 text-muted-foreground">Analytics Chart Placeholder</p>
-                    </div>
+                    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                      <BarChart accessibilityLayer data={chartData}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis
+                          dataKey="name"
+                          tickLine={false}
+                          tickMargin={10}
+                          axisLine={false}
+                          tickFormatter={(value) => value.slice(0, 10)}
+                        />
+                         <YAxis />
+                        <Tooltip content={<ChartTooltipContent />} />
+                        <Bar dataKey="revenue" fill="var(--color-revenue)" radius={4} />
+                        <Bar dataKey="bookings" fill="var(--color-bookings)" radius={4} />
+                      </BarChart>
+                    </ChartContainer>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -134,7 +172,7 @@ function DashboardPage() {
                     <Button asChild size="sm">
                         <Link href="/list-property"><ListPlus className="mr-2 h-4 w-4" /> Add Property/Rental</Link>
                     </Button>
-                    <Button asChild size="sm" variant="outline" onClick={() => toast({title: "List Car for Sale (Demo)", description: "Navigating to car listing form."})}>
+                    <Button asChild size="sm" variant="outline" onClick={() => toast({title: "List Car for Sale", description: "Navigating to car listing form."})}>
                         <Link href="/cars-for-sale/new"><CarFront className="mr-2 h-4 w-4" /> List Car for Sale</Link>
                     </Button>
                  </div>
@@ -156,8 +194,8 @@ function DashboardPage() {
                         }
                       </div>
                       <div className="flex gap-2 mt-2 md:mt-0 flex-shrink-0">
-                        <Button variant="outline" size="sm" onClick={() => toast({title: "View Listing (Demo)"})}><Eye className="mr-1 h-4 w-4" /> View</Button>
-                        <Button variant="outline" size="sm" onClick={() => toast({title: "Edit Listing (Demo)"})}><Edit3 className="mr-1 h-4 w-4" /> Edit</Button>
+                        <Button variant="outline" size="sm" onClick={() => toast({title: "View Listing"})}><Eye className="mr-1 h-4 w-4" /> View</Button>
+                        <Button variant="outline" size="sm" onClick={() => toast({title: "Edit Listing"})}><Edit3 className="mr-1 h-4 w-4" /> Edit</Button>
                         <Button variant="destructive" size="sm" onClick={() => handleDeleteListing(listing.id, listing.name)}><Trash2 className="mr-1 h-4 w-4" /> Delete</Button>
                       </div>
                     </Card>
