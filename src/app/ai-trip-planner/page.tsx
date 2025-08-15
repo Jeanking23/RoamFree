@@ -31,6 +31,7 @@ import { format } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
 
 const tripPlannerSurveySchema = z.object({
   travelPurpose: z.enum(["VACATION", "BUSINESS", "FAMILY", "ROMANTIC", "EVENT", "SPIRITUAL"], {
@@ -96,6 +97,7 @@ const slideshowImages = [
 ];
 
 export default function AiTripPlannerSurveyPage() {
+  const router = useRouter();
   const [tripPlan, setTripPlan] = useState<AiTripPlanOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -212,6 +214,19 @@ export default function AiTripPlannerSurveyPage() {
     if (currentStep > 0) {
       setCurrentStep(step => step - 1);
     }
+  };
+
+  const handleBookStay = () => {
+    if (!tripPlan) return;
+    const accommodationType = tripPlan.accommodationSuggestion.type;
+    const queryParams = new URLSearchParams();
+    
+    if (accommodationType.toLowerCase().includes('hotel') || accommodationType.toLowerCase().includes('resort')) {
+      queryParams.set('propertyType', 'HOTEL');
+    } else {
+      queryParams.set('propertyType', 'RENTAL');
+    }
+    router.push(`/stays/search?${queryParams.toString()}`);
   };
 
   const progress = ((currentStep + 1) / formSteps.length) * 100;
@@ -387,14 +402,20 @@ export default function AiTripPlannerSurveyPage() {
                                 <p className="text-muted-foreground text-sm">{tripPlan.accommodationSuggestion.reason}</p>
                             </CardContent>
                              <CardFooter>
-                                <Button asChild className="w-full"><Link href="/stays/search"><BedDouble className="mr-2 h-4 w-4"/>Book this Stay (Demo)</Link></Button>
+                                <Button className="w-full" onClick={handleBookStay}>
+                                    <BedDouble className="mr-2 h-4 w-4"/>Book this Stay
+                                </Button>
                             </CardFooter>
                         </Card>
                         <Card>
                             <CardHeader><CardTitle>Transport Suggestion</CardTitle></CardHeader>
                             <CardContent><p className="text-sm">{tripPlan.transportSuggestion}</p></CardContent>
                             <CardFooter>
-                                <Button asChild className="w-full"><Link href="/transport"><Car className="mr-2 h-4 w-4"/>Arrange Transport (Demo)</Link></Button>
+                                <Button asChild className="w-full">
+                                    <Link href="/transport">
+                                        <Car className="mr-2 h-4 w-4"/>Arrange Transport
+                                    </Link>
+                                </Button>
                             </CardFooter>
                         </Card>
                     </div>
