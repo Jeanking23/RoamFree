@@ -118,7 +118,7 @@ export default function ForPartnersPage() {
       {/* Hero Section */}
       <section className="relative h-[60vh] md:h-[80vh] w-full flex items-center justify-center text-white">
         <Image
-          src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3N0JTIwaG91c2V8ZW58MHx8fHwxNzU4NzM3OTQwfDA&ixlib-rb-4.1.0&q=80&w=1080"
+          src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3N0JTIwaG91c2V8ZW58MHx8fHwxNzU4NzM3OTQwfDA&ixlib=rb-4.1.0&q=80&w=1080"
           alt="Beautiful modern living room"
           fill
           className="object-cover"
@@ -285,11 +285,11 @@ export default function ForPartnersPage() {
         {/* Global Customer Base Section */}
         <section className="relative py-12 bg-muted/30 rounded-lg overflow-hidden">
           <Image
-            src="https://images.unsplash.com/photo-1571434220971-17d1783a31e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b3JsZCUyMG1hcCUyMGRvdHN8ZW58MHx8fHwxNzU5MjM2MjYwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+            src="https://images.unsplash.com/photo-1585124841948-a29d16dcf4c7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNHx8d29ybGQlMjBtYXB8ZW58MHx8fHwxNzU1Mjg4OTE4fDA&ixlib=rb-4.1.0&q=80&w=1080"
             alt="World map"
             fill
             className="object-cover opacity-10"
-            data-ai-hint="world map dots"
+            data-ai-hint="world map"
           />
           <div className="relative container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-8">Reach a unique global customer base</h2>
