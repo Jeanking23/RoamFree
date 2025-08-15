@@ -99,7 +99,7 @@ export default function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-9 w-9 relative rounded-full">
               <Avatar className="h-9 w-9">
-                <AvatarImage src="https://images.unsplash.com/photo-1633957897986-70e83293f3ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwZXJzb24lMjBhdmF0YXJ8ZW58MHx8fHwxNzUzODk0OTY2fDA&ixlib=rb-4.1.0&q=80&w=1080" alt="User Avatar" data-ai-hint="person avatar"/>
+                <AvatarImage src="https://images.unsplash.com/photo-1633957897986-70e83293f3ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwZXJzb24lMjBhdmF0YXJ8ZW58MHx8fHwxNzUzODk0OTY2fDA&ixlib-rb-4.1.0&q=80&w=1080" alt="User Avatar" data-ai-hint="person avatar"/>
                 <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
               </Avatar>
             </Button>
@@ -220,7 +220,7 @@ export default function Header() {
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="relative rounded-full">
                             <Avatar className="h-8 w-8">
-                                <AvatarImage src="https://images.unsplash.com/photo-1724435811349-32d27f4d5806?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBhdmF0YXJ8ZW58MHx8fHwxNzUzODk0OTY2fDA&ixlib=rb-4.1.0&q=80&w=1080" alt="User Avatar" data-ai-hint="person avatar"/>
+                                <AvatarImage src="https://images.unsplash.com/photo-1724435811349-32d27f4d5806?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBhdmF0YXJ8ZW58MHx8fHwxNzUzODk0OTY2fDA&ixlib-rb-4.1.0&q=80&w=1080" alt="User Avatar" data-ai-hint="person avatar"/>
                                 <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
                             </Avatar>
                         </Button>
