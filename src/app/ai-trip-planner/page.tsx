@@ -221,6 +221,9 @@ export default function AiTripPlannerSurveyPage() {
     const accommodationType = tripPlan.accommodationSuggestion.type.toLowerCase();
     const queryParams = new URLSearchParams();
     
+    // Pass the name of the suggested accommodation for direct searching
+    queryParams.set('q', tripPlan.accommodationSuggestion.name);
+
     if (accommodationType.includes('hotel') || accommodationType.includes('resort')) {
       queryParams.set('propertyType', 'HOTEL');
     } else { // Covers Apartment, Villa, Guest House, etc.
@@ -233,10 +236,11 @@ export default function AiTripPlannerSurveyPage() {
   const handleArrangeTransport = () => {
     if (!tripPlan) return;
     const suggestion = tripPlan.transportSuggestion.toLowerCase();
-    if (suggestion.includes('car rental') || suggestion.includes('renting a car')) {
+    // Prioritize navigating to car rental page if mentioned
+    if (suggestion.includes('car rental') || suggestion.includes('renting a car') || suggestion.includes('private driver')) {
         router.push('/car-rent');
     } else {
-        router.push('/transport');
+        router.push('/transport'); // General transport for rides, etc.
     }
   };
 
