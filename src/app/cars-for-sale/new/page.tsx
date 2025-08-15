@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CarFront, DollarSign, Gauge, CalendarDays, UploadCloud, Send } from 'lucide-react';
+import { CarFront, DollarSign, Gauge, CalendarDays, UploadCloud, Send, X } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -31,21 +31,36 @@ const carForSaleSchema = z.object({
 });
 
 const carForRentSchema = z.object({
-  title: z.string().min(5, "Title is required."),
-  pricePerDay: z.coerce.number().positive(),
-  pricePerHour: z.coerce.number().positive().optional(),
-  features: z.string().optional(),
+  title: z.string().min(5, "Title must be at least 5 characters."),
+  pricePerDay: z.coerce.number().positive("Daily price is required."),
+  pricePerHour: z.coerce.number().positive("Hourly price is required.").optional(),
+  pricePerWeek: z.coerce.number().positive("Weekly price is required.").optional(),
+  features: z.array(z.object({ value: z.string() })).optional(),
+  description: z.string().min(20, "Please provide a description.").max(500),
+  ecoFriendly: z.boolean().default(false),
+  insuranceIncluded: z.boolean().default(true),
 });
 
 type CarForSaleFormValues = z.infer<typeof carForSaleSchema>;
+type CarForRentFormValues = z.infer<typeof carForRentSchema>;
 
 export default function ListCarPage() {
-  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
-  const saleForm = useForm<CarForSaleFormValues>({ resolver: zodResolver(carForSaleSchema) });
-  // You would create a separate form instance for the rental tab
-  // const rentForm = useForm...
+  const [salePhotoPreviews, setSalePhotoPreviews] = useState<string[]>([]);
+  const [rentPhotoPreviews, setRentPhotoPreviews] = useState<string[]>([]);
+  const [rentFeatureInput, setRentFeatureInput] = useState("");
 
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const saleForm = useForm<CarForSaleFormValues>({ resolver: zodResolver(carForSaleSchema) });
+  const rentForm = useForm<CarForRentFormValues>({ 
+      resolver: zodResolver(carForRentSchema),
+      defaultValues: { features: [], ecoFriendly: false, insuranceIncluded: true }
+  });
+  
+  const { fields: rentFeatures, append: appendRentFeature, remove: removeRentFeature } = useFieldArray({
+    control: rentForm.control,
+    name: "features",
+  });
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>, type: 'sale' | 'rent') => {
     const files = event.target.files;
     if (files) {
       const newPreviews: string[] = [];
@@ -54,24 +69,34 @@ export default function ListCarPage() {
         reader.onloadend = () => {
           newPreviews.push(reader.result as string);
           if (newPreviews.length === files.length) {
-            setPhotoPreviews(prev => [...prev, ...newPreviews]);
+            if (type === 'sale') setSalePhotoPreviews(prev => [...prev, ...newPreviews]);
+            else setRentPhotoPreviews(prev => [...prev, ...newPreviews]);
           }
         };
         reader.readAsDataURL(file);
       });
     }
   };
-
-  const onSaleSubmit = (data: CarForSaleFormValues) => {
-    console.log("Car for Sale Submitted:", data, { photos: photoPreviews });
-    toast({ title: "Listing Submitted!", description: "Your car has been listed for sale." });
-    saleForm.reset();
-    setPhotoPreviews([]);
+  
+  const handleAddRentFeature = () => {
+    if (rentFeatureInput.trim()) {
+      appendRentFeature({ value: rentFeatureInput.trim() });
+      setRentFeatureInput("");
+    }
   };
 
-  const onRentSubmit = (data: any) => { // Replace 'any' with Zod schema for rent
-    console.log("Car for Rent Submitted:", data);
+  const onSaleSubmit = (data: CarForSaleFormValues) => {
+    console.log("Car for Sale Submitted:", data, { photos: salePhotoPreviews });
+    toast({ title: "Listing Submitted!", description: "Your car has been listed for sale." });
+    saleForm.reset();
+    setSalePhotoPreviews([]);
+  };
+
+  const onRentSubmit = (data: CarForRentFormValues) => {
+    console.log("Car for Rent Submitted:", data, { photos: rentPhotoPreviews });
     toast({ title: "Listing Submitted!", description: "Your car has been listed for rent." });
+    rentForm.reset();
+    setRentPhotoPreviews([]);
   };
 
   return (
@@ -108,10 +133,10 @@ export default function ListCarPage() {
                   <FormField control={saleForm.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the vehicle's features, condition, and history." rows={5} {...field}/></FormControl><FormMessage/></FormItem>)}/>
                   <FormItem>
                     <FormLabel className="flex items-center gap-2"><UploadCloud className="h-5 w-5"/>Photos</FormLabel>
-                    <FormControl><Input type="file" accept="image/*" multiple onChange={handlePhotoUpload} /></FormControl>
+                    <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoUpload(e, 'sale')} /></FormControl>
                     <FormDescription>Upload up to 10 photos of your vehicle.</FormDescription>
                     <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
-                      {photoPreviews.map((src, index) => (
+                      {salePhotoPreviews.map((src, index) => (
                         <div key={index} className="relative aspect-square rounded-md overflow-hidden">
                           <Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" />
                         </div>
@@ -123,15 +148,55 @@ export default function ListCarPage() {
               </Form>
             </TabsContent>
             <TabsContent value="for_rent" className="mt-6">
-                <Card className="border-dashed">
-                    <CardHeader className="text-center">
-                        <CardTitle>Coming Soon!</CardTitle>
-                        <CardDescription>The car rental listing form is under development.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-center">
-                        <p className="text-muted-foreground">We're working hard to bring you a seamless car rental listing experience. Check back soon!</p>
-                    </CardContent>
-                </Card>
+                 <Form {...rentForm}>
+                <form onSubmit={rentForm.handleSubmit(onRentSubmit)} className="space-y-6">
+                  <FormField control={rentForm.control} name="title" render={({ field }) => (<FormItem><FormLabel>Rental Listing Title</FormLabel><FormControl><Input placeholder="e.g., Reliable Sedan for City Trips" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                  
+                  <div className="grid md:grid-cols-3 gap-4">
+                     <FormField control={rentForm.control} name="pricePerDay" render={({ field }) => (<FormItem><FormLabel>Price per Day (USD)</FormLabel><FormControl><Input type="number" placeholder="55" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                     <FormField control={rentForm.control} name="pricePerHour" render={({ field }) => (<FormItem><FormLabel>Price per Hour (Optional)</FormLabel><FormControl><Input type="number" placeholder="10" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                     <FormField control={rentForm.control} name="pricePerWeek" render={({ field }) => (<FormItem><FormLabel>Price per Week (Optional)</FormLabel><FormControl><Input type="number" placeholder="350" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                  </div>
+
+                  <FormField control={rentForm.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the vehicle, its best uses, and any rental rules." rows={4} {...field}/></FormControl><FormMessage/></FormItem>)}/>
+
+                  <FormItem>
+                    <FormLabel>Features</FormLabel>
+                    <div className="flex gap-2">
+                        <Input value={rentFeatureInput} onChange={(e) => setRentFeatureInput(e.target.value)} placeholder="e.g., Apple CarPlay, Sunroof" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddRentFeature(); } }}/>
+                        <Button type="button" onClick={handleAddRentFeature}>Add</Button>
+                    </div>
+                    <div className="mt-2 space-y-2">
+                        {rentFeatures.map((field, index) => (
+                            <div key={field.id} className="flex items-center justify-between p-2 bg-muted rounded-md text-sm">
+                                <span>{field.value}</span>
+                                <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeRentFeature(index)}>
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                  </FormItem>
+                  
+                  <div className="space-y-2">
+                     <FormField control={rentForm.control} name="ecoFriendly" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Eco-Friendly Vehicle</FormLabel></FormItem> )}/>
+                     <FormField control={rentForm.control} name="insuranceIncluded" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Basic Insurance Included</FormLabel></FormItem> )}/>
+                  </div>
+                  
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2"><UploadCloud className="h-5 w-5"/>Photos</FormLabel>
+                    <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoUpload(e, 'rent')} /></FormControl>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
+                      {rentPhotoPreviews.map((src, index) => (
+                        <div key={index} className="relative aspect-square rounded-md overflow-hidden">
+                          <Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  </FormItem>
+                  <Button type="submit" size="lg" className="w-full sm:w-auto"><Send className="mr-2 h-4 w-4"/>Submit Rental Listing</Button>
+                </form>
+              </Form>
             </TabsContent>
           </Tabs>
         </CardContent>
