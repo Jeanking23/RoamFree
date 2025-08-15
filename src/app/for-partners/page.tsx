@@ -197,23 +197,25 @@ export default function ForPartnersPage() {
           <div className="max-w-4xl mx-auto">
             <Accordion type="single" collapsible className="w-full">
               {partnerTools.map((tool) => (
-                <AccordionItem value={tool.id} key={tool.id}>
-                  <AccordionTrigger className="text-left hover:no-underline text-lg font-semibold">
-                    <div className="flex items-center gap-3">
-                        <tool.icon className="h-6 w-6 text-primary"/>
-                        {tool.title}
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground text-base">
-                    <ul className="space-y-2 pl-4">
-                        {tool.points.map((point, index) => (
-                            <li key={index} className="flex items-start">
-                                <CheckCircle className="h-4 w-4 mr-3 mt-1 text-green-500 flex-shrink-0"/>
-                                <span>{point}</span>
-                            </li>
-                        ))}
-                    </ul>
-                  </AccordionContent>
+                <AccordionItem value={tool.id} key={tool.id} className="border-b-0 mb-2">
+                    <Card className="bg-muted/30">
+                        <AccordionTrigger className="text-left hover:no-underline text-lg font-semibold p-6">
+                            <div className="flex items-center gap-3">
+                                <tool.icon className="h-6 w-6 text-primary"/>
+                                {tool.title}
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground text-base px-6">
+                            <ul className="space-y-2 pl-4">
+                                {tool.points.map((point, index) => (
+                                    <li key={index} className="flex items-start">
+                                        <CheckCircle className="h-4 w-4 mr-3 mt-1 text-green-500 flex-shrink-0"/>
+                                        <span>{point}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </AccordionContent>
+                    </Card>
                 </AccordionItem>
               ))}
             </Accordion>
