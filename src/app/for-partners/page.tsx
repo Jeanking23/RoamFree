@@ -3,85 +3,109 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Building, Car, Users, BarChart2, Handshake, ArrowRight } from 'lucide-react';
+import { Check, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 
-const partnerSections = [
-  {
-    icon: Building,
-    title: "Property & Rental Owners",
-    description: "List your homes, villas, apartments, or land. Reach a global audience and manage your listings with our powerful dashboard, pricing tools, and booking calendar.",
-    cta: "Become a Property Partner",
-    link: "/signup",
-    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxob3VzZSUyMGV4dGVyaW9yfGVufDB8fHx8MTc1Mzg3OTU3MXww&ixlib=rb-4.1.0&q=80&w=1080",
-    dataAiHint: "house exterior"
-  },
-  {
-    icon: Car,
-    title: "Vehicle & Transport Partners",
-    description: "Whether you're listing a car for sale, offering rental vehicles, or providing ride services, our platform connects you with customers who need to get around.",
-    cta: "Join as a Transport Partner",
-    link: "/signup",
-    image: "https://images.unsplash.com/photo-1554224024-81a1b8a24c25?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjYXIlMjBmbGVldHxlbnwwfHx8fDE3NTM4Nzk1NzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    dataAiHint: "car fleet"
-  },
-  {
-    icon: Handshake,
-    title: "Corporate & Business Solutions",
-    description: "Streamline your company's travel with our business solutions. Get access to exclusive discounts, comprehensive reporting, and centralized billing.",
-    cta: "Contact Corporate Sales",
-    link: "/corporate-solutions-demo",
-    image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxidXNpbmVzcyUyMG1lZXRpbmd8ZW58MHx8fHwxNzUzODc5NTcxfDA&ixlib-rb-4.1.0&q=80&w=1080",
-    dataAiHint: "business meeting"
-  },
-  {
-    icon: BarChart2,
-    title: "Affiliate Program",
-    description: "Join our affiliate program to earn commissions by promoting RoamFree. Get access to marketing materials and track your performance with our dedicated portal.",
-    cta: "Join the Program (Soon)",
-    link: "#!",
-    image: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhZmZpbGlhdGUlMjBtYXJrZXRpbmd8ZW58MHx8fHwxNzUzODc5NTcxfDA&ixlib-rb-4.1.0&q=80&w=1080",
-    dataAiHint: "affiliate marketing"
-  },
+const registrationBenefits = [
+  "45% of hosts get their first booking within a week",
+  "Choose instant bookings or Request to Book",
+  "We'll facilitate payments for you",
+  "Daily payouts at guest check-in",
+  "Waived bank transfer fees for new partners",
+];
+
+const hostBenefits = [
+    { 
+        title: "Your rental, your rules",
+        items: [
+            "Accept or decline bookings with Request to Book.",
+            "Manage guests' expectations by setting up clear house rules.",
+        ]
+    },
+    { 
+        title: "Get to know your guests",
+        items: [
+            "Chat with guests before accepting their stay with pre-booking messaging.",
+            "Access guest travel history insights.",
+        ]
+    },
+    { 
+        title: "Stay protected",
+        items: [
+            "Protection against liability claims from guests and neighbors.",
+            "Selection of damage protection options to choose from.",
+        ]
+    },
 ];
 
 export default function ForPartnersPage() {
   return (
-    <div className="space-y-8">
-      <Card className="shadow-lg rounded-lg overflow-hidden">
-        <CardHeader className="bg-primary/10 text-center p-8 md:p-12">
-          <Briefcase className="h-16 w-16 text-primary mx-auto mb-4" />
-          <CardTitle className="text-3xl md:text-4xl font-headline text-primary">
-            Partner with RoamFree
-          </CardTitle>
-          <CardDescription className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Join our network of partners and unlock new opportunities. Whether you have a property to list, a car to rent, or a business travel need, we have a solution for you.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-6 md:p-8">
-          <div className="grid md:grid-cols-2 gap-6">
-            {partnerSections.map((section) => (
-              <Card key={section.title} className="overflow-hidden group flex flex-col">
-                <div className="relative h-48 w-full">
-                  <Image src={section.image} alt={section.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={section.dataAiHint} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+    <div className="space-y-0 md:-mt-8 md:-mx-8">
+      <div className="bg-primary text-primary-foreground p-6 md:p-12 lg:p-16">
+        <div className="container mx-auto">
+            <div className="bg-green-600 text-white text-sm font-semibold py-1 px-3 rounded-full inline-block mb-8">
+                Join thousands of other listings already on RoamFree
+            </div>
+            <div className="grid lg:grid-cols-2 gap-8 items-center">
+                <div className="space-y-4">
+                    <h1 className="text-4xl md:text-5xl font-bold font-headline">List your property on RoamFree</h1>
+                    <p className="text-lg md:text-xl text-primary-foreground/90 max-w-lg">
+                        List on one of the world's most downloaded travel apps to earn more, faster, and expand into new markets.
+                    </p>
                 </div>
-                 <div className="p-6 flex flex-col flex-grow">
-                    <section.icon className="h-8 w-8 text-accent mb-3" />
-                    <h3 className="text-xl font-semibold mb-2">{section.title}</h3>
-                    <p className="text-sm text-muted-foreground flex-grow mb-4">{section.description}</p>
-                    <Button asChild>
-                      <Link href={section.link}>
-                        {section.cta} <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                 </div>
-              </Card>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+                <Card className="shadow-2xl">
+                    <CardHeader>
+                        <CardTitle className="text-2xl">Register for free</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <ul className="space-y-2">
+                            {registrationBenefits.map((item, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                    <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <Button asChild size="lg" className="w-full text-lg py-6">
+                            <Link href="/signup">
+                                Get started now <ArrowRight className="ml-2 h-5 w-5" />
+                            </Link>
+                        </Button>
+                         <div className="text-center pt-2">
+                            <p className="text-sm">Already started registration? <Link href="/signin" className="text-primary hover:underline">Continue your registration</Link></p>
+                         </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+      </div>
+      
+      <div className="bg-background py-12 lg:py-16">
+        <div className="container mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline mb-8">Host worry-free. We've got your back</h2>
+            <div className="grid md:grid-cols-3 gap-8 text-left">
+                {hostBenefits.map(section => (
+                    <div key={section.title}>
+                        <h3 className="text-xl font-semibold mb-4">{section.title}</h3>
+                        <ul className="space-y-3">
+                            {section.items.map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-3">
+                                    <Check className="h-6 w-6 text-primary mt-0.5 flex-shrink-0" />
+                                    <span className="text-muted-foreground">{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </div>
+            <Button asChild size="lg" className="mt-12">
+                <Link href="/list-property">
+                    Host with us today
+                </Link>
+            </Button>
+            <p className="text-xs text-muted-foreground mt-4">*Feature availability may vary based on your listing type and location.</p>
+        </div>
+      </div>
     </div>
   );
 }
