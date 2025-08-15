@@ -356,7 +356,7 @@ export default function HomePage() {
       <section className="container mx-auto px-4">
         <h2 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6 flex items-center">
           <Sparkles className="mr-3 h-7 w-7 text-primary" />
-          Trending Near You (Demo Location)
+          Trending Near You
         </h2>
         <div className="flex gap-6 overflow-x-auto pb-4 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-x-visible no-scrollbar">
           {mockTrendingDestinations.map(dest => {
