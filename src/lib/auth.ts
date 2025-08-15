@@ -43,9 +43,12 @@ async function signInWithGoogle(): Promise<{ uid: string } | { error: string } |
     return { uid: user.uid };
   } catch (error) {
     const authError = error as AuthError;
-    // Handle specific errors like account-exists-with-different-credential
     if (authError.code === 'auth/popup-closed-by-user') {
         return null; // User closed the popup, not an error to display
+    }
+    // Provide a more helpful error message for the common unauthorized domain issue.
+    if (authError.code === 'auth/unauthorized-domain') {
+      return { error: "This domain is not authorized for Google Sign-In. Please add 'localhost' to the authorized domains in your Firebase Authentication settings." };
     }
     return { error: authError.message };
   }
