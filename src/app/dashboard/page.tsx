@@ -44,7 +44,7 @@ function DashboardPage() {
   };
   
   const handleToolClick = (toolName: string) => {
-    toast({ title: `${toolName} (Demo)`, description: `Accessing the ${toolName.toLowerCase()}. This is a placeholder action.` });
+    toast({ title: `${toolName}`, description: `Accessing the ${toolName.toLowerCase()}. This is a placeholder action.` });
   };
 
   return (
@@ -211,13 +211,13 @@ function DashboardPage() {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <Card className="p-4">
-                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><DollarSign className="h-5 w-5"/>Automated Pricing Tool (Demo)</CardTitle>
+                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><DollarSign className="h-5 w-5"/>Automated Pricing Tool</CardTitle>
                             <p className="text-sm text-muted-foreground mb-3">Let AI suggest optimal pricing based on demand, season, and local events for rentals. Get valuation insights for sale items.</p>
                             <Button onClick={() => handleToolClick("Smart Pricing Tool")}>Access Smart Pricing</Button>
                         </Card>
                         <Card className="p-4">
-                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><CalendarCheck2 className="h-5 w-5"/>Dynamic Availability (Rentals - Demo)</CardTitle>
-                            <p className="text-sm text-muted-foreground mb-3">Set custom rules for your rental listing's availability. Sync with Airbnb/Booking.com (Demo).</p>
+                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><CalendarCheck2 className="h-5 w-5"/>Dynamic Availability (Rentals)</CardTitle>
+                            <p className="text-sm text-muted-foreground mb-3">Set custom rules for your rental listing's availability. Sync with Airbnb/Booking.com.</p>
                             <div className="space-y-2">
                                 <div className="flex items-center space-x-2">
                                     <Switch id="instant-booking" defaultChecked />
@@ -241,17 +241,17 @@ function DashboardPage() {
                             <Button className="mt-3" variant="outline" onClick={() => handleToolClick("Availability Settings")}>Update Availability Settings</Button>
                         </Card>
                         <Card className="p-4">
-                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><AlertTriangle className="h-5 w-5"/>Damage &amp; Dispute Resolution (Demo)</CardTitle>
+                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><AlertTriangle className="h-5 w-5"/>Damage &amp; Dispute Resolution</CardTitle>
                             <p className="text-sm text-muted-foreground mb-3">Submit photo/video-based damage claims for rentals and access mediation services.</p>
                             <Button variant="secondary" onClick={() => handleToolClick("Dispute System")}><Wrench className="mr-2 h-4 w-4"/>Open Dispute System</Button>
                         </Card>
                          <Card className="p-4">
-                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><Users className="h-5 w-5"/>Tenant/Buyer Screening (Demo)</CardTitle>
+                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><Users className="h-5 w-5"/>Tenant/Buyer Screening</CardTitle>
                             <p className="text-sm text-muted-foreground mb-3">Optional tools to verify ID, income, or rental history for tenants, or buyer credibility for sales.</p>
                             <Button variant="outline" onClick={() => handleToolClick("Screening Tools")}>Access Screening Tools</Button>
                         </Card>
                         <Card className="p-4">
-                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><FileText className="h-5 w-5"/>Document Management (Demo)</CardTitle>
+                            <CardTitle className="text-lg mb-2 flex items-center gap-2"><FileText className="h-5 w-5"/>Document Management</CardTitle>
                             <p className="text-sm text-muted-foreground mb-3">Upload and manage legal documents for properties for sale (title deeds, zoning certs). Manage digital lease agreements for rentals.</p>
                             <Button variant="outline" onClick={() => handleToolClick("Document Management")}>Manage Documents</Button>
                         </Card>
