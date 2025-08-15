@@ -83,6 +83,15 @@ const animatedHeadlines = [
     "Offer Experiences"
 ];
 
+const testimonials = [
+  { quote: `"Travelers come to Charming Lofts from all over the world. RoamFree really helps with that. Unlike some other platforms, it's multinational and caters to a much larger audience. For me, that was a real game-changer."`, author: "Louis Gonzalez", location: "Charming Lofts, Los Angeles", avatarHint: "man indoor", borderColor: "border-yellow-400" },
+  { quote: `"After joining RoamFree and setting up the listing, my occupancy went up significantly and bookings were coming in five to six months in advance."`, author: "Zoey Berghoff", location: "US-based host", avatarHint: "woman indoor", borderColor: "border-yellow-400" },
+  { quote: `"Getting started with RoamFree was super simple and took no time at all."`, author: "Shawn Ritzenthaler", location: "Owner of The Hollywood Hills Mansion", avatarHint: "man outdoor", borderColor: "border-yellow-400" },
+  { quote: `"I was able to list within 15 minutes, and no more than two hours later, I had my first booking!"`, author: "Parley Rose", location: "UK-based host", avatarHint: "woman home", borderColor: "border-yellow-400" },
+  { quote: `"RoamFree is the most straightforward platform to work with. Everything is clear. It's easy. And it frees us up to focus on the aspects that we can really add value to: like the guest experience."`, author: "Martin Feldman", location: "Managing Director, Abodebed", avatarHint: "man office", borderColor: "border-primary" },
+  { quote: `"RoamFree accounts for our largest share of guests and has helped get us where we are today."`, author: "Michel and Asja", location: "Owners of La Maison de Souhey", avatarHint: "couple indoor", borderColor: "border-primary" },
+];
+
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
         <svg
@@ -313,6 +322,56 @@ export default function ForPartnersPage() {
                 </Button>
             </div>
           </div>
+        </section>
+
+         {/* Testimonials Section */}
+        <section className="py-12">
+          <h2 className="text-3xl font-bold text-center mb-8">What hosts like you say</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className={`p-6 border-2 ${testimonial.borderColor}`}>
+                <CardContent className="p-0">
+                  <p className="text-muted-foreground mb-4">{testimonial.quote}</p>
+                  <div className="flex items-center gap-3">
+                    <Image src={`https://placehold.co/40x40.png`} alt={testimonial.author} width={40} height={40} className="rounded-full" data-ai-hint={testimonial.avatarHint} />
+                    <div>
+                      <p className="font-semibold">{testimonial.author}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.location}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+           <div className="text-center mt-8">
+                <Button asChild size="lg">
+                    <Link href="/signup">Join hosts like you</Link>
+                </Button>
+            </div>
+        </section>
+        
+        {/* FAQ Section */}
+        <section className="py-12">
+            <h2 className="text-3xl font-bold text-center mb-8">Your questions answered</h2>
+            <div className="max-w-3xl mx-auto">
+                <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger className="text-xl font-semibold">What happens if my property is damaged by a guest?</AccordionTrigger>
+                        <AccordionContent className="text-base text-muted-foreground">
+                            RoamFree offers Host Protection, which includes property damage protection and liability insurance of up to $1M USD to support you in the rare event of an incident. You can file a claim through our resolution center.
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-2">
+                        <AccordionTrigger className="text-xl font-semibold">When will my property go online?</AccordionTrigger>
+                        <AccordionContent className="text-base text-muted-foreground">
+                            After you submit your listing, it goes through a quick review process to ensure it meets our guidelines. This typically takes a few hours. Once approved, your property will be live and bookable on RoamFree.
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            </div>
+            <p className="text-center mt-6 text-muted-foreground">
+                Still have questions? Find answers to all your questions in our <Link href="/faq" className="text-primary underline">FAQ</Link>.
+            </p>
         </section>
 
         {/* Call to Action */}
