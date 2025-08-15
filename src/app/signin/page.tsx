@@ -23,6 +23,8 @@ import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose, DialogTrigger } from '@/components/ui/dialog';
+import { sendPasswordResetAction } from '@/app/actions';
 
 const signInSchema = z.object({
   email: z.string().email('Invalid email address.'),
@@ -30,6 +32,12 @@ const signInSchema = z.object({
 });
 
 type SignInFormValues = z.infer<typeof signInSchema>;
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email('Please enter a valid email address.'),
+});
+type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -56,8 +64,72 @@ const slideshowImages = [
   { url: "https://images.unsplash.com/photo-1519010470956-6d877008eaa4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjaXR5c2NhcGUlMjBhJ25pZ2h0fGVufDB8fHx8MTc1MjgwMzcwN3ww&ixlib=rb-4.1.0&q=80&w=1080", hint: "cityscape night" },
 ];
 
+function ForgotPasswordDialog({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {
+  const [isSending, setIsSending] = useState(false);
+  const forgotPasswordForm = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: { email: '' },
+  });
+
+  async function onForgotPasswordSubmit(values: ForgotPasswordFormValues) {
+    setIsSending(true);
+    const result = await sendPasswordResetAction(values.email);
+    setIsSending(false);
+
+    if ('error' in result) {
+      toast({
+        title: 'Error',
+        description: result.error,
+        variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: 'Password Reset Email Sent',
+        description: 'Please check your inbox for instructions to reset your password.',
+      });
+      onOpenChange(false); // Close dialog on success
+      forgotPasswordForm.reset();
+    }
+  }
+
+  return (
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Forgot Password</DialogTitle>
+        <DialogDescription>
+          Enter your email address below and we'll send you a link to reset your password.
+        </DialogDescription>
+      </DialogHeader>
+      <Form {...forgotPasswordForm}>
+        <form onSubmit={forgotPasswordForm.handleSubmit(onForgotPasswordSubmit)} className="space-y-4 py-4">
+          <FormField
+            control={forgotPasswordForm.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="you@example.com" icon={<Mail className="h-4 w-4 text-muted-foreground" />} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <DialogFooter>
+            <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+            <Button type="submit" disabled={isSending}>
+              {isSending ? 'Sending...' : 'Send Reset Link'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </Form>
+    </DialogContent>
+  );
+}
+
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -175,9 +247,14 @@ export default function SignInPage() {
                   <FormItem>
                      <div className="flex justify-between items-center">
                         <FormLabel>Password</FormLabel>
-                        <Link href="#" className="text-xs text-primary hover:underline" onClick={() => toast({ title: "Forgot Password (Demo)", description: "Password reset instructions would be sent to your email."})}>
-                            Forgot password?
-                        </Link>
+                        <Dialog open={isForgotPasswordOpen} onOpenChange={setIsForgotPasswordOpen}>
+                          <DialogTrigger asChild>
+                             <button type="button" className="text-xs text-primary hover:underline">
+                                Forgot password?
+                             </button>
+                          </DialogTrigger>
+                          <ForgotPasswordDialog onOpenChange={setIsForgotPasswordOpen} />
+                        </Dialog>
                     </div>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" icon={<Lock className="h-4 w-4 text-muted-foreground" />} {...field} />

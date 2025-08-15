@@ -8,11 +8,12 @@ import {
   updatePassword,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail,
   type AuthError,
 } from 'firebase/auth';
 import { auth } from './firebase';
 
-export { createUser, signIn, signOut, changePassword, signInWithGoogle };
+export { createUser, signIn, signOut, changePassword, signInWithGoogle, sendPasswordResetEmail };
 
 async function createUser(email: string, password: string): Promise<{ uid: string } | { error: string }> {
   try {
@@ -78,6 +79,19 @@ async function changePassword(currentPassword: string, newPassword: string): Pro
     }
      if (authError.code === 'auth/weak-password') {
       return { error: 'The new password is too weak. Please choose a stronger one.' };
+    }
+    return { error: authError.message };
+  }
+}
+
+async function sendPasswordResetEmail(email: string): Promise<{ success: boolean } | { error: string }> {
+  try {
+    await firebaseSendPasswordResetEmail(auth, email);
+    return { success: true };
+  } catch (error) {
+    const authError = error as AuthError;
+    if (authError.code === 'auth/user-not-found') {
+        return { error: 'No account found with this email address.' };
     }
     return { error: authError.message };
   }

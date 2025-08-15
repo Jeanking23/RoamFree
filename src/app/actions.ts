@@ -6,6 +6,7 @@ import { planTrip, type AiTripPlanInput, type AiTripPlanOutput } from "@/ai/flow
 import { getSupportChatResponse, type SupportChatbotInput, type SupportChatbotOutput } from "@/ai/flows/support-chatbot-flow";
 import { getSavedPlaces, addSavedPlace } from "@/services/places";
 import type { SavedPlace } from "@/services/places";
+import { sendPasswordResetEmail } from "@/lib/auth";
 
 export async function getPoiRecommendationsAction(input: RecommendPoiInput): Promise<RecommendPoiOutput | { error: string }> {
   try {
@@ -63,4 +64,18 @@ export async function addSavedPlaceAction(place: Omit<SavedPlace, 'id'>): Promis
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
         return { error: `Failed to save place: ${errorMessage}` };
     }
+}
+
+export async function sendPasswordResetAction(email: string): Promise<{ success: boolean } | { error: string }> {
+  if (!email) {
+    return { error: "Email is required." };
+  }
+  try {
+    const result = await sendPasswordResetEmail(email);
+    return result;
+  } catch (error) {
+    console.error("Error in sendPasswordResetAction:", error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    return { error: `Failed to send password reset email: ${errorMessage}` };
+  }
 }
