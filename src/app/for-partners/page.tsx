@@ -9,6 +9,8 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const hostBenefits = [
   {
@@ -28,13 +30,30 @@ const hostBenefits = [
   },
 ];
 
+const animatedHeadlines = [
+    "Become a RoamFree Partner",
+    "List Your Property",
+    "Rent Out Your Car",
+    "Offer Experiences"
+];
+
 export default function ForPartnersPage() {
+  const [headlineIndex, setHeadlineIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeadlineIndex((prevIndex) => (prevIndex + 1) % animatedHeadlines.length);
+    }, 3000); // Change headline every 3 seconds
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="space-y-8 -mt-8 -mx-4 md:mt-0 md:mx-0">
       {/* Hero Section */}
       <section className="relative h-[60vh] md:h-[70vh] w-full flex items-center justify-center text-white">
         <Image
-          src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3N0JTIwaG91c2V8ZW58MHx8fHwxNzU4NzM3OTQwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+          src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3N0JTIwaG91c2V8ZW58MHx8fHwxNzU4NzM3OTQwfDA&ixlib-rb-4.1.0&q=80&w=1080"
           alt="Beautiful modern living room"
           fill
           className="object-cover"
@@ -44,9 +63,20 @@ export default function ForPartnersPage() {
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
           <div className="text-center md:text-left">
-            <h1 className="text-4xl md:text-5xl font-headline font-bold leading-tight">
-              Become a RoamFree Partner
-            </h1>
+             <div className="h-24 md:h-28">
+                <AnimatePresence mode="wait">
+                    <motion.h1
+                        key={headlineIndex}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                        className="text-4xl md:text-5xl font-headline font-bold leading-tight"
+                    >
+                        {animatedHeadlines[headlineIndex]}
+                    </motion.h1>
+                </AnimatePresence>
+            </div>
             <p className="mt-4 text-lg md:text-xl text-white/90 max-w-lg">
               Join our community of hosts and providers to unlock new opportunities and earn money.
             </p>
