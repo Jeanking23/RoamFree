@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, MessageSquare, BarChart3, Rocket, Home, CarFront, Users, DollarSign, Lock, UserCheck, Settings, Upload, CheckCircle, BadgePlus, UploadCloud, BadgeHelp, Search } from 'lucide-react';
+import { ShieldCheck, MessageSquare, BarChart3, Rocket, Home, CarFront, Users, DollarSign, Lock, UserCheck, Settings, Upload, CheckCircle, BadgePlus, UploadCloud, BadgeHelp, Search, X } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const hostBenefits = [
   {
@@ -84,13 +85,14 @@ const animatedHeadlines = [
 ];
 
 const testimonials = [
-  { quote: `"Travelers come to Charming Lofts from all over the world. RoamFree really helps with that. Unlike some other platforms, it's multinational and caters to a much larger audience. For me, that was a real game-changer."`, author: "Louis Gonzalez", location: "Charming Lofts, Los Angeles", avatar: "https://images.unsplash.com/photo-1500903380903-1711baaa3be5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYW4lMjBpbmRvb3J8ZW58MHx8fHwxNzU1Mjg5MjU2fDA&ixlib=rb-4.1.0&q=80&w=1080", avatarHint: "man indoor", borderColor: "border-yellow-400" },
-  { quote: `"After joining RoamFree and setting up the listing, my occupancy went up significantly and bookings were coming in five to six months in advance."`, author: "Zoey Berghoff", location: "US-based host", avatar: "https://images.unsplash.com/photo-1573718789603-62e070fa1e3d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGluZG9vcnxlbnwwfHx8fDE3NTUyODkyNTZ8MA&ixlib=rb-4.1.0&q=80&w=1080", avatarHint: "woman indoor", borderColor: "border-yellow-400" },
-  { quote: `"Getting started with RoamFree was super simple and took no time at all."`, author: "Shawn Ritzenthaler", location: "Owner of The Hollywood Hills Mansion", avatar: "https://images.unsplash.com/photo-1553121646-a17a583a7faf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYW4lMjBvdXRkb29yfGVufDB8fHx8MTc1NTI4OTI1Nnww&ixlib=rb-4.1.0&q=80&w=1080", avatarHint: "man outdoor", borderColor: "border-yellow-400" },
-  { quote: `"I was able to list within 15 minutes, and no more than two hours later, I had my first booking!"`, author: "Parley Rose", location: "UK-based host", avatar: "https://images.unsplash.com/photo-1507296459426-2af5b6833a88?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3b21hbiUyMGhvbWV8ZW58MHx8fHwxNzU1Mjg5MjU2fDA&ixlib=rb-4.1.0&q=80&w=1080", avatarHint: "woman home", borderColor: "border-yellow-400" },
-  { quote: `"RoamFree is the most straightforward platform to work with. Everything is clear. It's easy. And it frees us up to focus on the aspects that we can really add value to: like the guest experience."`, author: "Martin Feldman", location: "Managing Director, Abodebed", avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW4lMjBvZmZpY2V8ZW58MHx8fHwxNzU1Mjg5MjU2fDA&ixlibrb-4.1.0&q=80&w=1080", avatarHint: "man office", borderColor: "border-primary" },
-  { quote: `"RoamFree accounts for our largest share of guests and has helped get us where we are today."`, author: "Michel and Asja", location: "Owners of La Maison de Souhey", avatar: "https://images.unsplash.com/photo-1630931389243-2c78fdecd332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjb3VwbGUlMjBpbmRvb3J8ZW58MHx8fHwxNzU1Mjg5MjU3fDA&ixlib=rb-4.1.0&q=80&w=1080", avatarHint: "couple indoor", borderColor: "border-primary" },
+  { quote: `"Travelers come to Charming Lofts from all over the world. RoamFree really helps with that. Unlike some other platforms, it's multinational and caters to a much larger audience. For me, that was a real game-changer."`, author: "Louis Gonzalez", location: "Charming Lofts, Los Angeles", avatar: "https://images.unsplash.com/photo-1500903380903-1711baaa3be5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYW4lMjBpbmRvb3J8ZW58MHx8fHwxNzU1Mjg5MjU2fDA&ixlib=rb-4.1.0&q=80&w=1080", avatarHint: "man indoor", borderColor: "border-yellow-400", listingLink: "/stays/stay1" },
+  { quote: `"After joining RoamFree and setting up the listing, my occupancy went up significantly and bookings were coming in five to six months in advance."`, author: "Zoey Berghoff", location: "US-based host", avatar: "https://images.unsplash.com/photo-1573718789603-62e070fa1e3d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGluZG9vcnxlbnwwfHx8fDE3NTUyODkyNTZ8MA&ixlib=rb-4.1.0&q=80&w=1080", avatarHint: "woman indoor", borderColor: "border-yellow-400", listingLink: "/stays/stay2" },
+  { quote: `"Getting started with RoamFree was super simple and took no time at all."`, author: "Shawn Ritzenthaler", location: "Owner of The Hollywood Hills Mansion", avatar: "https://images.unsplash.com/photo-1553121646-a17a583a7faf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYW4lMjBvdXRkb29yfGVufDB8fHx8MTc1NTI4OTI1Nnww&ixlib=rb-4.1.0&q=80&w=1080", avatarHint: "man outdoor", borderColor: "border-yellow-400", listingLink: "/stays/stay3" },
+  { quote: `"I was able to list within 15 minutes, and no more than two hours later, I had my first booking!"`, author: "Parley Rose", location: "UK-based host", avatar: "https://images.unsplash.com/photo-1507296459426-2af5b6833a88?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3b21hbiUyMGhvbWV8ZW58MHx8fHwxNzU1Mjg5MjU2fDA&ixlib=rb-4.1.0&q=80&w=1080", avatarHint: "woman home", borderColor: "border-yellow-400", listingLink: "/car-rent/1" },
+  { quote: `"RoamFree is the most straightforward platform to work with. Everything is clear. It's easy. And it frees us up to focus on the aspects that we can really add value to: like the guest experience."`, author: "Martin Feldman", location: "Managing Director, Abodebed", avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW4lMjBvZmZpY2V8ZW58MHx8fHwxNzU1Mjg5MjU2fDA&ixlib-rb-4.1.0&q=80&w=1080", avatarHint: "man office", borderColor: "border-primary", listingLink: "/stays/search" },
+  { quote: `"RoamFree accounts for our largest share of guests and has helped get us where we are today."`, author: "Michel and Asja", location: "Owners of La Maison de Souhey", avatar: "https://images.unsplash.com/photo-1630931389243-2c78fdecd332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjb3VwbGUlMjBpbmRvb3J8ZW58MHx8fHwxNzU1Mjg5MjU3fDA&ixlib-rb-4.1.0&q=80&w=1080", avatarHint: "couple indoor", borderColor: "border-primary", listingLink: "/rent-home" },
 ];
+type Testimonial = typeof testimonials[0];
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -113,6 +115,7 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export default function ForPartnersPage() {
   const [headlineIndex, setHeadlineIndex] = useState(0);
+  const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -127,7 +130,7 @@ export default function ForPartnersPage() {
       {/* Hero Section */}
       <section className="relative h-[60vh] md:h-[80vh] w-full flex items-center justify-center text-white">
         <Image
-          src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3N0JTIwaG91c2V8ZW58MHx8fHwxNzU4NzM3OTQwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+          src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3N0JTIwaG91c2V8ZW58MHx8fHwxNzU4NzM3OTQwfDA&ixlib-rb-4.1.0&q=80&w=1080"
           alt="Beautiful modern living room"
           fill
           className="object-cover"
@@ -327,22 +330,46 @@ export default function ForPartnersPage() {
          {/* Testimonials Section */}
         <section className="py-12">
           <h2 className="text-3xl font-bold text-center mb-8">What hosts like you say</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className={`p-6 border-2 ${testimonial.borderColor}`}>
-                <CardContent className="p-0">
-                  <p className="text-muted-foreground mb-4">{testimonial.quote}</p>
-                  <div className="flex items-center gap-3">
-                    <Image src={testimonial.avatar} alt={testimonial.author} width={40} height={40} className="rounded-full" data-ai-hint={testimonial.avatarHint} />
-                    <div>
-                      <p className="font-semibold">{testimonial.author}</p>
-                      <p className="text-sm text-muted-foreground">{testimonial.location}</p>
+          <Dialog open={!!selectedTestimonial} onOpenChange={(isOpen) => !isOpen && setSelectedTestimonial(null)}>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {testimonials.map((testimonial, index) => (
+                <DialogTrigger key={index} asChild>
+                  <Card
+                    onClick={() => setSelectedTestimonial(testimonial)}
+                    className={`p-6 border-2 ${testimonial.borderColor} cursor-pointer hover:shadow-xl hover:scale-105 transition-all`}
+                  >
+                    <CardContent className="p-0">
+                      <p className="text-muted-foreground mb-4">{testimonial.quote}</p>
+                      <div className="flex items-center gap-3">
+                        <Image src={testimonial.avatar} alt={testimonial.author} width={40} height={40} className="rounded-full" data-ai-hint={testimonial.avatarHint} />
+                        <div>
+                          <p className="font-semibold">{testimonial.author}</p>
+                          <p className="text-sm text-muted-foreground">{testimonial.location}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </DialogTrigger>
+              ))}
+            </div>
+            {selectedTestimonial && (
+                 <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                      <DialogTitle>{selectedTestimonial.author}</DialogTitle>
+                      <DialogDescription>{selectedTestimonial.location}</DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 text-center">
+                        <Image src={selectedTestimonial.avatar} alt={selectedTestimonial.author} width={100} height={100} className="rounded-full mx-auto mb-4" data-ai-hint={selectedTestimonial.avatarHint}/>
+                        <blockquote className="text-lg italic text-foreground border-l-4 border-primary pl-4">
+                            {selectedTestimonial.quote}
+                        </blockquote>
+                        <Button asChild className="mt-6">
+                            <Link href={selectedTestimonial.listingLink}>View Listing (Demo)</Link>
+                        </Button>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </DialogContent>
+            )}
+          </Dialog>
            <div className="text-center mt-8">
                 <Button asChild size="lg">
                     <Link href="/signup">Join hosts like you</Link>
