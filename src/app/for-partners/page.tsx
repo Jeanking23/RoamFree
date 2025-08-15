@@ -283,8 +283,15 @@ export default function ForPartnersPage() {
         </section>
 
         {/* Global Customer Base Section */}
-        <section className="py-12 bg-muted/30 rounded-lg">
-          <div className="container mx-auto px-4 text-center">
+        <section className="relative py-12 bg-muted/30 rounded-lg overflow-hidden">
+          <Image
+            src="https://images.unsplash.com/photo-1571434220971-17d1783a31e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b3JsZCUyMG1hcCUyMGRvdHN8ZW58MHx8fHwxNzU5MjM2MjYwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+            alt="World map"
+            fill
+            className="object-cover opacity-10"
+            data-ai-hint="world map dots"
+          />
+          <div className="relative container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-8">Reach a unique global customer base</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div>
