@@ -216,7 +216,7 @@ export default function ListPropertyPage() {
 
              {listingType === "RENT" && (
                 <Card>
-                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><CalendarCheck2 className="h-5 w-5 text-primary"/>Rental Settings (Demo)</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><CalendarCheck2 className="h-5 w-5 text-primary"/>Rental Settings</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
                         <FormField control={form.control} name="instantBooking" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Enable Instant Booking</FormLabel></FormItem>)} />
                         <FormField control={form.control} name="requestToBook" render={({ field }) => (<FormItem className="flex flex-row items-center space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal">Require Request to Book</FormLabel></FormItem>)} />
