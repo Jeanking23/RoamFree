@@ -9,6 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Facebook, Twitter, Instagram, Linkedin, Send } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import LanguageCurrencySelector from './language-currency-selector';
+import { useAuth } from '@/context/auth-provider';
 
 const footerSections = [
   {
@@ -41,7 +42,7 @@ const footerSections = [
     title: 'Partners',
     links: [
       { label: 'Become a Partner', href: '/for-partners' },
-      { label: 'List Your Property', href: '/list-property' },
+      { label: 'List Your Property', href: '/list-property', auth: true, noAuthHref: '/signup' },
       { label: 'Partner Dashboard', href: '/dashboard' },
       { label: 'Business Solutions', href: '/corporate-solutions-demo' },
     ]
@@ -59,6 +60,7 @@ const footerSections = [
 
 export default function Footer() {
   const [currentYear, setCurrentYear] = useState('');
+  const { user } = useAuth();
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear().toString());
@@ -69,6 +71,43 @@ export default function Footer() {
     toast({ title: "Subscribed!", description: "Thank you for subscribing to our newsletter." });
   };
 
+  const renderLinks = (links: typeof footerSections[0]['links']) => (
+    <ul className="space-y-2">
+      {links.map(link => {
+        const href = (link.auth && !user && link.noAuthHref) ? link.noAuthHref : link.href;
+        return (
+          <li key={link.label}>
+            <Link 
+              href={href} 
+              className="text-sm hover:text-primary hover:underline transition-colors"
+            >
+              {link.label}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
+  const renderMobileLinks = (links: typeof footerSections[0]['links']) => (
+    <ul className="space-y-3 pl-2">
+      {links.map(link => {
+        const href = (link.auth && !user && link.noAuthHref) ? link.noAuthHref : link.href;
+        return (
+          <li key={link.label}>
+            <Link 
+              href={href} 
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              {link.label}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
+
   return (
     <footer className="bg-muted/50 border-t pt-12 pb-24 md:pb-8 mt-16 text-muted-foreground">
       <div className="container mx-auto px-4">
@@ -77,23 +116,12 @@ export default function Footer() {
           {footerSections.map(section => (
             <div key={section.title}>
               <h3 className="font-semibold text-foreground mb-4">{section.title}</h3>
-              <ul className="space-y-2">
-                {section.links.map(link => (
-                  <li key={link.label}>
-                    <Link 
-                      href={link.href} 
-                      className="text-sm hover:text-primary hover:underline transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
+                {renderLinks(section.links)}
                  {section.title === 'Terms & Settings' && (
-                    <li>
+                    <div className="mt-2">
                       <LanguageCurrencySelector isFooter={true} />
-                    </li>
+                    </div>
                  )}
-              </ul>
             </div>
           ))}
         </div>
@@ -105,23 +133,12 @@ export default function Footer() {
                     <AccordionItem value={section.title} key={section.title}>
                         <AccordionTrigger className="text-foreground font-semibold text-base hover:no-underline">{section.title}</AccordionTrigger>
                         <AccordionContent>
-                           <ul className="space-y-3 pl-2">
-                            {section.links.map(link => (
-                              <li key={link.label}>
-                                <Link 
-                                  href={link.href} 
-                                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                  {link.label}
-                                </Link>
-                              </li>
-                            ))}
+                           {renderMobileLinks(section.links)}
                              {section.title === 'Terms & Settings' && (
-                                <li>
+                                <div className="pl-2 mt-3">
                                   <LanguageCurrencySelector isFooter={true} />
-                                </li>
+                                </div>
                              )}
-                          </ul>
                         </AccordionContent>
                     </AccordionItem>
                 ))}
