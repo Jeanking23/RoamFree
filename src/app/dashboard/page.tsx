@@ -17,6 +17,7 @@ import { useState } from 'react';
 import withAuth from '@/components/auth/with-auth';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 // Mock data - replace with actual data fetching
 const mockListings = [
@@ -233,11 +234,41 @@ function DashboardPage() {
                   <CardTitle>Guest, Renter &amp; Buyer Messages</CardTitle>
                   <CardDescription>Communicate with your clients directly.</CardDescription>
                 </CardHeader>
-                <CardContent className="text-center py-12 bg-muted/30 rounded-md">
-                  <MessageSquare className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-                  <p className="text-xl font-semibold">In-App Messaging Coming Soon</p>
-                  <p className="text-muted-foreground">A secure way to chat with your clients will be available here.</p>
+                <CardContent className="p-0">
+                  <div className="space-y-4 p-4">
+                    {/* Mock Message 1 */}
+                    <div className="flex items-start gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                      <Avatar>
+                        <AvatarImage src="https://placehold.co/40x40.png" alt="John K." data-ai-hint="person avatar" />
+                        <AvatarFallback>JK</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-grow">
+                        <div className="flex justify-between items-center">
+                          <p className="font-semibold">John K.</p>
+                          <p className="text-xs text-muted-foreground">2 hours ago</p>
+                        </div>
+                        <p className="text-sm text-muted-foreground truncate">Regarding Sunny Beachfront Villa: Hi, I have a question about the check-in time...</p>
+                      </div>
+                    </div>
+                    {/* Mock Message 2 */}
+                    <div className="flex items-start gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer bg-primary/10 border-l-4 border-primary">
+                       <Avatar>
+                        <AvatarImage src="https://placehold.co/40x40.png" alt="Jane D." data-ai-hint="person avatar" />
+                        <AvatarFallback>JD</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-grow">
+                        <div className="flex justify-between items-center">
+                          <p className="font-semibold">Jane D. (New Offer)</p>
+                          <p className="text-xs text-muted-foreground">5 hours ago</p>
+                        </div>
+                        <p className="text-sm text-muted-foreground truncate font-medium text-primary">New offer received for Honda Civic 2019: $17,200</p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
+                 <CardFooter className="border-t p-4">
+                    <Button variant="outline" className="w-full">View All Messages</Button>
+                </CardFooter>
               </Card>
             </TabsContent>
             
