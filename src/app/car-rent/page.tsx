@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { KeyRound, Car, User, CheckCircle, CalendarDays, Users, Briefcase, ShieldCheck, Star, Luggage, TvIcon, Settings, FileText, MapPin, Edit, AlertTriangle, Camera, X, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { KeyRound, Car, User, CheckCircle, CalendarDays, Users, Briefcase, ShieldCheck, Star, Luggage, TvIcon, Settings, FileText, MapPin, Edit, AlertTriangle, Camera, X, Search, ChevronLeft, ChevronRight, Filter, CarIcon, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,9 @@ import { addDays, format, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from '@/components/ui/sheet';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Slider } from '@/components/ui/slider';
 
 
 function CarImageSlider({ car }: { car: CarListing }) {
@@ -75,6 +78,52 @@ function CarImageSlider({ car }: { car: CarListing }) {
     </div>
   );
 }
+
+const carTypes = ['Sedan', 'SUV', 'Van', 'Truck', 'Coupe', 'Convertible'];
+const carFeatures = ['GPS', 'Bluetooth', 'Sunroof', 'Child Seat', 'All-Wheel Drive'];
+
+const FilterContent = () => (
+    <Accordion type="multiple" defaultValue={['price', 'car_type']} className="w-full">
+        <AccordionItem value="price">
+            <AccordionTrigger>Price Range</AccordionTrigger>
+            <AccordionContent className="space-y-4">
+                <Slider defaultValue={[0, 200]} min={0} max={500} step={10} />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>$0</span>
+                    <span>$500+</span>
+                </div>
+            </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="car_type">
+            <AccordionTrigger>Car Type</AccordionTrigger>
+            <AccordionContent className="space-y-2">
+                {carTypes.map(type => (
+                    <div key={type} className="flex items-center space-x-2">
+                        <Checkbox id={`type-${type}`} />
+                        <Label htmlFor={`type-${type}`}>{type}</Label>
+                    </div>
+                ))}
+            </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="features">
+            <AccordionTrigger>Features</AccordionTrigger>
+            <AccordionContent className="space-y-2">
+                {carFeatures.map(feature => (
+                    <div key={feature} className="flex items-center space-x-2">
+                        <Checkbox id={`feature-${feature}`} />
+                        <Label htmlFor={`feature-${feature}`}>{feature}</Label>
+                    </div>
+                ))}
+            </AccordionContent>
+        </AccordionItem>
+         <AccordionItem value="seating">
+            <AccordionTrigger>Seating Capacity</AccordionTrigger>
+            <AccordionContent>
+                 <Input type="number" min="2" placeholder="Any" />
+            </AccordionContent>
+        </AccordionItem>
+    </Accordion>
+);
 
 
 export default function CarRentPage() {
@@ -167,81 +216,101 @@ export default function CarRentPage() {
           </CardHeader>
           <CardContent className="p-6">
             <div className="mb-6 p-4 border rounded-md bg-muted/30 space-y-4">
-              <div className="grid sm:grid-cols-2 gap-4 items-end">
-                  <div>
-                    <Label htmlFor="search-cars">Search by Name or Type</Label>
-                    <div className="relative">
-                      <Input
+               <div className="flex items-center gap-2">
+                <div className="relative flex-grow">
+                    <Input
                         id="search-cars"
                         type="text"
-                        placeholder="e.g., Toyota Camry, SUV..."
+                        placeholder="Search by name, model, or type..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pr-10"
-                      />
-                      <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="rental-dates">Pickup &amp; Return Dates</Label>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                id="rental-dates"
-                                variant={"outline"}
-                                className={cn(
-                                    "w-full justify-start text-left font-normal",
-                                    !dateRange && "text-muted-foreground"
-                                )}
-                            >
-                                <CalendarDays className="mr-2 h-4 w-4" />
-                                {hasMounted && dateRange?.from ? (
-                                    dateRange.to ? (
-                                        <>
-                                            {format(dateRange.from, "LLL dd, y")} -{" "}
-                                            {format(dateRange.to, "LLL dd, y")}
-                                        </>
+                        className="pr-10 h-11 rounded-full pl-10"
+                    />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                </div>
+                 <Sheet>
+                    <SheetTrigger asChild>
+                         <Button variant="outline" className="h-11 rounded-full text-sm shrink-0">
+                            <Filter className="mr-2 h-4 w-4" />
+                            <span className="hidden sm:inline">Filter</span>
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent className="w-full sm:max-w-md p-0 flex flex-col">
+                        <SheetHeader className="p-6 pb-4">
+                            <SheetTitle>Filters</SheetTitle>
+                        </SheetHeader>
+                        <div className="flex-grow overflow-y-auto px-6">
+                            <FilterContent />
+                        </div>
+                        <SheetFooter className="p-6 pt-4 bg-background border-t">
+                            <Button variant="outline" className="flex-1">Clear all</Button>
+                            <SheetClose asChild><Button type="submit" className="flex-1 w-full">View Results</Button></SheetClose>
+                        </SheetFooter>
+                    </SheetContent>
+                </Sheet>
+               </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                        <Label htmlFor="rental-dates">Pickup &amp; Return Dates</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    id="rental-dates"
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !dateRange && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarDays className="mr-2 h-4 w-4" />
+                                    {hasMounted && dateRange?.from ? (
+                                        dateRange.to ? (
+                                            <>
+                                                {format(dateRange.from, "LLL dd, y")} -{" "}
+                                                {format(dateRange.to, "LLL dd, y")}
+                                            </>
+                                        ) : (
+                                            format(dateRange.from, "LLL dd, y")
+                                        )
                                     ) : (
-                                        format(dateRange.from, "LLL dd, y")
-                                    )
-                                ) : (
-                                    <span>Pick a date range</span>
-                                )}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                                initialFocus
-                                mode="range"
-                                defaultMonth={dateRange?.from}
-                                selected={dateRange}
-                                onSelect={setDateRange}
-                                numberOfMonths={2}
-                                disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
-                            />
-                        </PopoverContent>
-                    </Popover>
-                  </div>
-              </div>
-               <div>
-                  <Label htmlFor="insurance-options">Insurance Coverage</Label>
-                  <Select value={selectedInsurance} onValueChange={setSelectedInsurance}>
-                      <SelectTrigger id="insurance-options">
-                          <SelectValue placeholder="Select insurance" />
-                      </SelectTrigger>
-                      <SelectContent>
-                          <SelectItem value="basic">Basic (Included where stated)</SelectItem>
-                          <SelectItem value="full">Full Coverage (+$X/day)</SelectItem>
-                      </SelectContent>
-                  </Select>
-              </div>
+                                        <span>Pick a date range</span>
+                                    )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                    initialFocus
+                                    mode="range"
+                                    defaultMonth={dateRange?.from}
+                                    selected={dateRange}
+                                    onSelect={setDateRange}
+                                    numberOfMonths={2}
+                                    disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                     <div>
+                      <Label htmlFor="insurance-options">Insurance Coverage</Label>
+                      <Select value={selectedInsurance} onValueChange={setSelectedInsurance}>
+                          <SelectTrigger id="insurance-options">
+                              <SelectValue placeholder="Select insurance" />
+                          </SelectTrigger>
+                          <SelectContent>
+                              <SelectItem value="basic">Basic (Included where stated)</SelectItem>
+                              <SelectItem value="full">Full Coverage (+$X/day)</SelectItem>
+                          </SelectContent>
+                      </Select>
+                    </div>
+                </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="includeDriver"
                   checked={includeDriver}
                   onCheckedChange={(checked) => setIncludeDriver(checked as boolean)}
                 />
-                <Label htmlFor="includeDriver" className="text-base font-medium text-foreground">
+                <Label htmlFor="includeDriver" className="font-normal">
                   Include a Driver (for intercity trips, airport transfers, or convenience)
                 </Label>
               </div>
@@ -251,7 +320,7 @@ export default function CarRentPage() {
                   checked={baggageAssistance}
                   onCheckedChange={(checked) => setBaggageAssistance(checked as boolean)}
                 />
-                <Label htmlFor="baggageAssistance" className="text-base font-medium text-foreground">
+                <Label htmlFor="baggageAssistance" className="font-normal">
                   Include Baggage Assistance (Help for seniors or families)
                 </Label>
               </div>
