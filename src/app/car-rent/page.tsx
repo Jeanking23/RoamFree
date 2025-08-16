@@ -127,21 +127,23 @@ const FilterContent = () => (
 
 
 export default function CarRentPage() {
-  const [includeDriver, setIncludeDriver] = useState(false);
-  const [baggageAssistance, setBaggageAssistance] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
-  const [selectedInsurance, setSelectedInsurance] = useState("basic"); // basic, full
   const [hasMounted, setHasMounted] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   
-  // State for dialogs
+  // State for dialogs and their options
   const [selectedCarForAction, setSelectedCarForAction] = useState<CarListing | null>(null);
   const [isRentDialogOpen, setIsRentDialogOpen] = useState(false);
   const [is360DialogOpen, setIs360DialogOpen] = useState(false);
   const [isDamageDialogOpen, setIsDamageDialogOpen] = useState(false);
+  
+  // State for rental options inside the dialog
+  const [includeDriver, setIncludeDriver] = useState(false);
+  const [baggageAssistance, setBaggageAssistance] = useState(false);
+  const [selectedInsurance, setSelectedInsurance] = useState("basic");
+  const [totalPrice, setTotalPrice] = useState<number | null>(null);
 
   useEffect(() => {
-    // This prevents hydration errors by ensuring date state is only set on the client
     setHasMounted(true);
     setDateRange({
       from: new Date(),
@@ -149,11 +151,32 @@ export default function CarRentPage() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!selectedCarForAction || !dateRange?.from || !dateRange?.to) {
+      setTotalPrice(null);
+      return;
+    }
+
+    const nights = differenceInDays(dateRange.to, dateRange.from) || 1;
+    let price = selectedCarForAction.pricePerDay * nights;
+    
+    // Add-on prices (demo values)
+    if (includeDriver) price += 50 * nights;
+    if (baggageAssistance) price += 10 * nights;
+    if (selectedInsurance === 'full') price += 25 * nights;
+    
+    setTotalPrice(price);
+  }, [selectedCarForAction, dateRange, includeDriver, baggageAssistance, selectedInsurance]);
+
   const getPrice = (car: typeof carListings[0]) => car.pricePerDay;
   const getPriceSuffix = () => "/day";
   
   const handleRentClick = (car: CarListing) => {
     setSelectedCarForAction(car);
+    // Reset options to default when opening the dialog
+    setIncludeDriver(false);
+    setBaggageAssistance(false);
+    setSelectedInsurance('basic');
     setIsRentDialogOpen(true);
   };
 
@@ -161,15 +184,12 @@ export default function CarRentPage() {
     if (!selectedCarForAction) return;
     let durationString = '';
     if (dateRange?.from && dateRange?.to) {
-        const days = differenceInDays(dateRange.to, dateRange.from);
-        if (days >= 0) {
-            const displayDays = days === 0 ? 1 : days;
-            durationString = `from ${format(dateRange.from, 'PPP')} to ${format(dateRange.to, 'PPP')} (${displayDays} day${displayDays > 1 ? 's' : ''})`;
-        }
+        const days = differenceInDays(dateRange.to, dateRange.from) || 1;
+        durationString = `from ${format(dateRange.from, 'PPP')} to ${format(dateRange.to, 'PPP')} (${days} day${days > 1 ? 's' : ''})`;
     }
     toast({
       title: "Rental Initiated",
-      description: `You've started the rental process for ${selectedCarForAction.name}. ${durationString}. Insurance: ${selectedInsurance}. ${includeDriver ? 'Driver service requested.' : ''} ${baggageAssistance ? 'Baggage assistance requested.' : ''} Driver's license upload would be required here.`,
+      description: `You've started the rental process for ${selectedCarForAction.name}. ${durationString}. Insurance: ${selectedInsurance}. ${includeDriver ? 'Driver service requested.' : ''} ${baggageAssistance ? 'Baggage assistance requested.' : ''} Total: $${totalPrice?.toFixed(2)}. Driver's license upload would be required here.`,
       duration: 10000,
     });
     setIsRentDialogOpen(false);
@@ -249,97 +269,7 @@ export default function CarRentPage() {
                     </SheetContent>
                 </Sheet>
                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                        <Label htmlFor="rental-dates">Pickup &amp; Return Dates</Label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    id="rental-dates"
-                                    variant={"outline"}
-                                    className={cn(
-                                        "w-full justify-start text-left font-normal",
-                                        !dateRange && "text-muted-foreground"
-                                    )}
-                                >
-                                    <CalendarDays className="mr-2 h-4 w-4" />
-                                    {hasMounted && dateRange?.from ? (
-                                        dateRange.to ? (
-                                            <>
-                                                {format(dateRange.from, "LLL dd, y")} -{" "}
-                                                {format(dateRange.to, "LLL dd, y")}
-                                            </>
-                                        ) : (
-                                            format(dateRange.from, "LLL dd, y")
-                                        )
-                                    ) : (
-                                        <span>Pick a date range</span>
-                                    )}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                    initialFocus
-                                    mode="range"
-                                    defaultMonth={dateRange?.from}
-                                    selected={dateRange}
-                                    onSelect={setDateRange}
-                                    numberOfMonths={2}
-                                    disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
-                                />
-                            </PopoverContent>
-                        </Popover>
-                    </div>
-                     <div>
-                      <Label htmlFor="insurance-options">Insurance Coverage</Label>
-                      <Select value={selectedInsurance} onValueChange={setSelectedInsurance}>
-                          <SelectTrigger id="insurance-options">
-                              <SelectValue placeholder="Select insurance" />
-                          </SelectTrigger>
-                          <SelectContent>
-                              <SelectItem value="basic">Basic (Included where stated)</SelectItem>
-                              <SelectItem value="full">Full Coverage (+$X/day)</SelectItem>
-                          </SelectContent>
-                      </Select>
-                    </div>
-                </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="includeDriver"
-                  checked={includeDriver}
-                  onCheckedChange={(checked) => setIncludeDriver(checked as boolean)}
-                />
-                <Label htmlFor="includeDriver" className="font-normal">
-                  Include a Driver (for intercity trips, airport transfers, or convenience)
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="baggageAssistance"
-                  checked={baggageAssistance}
-                  onCheckedChange={(checked) => setBaggageAssistance(checked as boolean)}
-                />
-                <Label htmlFor="baggageAssistance" className="font-normal">
-                  Include Baggage Assistance (Help for seniors or families)
-                </Label>
-              </div>
             </div>
-
-            {includeDriver && (
-              <div className="mb-6 p-4 border border-accent rounded-md bg-accent/10">
-                <p className="text-accent-foreground font-semibold">
-                  <Briefcase className="inline h-5 w-5 mr-2" /> Professional driver service selected. Additional charges may apply.
-                </p>
-              </div>
-            )}
-            {baggageAssistance && (
-              <div className="mb-6 p-4 border border-blue-500 rounded-md bg-blue-500/10">
-                <p className="text-blue-700 font-semibold">
-                  <Luggage className="inline h-5 w-5 mr-2" /> Baggage assistance service selected.
-                </p>
-              </div>
-            )}
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCarListings.map((car) => (
@@ -415,17 +345,57 @@ export default function CarRentPage() {
                       Review the details below and confirm your rental for the {selectedCarForAction?.name}.
                   </DialogDescription>
               </DialogHeader>
-              <div className="py-4 space-y-3">
-                  <p><strong>Vehicle:</strong> {selectedCarForAction?.name}</p>
-                  <p><strong>Dates:</strong> {dateRange?.from && dateRange?.to ? `${format(dateRange.from, "PPP")} to ${format(dateRange.to, "PPP")}` : "N/A"}</p>
-                  <p><strong>Insurance:</strong> {selectedInsurance === 'basic' ? 'Basic Coverage' : 'Full Coverage'}</p>
-                  {includeDriver && <p><strong>Add-on:</strong> Professional Driver</p>}
-                  {baggageAssistance && <p><strong>Add-on:</strong> Baggage Assistance</p>}
-                  <p className="text-sm text-muted-foreground pt-4">Clicking confirm will simulate the start of the booking process.</p>
+              <div className="py-4 space-y-4">
+                  <div>
+                    <Label>Pickup & Return Dates</Label>
+                     <Popover>
+                        <PopoverTrigger asChild>
+                            <Button id="rental-dates-dialog" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}>
+                                <CalendarDays className="mr-2 h-4 w-4" />
+                                {hasMounted && dateRange?.from ? ( dateRange.to ? ( <> {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")} </> ) : ( format(dateRange.from, "LLL dd, y") ) ) : ( <span>Pick a date range</span> )}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}/>
+                        </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div>
+                      <Label>Insurance Coverage</Label>
+                      <Select value={selectedInsurance} onValueChange={setSelectedInsurance}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                              <SelectItem value="basic">Basic (Included)</SelectItem>
+                              <SelectItem value="full">Full Coverage (+$25/day)</SelectItem>
+                          </SelectContent>
+                      </Select>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                      <Checkbox id="includeDriverDialog" checked={includeDriver} onCheckedChange={(checked) => setIncludeDriver(checked as boolean)} />
+                      <Label htmlFor="includeDriverDialog" className="font-normal">Include a Driver (+$50/day)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                      <Checkbox id="baggageAssistanceDialog" checked={baggageAssistance} onCheckedChange={(checked) => setBaggageAssistance(checked as boolean)} />
+                      <Label htmlFor="baggageAssistanceDialog" className="font-normal">Baggage Assistance (+$10/day)</Label>
+                  </div>
+                   <Separator />
+                  <div className="space-y-1">
+                      <div className="flex justify-between text-sm text-muted-foreground">
+                          <span>Base Price ({differenceInDays(dateRange?.to || new Date(), dateRange?.from || new Date()) || 1} days)</span>
+                          <span>${selectedCarForAction ? ((differenceInDays(dateRange?.to || new Date(), dateRange?.from || new Date()) || 1) * selectedCarForAction.pricePerDay).toFixed(2) : '0.00'}</span>
+                      </div>
+                      {selectedInsurance === 'full' && <div className="flex justify-between text-sm text-muted-foreground"><span>Full Coverage</span><span>+$25.00/day</span></div>}
+                      {includeDriver && <div className="flex justify-between text-sm text-muted-foreground"><span>Driver Service</span><span>+$50.00/day</span></div>}
+                      {baggageAssistance && <div className="flex justify-between text-sm text-muted-foreground"><span>Baggage Help</span><span>+$10.00/day</span></div>}
+                      <div className="flex justify-between font-bold text-lg text-foreground pt-2 border-t">
+                          <span>Total Estimated Price</span>
+                          <span>${totalPrice ? totalPrice.toFixed(2) : '...'}</span>
+                      </div>
+                  </div>
               </div>
               <DialogFooter>
                   <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-                  <Button onClick={handleConfirmRental}>Confirm & Proceed</Button>
+                  <Button onClick={handleConfirmRental} disabled={!totalPrice}>Confirm & Proceed</Button>
               </DialogFooter>
           </DialogContent>
       </Dialog>
