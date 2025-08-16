@@ -1,3 +1,4 @@
+
 // src/app/car-rent/[id]/page.tsx
 'use client';
 
@@ -238,7 +239,7 @@ export default function CarRentalDetailsPage() {
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="accent" size="lg" className="w-full">
-                      <CalendarDays className="mr-2 h-5 w-5" /> Rent Now
+                      <CalendarDays className="mr-2 h-5 w-5" /> Reserve Now
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
