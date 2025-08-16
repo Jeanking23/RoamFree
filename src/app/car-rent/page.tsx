@@ -269,6 +269,36 @@ export default function CarRentPage() {
                     </SheetContent>
                 </Sheet>
                </div>
+                <div className="space-y-2">
+                    <div>
+                        <Label>Pickup & Return Dates</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button id="rental-dates" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}>
+                                    <CalendarDays className="mr-2 h-4 w-4" />
+                                    {hasMounted && dateRange?.from ? ( dateRange.to ? ( <> {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")} </> ) : ( format(dateRange.from, "LLL dd, y") ) ) : ( <span>Pick a date range</span> )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}/>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                        <div>
+                            <Label>Insurance Coverage</Label>
+                            <Select><SelectTrigger><SelectValue placeholder="Select coverage" /></SelectTrigger><SelectContent><SelectItem value="basic">Basic (Included where stated)</SelectItem><SelectItem value="full">Full Coverage</SelectItem></SelectContent></Select>
+                        </div>
+                        <div className="flex items-center space-x-2 pt-6">
+                            <Checkbox id="includeDriver" />
+                            <Label htmlFor="includeDriver" className="font-normal text-sm">Include a Driver <span className="text-xs text-muted-foreground">(for intercity trips, airport transfers, or convenience)</span></Label>
+                        </div>
+                        <div className="flex items-center space-x-2 pt-6">
+                            <Checkbox id="baggageAssistance" />
+                            <Label htmlFor="baggageAssistance" className="font-normal text-sm">Include Baggage Assistance <span className="text-xs text-muted-foreground">(Help for seniors or families)</span></Label>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
