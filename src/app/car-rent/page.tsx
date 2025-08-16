@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { KeyRound, Car, User, CheckCircle, CalendarDays, Users, Briefcase, ShieldCheck, Star, Luggage, TvIcon, Settings, FileText, MapPin, Edit, AlertTriangle, Camera, X, Search, ChevronLeft, ChevronRight, Filter, CarIcon, Sun, Moon } from 'lucide-react';
+import { KeyRound, Car, User, CheckCircle, CalendarDays, Users, Briefcase, ShieldCheck, Star, Luggage, TvIcon, Settings, FileText, MapPin, Edit, AlertTriangle, Camera, X, Search, ChevronLeft, ChevronRight, Filter, CarIcon, Sun, Moon, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -128,6 +128,8 @@ const FilterContent = () => (
 
 export default function CarRentPage() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [pickupTime, setPickupTime] = useState('10:00');
+  const [dropoffTime, setDropoffTime] = useState('10:00');
   const [hasMounted, setHasMounted] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -270,19 +272,31 @@ export default function CarRentPage() {
                 </Sheet>
                </div>
                 <div className="space-y-2">
-                    <div>
-                        <Label>Pickup & Return Dates</Label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button id="rental-dates" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}>
-                                    <CalendarDays className="mr-2 h-4 w-4" />
-                                    {hasMounted && dateRange?.from ? ( dateRange.to ? ( <> {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")} </> ) : ( format(dateRange.from, "LLL dd, y") ) ) : ( <span>Pick a date range</span> )}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}/>
-                            </PopoverContent>
-                        </Popover>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <Label>Pickup & Return Dates</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button id="rental-dates" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}>
+                                        <CalendarDays className="mr-2 h-4 w-4" />
+                                        {hasMounted && dateRange?.from ? ( dateRange.to ? ( <> {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")} </> ) : ( format(dateRange.from, "LLL dd, y") ) ) : ( <span>Pick a date range</span> )}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}/>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                         <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <Label htmlFor="pickup-time">Pickup Time</Label>
+                                <Input id="pickup-time" type="time" value={pickupTime} onChange={e => setPickupTime(e.target.value)} />
+                            </div>
+                            <div>
+                                <Label htmlFor="dropoff-time">Dropoff Time</Label>
+                                <Input id="dropoff-time" type="time" value={dropoffTime} onChange={e => setDropoffTime(e.target.value)} />
+                            </div>
+                        </div>
                     </div>
                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
                         <div>
@@ -347,7 +361,7 @@ export default function CarRentPage() {
                     </Link>
                     <CardFooter className="flex flex-col items-start bg-muted/50 p-4 mt-auto">
                         <p className="text-2xl font-bold text-primary mb-2">${getPrice(car)}<span className="text-sm font-normal text-muted-foreground">{getPriceSuffix()}</span></p>
-                        <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" onClick={(e) => { e.stopPropagation(); handleRentClick(car); }}>
+                        <Button className="w-full bg-accent hover:bg-accent/80 text-accent-foreground" onClick={(e) => { e.stopPropagation(); handleRentClick(car); }}>
                             <CalendarDays className="mr-2 h-4 w-4" /> Rent Now
                         </Button>
                         <Button variant="ghost" size="sm" className="w-full mt-1 text-destructive" onClick={(e) => { e.stopPropagation(); handleReportDamageClick(car); }}>
