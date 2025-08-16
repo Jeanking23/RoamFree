@@ -264,6 +264,7 @@ export default function CarRentalDetailsPage() {
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
+                <Button variant="outline" className="w-full" onClick={handleConfirmRental}>Rent Now</Button>
                 <p className="text-xs text-muted-foreground text-center">You won't be charged yet. This is a demo.</p>
               </CardContent>
             </Card>
