@@ -20,7 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon, Filter, CircleDollarSign, TicketIcon, PlusCircle } from 'lucide-react';
+import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon, Filter, CircleDollarSign, TicketIcon, PlusCircle, ArrowRight } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "@/hooks/use-toast";
@@ -30,6 +30,7 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
+import { motion, AnimatePresence } from "framer-motion";
 
 const busSearchSchema = z.object({
   originCity: z.string().min(2, "Origin city is required."),
@@ -82,6 +83,11 @@ interface Passenger {
     name: string;
     idType: "Passport" | "National ID" | "Driver's License";
     idNumber: string;
+}
+
+interface SelectedTrip {
+    route: BusRoute;
+    seats: string[];
 }
 
 const mockBusRoutes: BusRoute[] = [
@@ -182,7 +188,8 @@ const savedPassengers: Passenger[] = [
 
 
 export default function BusTransportationPage() {
-  const [searchResults, setSearchResults] = useState<BusRoute[]>([]);
+  const [departureResults, setDepartureResults] = useState<BusRoute[]>([]);
+  const [returnResults, setReturnResults] = useState<BusRoute[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedRoute, setSelectedRoute] = useState<BusRoute | null>(null);
   const [currentStep, setCurrentStep] = useState(1); // 1: Select Seats, 2: Passenger Details, 3: Add-ons & Pay
@@ -190,12 +197,16 @@ export default function BusTransportationPage() {
   const [passengers, setPassengers] = useState<Passenger[]>([]);
   const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
 
+  // Round trip state
+  const [roundTripStage, setRoundTripStage] = useState<'departure' | 'return' | 'confirm'>('departure');
+  const [departureTrip, setDepartureTrip] = useState<SelectedTrip | null>(null);
+  const [returnTrip, setReturnTrip] = useState<SelectedTrip | null>(null);
+
   // Add-ons state
   const [extraLuggage, setExtraLuggage] = useState(0);
   const [travelInsurance, setTravelInsurance] = useState(false);
   
   const router = useRouter();
-
 
   const form = useForm<BusSearchFormValues>({
     resolver: zodResolver(busSearchSchema),
@@ -219,27 +230,37 @@ export default function BusTransportationPage() {
     }
   }, [form]);
 
-
   async function onBusSearchSubmit(data: BusSearchFormValues) {
     setIsLoading(true);
-    setSearchResults([]);
+    setDepartureResults([]);
+    setReturnResults([]);
     console.log("Bus Search Submitted:", data);
 
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    const filteredResults = mockBusRoutes.filter(route => {
-      let matches = true;
-      if (data.hasAC && !route.amenities.ac) matches = false;
-      if (data.hasWifi && !route.amenities.wifi) matches = false;
-      if (data.hasUsb && !route.amenities.usb) matches = false;
-      if (data.tripType !== "ANY" && route.tripType.toUpperCase() !== data.tripType) matches = false;
-      return matches;
-    });
-
-    setSearchResults(filteredResults);
+    const filterRoutes = (routes: BusRoute[], filters: BusSearchFormValues) => {
+        return routes.filter(route => {
+            let matches = true;
+            if (filters.hasAC && !route.amenities.ac) matches = false;
+            if (filters.hasWifi && !route.amenities.wifi) matches = false;
+            if (filters.hasUsb && !route.amenities.usb) matches = false;
+            if (filters.tripType !== "ANY" && route.tripType.toUpperCase() !== filters.tripType) matches = false;
+            return matches;
+        });
+    };
+    
+    const departure = filterRoutes(mockBusRoutes, data);
+    setDepartureResults(departure);
+    
+    if (data.isRoundTrip) {
+        // In a real app, you might fetch return routes separately. Here we just re-filter the mock data.
+        const returnRoutes = filterRoutes(mockBusRoutes, data);
+        setReturnResults(returnRoutes);
+    }
+    
     setIsLoading(false);
-    if (filteredResults.length > 0) {
-        toast({ title: "Bus Search Results", description: `Found ${filteredResults.length} routes for your criteria.` });
+    if (departure.length > 0) {
+        toast({ title: "Bus Search Results", description: `Found ${departure.length} routes for your criteria.` });
     } else {
         toast({ title: "No Buses Found", description: "Try adjusting your search criteria.", variant: "destructive" });
     }
@@ -252,6 +273,15 @@ export default function BusTransportationPage() {
     setSelectedSeats([]);
     setExtraLuggage(0);
     setTravelInsurance(false);
+    
+    if (isRoundTrip) {
+        setRoundTripStage('departure');
+        setDepartureTrip(null);
+        setReturnTrip(null);
+    } else {
+        setRoundTripStage('confirm');
+    }
+    
     setCurrentStep(1);
     setIsBookingDialogOpen(true);
   }
@@ -297,6 +327,24 @@ export default function BusTransportationPage() {
         toast({ title: "Seat Count Mismatch", description: `Please select exactly ${passengerCount} seat(s).`, variant: "destructive" });
         return;
       }
+      if (isRoundTrip) {
+        if (roundTripStage === 'departure') {
+          if (!selectedRoute) return;
+          setDepartureTrip({ route: selectedRoute, seats: selectedSeats });
+          setRoundTripStage('return');
+          setSelectedRoute(null); // Reset for return trip selection
+          setSelectedSeats([]);
+          setIsBookingDialogOpen(false); // Close dialog to select return trip
+          toast({ title: "Departure Trip Saved!", description: "Now, please select your return trip." });
+          return;
+        } else if (roundTripStage === 'return') {
+          if (!selectedRoute) return;
+          setReturnTrip({ route: selectedRoute, seats: selectedSeats });
+          setRoundTripStage('confirm');
+          setCurrentStep(2); // Proceed to passenger details
+          return;
+        }
+      }
     }
     if (currentStep === 2) { // Passenger details
         const allPassengersValid = passengers.every(p => p.name.trim() !== '' && p.idNumber.trim() !== '');
@@ -318,8 +366,14 @@ export default function BusTransportationPage() {
       });
       setIsBookingDialogOpen(false);
       
-      // Navigate to a ticket page and tracking page
       router.push(`/bus-transportation/ticket/${bookingId}?routeId=${selectedRoute?.id}`);
+  };
+
+  const renderCurrentRoutes = () => {
+    if (isRoundTrip && roundTripStage === 'return') {
+        return returnResults;
+    }
+    return departureResults;
   };
 
   return (
@@ -485,11 +539,25 @@ export default function BusTransportationPage() {
           <p className="text-lg text-muted-foreground">Finding available bus routes...</p>
         </div>
       )}
+      
+      {departureTrip && isRoundTrip && (
+          <Card className="mt-8 border-primary">
+              <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-primary"><ArrowRight className="h-5 w-5"/>Departure Trip Selected</CardTitle>
+              </CardHeader>
+              <CardContent>
+                  <p><strong>{departureTrip.route.operator}</strong> from {departureTrip.route.departureStation} at {departureTrip.route.departureTime}</p>
+                  <p>Seats: {departureTrip.seats.join(', ')}</p>
+              </CardContent>
+          </Card>
+      )}
 
-      {!isLoading && searchResults.length > 0 && (
+      {!isLoading && renderCurrentRoutes().length > 0 && (
         <div className="space-y-6 mt-8">
-          <h2 className="text-2xl font-semibold text-foreground">Available Routes ({searchResults.length})</h2>
-          {searchResults.map((route) => (
+          <h2 className="text-2xl font-semibold text-foreground">
+            {isRoundTrip && roundTripStage === 'return' ? `Select Your Return Trip (${returnResults.length})` : `Available Routes (${departureResults.length})`}
+          </h2>
+          {renderCurrentRoutes().map((route) => (
             <Card key={route.id} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
               <div className="grid md:grid-cols-12 gap-4 p-4 items-stretch">
                 <div className="md:col-span-2 flex flex-col items-center justify-center text-center">
@@ -542,7 +610,7 @@ export default function BusTransportationPage() {
         </div>
       )}
 
-      {!isLoading && searchResults.length === 0 && form.formState.isSubmitted && (
+      {!isLoading && departureResults.length === 0 && form.formState.isSubmitted && (
          <Card className="mt-8 text-center py-12 bg-muted/50">
             <CardContent>
                 <BusIcon className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
@@ -556,12 +624,22 @@ export default function BusTransportationPage() {
         <Dialog open={isBookingDialogOpen} onOpenChange={setIsBookingDialogOpen}>
           <DialogContent className="sm:max-w-4xl">
             <DialogHeader>
-              <DialogTitle>Book your trip with {selectedRoute.operator}</DialogTitle>
+              <DialogTitle>
+                {isRoundTrip && roundTripStage === 'return' ? `Select Seats for Return Trip` : `Book your trip with ${selectedRoute.operator}`}
+              </DialogTitle>
               <DialogDescription>
-                Step {currentStep} of 3: {currentStep === 1 ? 'Select Your Seats' : currentStep === 2 ? 'Enter Passenger Details' : 'Add-ons & Payment'}
+                 Step {currentStep} of 3: {currentStep === 1 ? 'Select Your Seats' : currentStep === 2 ? 'Enter Passenger Details' : 'Add-ons & Payment'}
               </DialogDescription>
             </DialogHeader>
-            <div className="py-4">
+             <AnimatePresence mode="wait">
+             <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
+                className="py-4"
+              >
               {currentStep === 1 && (
                   <div>
                     <div className="mb-4 flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-sm">
@@ -579,9 +657,7 @@ export default function BusTransportationPage() {
                             const seatId = getSeatLabel(rowIndex, colIndex, layout);
                             const isTaken = index % 5 === 0 || ["2A", "3C"].includes(seatId);
                             const isSelected = selectedSeats.includes(seatId);
-                            const isWindow = colIndex === 0 || colIndex === layout.cols - 1;
-                            const isAisle = colIndex === layout.aisleAfter - 1 || colIndex === layout.aisleAfter;
-
+                            
                             return (
                                 <Button
                                 key={seatId}
@@ -596,7 +672,7 @@ export default function BusTransportationPage() {
                                 )}
                                 onClick={() => !isTaken && toggleSeatSelection(seatId)}
                                 disabled={isTaken}
-                                title={`Seat ${seatId}${isWindow ? ' (Window)' : ''}${isAisle ? ' (Aisle)' : ''}`}
+                                title={`Seat ${seatId}`}
                                 >
                                 <Armchair className="h-4 w-4 sm:h-5 sm:w-5" />
                                 <span className="sr-only">{seatId}</span>
@@ -611,7 +687,10 @@ export default function BusTransportationPage() {
                   <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-4">
                       {passengers.map((p, index) => (
                           <Card key={index} className="p-4">
-                              <CardTitle className="text-lg mb-2">Passenger {index + 1} (Seat {selectedSeats[index]})</CardTitle>
+                              <CardTitle className="text-lg mb-2">
+                                  Passenger {index + 1}
+                                  {isRoundTrip ? ` (Dep: ${departureTrip?.seats[index]}, Ret: ${returnTrip?.seats[index]})` : ` (Seat: ${selectedSeats[index]})`}
+                              </CardTitle>
                               <div className="grid sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>Full Name</Label>
@@ -628,7 +707,7 @@ export default function BusTransportationPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>ID Type</Label>
-                                    <Select value={p.idType} onValueChange={val => handlePassengerDetailChange(index, 'idType', val)}>
+                                    <Select value={p.idType} onValueChange={val => handlePassengerDetailChange(index, 'idType', val as any)}>
                                         <SelectTrigger><SelectValue/></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="National ID">National ID</SelectItem>
@@ -664,27 +743,47 @@ export default function BusTransportationPage() {
                     <Card>
                         <CardHeader><CardTitle>Fare Breakdown</CardTitle></CardHeader>
                         <CardContent className="text-sm space-y-1">
-                            <div className="flex justify-between"><span>Base Fare ({passengers.length} x ${selectedRoute.price})</span><span>${(passengers.length * selectedRoute.price).toFixed(2)}</span></div>
+                            {isRoundTrip && departureTrip && returnTrip ? (
+                                <>
+                                <div className="flex justify-between"><span>Departure Fare ({passengers.length} x ${departureTrip.route.price})</span><span>${(passengers.length * departureTrip.route.price).toFixed(2)}</span></div>
+                                <div className="flex justify-between"><span>Return Fare ({passengers.length} x ${returnTrip.route.price})</span><span>${(passengers.length * returnTrip.route.price).toFixed(2)}</span></div>
+                                </>
+                            ) : (
+                                <div className="flex justify-between"><span>Base Fare ({passengers.length} x ${selectedRoute.price})</span><span>${(passengers.length * selectedRoute.price).toFixed(2)}</span></div>
+                            )}
+
                             <div className="flex justify-between"><span>Extra Luggage ({extraLuggage} x $5)</span><span>${(extraLuggage * 5).toFixed(2)}</span></div>
                             {travelInsurance && <div className="flex justify-between"><span>Travel Insurance ({passengers.length} x $2.50)</span><span>${(passengers.length * 2.5).toFixed(2)}</span></div>}
                             <Separator className="my-2"/>
                             <div className="flex justify-between font-bold text-lg">
                                 <span>Total</span>
-                                <span>${(passengers.length * selectedRoute.price + extraLuggage * 5 + (travelInsurance ? passengers.length * 2.5 : 0)).toFixed(2)}</span>
+                                <span>
+                                    ${
+                                        (
+                                            (isRoundTrip && departureTrip && returnTrip ? 
+                                                (passengers.length * (departureTrip.route.price + returnTrip.route.price)) : 
+                                                (passengers.length * selectedRoute.price)
+                                            ) + 
+                                            extraLuggage * 5 + 
+                                            (travelInsurance ? passengers.length * 2.5 : 0)
+                                        ).toFixed(2)
+                                    }
+                                </span>
                             </div>
                         </CardContent>
                     </Card>
                     <p className="text-xs text-muted-foreground">You will be redirected to a secure payment gateway. Reserve now, pay later options available.</p>
                   </div>
               )}
-            </div>
+              </motion.div>
+              </AnimatePresence>
             <DialogFooter className="sm:justify-between items-center">
                 <div>
                    {currentStep > 1 && <Button type="button" variant="outline" onClick={handlePrevStep}>Back</Button>}
                 </div>
                 <div className="flex gap-2">
                   <DialogClose asChild><Button type="button" variant="outline">Cancel Booking</Button></DialogClose>
-                  {currentStep < 3 && <Button type="button" onClick={handleNextStep}>Next</Button>}
+                  {currentStep < 3 && <Button type="button" onClick={handleNextStep}>{ isRoundTrip && roundTripStage !== 'confirm' && currentStep === 1 ? 'Confirm Seats & Select Return' : 'Next' }</Button>}
                   {currentStep === 3 && <Button type="button" onClick={handleConfirmBooking}>Confirm & Pay</Button>}
                 </div>
             </DialogFooter>
