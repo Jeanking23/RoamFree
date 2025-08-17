@@ -40,7 +40,13 @@ const busSearchSchema = z.object({
   hasWifi: z.boolean().default(false).optional(),
   hasUsb: z.boolean().default(false).optional(),
   tripType: z.enum(["ANY", "DAY", "OVERNIGHT"]).default("ANY").optional(),
+  isRoundTrip: z.boolean().default(false),
+  returnDate: z.date().optional(),
+}).refine(data => !data.isRoundTrip || !!data.returnDate, {
+    message: "Return date is required for a round trip.",
+    path: ["returnDate"],
 });
+
 
 type BusSearchFormValues = z.infer<typeof busSearchSchema>;
 
@@ -201,8 +207,11 @@ export default function BusTransportationPage() {
       hasWifi: false,
       hasUsb: false,
       tripType: "ANY",
+      isRoundTrip: false,
     },
   });
+
+  const isRoundTrip = form.watch("isRoundTrip");
 
   useEffect(() => {
     if (!form.getValues("departureDate")) {
@@ -352,7 +361,7 @@ export default function BusTransportationPage() {
                   )}
                 />
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
                 <FormField
                   control={form.control}
                   name="departureDate"
@@ -378,6 +387,30 @@ export default function BusTransportationPage() {
                     </FormItem>
                   )}
                 />
+                 {isRoundTrip && (
+                  <FormField
+                    control={form.control}
+                    name="returnDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Return Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>
+                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < (form.getValues("departureDate") || new Date(new Date().setHours(0,0,0,0)))} initialFocus />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
                 <FormField
                   control={form.control}
                   name="passengers"
@@ -389,6 +422,18 @@ export default function BusTransportationPage() {
                     </FormItem>
                   )}
                 />
+                 <FormField
+                    control={form.control}
+                    name="isRoundTrip"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0 pb-1.5">
+                        <FormControl>
+                          <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                        <FormLabel className="font-normal">Round Trip</FormLabel>
+                      </FormItem>
+                    )}
+                  />
               </div>
               <div>
                 <FormLabel className="text-base font-medium">Filters (Optional)</FormLabel>
