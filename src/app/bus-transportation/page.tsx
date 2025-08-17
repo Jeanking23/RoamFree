@@ -20,7 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon, Filter, CircleDollarSign, TicketIcon, PlusCircle, ArrowRight } from 'lucide-react';
+import { BusIcon, CalendarIcon, MapPin, Users, Search, Clock, DollarSign, Wifi, Power, Snowflake, Sun, Moon, Wind, Zap, Tv, BaggageClaim, AlertCircle, Armchair, Info, ListFilter, ShieldCheck, MessageSquare, Edit3, Languages, Star as StarIcon, Filter, CircleDollarSign, TicketIcon, PlusCircle, ArrowRight, Repeat } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "@/hooks/use-toast";
@@ -94,7 +94,7 @@ const mockBusRoutes: BusRoute[] = [
   {
     id: "route001",
     operator: "ComfortLines Express",
-    operatorLogo: "https://placehold.co/100x50.png",
+    operatorLogo: "https://images.unsplash.com/photo-1754782385462-87d3aadabd04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YnVzJTIwY29tcGFueSUyMGxvZ298ZW58MHx8fHwxNzU1Mzk4Mzk5fDA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "bus company logo",
     operatorRating: 4.5,
     departureTime: "08:00 AM",
@@ -114,7 +114,7 @@ const mockBusRoutes: BusRoute[] = [
   {
     id: "route002",
     operator: "Speedy Ways",
-    operatorLogo: "https://placehold.co/100x50.png",
+    operatorLogo: "https://images.unsplash.com/photo-1553946357-b1a3a8a20b5b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxidXMlMjBjb21wYW55JTIwbG9nb3xlbnwwfHx8fDE3NTUzOTgzOTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "bus company logo",
     operatorRating: 4.2,
     departureTime: "10:30 PM",
@@ -134,7 +134,7 @@ const mockBusRoutes: BusRoute[] = [
   {
     id: "route003",
     operator: "Budget Bus Co.",
-    operatorLogo: "https://placehold.co/100x50.png",
+    operatorLogo: "https://images.unsplash.com/photo-1553946357-b1a3a8a20b5b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxidXMlMjBjb21wYW55JTIwbG9nb3xlbnwwfHx8fDE3NTUzOTgzOTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "bus company logo",
     operatorRating: 3.8,
     departureTime: "02:00 PM",
@@ -154,7 +154,7 @@ const mockBusRoutes: BusRoute[] = [
    {
     id: "route004",
     operator: "Prestige Travel",
-    operatorLogo: "https://placehold.co/100x50.png",
+    operatorLogo: "https://images.unsplash.com/photo-1754782385462-87d3aadabd04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YnVzJTIwY29tcGFueSUyMGxvZ298ZW58MHx8fHwxNzU1Mzk4Mzk5fDA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "bus company logo",
     operatorRating: 4.8,
     departureTime: "11:00 AM",
@@ -500,7 +500,7 @@ export default function BusTransportationPage() {
                         <FormControl>
                           <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
-                        <FormLabel className="font-normal">Round Trip</FormLabel>
+                        <FormLabel className="font-normal flex items-center gap-2"><Repeat className="h-4 w-4" />Round Trip</FormLabel>
                       </FormItem>
                     )}
                   />
