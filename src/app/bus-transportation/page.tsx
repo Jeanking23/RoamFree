@@ -234,6 +234,9 @@ export default function BusTransportationPage() {
     setIsLoading(true);
     setDepartureResults([]);
     setReturnResults([]);
+    setDepartureTrip(null);
+    setReturnTrip(null);
+    setRoundTripStage('departure');
     console.log("Bus Search Submitted:", data);
 
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -274,10 +277,10 @@ export default function BusTransportationPage() {
     setExtraLuggage(0);
     setTravelInsurance(false);
     
-    if (isRoundTrip) {
+    if (isRoundTrip && !departureTrip) {
         setRoundTripStage('departure');
-        setDepartureTrip(null);
-        setReturnTrip(null);
+    } else if (isRoundTrip && departureTrip) {
+        setRoundTripStage('return');
     } else {
         setRoundTripStage('confirm');
     }
@@ -342,7 +345,7 @@ export default function BusTransportationPage() {
           setReturnTrip({ route: selectedRoute, seats: selectedSeats });
           setRoundTripStage('confirm');
           setCurrentStep(2); // Proceed to passenger details
-          return;
+          return; // Stay in dialog
         }
       }
     }
@@ -359,6 +362,7 @@ export default function BusTransportationPage() {
   const handlePrevStep = () => setCurrentStep(prev => prev - 1);
   
   const handleConfirmBooking = () => {
+      const activeRoute = isRoundTrip ? returnTrip?.route : selectedRoute;
       const bookingId = `RFBUS${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
       toast({
           title: "Booking Confirmed!",
@@ -366,7 +370,7 @@ export default function BusTransportationPage() {
       });
       setIsBookingDialogOpen(false);
       
-      router.push(`/bus-transportation/ticket/${bookingId}?routeId=${selectedRoute?.id}`);
+      router.push(`/bus-transportation/ticket/${bookingId}?routeId=${activeRoute?.id}`);
   };
 
   const renderCurrentRoutes = () => {
@@ -375,6 +379,18 @@ export default function BusTransportationPage() {
     }
     return departureResults;
   };
+  
+  const getActiveRouteForDialog = () => {
+    if (isRoundTrip) {
+        if (roundTripStage === 'confirm' && returnTrip) return returnTrip.route;
+        // The selectedRoute is the one currently being booked
+        return selectedRoute;
+    }
+    return selectedRoute;
+  };
+  
+  const activeRouteForDialog = getActiveRouteForDialog();
+
 
   return (
     <div className="space-y-8">
@@ -620,12 +636,12 @@ export default function BusTransportationPage() {
         </Card>
       )}
 
-      {selectedRoute && (
+      {activeRouteForDialog && (
         <Dialog open={isBookingDialogOpen} onOpenChange={setIsBookingDialogOpen}>
           <DialogContent className="sm:max-w-4xl">
             <DialogHeader>
               <DialogTitle>
-                {isRoundTrip && roundTripStage === 'return' ? `Select Seats for Return Trip` : `Book your trip with ${selectedRoute.operator}`}
+                {isRoundTrip && roundTripStage === 'return' ? `Select Seats for Return Trip` : isRoundTrip && roundTripStage === 'confirm' ? `Confirm Your Round Trip` : `Book your trip with ${activeRouteForDialog.operator}`}
               </DialogTitle>
               <DialogDescription>
                  Step {currentStep} of 3: {currentStep === 1 ? 'Select Your Seats' : currentStep === 2 ? 'Enter Passenger Details' : 'Add-ons & Payment'}
@@ -649,9 +665,9 @@ export default function BusTransportationPage() {
                     </div>
                     <div className="w-16 h-8 bg-gray-300 rounded-t-md mx-auto mb-2 flex items-center justify-center text-xs">Front</div>
                     <div className="bg-muted/30 p-2 sm:p-4 rounded-md flex justify-center">
-                        <div className="grid gap-1 sm:gap-1.5" style={{ gridTemplateColumns: `repeat(${selectedRoute.seatsLayout?.cols || 4}, minmax(0, 1fr))` }}>
-                        {Array.from({ length: selectedRoute.totalSeats || 40 }).map((_, index) => {
-                            const layout = selectedRoute.seatsLayout || { rows: 10, cols: 4, aisleAfter: 2 };
+                        <div className="grid gap-1 sm:gap-1.5" style={{ gridTemplateColumns: `repeat(${activeRouteForDialog.seatsLayout?.cols || 4}, minmax(0, 1fr))` }}>
+                        {Array.from({ length: activeRouteForDialog.totalSeats || 40 }).map((_, index) => {
+                            const layout = activeRouteForDialog.seatsLayout || { rows: 10, cols: 4, aisleAfter: 2 };
                             const rowIndex = Math.floor(index / layout.cols);
                             const colIndex = index % layout.cols;
                             const seatId = getSeatLabel(rowIndex, colIndex, layout);
@@ -689,7 +705,7 @@ export default function BusTransportationPage() {
                           <Card key={index} className="p-4">
                               <CardTitle className="text-lg mb-2">
                                   Passenger {index + 1}
-                                  {isRoundTrip ? ` (Dep: ${departureTrip?.seats[index]}, Ret: ${returnTrip?.seats[index]})` : ` (Seat: ${selectedSeats[index]})`}
+                                  {isRoundTrip && departureTrip && returnTrip ? ` (Dep: ${departureTrip.seats[index]}, Ret: ${returnTrip.seats[index]})` : ` (Seat: ${selectedSeats[index]})`}
                               </CardTitle>
                               <div className="grid sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -749,7 +765,7 @@ export default function BusTransportationPage() {
                                 <div className="flex justify-between"><span>Return Fare ({passengers.length} x ${returnTrip.route.price})</span><span>${(passengers.length * returnTrip.route.price).toFixed(2)}</span></div>
                                 </>
                             ) : (
-                                <div className="flex justify-between"><span>Base Fare ({passengers.length} x ${selectedRoute.price})</span><span>${(passengers.length * selectedRoute.price).toFixed(2)}</span></div>
+                                <div className="flex justify-between"><span>Base Fare ({passengers.length} x ${activeRouteForDialog.price})</span><span>${(passengers.length * activeRouteForDialog.price).toFixed(2)}</span></div>
                             )}
 
                             <div className="flex justify-between"><span>Extra Luggage ({extraLuggage} x $5)</span><span>${(extraLuggage * 5).toFixed(2)}</span></div>
@@ -762,7 +778,7 @@ export default function BusTransportationPage() {
                                         (
                                             (isRoundTrip && departureTrip && returnTrip ? 
                                                 (passengers.length * (departureTrip.route.price + returnTrip.route.price)) : 
-                                                (passengers.length * selectedRoute.price)
+                                                (passengers.length * activeRouteForDialog.price)
                                             ) + 
                                             extraLuggage * 5 + 
                                             (travelInsurance ? passengers.length * 2.5 : 0)
