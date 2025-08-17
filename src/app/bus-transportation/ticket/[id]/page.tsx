@@ -4,7 +4,7 @@
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TicketIcon, User, MapPin, Clock, BusIcon, QrCode, Download, Share2, ArrowLeft, Save } from 'lucide-react';
+import { TicketIcon, User, MapPin, Clock, BusIcon, QrCode, Download, Share2, ArrowLeft, Save, ArrowRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -23,6 +23,18 @@ const mockTicketData = {
     date: "2024-08-15",
     passengers: [{ name: "Alex Johnson", seat: "5A" }],
     busType: "Luxury AC Coach",
+    isRoundTrip: true, // Flag to indicate a round trip
+    returnTrip: {
+        routeId: "route002",
+        operator: "Speedy Ways",
+        departureStation: "Main Station, Yaoundé",
+        arrivalStation: "Central Bus Terminal, Douala",
+        departureTime: "10:30 PM",
+        arrivalTime: "05:30 AM",
+        date: "2024-08-22",
+        passengers: [{ name: "Alex Johnson", seat: "3B" }],
+        busType: "Standard AC Sleeper",
+    }
 };
 
 export default function BusTicketPage() {
@@ -42,6 +54,8 @@ export default function BusTicketPage() {
     const ticket = mockTicketData;
 
     const formattedDate = hasMounted ? format(new Date(ticket.date), 'PPP') : '';
+    const formattedReturnDate = hasMounted && ticket.isRoundTrip && ticket.returnTrip ? format(new Date(ticket.returnTrip.date), 'PPP') : '';
+
 
     const handleDownload = () => {
         toast({ title: "Downloading Ticket", description: "Your ticket is being downloaded as a PDF." });
@@ -86,52 +100,99 @@ export default function BusTicketPage() {
                         Your E-Ticket
                     </CardTitle>
                     <CardDescription className="text-lg text-muted-foreground">
-                        Booking ID: {bookingId}
+                        Booking ID: {bookingId} {ticket.isRoundTrip && <span className="font-semibold text-primary">(Round Trip)</span>}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
-                    <div className="flex justify-between items-center p-4 bg-muted/50 rounded-lg">
-                        <div>
-                            <p className="text-sm text-muted-foreground">Operator</p>
-                            <p className="font-semibold text-lg">{ticket.operator}</p>
-                        </div>
-                        <BusIcon className="h-10 w-10 text-primary" />
-                    </div>
-
-                    <div className="grid sm:grid-cols-2 gap-6">
-                        <div>
-                            <p className="text-sm text-muted-foreground flex items-center gap-1"><MapPin className="h-4 w-4"/> From</p>
-                            <p className="font-semibold">{ticket.departureStation}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-muted-foreground flex items-center gap-1"><MapPin className="h-4 w-4"/> To</p>
-                            <p className="font-semibold">{ticket.arrivalStation}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Departure</p>
-                            <p className="font-semibold">{formattedDate} at {ticket.departureTime}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Arrival (Est.)</p>
-                            <p className="font-semibold">{formattedDate} at {ticket.arrivalTime}</p>
-                        </div>
-                    </div>
-
-                    <Separator />
-                    
-                    <div>
-                        <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2"><User className="h-4 w-4"/> Passengers</p>
-                        <div className="space-y-2">
-                        {ticket.passengers.map((p, i) => (
-                             <div key={i} className="flex justify-between items-center">
-                                <p className="font-semibold">{p.name}</p>
-                                <p className="text-sm text-muted-foreground">Seat: <span className="font-bold text-primary">{p.seat}</span></p>
+                    {/* Departure Trip */}
+                    <div className="p-4 bg-muted/50 rounded-lg">
+                        <div className="flex justify-between items-center mb-4">
+                            <div>
+                                <p className="text-sm text-muted-foreground">Operator</p>
+                                <p className="font-semibold text-lg">{ticket.operator}</p>
                             </div>
-                        ))}
+                             <div className="text-right">
+                                <p className="text-sm font-semibold">Departure Trip</p>
+                                <BusIcon className="h-8 w-8 text-primary inline-block" />
+                            </div>
+                        </div>
+                        <div className="grid sm:grid-cols-2 gap-6">
+                            <div>
+                                <p className="text-sm text-muted-foreground flex items-center gap-1"><MapPin className="h-4 w-4"/> From</p>
+                                <p className="font-semibold">{ticket.departureStation}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground flex items-center gap-1"><MapPin className="h-4 w-4"/> To</p>
+                                <p className="font-semibold">{ticket.arrivalStation}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Departure</p>
+                                <p className="font-semibold">{formattedDate} at {ticket.departureTime}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Arrival (Est.)</p>
+                                <p className="font-semibold">{formattedDate} at {ticket.arrivalTime}</p>
+                            </div>
+                        </div>
+                        <Separator className="my-4"/>
+                         <div>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2"><User className="h-4 w-4"/> Passengers</p>
+                            <div className="space-y-2">
+                            {ticket.passengers.map((p, i) => (
+                                <div key={i} className="flex justify-between items-center">
+                                    <p className="font-semibold">{p.name}</p>
+                                    <p className="text-sm text-muted-foreground">Seat: <span className="font-bold text-primary">{p.seat}</span></p>
+                                </div>
+                            ))}
+                            </div>
                         </div>
                     </div>
-                    
-                    <Separator />
+
+                    {/* Return Trip */}
+                    {ticket.isRoundTrip && ticket.returnTrip && (
+                         <div className="p-4 bg-muted/50 rounded-lg">
+                            <div className="flex justify-between items-center mb-4">
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Operator</p>
+                                    <p className="font-semibold text-lg">{ticket.returnTrip.operator}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm font-semibold">Return Trip</p>
+                                    <BusIcon className="h-8 w-8 text-primary inline-block" />
+                                </div>
+                            </div>
+                            <div className="grid sm:grid-cols-2 gap-6">
+                                <div>
+                                    <p className="text-sm text-muted-foreground flex items-center gap-1"><MapPin className="h-4 w-4"/> From</p>
+                                    <p className="font-semibold">{ticket.returnTrip.departureStation}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-muted-foreground flex items-center gap-1"><MapPin className="h-4 w-4"/> To</p>
+                                    <p className="font-semibold">{ticket.returnTrip.arrivalStation}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Departure</p>
+                                    <p className="font-semibold">{formattedReturnDate} at {ticket.returnTrip.departureTime}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-muted-foreground flex items-center gap-1"><Clock className="h-4 w-4"/> Arrival (Est.)</p>
+                                    <p className="font-semibold">{formattedReturnDate} at {ticket.returnTrip.arrivalTime}</p>
+                                </div>
+                            </div>
+                             <Separator className="my-4"/>
+                             <div>
+                                <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2"><User className="h-4 w-4"/> Passengers</p>
+                                <div className="space-y-2">
+                                {ticket.returnTrip.passengers.map((p, i) => (
+                                    <div key={i} className="flex justify-between items-center">
+                                        <p className="font-semibold">{p.name}</p>
+                                        <p className="text-sm text-muted-foreground">Seat: <span className="font-bold text-primary">{p.seat}</span></p>
+                                    </div>
+                                ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="text-center">
                         <p className="text-sm text-muted-foreground mb-2">Scan this QR code at boarding</p>
