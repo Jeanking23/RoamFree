@@ -25,13 +25,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import BusTransportationSearchForm from './bus-transportation-search-form';
 
 
 const serviceCategories = [
-  { name: 'Ride', icon: Car, link: '/transport' },
-  { name: 'Bus Tickets', icon: Bus, link: '/bus-transportation' },
-  { name: 'Rental Car', icon: CarFront, link: '/car-rent' },
-  { name: 'Flights', icon: Plane, link: '/flights' },
+  { name: 'Ride', icon: Car, link: '/transport', tabValue: 'ride' },
+  { name: 'Bus', icon: Bus, link: '/transport?tab=bus', tabValue: 'bus' },
+  { name: 'Rent', icon: CarFront, link: '/car-rent', tabValue: 'rent' },
+  { name: 'Flights', icon: Plane, link: '/flights', tabValue: 'flights' },
 ];
 
 const suggestionItems = [
@@ -52,7 +54,7 @@ const suggestionItems = [
     {
       title: 'Rental Cars',
       description: 'Rent a car from a variety of models.',
-      imageSrc: 'https://images.unsplash.com/photo-1581966451257-a5c7c5afa833?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZW50YWwlMjBjYXJzfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1581966451257-a5c7c5afa833?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZW50YWwlMjBjYXJzfGVufDB8fHx8MTc1MjcyNzYwN3ww&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'rental cars',
       link: '/car-rent',
     },
@@ -66,7 +68,7 @@ const suggestionItems = [
     {
       title: 'Food',
       description: 'Get your favorite meals delivered.',
-      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1652862730749-31dae8981191?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZGVsaXZlcnl8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
       dataAiHint: 'food delivery',
       link: '#!', // Placeholder link
     },
@@ -542,202 +544,195 @@ export default function TransportPage() {
                 />
             </div>
             <div className="space-y-4">
-               <div className="lg:hidden grid grid-cols-4 gap-4 mb-8">
-                  {serviceCategories.map((service) => {
-                    const isActive = pathname === service.link;
-                    return (
-                        <Link key={service.name} href={service.link} passHref>
-                        <Card className={cn("text-center p-2 hover:bg-accent/10 transition-all cursor-pointer h-full flex flex-col justify-center items-center relative", isActive && "bg-accent/10 border-primary")}>
-                            <service.icon className={cn("h-6 w-6 mx-auto mb-1", isActive ? "text-primary" : "text-muted-foreground")} />
-                            <p className={cn("font-semibold text-xs text-center", isActive ? "text-primary" : "text-foreground")}>{service.name}</p>
-                            {isActive && <div className="absolute bottom-[-8px] h-1 w-8 bg-primary rounded-full"></div>}
-                        </Card>
-                        </Link>
-                    );
-                  })}
-              </div>
-               <div className="hidden lg:grid grid-cols-4 gap-4">
-                  {serviceCategories.map((service) => {
-                    const isActive = pathname === service.link;
-                    return (
-                        <Link key={service.name} href={service.link} passHref>
-                        <Card className={cn("text-center p-3 hover:bg-accent/10 hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-center items-center relative", isActive && "bg-accent/10 border-primary")}>
-                            <service.icon className={cn("h-8 w-8 mx-auto mb-2", isActive ? "text-primary" : "text-muted-foreground")} />
-                            <p className={cn("font-semibold text-sm", isActive ? "text-primary" : "text-foreground")}>{service.name}</p>
-                             {isActive && <div className="absolute bottom-[-12px] h-1 w-12 bg-primary rounded-full"></div>}
-                        </Card>
-                        </Link>
-                    );
-                  })}
-              </div>
-              <Card id="ride-booking">
-                <CardContent className="p-2 space-y-2">
-                  <h3 className="text-lg font-semibold px-2 pt-2">Book a Ride</h3>
-                  <div className="space-y-1">
-                    <div className="relative px-2">
-                        <div className="absolute left-[15px] top-[18px] h-[calc(100%-36px)] w-px bg-muted-foreground/30"></div>
-                        <div className="space-y-1">
-                            <LocationInput
-                                value={pickupLocation}
-                                onValueChange={setPickupLocation}
-                                placeholder="Pickup location"
-                                iconType="pickup"
-                                onMapSelectRequest={() => setupMapClickListener('pickup')}
-                                onUseCurrentLocation={() => handleUseCurrentLocation('pickup')}
-                            />
-                            <LocationInput
-                                value={dropoffLocation}
-                                onValueChange={setDropoffLocation}
-                                placeholder="Destination"
-                                iconType="dropoff"
-                                onMapSelectRequest={() => setupMapClickListener('dropoff')}
-                                onUseCurrentLocation={() => handleUseCurrentLocation('dropoff')}
-                            />
+              <Tabs defaultValue="ride" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  {serviceCategories.map((service) => (
+                    <TabsTrigger key={service.tabValue} value={service.tabValue} asChild>
+                      <Link href={service.link}>
+                        <service.icon className={cn("h-5 w-5 md:mr-2")} />
+                        <span className="hidden md:inline">{service.name}</span>
+                      </Link>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                <TabsContent value="ride">
+                  <Card id="ride-booking">
+                    <CardContent className="p-4 space-y-3">
+                      <h3 className="text-lg font-semibold">Book a Ride</h3>
+                      <div className="space-y-1">
+                        <div className="relative">
+                            <div className="absolute left-2.5 top-[18px] h-[calc(100%-36px)] w-px bg-muted-foreground/30"></div>
+                            <div className="space-y-1">
+                                <LocationInput
+                                    value={pickupLocation}
+                                    onValueChange={setPickupLocation}
+                                    placeholder="Pickup location"
+                                    iconType="pickup"
+                                    onMapSelectRequest={() => setupMapClickListener('pickup')}
+                                    onUseCurrentLocation={() => handleUseCurrentLocation('pickup')}
+                                />
+                                <LocationInput
+                                    value={dropoffLocation}
+                                    onValueChange={setDropoffLocation}
+                                    placeholder="Destination"
+                                    iconType="dropoff"
+                                    onMapSelectRequest={() => setupMapClickListener('dropoff')}
+                                    onUseCurrentLocation={() => handleUseCurrentLocation('dropoff')}
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="px-2">
-                        <div className="flex items-center space-x-2">
-                            <Switch id="round-trip" checked={isRoundTrip} onCheckedChange={setIsRoundTrip} />
-                            <Label htmlFor="round-trip" className="flex items-center gap-2 text-sm"><Repeat className="h-4 w-4" />Round Trip / Return Way</Label>
+                        <div className="px-1">
+                            <div className="flex items-center space-x-2">
+                                <Switch id="round-trip" checked={isRoundTrip} onCheckedChange={setIsRoundTrip} />
+                                <Label htmlFor="round-trip" className="flex items-center gap-2 text-sm"><Repeat className="h-4 w-4" />Round Trip / Return Way</Label>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <AnimatePresence>
-                    {isRoundTrip && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="grid grid-cols-2 gap-2 pt-2 overflow-hidden border-t px-2"
-                        >
+                        
+                        <AnimatePresence>
+                        {isRoundTrip && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="grid grid-cols-2 gap-2 pt-2 overflow-hidden border-t px-1"
+                            >
+                                <div>
+                                    <Label className="text-xs">Return Date</Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal",!returnDate && "text-muted-foreground")}>
+                                                <CalendarDays className="mr-2 h-4 w-4" />
+                                                {returnDate ? format(returnDate, "PPP") : <span>Pick a date</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar mode="single" selected={returnDate} onSelect={setReturnDate} disabled={(d) => d < (date || new Date(new Date().setHours(0,0,0,0)))} initialFocus/>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <div>
+                                    <Label className="text-xs">Return Time</Label>
+                                    <Input type="time" value={returnTime} onChange={(e) => setReturnTime(e.target.value)} />
+                                </div>
+                            </motion.div>
+                        )}
+                        </AnimatePresence>
+
+
+                        <div className="grid grid-cols-2 gap-2 px-1">
                             <div>
-                                <Label className="text-xs">Return Date</Label>
+                                <Label className="text-xs">Date</Label>
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal",!returnDate && "text-muted-foreground")}>
+                                        <Button
+                                            size="sm"
+                                            variant={"outline"}
+                                            className={cn(
+                                                "w-full justify-start text-left font-normal",
+                                                !date && "text-muted-foreground"
+                                            )}
+                                        >
                                             <CalendarDays className="mr-2 h-4 w-4" />
-                                            {returnDate ? format(returnDate, "PPP") : <span>Pick a date</span>}
+                                            {date ? format(date, "PPP") : <span>Pick a date</span>}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0" align="start">
-                                        <Calendar mode="single" selected={returnDate} onSelect={setReturnDate} disabled={(d) => d < (date || new Date(new Date().setHours(0,0,0,0)))} initialFocus/>
+                                        <Calendar
+                                            mode="single"
+                                            selected={date}
+                                            onSelect={setDate}
+                                            disabled={(d) => d < new Date(new Date().setHours(0,0,0,0))}
+                                            initialFocus
+                                        />
                                     </PopoverContent>
                                 </Popover>
                             </div>
                             <div>
-                                <Label className="text-xs">Return Time</Label>
-                                <Input type="time" value={returnTime} onChange={(e) => setReturnTime(e.target.value)} />
+                                <Label className="text-xs">Time</Label>
+                                <Input
+                                    type="time"
+                                    value={time}
+                                    onChange={(e) => setTime(e.target.value)}
+                                />
                             </div>
-                        </motion.div>
-                    )}
-                    </AnimatePresence>
-
-
-                    <div className="grid grid-cols-2 gap-2 px-2">
-                        <div>
-                            <Label className="text-xs">Date</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        size="sm"
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal",
-                                            !date && "text-muted-foreground"
-                                        )}
-                                    >
-                                        <CalendarDays className="mr-2 h-4 w-4" />
-                                        {date ? format(date, "PPP") : <span>Pick a date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={date}
-                                        onSelect={setDate}
-                                        disabled={(d) => d < new Date(new Date().setHours(0,0,0,0))}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
                         </div>
-                        <div>
-                            <Label className="text-xs">Time</Label>
-                            <Input
-                                type="time"
-                                value={time}
-                                onChange={(e) => setTime(e.target.value)}
+
+                        <div className="px-1">
+                            <Label className="text-xs">Passengers</Label>
+                            <div className="flex gap-2">
+                                <div className="flex-1">
+                                    <Label htmlFor="adults" className="text-xs text-muted-foreground">Adults</Label>
+                                    <Input id="adults" type="number" min="1" value={adults} onChange={e => setAdults(Number(e.target.value))} />
+                                </div>
+                                <div className="flex-1">
+                                    <Label htmlFor="children" className="text-xs text-muted-foreground">Children</Label>
+                                    <Input id="children" type="number" min="0" value={children} onChange={e => setChildren(Number(e.target.value))} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="px-1">
+                            <Label htmlFor="comment" className="flex items-center gap-2 text-xs"><MessageSquare className="h-4 w-4"/>Comment (Optional)</Label>
+                            <Textarea 
+                                id="comment"
+                                placeholder="Luggage info, special needs..."
+                                value={comment}
+                                onChange={e => setComment(e.target.value)}
+                                className="text-sm"
                             />
                         </div>
-                    </div>
 
-                    <div className="px-2">
-                        <Label className="text-xs">Passengers</Label>
-                        <div className="flex gap-2">
-                            <div className="flex-1">
-                                <Label htmlFor="adults" className="text-xs text-muted-foreground">Adults</Label>
-                                <Input id="adults" type="number" min="1" value={adults} onChange={e => setAdults(Number(e.target.value))} />
-                            </div>
-                            <div className="flex-1">
-                                <Label htmlFor="children" className="text-xs text-muted-foreground">Children</Label>
-                                <Input id="children" type="number" min="0" value={children} onChange={e => setChildren(Number(e.target.value))} />
-                            </div>
+                        <div className="flex items-center space-x-2 px-1">
+                            <Switch id="ride-for-other" checked={rideForSomeoneElse} onCheckedChange={setRideForSomeoneElse} />
+                            <Label htmlFor="ride-for-other" className="flex items-center gap-2 text-sm"><UserPlus className="h-4 w-4" />Ride for someone else</Label>
                         </div>
-                    </div>
 
-                    <div className="px-2">
-                        <Label htmlFor="comment" className="flex items-center gap-2 text-xs"><MessageSquare className="h-4 w-4"/>Comment (Optional)</Label>
-                        <Textarea 
-                            id="comment"
-                            placeholder="Luggage info, special needs..."
-                            value={comment}
-                            onChange={e => setComment(e.target.value)}
-                            className="text-sm"
-                        />
-                    </div>
-
-                    <div className="flex items-center space-x-2 px-2">
-                        <Switch id="ride-for-other" checked={rideForSomeoneElse} onCheckedChange={setRideForSomeoneElse} />
-                        <Label htmlFor="ride-for-other" className="flex items-center gap-2 text-sm"><UserPlus className="h-4 w-4" />Ride for someone else</Label>
-                    </div>
-
-                    <AnimatePresence>
-                        {rideForSomeoneElse && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
-                                animate={{ opacity: 1, height: 'auto', marginTop: '0.5rem', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}
-                                exit={{ opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
-                                transition={{ duration: 0.3, ease: "easeInOut" }}
-                                className="space-y-3 pt-3 border-t overflow-hidden p-3 border rounded-md"
-                            >
-                                <h4 className="font-semibold text-foreground text-sm">Rider's Details</h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    <div>
-                                        <div className="flex justify-between items-center mb-1">
-                                            <Label htmlFor="riderName" className="text-xs">Rider's Name</Label>
-                                            <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={handleFromContacts}>From Contacts</Button>
+                        <AnimatePresence>
+                            {rideForSomeoneElse && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
+                                    animate={{ opacity: 1, height: 'auto', marginTop: '0.5rem', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}
+                                    exit={{ opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
+                                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                                    className="space-y-3 pt-3 border-t overflow-hidden p-3 border rounded-md"
+                                >
+                                    <h4 className="font-semibold text-foreground text-sm">Rider's Details</h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        <div>
+                                            <div className="flex justify-between items-center mb-1">
+                                                <Label htmlFor="riderName" className="text-xs">Rider's Name</Label>
+                                                <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={handleFromContacts}>From Contacts</Button>
+                                            </div>
+                                            <Input id="riderName" placeholder="e.g., Jane Doe" value={riderName} onChange={(e) => setRiderName(e.target.value)} />
                                         </div>
-                                        <Input id="riderName" placeholder="e.g., Jane Doe" value={riderName} onChange={(e) => setRiderName(e.target.value)} />
+                                        <div>
+                                            <Label htmlFor="riderPhone" className="text-xs">Rider's Phone</Label>
+                                            <Input id="riderPhone" type="tel" placeholder="+1 555-123-4567" value={riderPhone} onChange={(e) => setRiderPhone(e.target.value)} />
+                                        </div>
                                     </div>
-                                    <div>
-                                        <Label htmlFor="riderPhone" className="text-xs">Rider's Phone</Label>
-                                        <Input id="riderPhone" type="tel" placeholder="+1 555-123-4567" value={riderPhone} onChange={(e) => setRiderPhone(e.target.value)} />
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
-                    <div className="p-2">
-                        <Button className="w-full" onClick={handleSearch}>
-                            Search Rides
-                        </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                        <div className="p-1">
+                            <Button className="w-full" onClick={handleSearch}>
+                                Search Rides
+                            </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                <TabsContent value="bus">
+                  <Card>
+                    <CardContent className="p-4">
+                      <BusTransportationSearchForm />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
             </div>
           </div>
         </CardContent>
