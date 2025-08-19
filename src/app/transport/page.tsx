@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { toast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import InteractiveMapPlaceholder, { type AvailableVehicle } from '@/components/map/interactive-map-placeholder';
 import { cn } from '@/lib/utils';
@@ -31,7 +31,7 @@ import BusTransportationSearchForm from './bus-transportation-search-form';
 
 
 const serviceCategories = [
-  { name: 'Ride', icon: Car, link: '/transport', tabValue: 'ride' },
+  { name: 'Ride', icon: Car, link: '/transport?tab=ride', tabValue: 'ride' },
   { name: 'Bus', icon: Bus, link: '/transport?tab=bus', tabValue: 'bus' },
   { name: 'Rent', icon: CarFront, link: '/car-rent', tabValue: 'rent' },
   { name: 'Flights', icon: Plane, link: '/flights', tabValue: 'flights' },
@@ -292,6 +292,8 @@ const mockVehicles: AvailableVehicle[] = [
 export default function TransportPage() {
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const [activeTab, setActiveTab] = useState('ride');
     const [pickupLocation, setPickupLocation] = useState('');
     const [dropoffLocation, setDropoffLocation] = useState('');
     const [date, setDate] = useState<Date | undefined>(undefined);
@@ -314,6 +316,13 @@ export default function TransportPage() {
 
     const [showLocationPrompt, setShowLocationPrompt] = useState(false);
     const [fieldToSetFromLocation, setFieldToSetFromLocation] = useState<'pickup' | 'dropoff'>('pickup');
+    
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        if (tab && ['ride', 'bus', 'rent', 'flights'].includes(tab)) {
+            setActiveTab(tab);
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         setHasMounted(true);
@@ -545,13 +554,13 @@ export default function TransportPage() {
                 />
             </div>
             <div className="space-y-4">
-              <Tabs defaultValue="ride" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-4 h-14">
                   {serviceCategories.map((service) => (
-                    <TabsTrigger key={service.tabValue} value={service.tabValue} asChild>
+                    <TabsTrigger key={service.tabValue} value={service.tabValue} asChild className="text-base py-3">
                       <Link href={service.link}>
-                        <span className="flex items-center gap-2">
-                          <service.icon className={cn("h-5 w-5")} />
+                        <span className="flex flex-col md:flex-row items-center gap-2">
+                          <service.icon className={cn("h-6 w-6")} />
                           <span className="hidden md:inline">{service.name}</span>
                         </span>
                       </Link>
