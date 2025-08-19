@@ -339,16 +339,18 @@ export default function ForPartnersPage() {
                     onClick={() => setSelectedTestimonial(testimonial)}
                     className={`p-6 border-2 ${testimonial.borderColor} cursor-pointer hover:shadow-xl hover:scale-105 transition-all`}
                   >
-                    <CardContent className="p-0">
-                      <p className="text-muted-foreground mb-4">{testimonial.quote}</p>
-                      <div className="flex items-center gap-3">
-                        <Image src={testimonial.avatar} alt={testimonial.author} width={40} height={40} className="rounded-full" data-ai-hint={testimonial.avatarHint} />
-                        <div>
-                          <p className="font-semibold">{testimonial.author}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.location}</p>
+                    <div>
+                      <CardContent className="p-0">
+                        <p className="text-muted-foreground mb-4">{testimonial.quote}</p>
+                        <div className="flex items-center gap-3">
+                          <Image src={testimonial.avatar} alt={testimonial.author} width={40} height={40} className="rounded-full" data-ai-hint={testimonial.avatarHint} />
+                          <div>
+                            <p className="font-semibold">{testimonial.author}</p>
+                            <p className="text-sm text-muted-foreground">{testimonial.location}</p>
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
+                      </CardContent>
+                    </div>
                   </Card>
                 </DialogTrigger>
               ))}
