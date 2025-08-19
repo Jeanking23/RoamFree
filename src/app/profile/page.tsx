@@ -586,21 +586,21 @@ const SecurityTab = () => {
                             <FormField control={passwordForm.control} name="currentPassword" render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Current Password</FormLabel>
-                                    <FormControl><Input type="password" icon={<Lock className="h-4 w-4" />} {...field} /></FormControl>
+                                    <FormControl><Input type="password" icon={<Lock className="h-4 w-4 text-muted-foreground" />} {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )} />
                              <FormField control={passwordForm.control} name="newPassword" render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>New Password</FormLabel>
-                                    <FormControl><Input type="password" icon={<Lock className="h-4 w-4" />} {...field} /></FormControl>
+                                    <FormControl><Input type="password" icon={<Lock className="h-4 w-4 text-muted-foreground" />} {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )} />
                             <FormField control={passwordForm.control} name="confirmPassword" render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Confirm New Password</FormLabel>
-                                    <FormControl><Input type="password" icon={<Lock className="h-4 w-4" />} {...field} /></FormControl>
+                                    <FormControl><Input type="password" icon={<Lock className="h-4 w-4 text-muted-foreground" />} {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )} />
