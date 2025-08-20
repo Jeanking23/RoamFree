@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Users, DollarSign, MapPin, Bed, Bath, Smile, TvIcon, Layers, FileText, Phone, HomeIcon as HomeIconLucide, School, Building as BuildingIconLucide, Leaf, CheckCircle, Info, AlertTriangle, MessageSquare, Heart, Share2, Wallet, UserCheck, Clock, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Checkbox as CheckboxIcon } from 'lucide-react';
+import { CalendarDays, Users, DollarSign, MapPin, Bed, Bath, Smile, TvIcon, Layers, FileText, Phone, HomeIcon as HomeIconLucide, School, Building as BuildingIconLucide, Leaf, CheckCircle, Info, AlertTriangle, MessageSquare, Heart, Share2, Wallet, UserCheck, Clock, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Checkbox as CheckboxIcon, X } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
@@ -38,6 +38,10 @@ export default function RentalPropertyProfilePage() {
   const [screeningProgress, setScreeningProgress] = useState(0);
   const [screeningStatus, setScreeningStatus] = useState("");
   const [isScreeningComplete, setIsScreeningComplete] = useState(false);
+
+  // State for tour/plan dialogs
+  const [isVirtualTourOpen, setIsVirtualTourOpen] = useState(false);
+  const [isFloorPlanOpen, setIsFloorPlanOpen] = useState(false);
 
 
   useEffect(() => {
@@ -151,6 +155,7 @@ export default function RentalPropertyProfilePage() {
   
 
   return (
+    <>
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
         <CardHeader className="pb-4">
@@ -216,8 +221,8 @@ export default function RentalPropertyProfilePage() {
             </div>
           )}
           <div className="flex flex-wrap gap-2 justify-center mt-4">
-             <Button variant="outline" onClick={() => toast({title: "Virtual Tour (Demo)", description:`Starting virtual tour for ${property.name}`})} disabled={!property.virtualTourLink}><TvIcon className="mr-2 h-4 w-4" /> Virtual Tour</Button>
-             <Button variant="outline" onClick={() => toast({title: "Floor Plan (Demo)", description:`Showing floor plan for ${property.name}`})} disabled={!property.floorPlanLink}><Layers className="mr-2 h-4 w-4" /> Interactive Floor Plan</Button>
+             <Button variant="outline" onClick={() => setIsVirtualTourOpen(true)} disabled={!property.virtualTourLink}><TvIcon className="mr-2 h-4 w-4" /> Virtual Tour</Button>
+             <Button variant="outline" onClick={() => setIsFloorPlanOpen(true)} disabled={!property.floorPlanLink}><Layers className="mr-2 h-4 w-4" /> Interactive Floor Plan</Button>
           </div>
         </CardContent>
         
@@ -415,6 +420,38 @@ export default function RentalPropertyProfilePage() {
         </CardFooter>
       </Card>
     </div>
+
+    {/* Virtual Tour Dialog */}
+    <Dialog open={isVirtualTourOpen} onOpenChange={setIsVirtualTourOpen}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>Virtual Tour: {property.name}</DialogTitle>
+          <DialogDescription>This is a simulated 360° virtual tour of the property.</DialogDescription>
+        </DialogHeader>
+        <div className="py-4 text-center">
+          <div className="aspect-video bg-muted rounded-md flex items-center justify-center border">
+            <Image src="https://placehold.co/800x450.png" alt="Virtual tour placeholder" width={800} height={450} className="w-full h-full object-cover" data-ai-hint="house interior virtual tour"/>
+          </div>
+          <p className="text-sm text-muted-foreground mt-2">Use your mouse to look around.</p>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    {/* Floor Plan Dialog */}
+    <Dialog open={isFloorPlanOpen} onOpenChange={setIsFloorPlanOpen}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>Interactive Floor Plan: {property.name}</DialogTitle>
+          <DialogDescription>This is a simulated interactive floor plan.</DialogDescription>
+        </DialogHeader>
+        <div className="py-4 text-center">
+          <div className="aspect-video bg-muted rounded-md flex items-center justify-center border p-4">
+             <Image src="https://placehold.co/800x450.png" alt="Floor plan placeholder" width={800} height={450} className="w-full h-full object-contain" data-ai-hint="architect floor plan"/>
+          </div>
+          <p className="text-sm text-muted-foreground mt-2">Click on rooms to see details (Demo).</p>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
-
