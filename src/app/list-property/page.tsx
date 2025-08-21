@@ -69,69 +69,69 @@ const LocationStep = () => {
     const [address, setAddress] = useState("");
 
     return (
-        <div className="grid md:grid-cols-2 gap-8 h-full">
-            <div className="flex flex-col">
-                <CardHeader className="p-0">
-                    <CardTitle className="text-3xl font-headline text-primary">Where is your property?</CardTitle>
-                    <CardDescription className="pt-2">Enter the address so guests can find you.</CardDescription>
-                </CardHeader>
-                <CardContent className="p-0 pt-6 flex-grow space-y-4">
-                    <div>
-                        <Label htmlFor="address-search">Find Your Address</Label>
-                        <Input 
-                            id="address-search" 
-                            placeholder="Start typing your street address..." 
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <Label htmlFor="apt-suite">Apartment or floor number (Optional)</Label>
-                        <Input id="apt-suite" placeholder="e.g., Apt 3B" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
+        <div className="relative h-full w-full -m-6 md:-m-8">
+             <InteractiveMapPlaceholder pickup={address} />
+             <div className="absolute top-4 left-4 z-10 w-full max-w-md">
+                <Card className="shadow-2xl">
+                    <CardHeader>
+                        <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
+                        <CardDescription>Enter the address so guests can find you.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
                         <div>
-                            <Label htmlFor="country">Country/Region</Label>
-                            <Select defaultValue="US">
-                                <SelectTrigger id="country"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="US">United States</SelectItem>
-                                    <SelectItem value="CA">Canada</SelectItem>
-                                    <SelectItem value="CM">Cameroon</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <Label htmlFor="address-search">Find Your Address</Label>
+                            <Input 
+                                id="address-search" 
+                                placeholder="Start typing your street address..." 
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                            />
                         </div>
-                         <div>
-                            <Label htmlFor="city">City</Label>
-                            <Input id="city" placeholder="e.g., Camden" />
-                        </div>
-                    </div>
-                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <Label htmlFor="state">State</Label>
-                            <Select defaultValue="DE">
-                                <SelectTrigger id="state"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="DE">Delaware</SelectItem>
-                                    <SelectItem value="CA">California</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <Label htmlFor="apt-suite">Apartment or floor number (Optional)</Label>
+                            <Input id="apt-suite" placeholder="e.g., Apt 3B" />
                         </div>
-                         <div>
-                            <Label htmlFor="zip">Zip Code</Label>
-                            <Input id="zip" placeholder="e.g., 19934" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor="country">Country/Region</Label>
+                                <Select defaultValue="US">
+                                    <SelectTrigger id="country"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="US">United States</SelectItem>
+                                        <SelectItem value="CA">Canada</SelectItem>
+                                        <SelectItem value="CM">Cameroon</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                             <div>
+                                <Label htmlFor="city">City</Label>
+                                <Input id="city" placeholder="e.g., Camden" />
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex items-center space-x-2 pt-4">
-                        <Checkbox id="update-pin" defaultChecked />
-                        <Label htmlFor="update-pin" className="text-sm font-normal">Update the address by moving the pin on the map.</Label>
-                    </div>
-                     <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
-                </CardContent>
-            </div>
-            <div className="rounded-lg overflow-hidden h-full min-h-[300px] md:min-h-0">
-                <InteractiveMapPlaceholder pickup={address} />
-            </div>
+                         <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor="state">State</Label>
+                                <Select defaultValue="DE">
+                                    <SelectTrigger id="state"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="DE">Delaware</SelectItem>
+                                        <SelectItem value="CA">California</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                             <div>
+                                <Label htmlFor="zip">Zip Code</Label>
+                                <Input id="zip" placeholder="e.g., 19934" />
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-2 pt-2">
+                            <Checkbox id="update-pin" defaultChecked />
+                            <Label htmlFor="update-pin" className="text-sm font-normal">Update the address by moving the pin on the map.</Label>
+                        </div>
+                         <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
+                    </CardContent>
+                </Card>
+             </div>
         </div>
     );
 };
@@ -159,7 +159,7 @@ export default function ListPropertyPage() {
   return (
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden flex flex-col h-[85vh]">
-        <CardHeader className="bg-primary/10 border-b">
+        <CardHeader className="bg-primary/10 border-b z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Building className="h-8 w-8 text-primary" />
@@ -181,7 +181,7 @@ export default function ListPropertyPage() {
              </div>
           </div>
         </CardHeader>
-        <div className="p-6 md:p-8 flex-grow flex flex-col">
+        <div className="p-6 md:p-8 flex-grow flex flex-col relative">
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -202,7 +202,7 @@ export default function ListPropertyPage() {
                  </motion.div>
             </AnimatePresence>
         </div>
-        <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto">
+        <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
             <Button variant="outline" onClick={prevStep} disabled={currentStep === 0}>
                 <ArrowLeft className="mr-2 h-4 w-4"/> Back
             </Button>
