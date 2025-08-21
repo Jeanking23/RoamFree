@@ -181,7 +181,7 @@ export default function ListCarPage() {
                     <FormField control={saleForm.control} name="model" render={({ field }) => (
                       <FormItem>
                           <FormLabel>Model</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value} disabled={!selectedMake}>
+                          <Select onValueChange={field.onChange} value={field.value || ''} disabled={!selectedMake}>
                               <FormControl><SelectTrigger><SelectValue placeholder="Select Model"/></SelectTrigger></FormControl>
                               <SelectContent>
                                   {availableModels.map(model => <SelectItem key={model} value={model}>{model}</SelectItem>)}
