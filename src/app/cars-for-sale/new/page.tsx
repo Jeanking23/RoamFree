@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CarFront, DollarSign, Gauge, CalendarDays, UploadCloud, Send, X } from 'lucide-react';
+import { CarFront, DollarSign, Gauge, CalendarDays, UploadCloud, Send, X, Settings2, Droplets, Palette, Users, MapPin } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -26,6 +26,13 @@ const carForSaleSchema = z.object({
   year: z.coerce.number().min(1900).max(new Date().getFullYear() + 1),
   mileage: z.coerce.number().min(0),
   price: z.coerce.number().positive(),
+  vin: z.string().length(17, "VIN must be 17 characters."),
+  engine: z.string().min(2, "Engine details are required."),
+  transmission: z.string().min(2, "Transmission type is required."),
+  fuelType: z.string().min(2, "Fuel type is required."),
+  exteriorColor: z.string().min(2, "Exterior color is required."),
+  interiorColor: z.string().min(2, "Interior color is required."),
+  features: z.array(z.object({ value: z.string() })).optional(),
   description: z.string().min(20, "Please provide a more detailed description."),
   photos: z.array(z.string()).optional(),
 });
@@ -35,6 +42,11 @@ const carForRentSchema = z.object({
   pricePerDay: z.coerce.number().positive("Daily price is required."),
   pricePerHour: z.coerce.number().positive("Hourly price is required.").optional(),
   pricePerWeek: z.coerce.number().positive("Weekly price is required.").optional(),
+  seats: z.coerce.number().min(1, "Seating capacity is required."),
+  transmission: z.string().min(2, "Transmission type is required."),
+  mileage: z.coerce.number().min(0, "Mileage is required."),
+  fuelPolicy: z.string().min(2, "Fuel policy is required."),
+  pickupLocations: z.array(z.object({ value: z.string() })).min(1, "At least one pickup location is required."),
   features: z.array(z.object({ value: z.string() })).optional(),
   description: z.string().min(20, "Please provide a description.").max(500),
   ecoFriendly: z.boolean().default(false),
@@ -45,21 +57,32 @@ type CarForSaleFormValues = z.infer<typeof carForSaleSchema>;
 type CarForRentFormValues = z.infer<typeof carForRentSchema>;
 
 export default function ListCarPage() {
-  const [saleInteriorPhotoPreviews, setSaleInteriorPhotoPreviews] = useState<string[]>([]);
-  const [saleExteriorPhotoPreviews, setSaleExteriorPhotoPreviews] = useState<string[]>([]);
+  const [salePhotoPreviews, setSalePhotoPreviews] = useState<string[]>([]);
   const [rentPhotoPreviews, setRentPhotoPreviews] = useState<string[]>([]);
+  
+  const [saleFeatureInput, setSaleFeatureInput] = useState("");
   const [rentFeatureInput, setRentFeatureInput] = useState("");
+  const [rentLocationInput, setRentLocationInput] = useState("");
 
-  const saleForm = useForm<CarForSaleFormValues>({ resolver: zodResolver(carForSaleSchema) });
+  const saleForm = useForm<CarForSaleFormValues>({ 
+      resolver: zodResolver(carForSaleSchema),
+      defaultValues: { features: [] } 
+  });
   const rentForm = useForm<CarForRentFormValues>({ 
       resolver: zodResolver(carForRentSchema),
-      defaultValues: { features: [], ecoFriendly: false, insuranceIncluded: true }
+      defaultValues: { features: [], pickupLocations: [], ecoFriendly: false, insuranceIncluded: true }
   });
   
-  const { fields: rentFeatures, append: appendRentFeature, remove: removeRentFeature } = useFieldArray({
-    control: rentForm.control,
-    name: "features",
+  const { fields: saleFeatures, append: appendSaleFeature, remove: removeSaleFeature } = useFieldArray({
+    control: saleForm.control, name: "features",
   });
+  const { fields: rentFeatures, append: appendRentFeature, remove: removeRentFeature } = useFieldArray({
+    control: rentForm.control, name: "features",
+  });
+  const { fields: rentLocations, append: appendRentLocation, remove: removeRentLocation } = useFieldArray({
+    control: rentForm.control, name: "pickupLocations",
+  });
+
 
   const handlePhotoUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -81,22 +104,16 @@ export default function ListCarPage() {
     }
   };
   
-  const handleAddRentFeature = () => {
-    if (rentFeatureInput.trim()) {
-      appendRentFeature({ value: rentFeatureInput.trim() });
-      setRentFeatureInput("");
-    }
-  };
+  const handleAddSaleFeature = () => { if (saleFeatureInput.trim()) { appendSaleFeature({ value: saleFeatureInput.trim() }); setSaleFeatureInput(""); } };
+  const handleAddRentFeature = () => { if (rentFeatureInput.trim()) { appendRentFeature({ value: rentFeatureInput.trim() }); setRentFeatureInput(""); } };
+  const handleAddRentLocation = () => { if (rentLocationInput.trim()) { appendRentLocation({ value: rentLocationInput.trim() }); setRentLocationInput(""); } };
+
 
   const onSaleSubmit = (data: CarForSaleFormValues) => {
-    console.log("Car for Sale Submitted:", data, { 
-        interiorPhotos: saleInteriorPhotoPreviews,
-        exteriorPhotos: saleExteriorPhotoPreviews,
-    });
+    console.log("Car for Sale Submitted:", data, { photos: salePhotoPreviews });
     toast({ title: "Listing Submitted!", description: "Your car has been listed for sale." });
     saleForm.reset();
-    setSaleInteriorPhotoPreviews([]);
-    setSaleExteriorPhotoPreviews([]);
+    setSalePhotoPreviews([]);
   };
 
   const onRentSubmit = (data: CarForRentFormValues) => {
@@ -133,35 +150,47 @@ export default function ListCarPage() {
                     <FormField control={saleForm.control} name="model" render={({ field }) => (<FormItem><FormLabel>Model</FormLabel><FormControl><Input placeholder="Corolla" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                     <FormField control={saleForm.control} name="year" render={({ field }) => (<FormItem><FormLabel>Year</FormLabel><FormControl><Input type="number" placeholder="2018" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                   </div>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid md:grid-cols-3 gap-4">
                     <FormField control={saleForm.control} name="mileage" render={({ field }) => (<FormItem><FormLabel>Mileage</FormLabel><FormControl><Input type="number" placeholder="45000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                     <FormField control={saleForm.control} name="price" render={({ field }) => (<FormItem><FormLabel>Price (USD)</FormLabel><FormControl><Input type="number" placeholder="15000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                     <FormField control={saleForm.control} name="vin" render={({ field }) => (<FormItem><FormLabel>VIN</FormLabel><FormControl><Input placeholder="17-character VIN" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                   </div>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <FormField control={saleForm.control} name="engine" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Engine</FormLabel><FormControl><Input placeholder="e.g., 1.8L 4-Cylinder" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                    <FormField control={saleForm.control} name="transmission" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Transmission</FormLabel><FormControl><Input placeholder="e.g., Automatic" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                    <FormField control={saleForm.control} name="fuelType" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Type</FormLabel><FormControl><Input placeholder="e.g., Gasoline" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                  </div>
+                   <div className="grid md:grid-cols-2 gap-4">
+                     <FormField control={saleForm.control} name="exteriorColor" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Palette className="h-4 w-4"/>Exterior Color</FormLabel><FormControl><Input placeholder="e.g., Silver" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                     <FormField control={saleForm.control} name="interiorColor" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Palette className="h-4 w-4"/>Interior Color</FormLabel><FormControl><Input placeholder="e.g., Black" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                   </div>
                   <FormField control={saleForm.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the vehicle's features, condition, and history." rows={5} {...field}/></FormControl><FormMessage/></FormItem>)}/>
                   
-                  <Card>
-                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><UploadCloud className="h-5 w-5 text-primary"/>Photos</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <FormItem>
-                            <FormLabel>Interior Photos</FormLabel>
-                            <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoUpload(e, setSaleInteriorPhotoPreviews)} /></FormControl>
-                            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
-                            {saleInteriorPhotoPreviews.map((src, index) => (
-                                <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Interior Preview ${index + 1}`} fill className="object-cover" /></div>
-                            ))}
+                   <FormItem>
+                    <FormLabel>Key Features</FormLabel>
+                    <div className="flex gap-2">
+                        <Input value={saleFeatureInput} onChange={(e) => setSaleFeatureInput(e.target.value)} placeholder="e.g., Rearview Camera, Bluetooth" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddSaleFeature(); } }}/>
+                        <Button type="button" onClick={handleAddSaleFeature}>Add</Button>
+                    </div>
+                    <div className="mt-2 space-y-2">
+                        {saleFeatures.map((field, index) => (
+                            <div key={field.id} className="flex items-center justify-between p-2 bg-muted rounded-md text-sm">
+                                <span>{field.value}</span>
+                                <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeSaleFeature(index)}><X className="h-4 w-4" /></Button>
                             </div>
-                        </FormItem>
-                        <FormItem>
-                            <FormLabel>Exterior Photos</FormLabel>
-                            <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoUpload(e, setSaleExteriorPhotoPreviews)} /></FormControl>
-                             <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
-                                {saleExteriorPhotoPreviews.map((src, index) => (
-                                    <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Exterior Preview ${index + 1}`} fill className="object-cover" /></div>
-                                ))}
-                            </div>
-                        </FormItem>
-                    </CardContent>
-                  </Card>
+                        ))}
+                    </div>
+                  </FormItem>
+
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2"><UploadCloud className="h-5 w-5 text-primary"/>Photos</FormLabel>
+                    <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoUpload(e, setSalePhotoPreviews)} /></FormControl>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
+                        {salePhotoPreviews.map((src, index) => (
+                            <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" /></div>
+                        ))}
+                    </div>
+                  </FormItem>
 
                   <Button type="submit" size="lg" className="w-full sm:w-auto"><Send className="mr-2 h-4 w-4"/>Submit Sale Listing</Button>
                 </form>
@@ -177,11 +206,35 @@ export default function ListCarPage() {
                      <FormField control={rentForm.control} name="pricePerHour" render={({ field }) => (<FormItem><FormLabel>Price per Hour (Optional)</FormLabel><FormControl><Input type="number" placeholder="10" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                      <FormField control={rentForm.control} name="pricePerWeek" render={({ field }) => (<FormItem><FormLabel>Price per Week (Optional)</FormLabel><FormControl><Input type="number" placeholder="350" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                   </div>
+                  
+                   <div className="grid md:grid-cols-2 gap-4">
+                     <FormField control={rentForm.control} name="seats" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Users className="h-4 w-4"/>Seating Capacity</FormLabel><FormControl><Input type="number" placeholder="5" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                     <FormField control={rentForm.control} name="transmission" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Transmission</FormLabel><FormControl><Input placeholder="e.g., Automatic" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                     <FormField control={rentForm.control} name="mileage" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Gauge className="h-4 w-4"/>Mileage</FormLabel><FormControl><Input type="number" placeholder="25000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                     <FormField control={rentForm.control} name="fuelPolicy" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Policy</FormLabel><FormControl><Input placeholder="e.g., Full-to-Full" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                   </div>
 
                   <FormField control={rentForm.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the vehicle, its best uses, and any rental rules." rows={4} {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                  
+                   <FormItem>
+                    <FormLabel className="flex items-center gap-1"><MapPin className="h-4 w-4"/>Pickup Locations</FormLabel>
+                    <div className="flex gap-2">
+                        <Input value={rentLocationInput} onChange={(e) => setRentLocationInput(e.target.value)} placeholder="e.g., Airport, Downtown" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddRentLocation(); } }}/>
+                        <Button type="button" onClick={handleAddRentLocation}>Add</Button>
+                    </div>
+                    <div className="mt-2 space-y-2">
+                        {rentLocations.map((field, index) => (
+                            <div key={field.id} className="flex items-center justify-between p-2 bg-muted rounded-md text-sm">
+                                <span>{field.value}</span>
+                                <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeRentLocation(index)}><X className="h-4 w-4" /></Button>
+                            </div>
+                        ))}
+                    </div>
+                     <FormMessage>{rentForm.formState.errors.pickupLocations?.message}</FormMessage>
+                  </FormItem>
 
                   <FormItem>
-                    <FormLabel>Features</FormLabel>
+                    <FormLabel>Key Features</FormLabel>
                     <div className="flex gap-2">
                         <Input value={rentFeatureInput} onChange={(e) => setRentFeatureInput(e.target.value)} placeholder="e.g., Apple CarPlay, Sunroof" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddRentFeature(); } }}/>
                         <Button type="button" onClick={handleAddRentFeature}>Add</Button>
