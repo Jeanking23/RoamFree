@@ -7,10 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building, Info, Lightbulb, CheckCircle } from "lucide-react";
+import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import InteractiveMapPlaceholder from "@/components/map/interactive-map-placeholder"; // Placeholder for map component
 
 const listingSteps = [
   { id: "name", title: "Basic Info" },
@@ -62,16 +65,86 @@ const NameStep = () => (
   </div>
 );
 
+const LocationStep = () => {
+    const [address, setAddress] = useState("");
+
+    return (
+        <div className="grid md:grid-cols-2 gap-8 h-full">
+            <div className="flex flex-col">
+                <CardHeader className="p-0">
+                    <CardTitle className="text-3xl font-headline text-primary">Where is your property?</CardTitle>
+                    <CardDescription className="pt-2">Enter the address so guests can find you.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0 pt-6 flex-grow space-y-4">
+                    <div>
+                        <Label htmlFor="address-search">Find Your Address</Label>
+                        <Input 
+                            id="address-search" 
+                            placeholder="Start typing your street address..." 
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Label htmlFor="apt-suite">Apartment or floor number (Optional)</Label>
+                        <Input id="apt-suite" placeholder="e.g., Apt 3B" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="country">Country/Region</Label>
+                            <Select defaultValue="US">
+                                <SelectTrigger id="country"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="US">United States</SelectItem>
+                                    <SelectItem value="CA">Canada</SelectItem>
+                                    <SelectItem value="CM">Cameroon</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                         <div>
+                            <Label htmlFor="city">City</Label>
+                            <Input id="city" placeholder="e.g., Camden" />
+                        </div>
+                    </div>
+                     <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="state">State</Label>
+                            <Select defaultValue="DE">
+                                <SelectTrigger id="state"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="DE">Delaware</SelectItem>
+                                    <SelectItem value="CA">California</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                         <div>
+                            <Label htmlFor="zip">Zip Code</Label>
+                            <Input id="zip" placeholder="e.g., 19934" />
+                        </div>
+                    </div>
+                    <div className="flex items-center space-x-2 pt-4">
+                        <Checkbox id="update-pin" defaultChecked />
+                        <Label htmlFor="update-pin" className="text-sm font-normal">Update the address by moving the pin on the map.</Label>
+                    </div>
+                     <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
+                </CardContent>
+            </div>
+            <div className="rounded-lg overflow-hidden h-full min-h-[300px] md:min-h-0">
+                <InteractiveMapPlaceholder pickup={address} />
+            </div>
+        </div>
+    );
+};
+
 
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
 
   const nextStep = () => {
-    // For now, we only have one step. This will be expanded.
     if (currentStep < listingSteps.length - 1) {
         setCurrentStep(prev => prev + 1);
     } else {
-        toast({ title: "Next Step (Demo)", description: "Proceeding to the next part of the form."});
+        toast({ title: "Listing Submitted (Demo)", description: "Your property is now pending review."});
     }
   };
 
@@ -85,14 +158,13 @@ export default function ListPropertyPage() {
 
   return (
     <div className="space-y-8">
-      <Card className="shadow-lg rounded-lg overflow-hidden">
+      <Card className="shadow-lg rounded-lg overflow-hidden flex flex-col h-[85vh]">
         <CardHeader className="bg-primary/10 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Building className="h-8 w-8 text-primary" />
               <h1 className="text-xl font-semibold text-primary">List Your Property</h1>
             </div>
-            {/* You can add a save & exit button here */}
           </div>
           <div className="pt-4">
              <Progress value={progress} className="w-full h-2" />
@@ -109,7 +181,7 @@ export default function ListPropertyPage() {
              </div>
           </div>
         </CardHeader>
-        <div className="p-6 md:p-8 min-h-[50vh] flex flex-col">
+        <div className="p-6 md:p-8 flex-grow flex flex-col">
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -117,19 +189,25 @@ export default function ListPropertyPage() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="flex-grow"
+                    className="flex-grow flex flex-col"
                  >
                     {currentStep === 0 && <NameStep />}
-                    {/* Add other steps as components here, e.g., {currentStep === 1 && <LocationStep />} */}
+                    {currentStep === 1 && <LocationStep />}
+                    {/* Add other steps as components here */}
+                    {currentStep > 1 && (
+                        <div className="flex-grow flex items-center justify-center">
+                            <p className="text-muted-foreground">Step {currentStep + 1} content goes here.</p>
+                        </div>
+                    )}
                  </motion.div>
             </AnimatePresence>
         </div>
-        <CardFooter className="border-t p-4 flex justify-between bg-muted/50">
+        <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto">
             <Button variant="outline" onClick={prevStep} disabled={currentStep === 0}>
                 <ArrowLeft className="mr-2 h-4 w-4"/> Back
             </Button>
             <Button onClick={nextStep}>
-                Continue
+                {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
             </Button>
         </CardFooter>
       </Card>
