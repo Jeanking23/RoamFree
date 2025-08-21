@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Building, DollarSign, Bed, Bath, MapPin, ImageIcon, CalendarCheck2, FileText, Users, Sparkles, X, Home as HomeIcon, LandPlot, Landmark as AttractionIcon, CarFront } from "lucide-react";
+import { Building, DollarSign, Bed, Bath, MapPin, ImageIcon, CalendarCheck2, FileText, Users, Sparkles, X, Home as HomeIcon, LandPlot, Landmark as AttractionIcon, CarFront, UploadCloud } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox"; 
 import { toast } from "@/hooks/use-toast"; 
 import { useState, useEffect } from "react";
@@ -42,11 +42,15 @@ const propertySchema = z.object({
   features: z.array(z.object({ value: z.string() })).optional(),
   contactEmail: z.string().email("Invalid email address."),
   contactPhone: z.string().min(7, "Phone number seems too short.").optional(),
-  photos: z.string().optional().describe("Placeholder for photo upload URLs or identifiers"),
+  photos: z.array(z.string()).optional().describe("Placeholder for photo upload URLs"),
   instantBooking: z.boolean().default(true),
   requestToBook: z.boolean().default(false),
   blackoutDates: z.string().optional().describe("e.g., MM/DD/YYYY, MM/DD/YYYY-MM/DD/YYYY"),
-  legalDocs: z.string().optional().describe("Placeholder for land title, ownership proof upload"),
+  legalDocs: z.object({
+    landTitle: z.string().optional(),
+    surveyPlan: z.string().optional(),
+    attestation: z.string().optional(),
+  }).optional(),
   propertyStatus: z.string().optional().describe("e.g., Freehold, Leasehold, Verified - for sale"),
   enableTenantScreening: z.boolean().default(false),
 });
@@ -54,7 +58,11 @@ const propertySchema = z.object({
 type PropertyFormValues = z.infer<typeof propertySchema>;
 
 export default function ListPropertyPage() {
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [interiorPhotoPreviews, setInteriorPhotoPreviews] = useState<string[]>([]);
+  const [exteriorPhotoPreviews, setExteriorPhotoPreviews] = useState<string[]>([]);
+  const [landTitlePreview, setLandTitlePreview] = useState<string | null>(null);
+  const [surveyPlanPreview, setSurveyPlanPreview] = useState<string | null>(null);
+  const [attestationPreview, setAttestationPreview] = useState<string | null>(null);
   const [featureInput, setFeatureInput] = useState("");
 
   const form = useForm<PropertyFormValues>({
@@ -93,27 +101,57 @@ export default function ListPropertyPage() {
       form.setValue('priceType', 'PER_NIGHT');
     }
   }, [listingType, form]);
+  
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string[] | string | null>>,
+    isMultiple: boolean
+  ) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
-  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
+    if (isMultiple) {
+      const newPreviews: string[] = [];
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          newPreviews.push(reader.result as string);
+          if (newPreviews.length === files.length) {
+            (setter as React.Dispatch<React.SetStateAction<string[]>>)(prev => [...prev, ...newPreviews]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    } else {
+      const file = files[0];
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-        form.setValue("photos", reader.result as string, { shouldValidate: true });
+        (setter as React.Dispatch<React.SetStateAction<string | null>>)(reader.result as string);
       };
       reader.readAsDataURL(file);
-    } else {
-      setPhotoPreview(null);
-      form.setValue("photos", undefined);
     }
   };
 
+
   function onSubmit(data: PropertyFormValues) {
-    console.log("Property Listing Submitted:", data);
+    // In a real app, you'd upload the files and get URLs before saving
+    const submissionData = {
+      ...data,
+      photos: [...interiorPhotoPreviews, ...exteriorPhotoPreviews],
+      legalDocs: {
+          landTitle: landTitlePreview,
+          surveyPlan: surveyPlanPreview,
+          attestation: attestationPreview,
+      }
+    };
+    console.log("Property Listing Submitted:", submissionData);
     toast({title: "Property Submitted (Demo)", description: "Your listing has been submitted for review."});
     form.reset();
-    setPhotoPreview(null);
+    setInteriorPhotoPreviews([]);
+    setExteriorPhotoPreviews([]);
+    setLandTitlePreview(null);
+    setSurveyPlanPreview(null);
+    setAttestationPreview(null);
   }
   
   const handleAddFeature = () => {
@@ -126,7 +164,6 @@ export default function ListPropertyPage() {
   const showResidentialFields = ["APARTMENT", "HOUSE", "VILLA"].includes(propertyType);
   const showLandFields = propertyType === "LAND";
   const showFeatureFields = ["ATTRACTION", "EVENT_CENTER"].includes(propertyType);
-
 
   return (
     <div className="space-y-8">
@@ -208,21 +245,55 @@ export default function ListPropertyPage() {
 
               <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Detailed description of your listing, amenities, nearby attractions, etc." rows={6} {...field} /></FormControl><FormDescription>Provide as much detail as possible to attract buyers/renters.</FormDescription><FormMessage /></FormItem>)} />
               
-              <FormItem>
-                <FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-primary" />Main Photo</FormLabel>
-                <FormControl><Input type="file" accept="image/*" onChange={handlePhotoChange} /></FormControl>
-                <FormDescription>Upload a primary photo. More can be added from the partner dashboard.</FormDescription>
-                <FormMessage />
-              </FormItem>
-
-              {photoPreview && (
-                <div className="mt-4">
-                  <Label>Photo Preview:</Label>
-                  <div className="mt-2 relative w-full h-64 rounded-lg overflow-hidden border">
-                     <Image src={photoPreview} alt="Property preview" fill style={{objectFit:"cover"}} data-ai-hint="property preview"/>
-                  </div>
-                </div>
+              {showResidentialFields && (
+                <Card>
+                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><ImageIcon className="h-5 w-5 text-primary"/>Photos</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <FormItem>
+                            <FormLabel>Interior Photos</FormLabel>
+                            <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handleFileChange(e, setInteriorPhotoPreviews, true)} /></FormControl>
+                            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
+                                {interiorPhotoPreviews.map((src, index) => (
+                                    <div key={index} className="relative aspect-square rounded-md overflow-hidden border"><Image src={src} alt={`Interior Preview ${index + 1}`} fill className="object-cover" /></div>
+                                ))}
+                            </div>
+                        </FormItem>
+                        <FormItem>
+                            <FormLabel>Exterior Photos</FormLabel>
+                            <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handleFileChange(e, setExteriorPhotoPreviews, true)} /></FormControl>
+                             <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
+                                {exteriorPhotoPreviews.map((src, index) => (
+                                    <div key={index} className="relative aspect-square rounded-md overflow-hidden border"><Image src={src} alt={`Exterior Preview ${index + 1}`} fill className="object-cover" /></div>
+                                ))}
+                            </div>
+                        </FormItem>
+                    </CardContent>
+                </Card>
               )}
+              
+              {showLandFields && (
+                 <Card>
+                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/>Land Documents</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <FormItem>
+                            <FormLabel>Land Title</FormLabel>
+                            <FormControl><Input type="file" onChange={(e) => handleFileChange(e, setLandTitlePreview, false)} /></FormControl>
+                            {landTitlePreview && <p className="text-xs text-muted-foreground mt-1">Preview ready</p>}
+                        </FormItem>
+                        <FormItem>
+                            <FormLabel>Survey Plan</FormLabel>
+                            <FormControl><Input type="file" onChange={(e) => handleFileChange(e, setSurveyPlanPreview, false)} /></FormControl>
+                            {surveyPlanPreview && <p className="text-xs text-muted-foreground mt-1">Preview ready</p>}
+                        </FormItem>
+                        <FormItem>
+                            <FormLabel>Attestation</FormLabel>
+                            <FormControl><Input type="file" onChange={(e) => handleFileChange(e, setAttestationPreview, false)} /></FormControl>
+                            {attestationPreview && <p className="text-xs text-muted-foreground mt-1">Preview ready</p>}
+                        </FormItem>
+                    </CardContent>
+                 </Card>
+              )}
+
 
              {listingType === "RENT" && (
                 <Card>
@@ -240,7 +311,6 @@ export default function ListPropertyPage() {
                  <Card>
                     <CardHeader><CardTitle className="text-xl flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/>Sale Details (Demo)</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
-                        <FormField control={form.control} name="legalDocs" render={({ field }) => (<FormItem><FormLabel>Legal Documents</FormLabel><FormControl><Input type="file" multiple disabled /></FormControl><FormDescription>Upload land title, ownership proof, zoning certificate, etc.</FormDescription><FormMessage /></FormItem>)} />
                         <FormField control={form.control} name="propertyStatus" render={({ field }) => (<FormItem><FormLabel>Property Status</FormLabel><FormControl><Input placeholder="e.g., Freehold, Leasehold, Verified" {...field} /></FormControl><FormDescription>Indicate current legal status.</FormDescription><FormMessage /></FormItem>)} />
                     </CardContent>
                 </Card>
