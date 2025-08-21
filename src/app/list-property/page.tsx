@@ -69,69 +69,69 @@ const LocationStep = () => {
     const [address, setAddress] = useState("");
 
     return (
-        <div className="relative h-full w-full -m-6 md:-m-8">
-             <InteractiveMapPlaceholder pickup={address} />
-             <div className="absolute top-4 left-4 z-10 w-full max-w-md">
-                <Card className="shadow-2xl">
-                    <CardHeader>
-                        <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
-                        <CardDescription>Enter the address so guests can find you.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
+        <div className="grid md:grid-cols-2 gap-8 h-full">
+            <Card className="flex flex-col">
+                 <CardHeader>
+                    <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
+                    <CardDescription>Enter the address so guests can find you.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3 flex-grow">
+                     <div>
+                        <Label htmlFor="address-search">Find Your Address</Label>
+                        <Input 
+                            id="address-search" 
+                            placeholder="Start typing your street address..." 
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Label htmlFor="apt-suite">Apartment or floor number (Optional)</Label>
+                        <Input id="apt-suite" placeholder="e.g., Apt 3B" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <Label htmlFor="address-search">Find Your Address</Label>
-                            <Input 
-                                id="address-search" 
-                                placeholder="Start typing your street address..." 
-                                value={address}
-                                onChange={(e) => setAddress(e.target.value)}
-                            />
+                            <Label htmlFor="country">Country/Region</Label>
+                            <Select defaultValue="US">
+                                <SelectTrigger id="country"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="US">United States</SelectItem>
+                                    <SelectItem value="CA">Canada</SelectItem>
+                                    <SelectItem value="CM">Cameroon</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
+                         <div>
+                            <Label htmlFor="city">City</Label>
+                            <Input id="city" placeholder="e.g., Camden" />
+                        </div>
+                    </div>
+                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <Label htmlFor="apt-suite">Apartment or floor number (Optional)</Label>
-                            <Input id="apt-suite" placeholder="e.g., Apt 3B" />
+                            <Label htmlFor="state">State</Label>
+                            <Select defaultValue="DE">
+                                <SelectTrigger id="state"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="DE">Delaware</SelectItem>
+                                    <SelectItem value="CA">California</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor="country">Country/Region</Label>
-                                <Select defaultValue="US">
-                                    <SelectTrigger id="country"><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="US">United States</SelectItem>
-                                        <SelectItem value="CA">Canada</SelectItem>
-                                        <SelectItem value="CM">Cameroon</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                             <div>
-                                <Label htmlFor="city">City</Label>
-                                <Input id="city" placeholder="e.g., Camden" />
-                            </div>
+                         <div>
+                            <Label htmlFor="zip">Zip Code</Label>
+                            <Input id="zip" placeholder="e.g., 19934" />
                         </div>
-                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor="state">State</Label>
-                                <Select defaultValue="DE">
-                                    <SelectTrigger id="state"><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="DE">Delaware</SelectItem>
-                                        <SelectItem value="CA">California</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                             <div>
-                                <Label htmlFor="zip">Zip Code</Label>
-                                <Input id="zip" placeholder="e.g., 19934" />
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-2 pt-2">
-                            <Checkbox id="update-pin" defaultChecked />
-                            <Label htmlFor="update-pin" className="text-sm font-normal">Update the address by moving the pin on the map.</Label>
-                        </div>
-                         <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
-                    </CardContent>
-                </Card>
-             </div>
+                    </div>
+                    <div className="flex items-center space-x-2 pt-2">
+                        <Checkbox id="update-pin" defaultChecked />
+                        <Label htmlFor="update-pin" className="text-sm font-normal">Update the address by moving the pin on the map.</Label>
+                    </div>
+                     <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
+                </CardContent>
+            </Card>
+            <div className="h-full min-h-[400px] md:min-h-0 rounded-lg overflow-hidden">
+                <InteractiveMapPlaceholder pickup={address} />
+            </div>
         </div>
     );
 };
@@ -150,7 +150,7 @@ export default function ListPropertyPage() {
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(prev => prev + 1);
     }
   };
   
@@ -181,7 +181,7 @@ export default function ListPropertyPage() {
              </div>
           </div>
         </CardHeader>
-        <div className="p-6 md:p-8 flex-grow flex flex-col relative">
+        <div className="p-6 md:p-8 flex-grow flex flex-col">
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
