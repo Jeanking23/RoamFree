@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CarFront, DollarSign, Gauge, CalendarDays, UploadCloud, Send, X, Settings2, Droplets, Palette, Users, MapPin } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -43,9 +43,9 @@ const carForRentSchema = z.object({
   pricePerHour: z.coerce.number().positive("Hourly price is required.").optional(),
   pricePerWeek: z.coerce.number().positive("Weekly price is required.").optional(),
   seats: z.coerce.number().min(1, "Seating capacity is required."),
-  transmission: z.string().min(2, "Transmission type is required."),
+  transmission: z.string({ required_error: "Transmission type is required."}),
   mileage: z.coerce.number().min(0, "Mileage is required."),
-  fuelPolicy: z.string().min(2, "Fuel policy is required."),
+  fuelPolicy: z.string({ required_error: "Fuel policy is required." }),
   pickupLocations: z.array(z.object({ value: z.string() })).min(1, "At least one pickup location is required."),
   features: z.array(z.object({ value: z.string() })).optional(),
   description: z.string().min(20, "Please provide a description.").max(500),
@@ -169,7 +169,7 @@ export default function ListCarPage() {
                     <FormField control={saleForm.control} name="make" render={({ field }) => (
                       <FormItem>
                           <FormLabel>Make</FormLabel>
-                          <Select onValueChange={(value) => { field.onChange(value); saleForm.setValue('model', ''); }} defaultValue={field.value}>
+                          <Select onValueChange={(value) => { field.onChange(value); saleForm.setValue('model', ''); }} value={field.value}>
                               <FormControl><SelectTrigger><SelectValue placeholder="Select Make"/></SelectTrigger></FormControl>
                               <SelectContent>
                                   {carMakes.map(make => <SelectItem key={make} value={make}>{make}</SelectItem>)}
@@ -193,7 +193,7 @@ export default function ListCarPage() {
                     <FormField control={saleForm.control} name="year" render={({ field }) => (
                       <FormItem>
                           <FormLabel>Year</FormLabel>
-                          <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value)}>
+                          <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value ? String(field.value) : undefined}>
                               <FormControl><SelectTrigger><SelectValue placeholder="Select Year"/></SelectTrigger></FormControl>
                               <SelectContent>
                                   {years.map(year => <SelectItem key={year} value={String(year)}>{year}</SelectItem>)}
@@ -262,9 +262,9 @@ export default function ListCarPage() {
                   
                    <div className="grid md:grid-cols-2 gap-4">
                      <FormField control={rentForm.control} name="seats" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Users className="h-4 w-4"/>Seating Capacity</FormLabel><FormControl><Input type="number" placeholder="5" {...field}/></FormControl><FormMessage/></FormItem>)}/>
-                     <FormField control={rentForm.control} name="transmission" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Transmission</FormLabel><FormControl><Input placeholder="e.g., Automatic" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                     <FormField control={rentForm.control} name="transmission" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Transmission</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Transmission"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Automatic">Automatic</SelectItem><SelectItem value="Manual">Manual</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
                      <FormField control={rentForm.control} name="mileage" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Gauge className="h-4 w-4"/>Mileage</FormLabel><FormControl><Input type="number" placeholder="25000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
-                     <FormField control={rentForm.control} name="fuelPolicy" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Policy</FormLabel><FormControl><Input placeholder="e.g., Full-to-Full" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                     <FormField control={rentForm.control} name="fuelPolicy" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Policy</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Fuel Policy"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Full-to-Full">Full-to-Full</SelectItem><SelectItem value="Full-to-Empty">Full-to-Empty</SelectItem><SelectItem value="Same-to-Same">Same-to-Same</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
                    </div>
 
                   <FormField control={rentForm.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the vehicle, its best uses, and any rental rules." rows={4} {...field}/></FormControl><FormMessage/></FormItem>)}/>
