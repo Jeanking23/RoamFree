@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Building, Info, Lightbulb, CheckCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const listingSteps = [
   { id: "name", title: "Basic Info" },
