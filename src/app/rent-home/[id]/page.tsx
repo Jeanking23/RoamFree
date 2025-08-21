@@ -255,7 +255,7 @@ export default function RentalPropertyProfilePage() {
             {property.neighborhoodInsights && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><HomeIconLucide className="h-5 w-5"/> Neighborhood Insights (Demo)</CardTitle>
+                  <CardTitle className="flex items-center gap-2"><HomeIconLucide className="h-5 w-5"/> Neighborhood Insights</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
                   <p className="text-muted-foreground">{property.neighborhoodInsights.description}</p>
@@ -263,13 +263,13 @@ export default function RentalPropertyProfilePage() {
                   <p><strong>Walkability Score:</strong> {property.neighborhoodInsights.walkabilityScore}/100</p>
                   <p><strong>Crime Rate:</strong> {property.neighborhoodInsights.crimeRate}</p>
                   <div>
-                    <h4 className="font-medium">Nearby Schools:</h4>
+                    <h4 className="font-medium flex items-center gap-2 mb-1"><School className="h-4 w-4"/>Nearby Schools:</h4>
                     <ul className="list-disc list-inside ml-4">
                       {property.neighborhoodInsights.schools.map((school, i) => <li key={i}>{school.name} ({school.type}) - Rating: {school.rating}</li>)}
                     </ul>
                   </div>
                    <div>
-                    <h4 className="font-medium">Public Transport:</h4>
+                    <h4 className="font-medium flex items-center gap-2 mb-1"><BuildingIconLucide className="h-4 w-4"/>Public Transport:</h4>
                     <ul className="list-disc list-inside ml-4">
                       {property.neighborhoodInsights.publicTransport.map((pt, i) => <li key={i}>{pt.type} ({pt.line}) - Stop: {pt.stopDistance}</li>)}
                     </ul>
