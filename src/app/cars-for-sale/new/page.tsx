@@ -47,7 +47,6 @@ type CarForRentFormValues = z.infer<typeof carForRentSchema>;
 export default function ListCarPage() {
   const [saleInteriorPhotoPreviews, setSaleInteriorPhotoPreviews] = useState<string[]>([]);
   const [saleExteriorPhotoPreviews, setSaleExteriorPhotoPreviews] = useState<string[]>([]);
-  const [saleVariousPhotoPreviews, setSaleVariousPhotoPreviews] = useState<string[]>([]);
   const [rentPhotoPreviews, setRentPhotoPreviews] = useState<string[]>([]);
   const [rentFeatureInput, setRentFeatureInput] = useState("");
 
@@ -93,13 +92,11 @@ export default function ListCarPage() {
     console.log("Car for Sale Submitted:", data, { 
         interiorPhotos: saleInteriorPhotoPreviews,
         exteriorPhotos: saleExteriorPhotoPreviews,
-        variousPhotos: saleVariousPhotoPreviews,
     });
     toast({ title: "Listing Submitted!", description: "Your car has been listed for sale." });
     saleForm.reset();
     setSaleInteriorPhotoPreviews([]);
     setSaleExteriorPhotoPreviews([]);
-    setSaleVariousPhotoPreviews([]);
   };
 
   const onRentSubmit = (data: CarForRentFormValues) => {
@@ -160,15 +157,6 @@ export default function ListCarPage() {
                              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
                                 {saleExteriorPhotoPreviews.map((src, index) => (
                                     <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Exterior Preview ${index + 1}`} fill className="object-cover" /></div>
-                                ))}
-                            </div>
-                        </FormItem>
-                         <FormItem>
-                            <FormLabel>Various Sources (Engine, Trunk etc)</FormLabel>
-                            <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoUpload(e, setSaleVariousPhotoPreviews)} /></FormControl>
-                             <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
-                                {saleVariousPhotoPreviews.map((src, index) => (
-                                    <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Various Preview ${index + 1}`} fill className="object-cover" /></div>
                                 ))}
                             </div>
                         </FormItem>
