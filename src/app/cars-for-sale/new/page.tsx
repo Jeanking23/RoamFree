@@ -72,6 +72,7 @@ const carMakes = Object.keys(carMakesAndModels);
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 
+const carColors = ["Black", "White", "Silver", "Gray", "Red", "Blue", "Brown", "Green", "Beige", "Gold", "Yellow", "Orange", "Purple", "Other"];
 
 export default function ListCarPage() {
   const [salePhotoPreviews, setSalePhotoPreviews] = useState<string[]>([]);
@@ -213,8 +214,8 @@ export default function ListCarPage() {
                     <FormField control={saleForm.control} name="fuelType" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Fuel Type"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Gasoline">Gasoline</SelectItem><SelectItem value="Diesel">Diesel</SelectItem><SelectItem value="Electric">Electric</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
                   </div>
                    <div className="grid md:grid-cols-2 gap-4">
-                     <FormField control={saleForm.control} name="exteriorColor" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Palette className="h-4 w-4"/>Exterior Color</FormLabel><FormControl><Input placeholder="e.g., Silver" {...field}/></FormControl><FormMessage/></FormItem>)}/>
-                     <FormField control={saleForm.control} name="interiorColor" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Palette className="h-4 w-4"/>Interior Color</FormLabel><FormControl><Input placeholder="e.g., Black" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                     <FormField control={saleForm.control} name="exteriorColor" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Palette className="h-4 w-4"/>Exterior Color</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a color"/></SelectTrigger></FormControl><SelectContent>{carColors.map(color => <SelectItem key={`ext-${color}`} value={color}>{color}</SelectItem>)}</SelectContent></Select><FormMessage/></FormItem>)}/>
+                     <FormField control={saleForm.control} name="interiorColor" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Palette className="h-4 w-4"/>Interior Color</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a color"/></SelectTrigger></FormControl><SelectContent>{carColors.map(color => <SelectItem key={`int-${color}`} value={color}>{color}</SelectItem>)}</SelectContent></Select><FormMessage/></FormItem>)}/>
                    </div>
                   <FormField control={saleForm.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the vehicle's features, condition, and history." rows={5} {...field}/></FormControl><FormMessage/></FormItem>)}/>
                   
