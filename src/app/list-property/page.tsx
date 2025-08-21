@@ -60,6 +60,7 @@ type PropertyFormValues = z.infer<typeof propertySchema>;
 export default function ListPropertyPage() {
   const [interiorPhotoPreviews, setInteriorPhotoPreviews] = useState<string[]>([]);
   const [exteriorPhotoPreviews, setExteriorPhotoPreviews] = useState<string[]>([]);
+  const [landPhotoPreviews, setLandPhotoPreviews] = useState<string[]>([]);
   const [landTitlePreview, setLandTitlePreview] = useState<string | null>(null);
   const [surveyPlanPreview, setSurveyPlanPreview] = useState<string | null>(null);
   const [attestationPreview, setAttestationPreview] = useState<string | null>(null);
@@ -137,7 +138,7 @@ export default function ListPropertyPage() {
     // In a real app, you'd upload the files and get URLs before saving
     const submissionData = {
       ...data,
-      photos: [...interiorPhotoPreviews, ...exteriorPhotoPreviews],
+      photos: [...interiorPhotoPreviews, ...exteriorPhotoPreviews, ...landPhotoPreviews],
       legalDocs: {
           landTitle: landTitlePreview,
           surveyPlan: surveyPlanPreview,
@@ -149,6 +150,7 @@ export default function ListPropertyPage() {
     form.reset();
     setInteriorPhotoPreviews([]);
     setExteriorPhotoPreviews([]);
+    setLandPhotoPreviews([]);
     setLandTitlePreview(null);
     setSurveyPlanPreview(null);
     setAttestationPreview(null);
@@ -273,8 +275,17 @@ export default function ListPropertyPage() {
               
               {showLandFields && (
                  <Card>
-                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/>Land Documents</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/>Land Documents & Photos</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
+                        <FormItem>
+                            <FormLabel>Land Photos</FormLabel>
+                            <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handleFileChange(e, setLandPhotoPreviews, true)} /></FormControl>
+                            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
+                                {landPhotoPreviews.map((src, index) => (
+                                    <div key={index} className="relative aspect-square rounded-md overflow-hidden border"><Image src={src} alt={`Land Preview ${index + 1}`} fill className="object-cover" /></div>
+                                ))}
+                            </div>
+                        </FormItem>
                         <FormItem>
                             <FormLabel>Land Title</FormLabel>
                             <FormControl><Input type="file" onChange={(e) => handleFileChange(e, setLandTitlePreview, false)} /></FormControl>
