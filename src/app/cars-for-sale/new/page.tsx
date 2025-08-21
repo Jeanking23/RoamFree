@@ -21,9 +21,9 @@ import Image from 'next/image';
 
 const carForSaleSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters."),
-  make: z.string().min(2, "Make is required."),
-  model: z.string().min(1, "Model is required."),
-  year: z.coerce.number().min(1900).max(new Date().getFullYear() + 1),
+  make: z.string({ required_error: "Make is required." }),
+  model: z.string({ required_error: "Model is required." }),
+  year: z.coerce.number({ required_error: "Year is required." }).min(1900).max(new Date().getFullYear() + 1),
   mileage: z.coerce.number().min(0),
   price: z.coerce.number().positive(),
   vin: z.string().length(17, "VIN must be 17 characters."),
@@ -56,6 +56,23 @@ const carForRentSchema = z.object({
 type CarForSaleFormValues = z.infer<typeof carForSaleSchema>;
 type CarForRentFormValues = z.infer<typeof carForRentSchema>;
 
+const carMakesAndModels: Record<string, string[]> = {
+  'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander', 'Tacoma'],
+  'Ford': ['F-150', 'Explorer', 'Mustang', 'Escape', 'Bronco'],
+  'Honda': ['Civic', 'Accord', 'CR-V', 'Pilot', 'Odyssey'],
+  'Chevrolet': ['Silverado', 'Equinox', 'Malibu', 'Tahoe', 'Traverse'],
+  'Nissan': ['Altima', 'Rogue', 'Sentra', 'Titan', 'Frontier'],
+  'Jeep': ['Wrangler', 'Grand Cherokee', 'Cherokee'],
+  'Hyundai': ['Elantra', 'Sonata', 'Tucson', 'Santa Fe'],
+  'Kia': ['Forte', 'Optima', 'Sorento', 'Telluride'],
+  'BMW': ['3 Series', '5 Series', 'X3', 'X5'],
+  'Mercedes-Benz': ['C-Class', 'E-Class', 'GLC', 'GLE'],
+};
+const carMakes = Object.keys(carMakesAndModels);
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
+
+
 export default function ListCarPage() {
   const [salePhotoPreviews, setSalePhotoPreviews] = useState<string[]>([]);
   const [rentPhotoPreviews, setRentPhotoPreviews] = useState<string[]>([]);
@@ -83,6 +100,8 @@ export default function ListCarPage() {
     control: rentForm.control, name: "pickupLocations",
   });
 
+  const selectedMake = saleForm.watch("make");
+  const availableModels = selectedMake ? carMakesAndModels[selectedMake] : [];
 
   const handlePhotoUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -146,9 +165,42 @@ export default function ListCarPage() {
                 <form onSubmit={saleForm.handleSubmit(onSaleSubmit)} className="space-y-6">
                   <FormField control={saleForm.control} name="title" render={({ field }) => (<FormItem><FormLabel>Listing Title</FormLabel><FormControl><Input placeholder="e.g., Well-maintained Toyota Corolla 2018" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                   <div className="grid md:grid-cols-3 gap-4">
-                    <FormField control={saleForm.control} name="make" render={({ field }) => (<FormItem><FormLabel>Make</FormLabel><FormControl><Input placeholder="Toyota" {...field}/></FormControl><FormMessage/></FormItem>)}/>
-                    <FormField control={saleForm.control} name="model" render={({ field }) => (<FormItem><FormLabel>Model</FormLabel><FormControl><Input placeholder="Corolla" {...field}/></FormControl><FormMessage/></FormItem>)}/>
-                    <FormField control={saleForm.control} name="year" render={({ field }) => (<FormItem><FormLabel>Year</FormLabel><FormControl><Input type="number" placeholder="2018" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                    <FormField control={saleForm.control} name="make" render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Make</FormLabel>
+                          <Select onValueChange={(value) => { field.onChange(value); saleForm.setValue('model', ''); }} defaultValue={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Select Make"/></SelectTrigger></FormControl>
+                              <SelectContent>
+                                  {carMakes.map(make => <SelectItem key={make} value={make}>{make}</SelectItem>)}
+                              </SelectContent>
+                          </Select>
+                          <FormMessage/>
+                      </FormItem>
+                    )}/>
+                    <FormField control={saleForm.control} name="model" render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Model</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value} disabled={!selectedMake}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Select Model"/></SelectTrigger></FormControl>
+                              <SelectContent>
+                                  {availableModels.map(model => <SelectItem key={model} value={model}>{model}</SelectItem>)}
+                              </SelectContent>
+                          </Select>
+                          <FormMessage/>
+                      </FormItem>
+                    )}/>
+                    <FormField control={saleForm.control} name="year" render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Year</FormLabel>
+                          <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value)}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Select Year"/></SelectTrigger></FormControl>
+                              <SelectContent>
+                                  {years.map(year => <SelectItem key={year} value={String(year)}>{year}</SelectItem>)}
+                              </SelectContent>
+                          </Select>
+                          <FormMessage/>
+                      </FormItem>
+                    )}/>
                   </div>
                   <div className="grid md:grid-cols-3 gap-4">
                     <FormField control={saleForm.control} name="mileage" render={({ field }) => (<FormItem><FormLabel>Mileage</FormLabel><FormControl><Input type="number" placeholder="45000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
