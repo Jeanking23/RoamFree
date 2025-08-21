@@ -45,7 +45,8 @@ type CarForSaleFormValues = z.infer<typeof carForSaleSchema>;
 type CarForRentFormValues = z.infer<typeof carForRentSchema>;
 
 export default function ListCarPage() {
-  const [salePhotoPreviews, setSalePhotoPreviews] = useState<string[]>([]);
+  const [saleInteriorPhotoPreviews, setSaleInteriorPhotoPreviews] = useState<string[]>([]);
+  const [saleExteriorPhotoPreviews, setSaleExteriorPhotoPreviews] = useState<string[]>([]);
   const [rentPhotoPreviews, setRentPhotoPreviews] = useState<string[]>([]);
   const [rentFeatureInput, setRentFeatureInput] = useState("");
 
@@ -60,7 +61,10 @@ export default function ListCarPage() {
     name: "features",
   });
 
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>, type: 'sale' | 'rent') => {
+  const handlePhotoUpload = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
     const files = event.target.files;
     if (files) {
       const newPreviews: string[] = [];
@@ -69,8 +73,7 @@ export default function ListCarPage() {
         reader.onloadend = () => {
           newPreviews.push(reader.result as string);
           if (newPreviews.length === files.length) {
-            if (type === 'sale') setSalePhotoPreviews(prev => [...prev, ...newPreviews]);
-            else setRentPhotoPreviews(prev => [...prev, ...newPreviews]);
+            setter(prev => [...prev, ...newPreviews]);
           }
         };
         reader.readAsDataURL(file);
@@ -86,10 +89,14 @@ export default function ListCarPage() {
   };
 
   const onSaleSubmit = (data: CarForSaleFormValues) => {
-    console.log("Car for Sale Submitted:", data, { photos: salePhotoPreviews });
+    console.log("Car for Sale Submitted:", data, { 
+        interiorPhotos: saleInteriorPhotoPreviews,
+        exteriorPhotos: saleExteriorPhotoPreviews 
+    });
     toast({ title: "Listing Submitted!", description: "Your car has been listed for sale." });
     saleForm.reset();
-    setSalePhotoPreviews([]);
+    setSaleInteriorPhotoPreviews([]);
+    setSaleExteriorPhotoPreviews([]);
   };
 
   const onRentSubmit = (data: CarForRentFormValues) => {
@@ -131,18 +138,31 @@ export default function ListCarPage() {
                     <FormField control={saleForm.control} name="price" render={({ field }) => (<FormItem><FormLabel>Price (USD)</FormLabel><FormControl><Input type="number" placeholder="15000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                   </div>
                   <FormField control={saleForm.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the vehicle's features, condition, and history." rows={5} {...field}/></FormControl><FormMessage/></FormItem>)}/>
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2"><UploadCloud className="h-5 w-5"/>Photos</FormLabel>
-                    <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoUpload(e, 'sale')} /></FormControl>
-                    <FormDescription>Upload up to 10 photos of your vehicle.</FormDescription>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
-                      {salePhotoPreviews.map((src, index) => (
-                        <div key={index} className="relative aspect-square rounded-md overflow-hidden">
-                          <Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" />
-                        </div>
-                      ))}
-                    </div>
-                  </FormItem>
+                  
+                  <Card>
+                    <CardHeader><CardTitle className="text-xl flex items-center gap-2"><UploadCloud className="h-5 w-5 text-primary"/>Photos</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <FormItem>
+                            <FormLabel>Interior Photos</FormLabel>
+                            <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoUpload(e, setSaleInteriorPhotoPreviews)} /></FormControl>
+                            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
+                            {saleInteriorPhotoPreviews.map((src, index) => (
+                                <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Interior Preview ${index + 1}`} fill className="object-cover" /></div>
+                            ))}
+                            </div>
+                        </FormItem>
+                        <FormItem>
+                            <FormLabel>Exterior Photos</FormLabel>
+                            <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoUpload(e, setSaleExteriorPhotoPreviews)} /></FormControl>
+                             <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
+                                {saleExteriorPhotoPreviews.map((src, index) => (
+                                    <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Exterior Preview ${index + 1}`} fill className="object-cover" /></div>
+                                ))}
+                            </div>
+                        </FormItem>
+                    </CardContent>
+                  </Card>
+
                   <Button type="submit" size="lg" className="w-full sm:w-auto"><Send className="mr-2 h-4 w-4"/>Submit Sale Listing</Button>
                 </form>
               </Form>
@@ -185,7 +205,7 @@ export default function ListCarPage() {
                   
                   <FormItem>
                     <FormLabel className="flex items-center gap-2"><UploadCloud className="h-5 w-5"/>Photos</FormLabel>
-                    <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoUpload(e, 'rent')} /></FormControl>
+                    <FormControl><Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoUpload(e, setRentPhotoPreviews)} /></FormControl>
                     <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
                       {rentPhotoPreviews.map((src, index) => (
                         <div key={index} className="relative aspect-square rounded-md overflow-hidden">
