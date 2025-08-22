@@ -18,6 +18,7 @@ import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 
 const carForSaleSchema = z.object({
@@ -390,9 +391,17 @@ export default function ListCarPage() {
             </AnimatePresence>
           </div>
           <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
-            <Button variant="outline" onClick={prevStep} disabled={currentStep === 0}>
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back
-            </Button>
+            {currentStep === 0 ? (
+                <Button variant="outline" asChild>
+                    <Link href="/list-property">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                    </Link>
+                </Button>
+            ) : (
+                <Button variant="outline" onClick={prevStep}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                </Button>
+            )}
             <Button onClick={nextStep}>
               {currentStep === listingSteps.length - 1 ? <><Send className="mr-2 h-4 w-4"/>Publish Listing</> : 'Continue'}
             </Button>
