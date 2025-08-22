@@ -342,7 +342,7 @@ export default function ListPropertyPage() {
         </div>
         {currentStep > 0 && (
             <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
-                <Button variant="outline" onClick={prevStep} disabled={currentStep <= 1}>
+                <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
                     <ArrowLeft className="mr-2 h-4 w-4"/> Back
                 </Button>
                 <Button onClick={nextStep}>
