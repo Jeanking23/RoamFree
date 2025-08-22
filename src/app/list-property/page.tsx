@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 
 const listingFormSchema = z.object({
@@ -375,9 +376,15 @@ export default function ListPropertyPage() {
         </div>
         {currentStep > 0 && (
             <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
-                <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
-                    <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                </Button>
+                {currentStep === 1 ? (
+                    <Button variant="outline" onClick={() => setCurrentStep(0)}>
+                         <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                    </Button>
+                ) : (
+                    <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
+                        <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                    </Button>
+                )}
                 <Button onClick={nextStep}>
                     {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
                 </Button>
