@@ -208,110 +208,100 @@ const NameStep = () => {
     );
 };
 
-const LocationStep = ({ prevStep, nextStep }: { prevStep: () => void; nextStep: () => void }) => {
+const LocationStep = () => {
     const { watch, control, setValue } = useFormContext<ListingFormValues>();
     const address = watch("address");
 
     return (
-        <div className="relative h-full w-full rounded-lg overflow-hidden -m-6 md:-m-8">
-            <div className="absolute inset-0 z-0">
-                 <InteractiveMapPlaceholder 
+        <div className="grid md:grid-cols-2 gap-8 h-full">
+            <div className="flex flex-col h-full">
+                <CardHeader className="p-0">
+                    <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
+                    <CardDescription>Enter the address so guests can find you.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0 pt-6 space-y-3 flex-grow">
+                     <FormField control={control} name="address" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel htmlFor="address-search">Find Your Address</FormLabel>
+                            <FormControl>
+                                <Input 
+                                    id="address-search" 
+                                    placeholder="Start typing your street address..." 
+                                    {...field}
+                                    value={field.value || ''}
+                                />
+                            </FormControl>
+                            <FormMessage/>
+                        </FormItem>
+                    )}/>
+                    <FormField control={control} name="aptSuite" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Apartment or floor number (Optional)</FormLabel>
+                            <FormControl><Input placeholder="e.g., Apt 3B" {...field} value={field.value || ''}/></FormControl>
+                            <FormMessage/>
+                        </FormItem>
+                    )}/>
+                    <div className="grid grid-cols-2 gap-4">
+                        <FormField control={control} name="country" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Country/Region</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue placeholder="Select Country"/></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="US">United States</SelectItem>
+                                        <SelectItem value="CA">Canada</SelectItem>
+                                        <SelectItem value="CM">Cameroon</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage/>
+                            </FormItem>
+                        )}/>
+                        <FormField control={control} name="city" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>City</FormLabel>
+                                <FormControl><Input placeholder="e.g., Camden" {...field} value={field.value || ''}/></FormControl>
+                                <FormMessage/>
+                            </FormItem>
+                        )}/>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <FormField control={control} name="state" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>State</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue placeholder="Select State"/></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="DE">Delaware</SelectItem>
+                                        <SelectItem value="CA">California</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage/>
+                            </FormItem>
+                        )}/>
+                        <FormField control={control} name="zip" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Zip Code</FormLabel>
+                                <FormControl><Input placeholder="e.g., 19934" {...field} value={field.value || ''}/></FormControl>
+                                <FormMessage/>
+                            </FormItem>
+                        )}/>
+                    </div>
+                    <div className="flex items-center space-x-2 pt-2">
+                        <Checkbox id="update-pin" defaultChecked />
+                        <Label htmlFor="update-pin" className="text-sm font-normal">Update the address by moving the pin on the map.</Label>
+                    </div>
+                    <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
+                </CardContent>
+            </div>
+             <div className="h-full w-full rounded-lg overflow-hidden">
+                <InteractiveMapPlaceholder 
                     pickup={address} 
                     onMapClick={(latLng) => {
-                        // In a real app, you'd use a geocoding service here to convert latLng to an address
-                        // and update the form fields.
                         console.log("Map clicked at:", latLng);
                         setValue("address", `Approx. location at ${latLng.lat.toFixed(4)}, ${latLng.lng.toFixed(4)}`, { shouldValidate: true });
                         toast({ title: "Location Updated", description: "Address updated from map pin." });
                     }}
                 />
-            </div>
-            <div className="absolute top-4 left-4 z-10 w-full max-w-md">
-                <Card className="bg-background/90 backdrop-blur-sm flex flex-col h-full">
-                    <CardHeader>
-                        <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
-                        <CardDescription>Enter the address so guests can find you.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-3 flex-grow">
-                        <FormField control={control} name="address" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel htmlFor="address-search">Find Your Address</FormLabel>
-                                <FormControl>
-                                    <Input 
-                                        id="address-search" 
-                                        placeholder="Start typing your street address..." 
-                                        {...field}
-                                        value={field.value || ''}
-                                    />
-                                </FormControl>
-                                <FormMessage/>
-                            </FormItem>
-                        )}/>
-                        <FormField control={control} name="aptSuite" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Apartment or floor number (Optional)</FormLabel>
-                                <FormControl><Input placeholder="e.g., Apt 3B" {...field} value={field.value || ''}/></FormControl>
-                                <FormMessage/>
-                            </FormItem>
-                        )}/>
-                        <div className="grid grid-cols-2 gap-4">
-                            <FormField control={control} name="country" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Country/Region</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl><SelectTrigger><SelectValue placeholder="Select Country"/></SelectTrigger></FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="US">United States</SelectItem>
-                                            <SelectItem value="CA">Canada</SelectItem>
-                                            <SelectItem value="CM">Cameroon</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}/>
-                            <FormField control={control} name="city" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>City</FormLabel>
-                                    <FormControl><Input placeholder="e.g., Camden" {...field} value={field.value || ''}/></FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}/>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <FormField control={control} name="state" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>State</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl><SelectTrigger><SelectValue placeholder="Select State"/></SelectTrigger></FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="DE">Delaware</SelectItem>
-                                            <SelectItem value="CA">California</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}/>
-                            <FormField control={control} name="zip" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Zip Code</FormLabel>
-                                    <FormControl><Input placeholder="e.g., 19934" {...field} value={field.value || ''}/></FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}/>
-                        </div>
-                        <div className="flex items-center space-x-2 pt-2">
-                            <Checkbox id="update-pin" defaultChecked />
-                            <Label htmlFor="update-pin" className="text-sm font-normal">Update the address by moving the pin on the map.</Label>
-                        </div>
-                        <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                         <Button variant="outline" onClick={prevStep}>
-                            <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                        </Button>
-                        <Button onClick={nextStep}>Continue</Button>
-                    </CardFooter>
-                </Card>
             </div>
         </div>
     );
@@ -567,7 +557,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("p-6 md:p-8 flex-grow flex flex-col", currentStep === 2 && "p-0 md:p-0")}>
+        <div className={cn("p-6 md:p-8 flex-grow flex flex-col")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -579,7 +569,7 @@ export default function ListPropertyPage() {
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
-                    {currentStep === 2 && <LocationStep prevStep={prevStep} nextStep={nextStep} />}
+                    {currentStep === 2 && <LocationStep />}
                     {currentStep === 3 && <DetailsStep />}
                     {currentStep === 4 && <AmenitiesStep />}
                     {currentStep > 4 && (
@@ -590,30 +580,24 @@ export default function ListPropertyPage() {
                  </motion.div>
             </AnimatePresence>
         </div>
-        {currentStep !== 2 && (
-            <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
-                {currentStep === 0 ? (
-                    <Button variant="outline" asChild>
-                        <Link href="/">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Exit
-                        </Link>
-                    </Button>
-                ) : currentStep === 1 ? (
-                        <Button variant="outline" onClick={() => setCurrentStep(0)}>
-                            <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                    </Button>
-                ) : (
-                    <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
-                        <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                    </Button>
-                )}
-                {currentStep !== 0 && (
-                    <Button onClick={nextStep}>
-                        {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
-                    </Button>
-                )}
-            </CardFooter>
-        )}
+        <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
+            {currentStep === 0 ? (
+                <Button variant="outline" asChild>
+                    <Link href="/">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Exit
+                    </Link>
+                </Button>
+            ) : (
+                <Button variant="outline" onClick={prevStep}>
+                    <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                </Button>
+            )}
+            {currentStep !== 0 && (
+                <Button onClick={nextStep}>
+                    {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
+                </Button>
+            )}
+        </CardFooter>
       </Card>
       </FormProvider>
     </div>
