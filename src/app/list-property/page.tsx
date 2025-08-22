@@ -1,4 +1,3 @@
-
 // src/app/list-property/page.tsx
 'use client';
 
@@ -209,12 +208,12 @@ const NameStep = () => {
     );
 };
 
-const LocationStep = () => {
+const LocationStep = ({ prevStep, nextStep }: { prevStep: () => void; nextStep: () => void }) => {
     const { watch, control, setValue } = useFormContext<ListingFormValues>();
     const address = watch("address");
 
     return (
-        <div className="relative h-full w-full rounded-lg overflow-hidden flex-grow -m-6 md:-m-8">
+        <div className="relative h-full w-full rounded-lg overflow-hidden -m-6 md:-m-8">
             <div className="absolute inset-0 z-0">
                  <InteractiveMapPlaceholder 
                     pickup={address} 
@@ -228,12 +227,12 @@ const LocationStep = () => {
                 />
             </div>
             <div className="absolute top-4 left-4 z-10 w-full max-w-md">
-                <Card className="bg-background/90 backdrop-blur-sm">
+                <Card className="bg-background/90 backdrop-blur-sm flex flex-col h-full">
                     <CardHeader>
                         <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
                         <CardDescription>Enter the address so guests can find you.</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-3">
+                    <CardContent className="space-y-3 flex-grow">
                         <FormField control={control} name="address" render={({ field }) => (
                             <FormItem>
                                 <FormLabel htmlFor="address-search">Find Your Address</FormLabel>
@@ -306,6 +305,12 @@ const LocationStep = () => {
                         </div>
                         <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
                     </CardContent>
+                    <CardFooter className="flex justify-between">
+                         <Button variant="outline" onClick={prevStep}>
+                            <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                        </Button>
+                        <Button onClick={nextStep}>Continue</Button>
+                    </CardFooter>
                 </Card>
             </div>
         </div>
@@ -313,13 +318,54 @@ const LocationStep = () => {
 };
 
 const DetailsStep = () => {
+    const { control } = useFormContext<ListingFormValues>();
+    const [bedrooms, setBedrooms] = useState([{ id: 1, beds: [{ type: 'Full', count: 1 }] }]);
+    const [guests, setGuests] = useState(2);
+    const [bathrooms, setBathrooms] = useState(1);
+
+    const addBedroom = () => {
+        setBedrooms([...bedrooms, { id: Date.now(), beds: [{ type: 'Full', count: 1 }] }]);
+    };
+    
     return (
         <div>
             <CardHeader className="p-0 text-center md:text-left">
                 <CardTitle className="text-3xl font-headline text-primary">Property Details</CardTitle>
-                <CardDescription className="pt-2">Provide additional details about your property.</CardDescription>
+                <CardDescription className="pt-2">Tell us about the sleeping arrangements and capacity.</CardDescription>
             </CardHeader>
             <CardContent className="p-0 pt-8 space-y-8">
+                <div>
+                    <h3 className="text-lg font-semibold mb-3">Where can people sleep?</h3>
+                    <div className="space-y-4">
+                        {bedrooms.map((room, index) => (
+                            <Card key={room.id} className="p-4">
+                                <p className="font-medium">Bedroom {index + 1}</p>
+                                {/* Add bed type/count logic here */}
+                            </Card>
+                        ))}
+                    </div>
+                    <Button variant="outline" size="sm" onClick={addBedroom} className="mt-3">Add bedroom</Button>
+                </div>
+
+                <div className="space-y-6">
+                    <div>
+                         <h3 className="text-lg font-semibold mb-3">How many guests can stay?</h3>
+                         <div className="flex items-center gap-4">
+                             <Button variant="outline" size="icon" onClick={() => setGuests(p => Math.max(1, p-1))}><Minus className="h-4 w-4"/></Button>
+                             <span className="text-xl font-bold w-12 text-center">{guests}</span>
+                             <Button variant="outline" size="icon" onClick={() => setGuests(p => p+1)}><Plus className="h-4 w-4"/></Button>
+                         </div>
+                    </div>
+                     <div>
+                         <h3 className="text-lg font-semibold mb-3">How many bathrooms are there?</h3>
+                         <div className="flex items-center gap-4">
+                             <Button variant="outline" size="icon" onClick={() => setBathrooms(p => Math.max(0.5, p-0.5))}><Minus className="h-4 w-4"/></Button>
+                             <span className="text-xl font-bold w-12 text-center">{bathrooms}</span>
+                             <Button variant="outline" size="icon" onClick={() => setBathrooms(p => p+0.5)}><Plus className="h-4 w-4"/></Button>
+                         </div>
+                    </div>
+                </div>
+
                 <FormItem>
                     <FormLabel className="text-lg font-semibold">Do you serve guests breakfast?</FormLabel>
                     <FormControl>
@@ -449,12 +495,6 @@ export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const router = useRouter();
 
-  // State for Property Details step
-  const [bedrooms, setBedrooms] = useState([{ id: 1, beds: [{ type: 'Full', count: 1 }] }]);
-  const [guests, setGuests] = useState(2);
-  const [bathrooms, setBathrooms] = useState(1);
-
-
   const methods = useForm<ListingFormValues>({
     resolver: zodResolver(listingFormSchema),
     defaultValues: {
@@ -539,7 +579,7 @@ export default function ListPropertyPage() {
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
-                    {currentStep === 2 && <LocationStep />}
+                    {currentStep === 2 && <LocationStep prevStep={prevStep} nextStep={nextStep} />}
                     {currentStep === 3 && <DetailsStep />}
                     {currentStep === 4 && <AmenitiesStep />}
                     {currentStep > 4 && (
@@ -550,28 +590,30 @@ export default function ListPropertyPage() {
                  </motion.div>
             </AnimatePresence>
         </div>
-        <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
-            {currentStep === 0 ? (
-                <Button variant="outline" asChild>
-                    <Link href="/">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Exit
-                    </Link>
-                </Button>
-            ) : currentStep === 1 ? (
-                    <Button variant="outline" onClick={() => setCurrentStep(0)}>
+        {currentStep !== 2 && (
+            <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
+                {currentStep === 0 ? (
+                    <Button variant="outline" asChild>
+                        <Link href="/">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Exit
+                        </Link>
+                    </Button>
+                ) : currentStep === 1 ? (
+                        <Button variant="outline" onClick={() => setCurrentStep(0)}>
+                            <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                    </Button>
+                ) : (
+                    <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
                         <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                </Button>
-            ) : (
-                <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
-                    <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                </Button>
-            )}
-            {currentStep !== 0 && (
-                <Button onClick={nextStep}>
-                    {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
-                </Button>
-            )}
-        </CardFooter>
+                    </Button>
+                )}
+                {currentStep !== 0 && (
+                    <Button onClick={nextStep}>
+                        {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
+                    </Button>
+                )}
+            </CardFooter>
+        )}
       </Card>
       </FormProvider>
     </div>
