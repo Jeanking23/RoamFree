@@ -1,3 +1,4 @@
+
 // src/app/list-property/page.tsx
 'use client';
 
@@ -213,87 +214,8 @@ const LocationStep = () => {
     const address = watch("address");
 
     return (
-        <div className="grid md:grid-cols-2 gap-8 h-full">
-            <div className="flex flex-col h-full">
-                <CardHeader className="p-0">
-                    <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
-                    <CardDescription>Enter the address so guests can find you.</CardDescription>
-                </CardHeader>
-                <CardContent className="p-0 pt-6 space-y-3 flex-grow">
-                     <FormField control={control} name="address" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel htmlFor="address-search">Find Your Address</FormLabel>
-                            <FormControl>
-                                <Input 
-                                    id="address-search" 
-                                    placeholder="Start typing your street address..." 
-                                    {...field}
-                                    value={field.value || ''}
-                                />
-                            </FormControl>
-                            <FormMessage/>
-                        </FormItem>
-                    )}/>
-                    <FormField control={control} name="aptSuite" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Apartment or floor number (Optional)</FormLabel>
-                            <FormControl><Input placeholder="e.g., Apt 3B" {...field} value={field.value || ''}/></FormControl>
-                            <FormMessage/>
-                        </FormItem>
-                    )}/>
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormField control={control} name="country" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Country/Region</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl><SelectTrigger><SelectValue placeholder="Select Country"/></SelectTrigger></FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="US">United States</SelectItem>
-                                        <SelectItem value="CA">Canada</SelectItem>
-                                        <SelectItem value="CM">Cameroon</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage/>
-                            </FormItem>
-                        )}/>
-                        <FormField control={control} name="city" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>City</FormLabel>
-                                <FormControl><Input placeholder="e.g., Camden" {...field} value={field.value || ''}/></FormControl>
-                                <FormMessage/>
-                            </FormItem>
-                        )}/>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormField control={control} name="state" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>State</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl><SelectTrigger><SelectValue placeholder="Select State"/></SelectTrigger></FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="DE">Delaware</SelectItem>
-                                        <SelectItem value="CA">California</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage/>
-                            </FormItem>
-                        )}/>
-                        <FormField control={control} name="zip" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Zip Code</FormLabel>
-                                <FormControl><Input placeholder="e.g., 19934" {...field} value={field.value || ''}/></FormControl>
-                                <FormMessage/>
-                            </FormItem>
-                        )}/>
-                    </div>
-                    <div className="flex items-center space-x-2 pt-2">
-                        <Checkbox id="update-pin" defaultChecked />
-                        <Label htmlFor="update-pin" className="text-sm font-normal">Update the address by moving the pin on the map.</Label>
-                    </div>
-                    <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
-                </CardContent>
-            </div>
-             <div className="h-full w-full rounded-lg overflow-hidden">
+        <div className="relative h-full w-full min-h-[60vh] -m-6 md:-m-8">
+            <div className="absolute inset-0 z-0">
                 <InteractiveMapPlaceholder 
                     pickup={address} 
                     onMapClick={(latLng) => {
@@ -302,6 +224,87 @@ const LocationStep = () => {
                         toast({ title: "Location Updated", description: "Address updated from map pin." });
                     }}
                 />
+            </div>
+            <div className="relative z-10 p-6 md:p-8 h-full flex items-center">
+                <Card className="w-full max-w-md">
+                    <CardHeader>
+                        <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
+                        <CardDescription>Enter the address so guests can find you.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <FormField control={control} name="address" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor="address-search">Find Your Address</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        id="address-search" 
+                                        placeholder="Start typing your street address..." 
+                                        {...field}
+                                        value={field.value || ''}
+                                    />
+                                </FormControl>
+                                <FormMessage/>
+                            </FormItem>
+                        )}/>
+                        <FormField control={control} name="aptSuite" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Apartment or floor number (Optional)</FormLabel>
+                                <FormControl><Input placeholder="e.g., Apt 3B" {...field} value={field.value || ''}/></FormControl>
+                                <FormMessage/>
+                            </FormItem>
+                        )}/>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={control} name="country" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Country/Region</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl><SelectTrigger><SelectValue placeholder="Select Country"/></SelectTrigger></FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="US">United States</SelectItem>
+                                            <SelectItem value="CA">Canada</SelectItem>
+                                            <SelectItem value="CM">Cameroon</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}/>
+                            <FormField control={control} name="city" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>City</FormLabel>
+                                    <FormControl><Input placeholder="e.g., Camden" {...field} value={field.value || ''}/></FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}/>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={control} name="state" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>State</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl><SelectTrigger><SelectValue placeholder="Select State"/></SelectTrigger></FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="DE">Delaware</SelectItem>
+                                            <SelectItem value="CA">California</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}/>
+                            <FormField control={control} name="zip" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Zip Code</FormLabel>
+                                    <FormControl><Input placeholder="e.g., 19934" {...field} value={field.value || ''}/></FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}/>
+                        </div>
+                        <div className="flex items-center space-x-2 pt-2">
+                            <Checkbox id="update-pin" defaultChecked />
+                            <Label htmlFor="update-pin" className="text-sm font-normal">Update the address by moving the pin on the map.</Label>
+                        </div>
+                        <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );
@@ -557,7 +560,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("p-6 md:p-8 flex-grow flex flex-col")}>
+        <div className={cn("p-6 md:p-8 flex-grow flex flex-col", currentStep === 2 ? "p-0 md:p-0" : "")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
