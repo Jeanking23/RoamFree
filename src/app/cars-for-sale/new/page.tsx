@@ -8,11 +8,11 @@ import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CarFront, UploadCloud, Send, X, Settings2, Droplets, Palette, ArrowLeft } from 'lucide-react';
+import { CarFront, UploadCloud, Send, X, Settings2, Droplets, Palette, ArrowLeft, DollarSign, Calendar, RefreshCw, HandCoins } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
+import { useForm, useFieldArray, FormProvider, useFormContext } from 'react-hook-form';
 import * as z from 'zod';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -21,16 +21,19 @@ import { useRouter } from 'next/navigation';
 
 
 const carForSaleSchema = z.object({
+  listingType: z.enum(["FOR_SALE", "FOR_RENT"], { required_error: "Please select a listing type." }),
   title: z.string().min(5, "Title must be at least 5 characters."),
   make: z.string({ required_error: "Make is required." }),
   model: z.string({ required_error: "Model is required." }),
   year: z.coerce.number({ required_error: "Year is required." }).min(1900).max(new Date().getFullYear() + 1),
   mileage: z.coerce.number({ required_error: "Mileage is required." }).min(0),
   price: z.coerce.number({ required_error: "Price is required." }).positive(),
+  pricePeriod: z.enum(["total", "per_day", "per_week"]).optional(),
   vin: z.string().length(17, "VIN must be 17 characters."),
   engine: z.string().min(2, "Engine details are required."),
   transmission: z.string().min(2, "Transmission type is required."),
   fuelType: z.string().min(2, "Fuel type is required."),
+  fuelPolicy: z.string().optional(),
   exteriorColor: z.string().min(2, "Exterior color is required."),
   interiorColor: z.string().min(2, "Interior color is required."),
   features: z.array(z.object({ value: z.string() })).optional(),
@@ -40,11 +43,12 @@ const carForSaleSchema = z.object({
 type CarForSaleFormValues = z.infer<typeof carForSaleSchema>;
 
 const listingSteps = [
+  { id: "type", title: "Listing Type", fields: ["listingType"] },
   { id: "basics", title: "The Basics", fields: ["title", "make", "model", "year", "vin"] },
-  { id: "details", title: "Vehicle Details", fields: ["mileage", "engine", "transmission", "fuelType", "exteriorColor", "interiorColor"] },
+  { id: "details", title: "Vehicle Details", fields: ["mileage", "engine", "transmission", "fuelType", "fuelPolicy", "exteriorColor", "interiorColor"] },
   { id: "features", title: "Features & Description", fields: ["features", "description"] },
   { id: "photos", title: "Photos" },
-  { id: "pricing", title: "Set Your Price", fields: ["price"] },
+  { id: "pricing", title: "Set Your Price", fields: ["price", "pricePeriod"] },
   { id: "publish", title: "Review & Publish" },
 ];
 
@@ -66,8 +70,52 @@ const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 const carColors = ["Black", "White", "Silver", "Gray", "Red", "Blue", "Brown", "Green", "Beige", "Gold", "Yellow", "Orange", "Purple", "Other"];
 
 // Step Components
+const ListingTypeStep = () => {
+    const { control } = useFormContext<CarForSaleFormValues>();
+    return (
+        <div>
+            <CardHeader className="p-0 text-center">
+                <CardTitle className="text-3xl font-headline text-primary">What type of listing is this?</CardTitle>
+                <CardDescription className="pt-2">Are you listing your car for sale or for rent?</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 pt-8">
+                 <FormField
+                    control={control}
+                    name="listingType"
+                    render={({ field }) => (
+                    <FormItem className="space-y-3">
+                        <FormControl>
+                            <div className="flex flex-col md:flex-row gap-6 justify-center">
+                                <Card
+                                    onClick={() => field.onChange("FOR_SALE")}
+                                    className={cn("w-full md:w-64 p-6 text-center cursor-pointer hover:shadow-lg transition-all group", field.value === "FOR_SALE" && "border-primary ring-2 ring-primary")}
+                                >
+                                    <DollarSign className="h-12 w-12 text-primary mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                                    <h3 className="text-xl font-semibold">For Sale</h3>
+                                    <p className="text-sm text-muted-foreground mt-1">Sell your car to a buyer.</p>
+                                </Card>
+                                 <Card
+                                    onClick={() => field.onChange("FOR_RENT")}
+                                    className={cn("w-full md:w-64 p-6 text-center cursor-pointer hover:shadow-lg transition-all group", field.value === "FOR_RENT" && "border-primary ring-2 ring-primary")}
+                                >
+                                    <HandCoins className="h-12 w-12 text-primary mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                                    <h3 className="text-xl font-semibold">For Rent</h3>
+                                    <p className="text-sm text-muted-foreground mt-1">Rent out your car to travelers.</p>
+                                </Card>
+                            </div>
+                        </FormControl>
+                        <FormMessage className="text-center" />
+                    </FormItem>
+                    )}
+                />
+            </CardContent>
+        </div>
+    );
+};
+
+
 const BasicsStep = () => {
-  const { control, watch, setValue } = useForm<CarForSaleFormValues>();
+  const { control, watch, setValue, formState: { errors } } = useFormContext<CarForSaleFormValues>();
   const selectedMake = watch("make");
   const availableModels = selectedMake ? carMakesAndModels[selectedMake] : [];
 
@@ -75,7 +123,7 @@ const BasicsStep = () => {
     <div>
       <CardHeader className="p-0 text-center md:text-left">
         <CardTitle className="text-3xl font-headline text-primary">Let's start with the basics</CardTitle>
-        <CardDescription className="pt-2">Enter the main details of the car you are listing for sale.</CardDescription>
+        <CardDescription className="pt-2">Enter the main details of the car you are listing.</CardDescription>
       </CardHeader>
       <CardContent className="p-0 pt-8 space-y-6">
         <FormField control={control} name="title" render={({ field }) => (<FormItem><FormLabel>Listing Title</FormLabel><FormControl><Input placeholder="e.g., Well-maintained Toyota Corolla 2018" {...field}/></FormControl><FormMessage/></FormItem>)}/>
@@ -124,7 +172,9 @@ const BasicsStep = () => {
 };
 
 const DetailsStep = () => {
-    const { control } = useFormContext<CarForSaleFormValues>();
+    const { control, watch } = useFormContext<CarForSaleFormValues>();
+    const listingType = watch("listingType");
+
      return (
     <div>
       <CardHeader className="p-0 text-center md:text-left">
@@ -135,19 +185,21 @@ const DetailsStep = () => {
         <FormField control={control} name="mileage" render={({ field }) => (<FormItem><FormLabel>Mileage</FormLabel><FormControl><Input type="number" placeholder="45000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
          <div className="grid md:grid-cols-3 gap-4">
             <FormField control={control} name="engine" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Engine</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Engine Type"/></SelectTrigger></FormControl><SelectContent><SelectItem value="4-Cylinder">4-Cylinder</SelectItem><SelectItem value="6-Cylinder">6-Cylinder</SelectItem><SelectItem value="8-Cylinder">8-Cylinder</SelectItem><SelectItem value="Electric">Electric</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
-            <FormField control={control} name="transmission" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Transmission</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Transmission"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Automatic">Automatic</SelectItem><SelectItem value="Manual">Manual</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
+            <FormField control={control} name="transmission" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><RefreshCw className="h-4 w-4"/>Transmission</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Transmission"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Automatic">Automatic</SelectItem><SelectItem value="Manual">Manual</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
             <FormField control={control} name="fuelType" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Fuel Type"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Gasoline">Gasoline</SelectItem><SelectItem value="Diesel">Diesel</SelectItem><SelectItem value="Electric">Electric</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
             <FormField control={control} name="exteriorColor" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Palette className="h-4 w-4"/>Exterior Color</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a color"/></SelectTrigger></FormControl><SelectContent>{carColors.map(color => <SelectItem key={`ext-${color}`} value={color}>{color}</SelectItem>)}</SelectContent></Select><FormMessage/></FormItem>)}/>
             <FormField control={control} name="interiorColor" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Palette className="h-4 w-4"/>Interior Color</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a color"/></SelectTrigger></FormControl><SelectContent>{carColors.map(color => <SelectItem key={`int-${color}`} value={color}>{color}</SelectItem>)}</SelectContent></Select><FormMessage/></FormItem>)}/>
         </div>
+        {listingType === 'FOR_RENT' && (
+             <FormField control={control} name="fuelPolicy" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Policy (for Rentals)</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a policy"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Full-to-Full">Full-to-Full</SelectItem><SelectItem value="Like-for-Like">Like-for-Like</SelectItem><SelectItem value="Pre-purchased">Pre-purchased Fuel</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
+        )}
       </CardContent>
     </div>
   );
 };
 
-// ... other step components would be created similarly ...
 
 export default function ListCarPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -156,13 +208,15 @@ export default function ListCarPage() {
 
   const methods = useForm<CarForSaleFormValues>({
     resolver: zodResolver(carForSaleSchema),
-    defaultValues: { features: [] },
+    defaultValues: { features: [], listingType: "FOR_SALE", pricePeriod: "total" },
   });
 
   const { fields: features, append: appendFeature, remove: removeFeature } = useFieldArray({
     control: methods.control, name: "features",
   });
   const [featureInput, setFeatureInput] = useState("");
+  const listingType = methods.watch("listingType");
+
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -185,7 +239,7 @@ export default function ListCarPage() {
 
   const onFinalSubmit = (data: CarForSaleFormValues) => {
     console.log("Car for Sale Submitted:", { ...data, photos: photoPreviews });
-    toast({ title: "Listing Submitted!", description: "Your car has been listed for sale." });
+    toast({ title: "Listing Submitted!", description: `Your car has been listed for ${data.listingType === 'FOR_SALE' ? 'sale' : 'rent'}.` });
     router.push('/cars-for-sale');
   };
   
@@ -223,7 +277,7 @@ export default function ListCarPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <CarFront className="h-8 w-8 text-primary" />
-                <h1 className="text-xl font-semibold text-primary">List Your Car For Sale</h1>
+                <h1 className="text-xl font-semibold text-primary">List Your Car</h1>
               </div>
             </div>
             <div className="pt-4">
@@ -247,9 +301,10 @@ export default function ListCarPage() {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="w-full max-w-4xl mx-auto"
               >
-                {currentStep === 0 && <BasicsStep />}
-                {currentStep === 1 && <DetailsStep />}
-                {currentStep === 2 && (
+                {currentStep === 0 && <ListingTypeStep />}
+                {currentStep === 1 && <BasicsStep />}
+                {currentStep === 2 && <DetailsStep />}
+                {currentStep === 3 && (
                     <div>
                         <CardHeader className="p-0 text-center md:text-left">
                             <CardTitle className="text-3xl font-headline text-primary">Describe your car</CardTitle>
@@ -275,7 +330,7 @@ export default function ListCarPage() {
                         </CardContent>
                     </div>
                 )}
-                {currentStep === 3 && (
+                {currentStep === 4 && (
                     <div>
                         <CardHeader className="p-0 text-center md:text-left">
                             <CardTitle className="text-3xl font-headline text-primary">Upload Photos</CardTitle>
@@ -294,29 +349,35 @@ export default function ListCarPage() {
                          </CardContent>
                     </div>
                 )}
-                 {currentStep === 4 && (
+                 {currentStep === 5 && (
                     <div>
                         <CardHeader className="p-0 text-center md:text-left">
                             <CardTitle className="text-3xl font-headline text-primary">Set Your Price</CardTitle>
                             <CardDescription className="pt-2">What is the asking price for your car?</CardDescription>
                         </CardHeader>
                         <CardContent className="p-0 pt-8">
-                           <FormField control={methods.control} name="price" render={({ field }) => (<FormItem><FormLabel>Price (USD)</FormLabel><FormControl><Input type="number" placeholder="15000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                           <div className="grid md:grid-cols-2 gap-4">
+                               <FormField control={methods.control} name="price" render={({ field }) => (<FormItem><FormLabel>Price (USD)</FormLabel><FormControl><Input type="number" placeholder="15000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                               {listingType === 'FOR_RENT' && (
+                                   <FormField control={methods.control} name="pricePeriod" render={({ field }) => (<FormItem><FormLabel>Per</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="per_day">Day</SelectItem><SelectItem value="per_week">Week</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
+                               )}
+                           </div>
                         </CardContent>
                     </div>
                 )}
-                {currentStep === 5 && (
+                {currentStep === 6 && (
                     <div>
                         <CardHeader className="p-0 text-center">
                             <CardTitle className="text-3xl font-headline text-primary">Review & Publish</CardTitle>
                             <CardDescription className="pt-2">Review your listing details before publishing.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-0 pt-8 space-y-4">
+                            <p><strong>Listing Type:</strong> {allValues.listingType === 'FOR_SALE' ? 'For Sale' : 'For Rent'}</p>
                             <p><strong>Title:</strong> {allValues.title}</p>
                             <p><strong>Make:</strong> {allValues.make}</p>
                             <p><strong>Model:</strong> {allValues.model}</p>
                             <p><strong>Year:</strong> {allValues.year}</p>
-                            <p><strong>Price:</strong> ${allValues.price?.toLocaleString()}</p>
+                            <p><strong>Price:</strong> ${allValues.price?.toLocaleString()} {allValues.listingType === 'FOR_RENT' && ` per ${allValues.pricePeriod?.replace('per_', '')}`}</p>
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
                                 {photoPreviews.map((src, index) => (
                                     <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" /></div>
