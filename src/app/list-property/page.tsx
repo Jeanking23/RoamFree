@@ -13,10 +13,29 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import InteractiveMapPlaceholder from "@/components/map/interactive-map-placeholder"; // Placeholder for map component
+import InteractiveMapPlaceholder from "@/components/map/interactive-map-placeholder";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+
+
+const listingFormSchema = z.object({
+  propertyName: z.string().min(5, "Property name must be at least 5 characters."),
+  propertyType: z.string({ required_error: "Please select a property type." }),
+  listingType: z.enum(["FOR_RENT", "FOR_SALE"]),
+  address: z.string().optional(),
+  aptSuite: z.string().optional(),
+  country: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zip: z.string().optional(),
+});
+type ListingFormValues = z.infer<typeof listingFormSchema>;
+
 
 const listingSteps = [
-  { id: "name", title: "Basic Info" },
+  { id: "basics", title: "Basic Info" },
   { id: "location", title: "Location" },
   { id: "details", title: "Details" },
   { id: "photos", title: "Photos" },
@@ -24,46 +43,102 @@ const listingSteps = [
   { id: "publish", title: "Publish" },
 ];
 
-const NameStep = () => (
-  <div className="grid md:grid-cols-2 gap-8 items-start">
-    <div>
-      <CardHeader className="p-0">
-        <CardTitle className="text-3xl font-headline text-primary">What's the name of your place?</CardTitle>
-        <CardDescription className="pt-2">Give your property a name that stands out to guests.</CardDescription>
-      </CardHeader>
-      <CardContent className="p-0 pt-6">
-        <div className="space-y-2">
-          <Label htmlFor="property-name" className="text-base">Property Name</Label>
-          <Input id="property-name" placeholder="e.g., Sunny Beachfront Villa" className="text-lg h-12" />
+const NameStep = () => {
+    const form = useFormContext<ListingFormValues>();
+    return (
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+            <div>
+                <CardHeader className="p-0">
+                    <CardTitle className="text-3xl font-headline text-primary">Let's start with the basics</CardTitle>
+                    <CardDescription className="pt-2">Tell us about the property you're listing.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0 pt-6 space-y-6">
+                    <FormField
+                        control={form.control}
+                        name="propertyName"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-base">Property Name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="e.g., Sunny Beachfront Villa" className="text-lg h-12" {...field} />
+                                </FormControl>
+                                <FormDescription>Give your property a name that stands out to guests.</FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                     <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="propertyType"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Property Type</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger><SelectValue placeholder="Select a type" /></SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="House">House</SelectItem>
+                                            <SelectItem value="Apartment">Apartment</SelectItem>
+                                            <SelectItem value="Villa">Villa</SelectItem>
+                                            <SelectItem value="Land">Land</SelectItem>
+                                            <SelectItem value="Other">Other</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="listingType"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Listing Type</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger><SelectValue placeholder="Select a type" /></SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="FOR_RENT">For Rent</SelectItem>
+                                            <SelectItem value="FOR_SALE">For Sale</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </CardContent>
+            </div>
+            <div className="space-y-6">
+                <Card className="bg-muted/30 border-dashed">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb className="h-5 w-5 text-yellow-400" />What should I consider when choosing a name?</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                            <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Keep it short and catchy</li>
+                            <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Avoid abbreviations</li>
+                            <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Stick to the facts</li>
+                        </ul>
+                    </CardContent>
+                </Card>
+                <Card className="bg-muted/30 border-dashed">
+                        <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg"><Info className="h-5 w-5 text-primary"/>Why do I need to name my property?</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">The name is the first thing guests see. A good name can make your listing memorable.
+                        <br/><strong className="text-foreground">Do not use your property's address as the name.</strong>
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
-      </CardContent>
-    </div>
-    <div className="space-y-6">
-       <Card className="bg-muted/30 border-dashed">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb className="h-5 w-5 text-yellow-400" />What should I consider when choosing a name?</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Keep it short and catchy</li>
-                    <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Avoid abbreviations</li>
-                    <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Stick to the facts</li>
-                </ul>
-            </CardContent>
-       </Card>
-       <Card className="bg-muted/30 border-dashed">
-             <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg"><Info className="h-5 w-5 text-primary"/>Why do I need to name my property?</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-sm text-muted-foreground">The name is the first thing guests see. A good name can make your listing memorable.
-                <br/><strong className="text-foreground">Do not use your property's address as the name.</strong>
-                </p>
-            </CardContent>
-       </Card>
-    </div>
-  </div>
-);
+    );
+};
 
 const LocationStep = () => {
     const [address, setAddress] = useState("");
@@ -140,11 +215,29 @@ const LocationStep = () => {
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
 
-  const nextStep = () => {
+  const methods = useForm<ListingFormValues>({
+    resolver: zodResolver(listingFormSchema),
+    defaultValues: {
+        listingType: "FOR_RENT"
+    }
+  });
+
+
+  const nextStep = async () => {
+    // Trigger validation for the current step's fields before proceeding
+    const fields = listingSteps[currentStep].id === 'basics' ? ['propertyName', 'propertyType', 'listingType'] : [];
+    const isValid = await methods.trigger(fields as any);
+
+    if (!isValid) {
+        toast({ title: "Please complete the required fields.", variant: "destructive" });
+        return;
+    }
+    
     if (currentStep < listingSteps.length - 1) {
         setCurrentStep(prev => prev + 1);
     } else {
         toast({ title: "Listing Submitted (Demo)", description: "Your property is now pending review."});
+        console.log(methods.getValues());
     }
   };
 
@@ -158,6 +251,7 @@ export default function ListPropertyPage() {
 
   return (
     <div className="space-y-8">
+      <FormProvider {...methods}>
       <Card className="shadow-lg rounded-lg overflow-hidden flex flex-col h-[85vh]">
         <CardHeader className="bg-primary/10 border-b z-10">
           <div className="flex items-center justify-between">
@@ -211,6 +305,7 @@ export default function ListPropertyPage() {
             </Button>
         </CardFooter>
       </Card>
+      </FormProvider>
     </div>
   );
 }
