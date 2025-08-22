@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car } from "lucide-react";
+import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -25,6 +25,9 @@ const listingFormSchema = z.object({
   propertyName: z.string().min(5, "Property name must be at least 5 characters."),
   propertyType: z.string({ required_error: "Please select a property type." }),
   listingType: z.enum(["FOR_RENT", "FOR_SALE"]),
+  bedrooms: z.coerce.number().min(0, "Bedrooms cannot be negative.").optional(),
+  bathrooms: z.coerce.number().min(0, "Bathrooms cannot be negative.").optional(),
+  maxGuests: z.coerce.number().min(1, "Must accommodate at least 1 guest.").optional(),
   address: z.string().optional(),
   aptSuite: z.string().optional(),
   country: z.string().optional(),
@@ -37,7 +40,7 @@ type ListingFormValues = z.infer<typeof listingFormSchema>;
 
 const listingSteps = [
   { id: "type", title: "Select Type" },
-  { id: "basics", title: "Basic Info" },
+  { id: "basics", title: "Basic Info", fields: ["propertyName", "propertyType", "listingType", "bedrooms", "bathrooms", "maxGuests"] },
   { id: "location", title: "Location" },
   { id: "details", title: "Details" },
   { id: "photos", title: "Photos" },
@@ -76,7 +79,12 @@ const ListingTypeStep = ({ onSelect }: { onSelect: (type: 'property' | 'car') =>
 
 
 const NameStep = () => {
-    const form = useFormContext<ListingFormValues>();
+    const { control, watch } = useFormContext<ListingFormValues>();
+    const listingType = watch("listingType");
+    const propertyType = watch("propertyType");
+    
+    const showPropertyDetails = propertyType && propertyType !== 'Land';
+
     return (
         <div className="grid md:grid-cols-2 gap-8 items-start">
             <div>
@@ -86,7 +94,7 @@ const NameStep = () => {
                 </CardHeader>
                 <CardContent className="p-0 pt-6 space-y-6">
                     <FormField
-                        control={form.control}
+                        control={control}
                         name="propertyName"
                         render={({ field }) => (
                             <FormItem>
@@ -101,7 +109,7 @@ const NameStep = () => {
                     />
                      <div className="grid grid-cols-2 gap-4">
                         <FormField
-                            control={form.control}
+                            control={control}
                             name="propertyType"
                             render={({ field }) => (
                                 <FormItem>
@@ -123,7 +131,7 @@ const NameStep = () => {
                             )}
                         />
                         <FormField
-                            control={form.control}
+                            control={control}
                             name="listingType"
                             render={({ field }) => (
                                 <FormItem>
@@ -142,6 +150,30 @@ const NameStep = () => {
                             )}
                         />
                     </div>
+                     {showPropertyDetails && (
+                        <div className="grid grid-cols-3 gap-4 pt-2">
+                             <FormField control={control} name="bedrooms" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="flex items-center gap-1"><Bed className="h-4 w-4"/>Bedrooms</FormLabel>
+                                    <FormControl><Input type="number" min="0" placeholder="e.g., 3" {...field} /></FormControl>
+                                </FormItem>
+                            )}/>
+                            <FormField control={control} name="bathrooms" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="flex items-center gap-1"><Bath className="h-4 w-4"/>Bathrooms</FormLabel>
+                                    <FormControl><Input type="number" min="0" step="0.5" placeholder="e.g., 2.5" {...field} /></FormControl>
+                                </FormItem>
+                            )}/>
+                            {listingType === 'FOR_RENT' && (
+                                <FormField control={control} name="maxGuests" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="flex items-center gap-1"><Users className="h-4 w-4"/>Guests</FormLabel>
+                                        <FormControl><Input type="number" min="1" placeholder="e.g., 6" {...field} /></FormControl>
+                                    </FormItem>
+                                )}/>
+                            )}
+                        </div>
+                    )}
                 </CardContent>
             </div>
             <div className="space-y-6">
@@ -258,8 +290,9 @@ export default function ListPropertyPage() {
 
   const nextStep = async () => {
     // Trigger validation for the current step's fields before proceeding
-    const fields = listingSteps[currentStep].id === 'basics' ? ['propertyName', 'propertyType', 'listingType'] : [];
-    const isValid = await methods.trigger(fields as any);
+    const currentStepConfig = listingSteps.find((_, index) => index === currentStep);
+    const fields = currentStepConfig?.fields;
+    const isValid = fields ? await methods.trigger(fields as any) : true;
 
     if (!isValid) {
         toast({ title: "Please complete the required fields.", variant: "destructive" });
