@@ -206,8 +206,9 @@ const NameStep = () => {
     );
 };
 
-const LocationStep = ({ onBack, onContinue }: { onBack: () => void; onContinue: () => void; }) => {
-    const [address, setAddress] = useState("");
+const LocationStep = () => {
+    const { watch } = useFormContext<ListingFormValues>();
+    const address = watch("address");
 
     return (
         <div className="grid md:grid-cols-2 gap-8 h-full">
@@ -217,51 +218,71 @@ const LocationStep = ({ onBack, onContinue }: { onBack: () => void; onContinue: 
                     <CardDescription>Enter the address so guests can find you.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 flex-grow">
-                     <div>
-                        <Label htmlFor="address-search">Find Your Address</Label>
-                        <Input 
-                            id="address-search" 
-                            placeholder="Start typing your street address..." 
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <Label htmlFor="apt-suite">Apartment or floor number (Optional)</Label>
-                        <Input id="apt-suite" placeholder="e.g., Apt 3B" />
-                    </div>
+                     <FormField control={useFormContext().control} name="address" render={({ field }) => (
+                         <FormItem>
+                            <FormLabel htmlFor="address-search">Find Your Address</FormLabel>
+                            <FormControl>
+                                <Input 
+                                    id="address-search" 
+                                    placeholder="Start typing your street address..." 
+                                    {...field}
+                                    value={field.value || ''}
+                                />
+                             </FormControl>
+                             <FormMessage/>
+                         </FormItem>
+                     )}/>
+                    <FormField control={useFormContext().control} name="aptSuite" render={({ field }) => (
+                         <FormItem>
+                            <FormLabel>Apartment or floor number (Optional)</FormLabel>
+                             <FormControl><Input placeholder="e.g., Apt 3B" {...field} value={field.value || ''}/></FormControl>
+                             <FormMessage/>
+                         </FormItem>
+                     )}/>
                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <Label htmlFor="country">Country/Region</Label>
-                            <Select defaultValue="US">
-                                <SelectTrigger id="country"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="US">United States</SelectItem>
-                                    <SelectItem value="CA">Canada</SelectItem>
-                                    <SelectItem value="CM">Cameroon</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                         <div>
-                            <Label htmlFor="city">City</Label>
-                            <Input id="city" placeholder="e.g., Camden" />
-                        </div>
+                        <FormField control={useFormContext().control} name="country" render={({ field }) => (
+                             <FormItem>
+                                <FormLabel>Country/Region</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue placeholder="Select Country"/></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="US">United States</SelectItem>
+                                        <SelectItem value="CA">Canada</SelectItem>
+                                        <SelectItem value="CM">Cameroon</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage/>
+                             </FormItem>
+                         )}/>
+                         <FormField control={useFormContext().control} name="city" render={({ field }) => (
+                             <FormItem>
+                                <FormLabel>City</FormLabel>
+                                <FormControl><Input placeholder="e.g., Camden" {...field} value={field.value || ''}/></FormControl>
+                                <FormMessage/>
+                             </FormItem>
+                         )}/>
                     </div>
                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <Label htmlFor="state">State</Label>
-                            <Select defaultValue="DE">
-                                <SelectTrigger id="state"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="DE">Delaware</SelectItem>
-                                    <SelectItem value="CA">California</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                         <div>
-                            <Label htmlFor="zip">Zip Code</Label>
-                            <Input id="zip" placeholder="e.g., 19934" />
-                        </div>
+                        <FormField control={useFormContext().control} name="state" render={({ field }) => (
+                             <FormItem>
+                                <FormLabel>State</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue placeholder="Select State"/></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="DE">Delaware</SelectItem>
+                                        <SelectItem value="CA">California</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage/>
+                             </FormItem>
+                         )}/>
+                         <FormField control={useFormContext().control} name="zip" render={({ field }) => (
+                             <FormItem>
+                                <FormLabel>Zip Code</FormLabel>
+                                <FormControl><Input placeholder="e.g., 19934" {...field} value={field.value || ''}/></FormControl>
+                                <FormMessage/>
+                             </FormItem>
+                         )}/>
                     </div>
                     <div className="flex items-center space-x-2 pt-2">
                         <Checkbox id="update-pin" defaultChecked />
@@ -269,14 +290,6 @@ const LocationStep = ({ onBack, onContinue }: { onBack: () => void; onContinue: 
                     </div>
                      <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
                 </CardContent>
-                <CardFooter className="flex justify-between mt-auto">
-                    <Button variant="outline" onClick={onBack}>
-                        <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                    </Button>
-                    <Button onClick={onContinue}>
-                        Continue
-                    </Button>
-                </CardFooter>
             </Card>
             <div className="h-full min-h-[400px] md:min-h-0 rounded-lg overflow-hidden">
                 <InteractiveMapPlaceholder pickup={address} />
@@ -379,7 +392,7 @@ export default function ListPropertyPage() {
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
-                    {currentStep === 2 && <LocationStep onBack={prevStep} onContinue={nextStep} />}
+                    {currentStep === 2 && <LocationStep />}
                     {currentStep === 3 && (
                         <div>
                             <CardHeader className="p-0 text-center md:text-left">
@@ -450,30 +463,28 @@ export default function ListPropertyPage() {
                  </motion.div>
             </AnimatePresence>
         </div>
-        {currentStep !== 2 && (
-             <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
-                {currentStep === 0 ? (
-                    <Button variant="outline" asChild>
-                        <Link href="/">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Exit
-                        </Link>
-                    </Button>
-                ) : currentStep === 1 ? (
-                     <Button variant="outline" onClick={() => setCurrentStep(0)}>
-                         <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                    </Button>
-                ) : (
-                    <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
+        <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
+            {currentStep === 0 ? (
+                <Button variant="outline" asChild>
+                    <Link href="/">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Exit
+                    </Link>
+                </Button>
+            ) : currentStep === 1 ? (
+                    <Button variant="outline" onClick={() => setCurrentStep(0)}>
                         <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                    </Button>
-                )}
-                {currentStep !== 0 && (
-                    <Button onClick={nextStep}>
-                        {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
-                    </Button>
-                )}
-            </CardFooter>
-        )}
+                </Button>
+            ) : (
+                <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
+                    <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                </Button>
+            )}
+            {currentStep !== 0 && (
+                <Button onClick={nextStep}>
+                    {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
+                </Button>
+            )}
+        </CardFooter>
       </Card>
       </FormProvider>
     </div>
