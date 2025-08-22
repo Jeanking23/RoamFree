@@ -17,6 +17,7 @@ interface InteractiveMapPlaceholderProps {
   setPickup?: (address: string) => void;
   setDropoff?: (address: string) => void;
   availableVehicles?: AvailableVehicle[];
+  onMapClick?: (latLng: google.maps.LatLngLiteral) => void;
 }
 
 const containerStyle = {
@@ -24,7 +25,7 @@ const containerStyle = {
   height: '100%',
 };
 
-export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, setPickup, setDropoff, availableVehicles = [] }: InteractiveMapPlaceholderProps) {
+export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, setPickup, setDropoff, availableVehicles = [], onMapClick }: InteractiveMapPlaceholderProps) {
     const { isLoaded, loadError } = useGoogleMaps();
 
     const [pickupCoords, setPickupCoords] = useState<google.maps.LatLngLiteral | null>(null);
@@ -246,6 +247,7 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
                     tilt: 45,
                 }}
                 onLoad={onLoad}
+                onClick={(e) => onMapClick && e.latLng && onMapClick(e.latLng.toJSON())}
             >
                 {pickupCoords && pickup && (
                     <Marker 
@@ -253,6 +255,8 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
                         icon={pickupIcon} 
                         animation={window.google.maps.Animation.DROP}
                         onClick={() => handleMarkerClick(pickupCoords, 'pickup')}
+                        draggable={true}
+                        onDragEnd={(e) => onMapClick && e.latLng && onMapClick(e.latLng.toJSON())}
                     >
                          {activeInfoWindow === 'pickup' && (
                              <InfoWindow position={pickupCoords} options={infoWindowOptions}>
@@ -309,26 +313,10 @@ export default function InteractiveMapPlaceholder({ pickup, dropoff, onMapLoad, 
     };
 
     return (
-        <div className="bg-card shadow-lg rounded-lg border overflow-hidden h-full flex flex-col">
-            <div className="p-4 border-b">
-                <h3 className="text-lg font-headline font-semibold text-primary flex items-center gap-2">
-                    <Map className="h-5 w-5" />
-                    Live Route
-                </h3>
-                {pickup && dropoff ? (
-                    <div className="text-xs text-muted-foreground mt-1">
-                        <p className="truncate">From: <strong>{pickup}</strong></p>
-                        <p className="truncate">To: <strong>{dropoff}</strong></p>
-                    </div>
-                ) : (
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Enter pickup and dropoff to see the route.
-                    </p>
-                )}
-            </div>
-            <div className="flex-grow bg-muted flex items-center justify-center relative">
-                {renderMap()}
-            </div>
-        </div>
+        <>
+            {loadError && <div>Error loading map</div>}
+            {!isLoaded && <div>Loading map...</div>}
+            {isLoaded && renderMap()}
+        </>
     );
 }
