@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users } from "lucide-react";
+import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -205,7 +205,7 @@ const NameStep = () => {
     );
 };
 
-const LocationStep = ({ onNext, onBack }: { onNext: () => void; onBack: () => void; }) => {
+const LocationStep = () => {
     const [address, setAddress] = useState("");
 
     return (
@@ -268,14 +268,6 @@ const LocationStep = ({ onNext, onBack }: { onNext: () => void; onBack: () => vo
                     </div>
                      <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
                 </CardContent>
-                 <CardFooter className="flex justify-between">
-                    <Button variant="outline" onClick={onBack}>
-                        <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                    </Button>
-                    <Button onClick={onNext}>
-                        Continue
-                    </Button>
-                </CardFooter>
             </Card>
             <div className="h-full min-h-[400px] md:min-h-0 rounded-lg overflow-hidden">
                 <InteractiveMapPlaceholder pickup={address} />
@@ -288,6 +280,12 @@ const LocationStep = ({ onNext, onBack }: { onNext: () => void; onBack: () => vo
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const router = useRouter();
+
+  // State for Property Details step
+  const [bedrooms, setBedrooms] = useState([{ id: 1, beds: [{ type: 'Full', count: 1 }] }]);
+  const [guests, setGuests] = useState(2);
+  const [bathrooms, setBathrooms] = useState(1);
+
 
   const methods = useForm<ListingFormValues>({
     resolver: zodResolver(listingFormSchema),
@@ -372,32 +370,98 @@ export default function ListPropertyPage() {
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
-                    {currentStep === 2 && <LocationStep onBack={prevStep} onNext={nextStep} />}
+                    {currentStep === 2 && <LocationStep />}
                     {/* Add other steps as components here */}
                     {currentStep > 2 && (
-                        <div className="flex-grow flex items-center justify-center">
-                            <p className="text-muted-foreground">Step {currentStep + 1} content goes here.</p>
+                        <div>
+                            <CardHeader className="p-0 text-center md:text-left">
+                                <CardTitle className="text-3xl font-headline text-primary">Property Details</CardTitle>
+                                <CardDescription className="pt-2">Tell us about the sleeping arrangements and guest capacity.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-0 pt-8 space-y-8">
+                                <div>
+                                    <h3 className="text-xl font-semibold mb-4">Where can people sleep?</h3>
+                                    <div className="space-y-4">
+                                        {bedrooms.map((room, index) => (
+                                            <Card key={room.id} className="p-4 bg-muted/50">
+                                                <p className="font-semibold">Bedroom {index + 1}</p>
+                                                {/* Add bed type/count selection here */}
+                                                <p className="text-sm text-muted-foreground">1 full bed</p>
+                                            </Card>
+                                        ))}
+                                    </div>
+                                    <Button variant="outline" size="sm" className="mt-4" onClick={() => setBedrooms(prev => [...prev, { id: prev.length + 1, beds: [] }])}>Add bedroom</Button>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <Label className="text-base">How many guests can stay?</Label>
+                                        <div className="flex items-center gap-2">
+                                            <Button type="button" variant="outline" size="icon" className="h-8 w-8" onClick={() => setGuests(p => Math.max(1, p - 1))}><Minus className="h-4 w-4" /></Button>
+                                            <Input type="number" readOnly value={guests} className="w-16 h-8 text-center" />
+                                            <Button type="button" variant="outline" size="icon" className="h-8 w-8" onClick={() => setGuests(p => p + 1)}><Plus className="h-4 w-4" /></Button>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <Label className="text-base">How many bathrooms are there?</Label>
+                                         <div className="flex items-center gap-2">
+                                            <Button type="button" variant="outline" size="icon" className="h-8 w-8" onClick={() => setBathrooms(p => Math.max(0.5, p - 0.5))}><Minus className="h-4 w-4" /></Button>
+                                            <Input type="number" readOnly value={bathrooms} className="w-16 h-8 text-center" />
+                                            <Button type="button" variant="outline" size="icon" className="h-8 w-8" onClick={() => setBathrooms(p => p + 0.5)}><Plus className="h-4 w-4" /></Button>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div className="space-y-4 pt-4 border-t">
+                                     <div className="flex items-center space-x-2">
+                                         <Checkbox id="allow-children"/>
+                                         <Label htmlFor="allow-children">Do you allow children?</Label>
+                                     </div>
+                                      <div className="flex items-center space-x-2">
+                                         <Checkbox id="offer-cribs"/>
+                                         <Label htmlFor="offer-cribs">Do you offer cribs?</Label>
+                                     </div>
+                                     <div className="flex items-center gap-4">
+                                         <Label>Apartment size (Optional)</Label>
+                                         <Input type="number" className="w-32"/>
+                                         <Select defaultValue="sqft">
+                                             <SelectTrigger className="w-32"><SelectValue/></SelectTrigger>
+                                             <SelectContent>
+                                                 <SelectItem value="sqft">sq ft</SelectItem>
+                                                 <SelectItem value="sqm">sq m</SelectItem>
+                                             </SelectContent>
+                                         </Select>
+                                     </div>
+                                 </div>
+                            </CardContent>
+                             <CardFooter className="p-0 pt-8">
+                                <Button className="w-full md:w-auto" onClick={nextStep}>Continue</Button>
+                            </CardFooter>
                         </div>
                     )}
                  </motion.div>
             </AnimatePresence>
         </div>
-        {currentStep > 0 && currentStep !== 2 && ( // Do not show global footer buttons for location step
-            <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
-                {currentStep === 1 ? (
-                    <Button variant="outline" onClick={() => setCurrentStep(0)}>
-                         <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                    </Button>
-                ) : (
-                    <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
-                        <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                    </Button>
-                )}
+        <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
+            {currentStep === 0 ? (
+                <Button variant="outline" asChild>
+                    <Link href="/">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Exit
+                    </Link>
+                </Button>
+            ) : currentStep === 1 ? (
+                 <Button variant="outline" onClick={() => setCurrentStep(0)}>
+                     <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                </Button>
+            ) : (
+                <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
+                    <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                </Button>
+            )}
+            {currentStep !== 0 && (
                 <Button onClick={nextStep}>
                     {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
                 </Button>
-            </CardFooter>
-        )}
+            )}
+        </CardFooter>
       </Card>
       </FormProvider>
     </div>
