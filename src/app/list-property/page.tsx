@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin } from "lucide-react";
+import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useRouter } from "next/navigation";
 
 
 const listingFormSchema = z.object({
@@ -35,6 +36,7 @@ type ListingFormValues = z.infer<typeof listingFormSchema>;
 
 
 const listingSteps = [
+  { id: "type", title: "Select Type" },
   { id: "basics", title: "Basic Info" },
   { id: "location", title: "Location" },
   { id: "details", title: "Details" },
@@ -42,6 +44,36 @@ const listingSteps = [
   { id: "pricing", title: "Pricing & Availability" },
   { id: "publish", title: "Publish" },
 ];
+
+const ListingTypeStep = ({ onSelect }: { onSelect: (type: 'property' | 'car') => void }) => {
+    return (
+        <div>
+            <CardHeader className="p-0 text-center">
+                <CardTitle className="text-3xl font-headline text-primary">What would you like to list?</CardTitle>
+                <CardDescription className="pt-2">Choose a category to get started.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 pt-8 flex flex-col md:flex-row gap-6 justify-center">
+                <Card
+                    onClick={() => onSelect('property')}
+                    className="w-full md:w-64 p-6 text-center cursor-pointer hover:shadow-lg hover:border-primary transition-all group"
+                >
+                    <HomeIcon className="h-12 w-12 text-primary mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                    <h3 className="text-xl font-semibold">A Property</h3>
+                    <p className="text-sm text-muted-foreground mt-1">Homes, apartments, land, etc.</p>
+                </Card>
+                <Card
+                    onClick={() => onSelect('car')}
+                    className="w-full md:w-64 p-6 text-center cursor-pointer hover:shadow-lg hover:border-primary transition-all group"
+                >
+                    <Car className="h-12 w-12 text-primary mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                    <h3 className="text-xl font-semibold">A Car</h3>
+                    <p className="text-sm text-muted-foreground mt-1">For sale or for rent.</p>
+                </Card>
+            </CardContent>
+        </div>
+    );
+};
+
 
 const NameStep = () => {
     const form = useFormContext<ListingFormValues>();
@@ -214,6 +246,7 @@ const LocationStep = () => {
 
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
+  const router = useRouter();
 
   const methods = useForm<ListingFormValues>({
     resolver: zodResolver(listingFormSchema),
@@ -247,7 +280,15 @@ export default function ListPropertyPage() {
     }
   };
   
-  const progress = ((currentStep + 1) / listingSteps.length) * 100;
+  const handleListingTypeSelect = (type: 'property' | 'car') => {
+    if (type === 'property') {
+      setCurrentStep(1); // Move to the next step which is 'basics'
+    } else if (type === 'car') {
+      router.push('/cars-for-sale/new');
+    }
+  };
+  
+  const progress = ((currentStep) / (listingSteps.length - 1)) * 100;
 
   return (
     <div className="space-y-8">
@@ -260,20 +301,22 @@ export default function ListPropertyPage() {
               <h1 className="text-xl font-semibold text-primary">List Your Property</h1>
             </div>
           </div>
-          <div className="pt-4">
-             <Progress value={progress} className="w-full h-2" />
-             <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                {listingSteps.map((step, index) => (
-                    <span key={step.id} className={cn(
-                        "font-medium",
-                        index === currentStep && "text-primary",
-                        index < currentStep && "text-primary/70"
-                    )}>
-                        {step.title}
-                    </span>
-                ))}
-             </div>
-          </div>
+          {currentStep > 0 && (
+            <div className="pt-4">
+               <Progress value={progress} className="w-full h-2" />
+               <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  {listingSteps.slice(1).map((step, index) => (
+                      <span key={step.id} className={cn(
+                          "font-medium",
+                          (index + 1) === currentStep && "text-primary",
+                          (index + 1) < currentStep && "text-primary/70"
+                      )}>
+                          {step.title}
+                      </span>
+                  ))}
+               </div>
+            </div>
+          )}
         </CardHeader>
         <div className="p-6 md:p-8 flex-grow flex flex-col">
             <AnimatePresence mode="wait">
@@ -283,12 +326,13 @@ export default function ListPropertyPage() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="flex-grow flex flex-col"
+                    className="flex-grow flex flex-col justify-center"
                  >
-                    {currentStep === 0 && <NameStep />}
-                    {currentStep === 1 && <LocationStep />}
+                    {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
+                    {currentStep === 1 && <NameStep />}
+                    {currentStep === 2 && <LocationStep />}
                     {/* Add other steps as components here */}
-                    {currentStep > 1 && (
+                    {currentStep > 2 && (
                         <div className="flex-grow flex items-center justify-center">
                             <p className="text-muted-foreground">Step {currentStep + 1} content goes here.</p>
                         </div>
@@ -296,14 +340,16 @@ export default function ListPropertyPage() {
                  </motion.div>
             </AnimatePresence>
         </div>
-        <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
-            <Button variant="outline" onClick={prevStep} disabled={currentStep === 0}>
-                <ArrowLeft className="mr-2 h-4 w-4"/> Back
-            </Button>
-            <Button onClick={nextStep}>
-                {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
-            </Button>
-        </CardFooter>
+        {currentStep > 0 && (
+            <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
+                <Button variant="outline" onClick={prevStep} disabled={currentStep <= 1}>
+                    <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                </Button>
+                <Button onClick={nextStep}>
+                    {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
+                </Button>
+            </CardFooter>
+        )}
       </Card>
       </FormProvider>
     </div>
