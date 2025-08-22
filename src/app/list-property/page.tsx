@@ -205,7 +205,7 @@ const NameStep = () => {
     );
 };
 
-const LocationStep = () => {
+const LocationStep = ({ onNext, onBack }: { onNext: () => void; onBack: () => void; }) => {
     const [address, setAddress] = useState("");
 
     return (
@@ -268,6 +268,14 @@ const LocationStep = () => {
                     </div>
                      <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
                 </CardContent>
+                 <CardFooter className="flex justify-between">
+                    <Button variant="outline" onClick={onBack}>
+                        <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                    </Button>
+                    <Button onClick={onNext}>
+                        Continue
+                    </Button>
+                </CardFooter>
             </Card>
             <div className="h-full min-h-[400px] md:min-h-0 rounded-lg overflow-hidden">
                 <InteractiveMapPlaceholder pickup={address} />
@@ -364,7 +372,7 @@ export default function ListPropertyPage() {
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
-                    {currentStep === 2 && <LocationStep />}
+                    {currentStep === 2 && <LocationStep onBack={prevStep} onNext={nextStep} />}
                     {/* Add other steps as components here */}
                     {currentStep > 2 && (
                         <div className="flex-grow flex items-center justify-center">
@@ -374,7 +382,7 @@ export default function ListPropertyPage() {
                  </motion.div>
             </AnimatePresence>
         </div>
-        {currentStep > 0 && (
+        {currentStep > 0 && currentStep !== 2 && ( // Do not show global footer buttons for location step
             <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
                 {currentStep === 1 ? (
                     <Button variant="outline" onClick={() => setCurrentStep(0)}>
