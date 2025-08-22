@@ -21,6 +21,7 @@ import * as z from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 
 const listingFormSchema = z.object({
@@ -311,6 +312,53 @@ const LocationStep = () => {
     );
 };
 
+const DetailsStep = () => {
+    return (
+        <div>
+            <CardHeader className="p-0 text-center md:text-left">
+                <CardTitle className="text-3xl font-headline text-primary">Property Details</CardTitle>
+                <CardDescription className="pt-2">Provide additional details about your property.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 pt-8 space-y-8">
+                <FormItem>
+                    <FormLabel className="text-lg font-semibold">Do you serve guests breakfast?</FormLabel>
+                    <FormControl>
+                        <RadioGroup defaultValue="no" className="flex gap-4">
+                            <FormItem className="flex items-center space-x-2">
+                                <RadioGroupItem value="yes" id="breakfast-yes"/>
+                                <Label htmlFor="breakfast-yes" className="font-normal">Yes</Label>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2">
+                                <RadioGroupItem value="no" id="breakfast-no"/>
+                                <Label htmlFor="breakfast-no" className="font-normal">No</Label>
+                            </FormItem>
+                        </RadioGroup>
+                    </FormControl>
+                </FormItem>
+                 <FormItem>
+                    <FormLabel className="text-lg font-semibold">Is parking available to guests?</FormLabel>
+                    <FormControl>
+                        <RadioGroup defaultValue="no" className="flex gap-4">
+                            <FormItem className="flex items-center space-x-2">
+                                <RadioGroupItem value="yes-free" id="parking-yes-free"/>
+                                <Label htmlFor="parking-yes-free" className="font-normal">Yes, free</Label>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2">
+                                <RadioGroupItem value="yes-paid" id="parking-yes-paid"/>
+                                <Label htmlFor="parking-yes-paid" className="font-normal">Yes, paid</Label>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2">
+                                <RadioGroupItem value="no" id="parking-no"/>
+                                <Label htmlFor="parking-no" className="font-normal">No</Label>
+                            </FormItem>
+                        </RadioGroup>
+                    </FormControl>
+                </FormItem>
+            </CardContent>
+        </div>
+    );
+};
+
 
 const amenitiesList = {
   general: [
@@ -437,7 +485,7 @@ export default function ListPropertyPage() {
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(prev => prev + 1);
     }
   };
   
@@ -492,68 +540,7 @@ export default function ListPropertyPage() {
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
                     {currentStep === 2 && <LocationStep />}
-                    {currentStep === 3 && (
-                        <div>
-                            <CardHeader className="p-0 text-center md:text-left">
-                                <CardTitle className="text-3xl font-headline text-primary">Property Details</CardTitle>
-                                <CardDescription className="pt-2">Tell us about the sleeping arrangements and guest capacity.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="p-0 pt-8 space-y-8">
-                                <div>
-                                    <h3 className="text-xl font-semibold mb-4">Where can people sleep?</h3>
-                                    <div className="space-y-4">
-                                        {bedrooms.map((room, index) => (
-                                            <Card key={room.id} className="p-4 bg-muted/50">
-                                                <p className="font-semibold">Bedroom {index + 1}</p>
-                                                {/* Add bed type/count selection here */}
-                                                <p className="text-sm text-muted-foreground">1 full bed</p>
-                                            </Card>
-                                        ))}
-                                    </div>
-                                    <Button variant="outline" size="sm" className="mt-4" onClick={() => setBedrooms(prev => [...prev, { id: prev.length + 1, beds: [] }])}>Add bedroom</Button>
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <Label className="text-base">How many guests can stay?</Label>
-                                        <div className="flex items-center gap-2">
-                                            <Button type="button" variant="outline" size="icon" className="h-8 w-8" onClick={() => setGuests(p => Math.max(1, p - 1))}><Minus className="h-4 w-4" /></Button>
-                                            <Input type="number" readOnly value={guests} className="w-16 h-8 text-center" />
-                                            <Button type="button" variant="outline" size="icon" className="h-8 w-8" onClick={() => setGuests(p => p + 1)}><Plus className="h-4 w-4" /></Button>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <Label className="text-base">How many bathrooms are there?</Label>
-                                         <div className="flex items-center gap-2">
-                                            <Button type="button" variant="outline" size="icon" className="h-8 w-8" onClick={() => setBathrooms(p => Math.max(0.5, p - 0.5))}><Minus className="h-4 w-4" /></Button>
-                                            <Input type="number" readOnly value={bathrooms} className="w-16 h-8 text-center" />
-                                            <Button type="button" variant="outline" size="icon" className="h-8 w-8" onClick={() => setBathrooms(p => p + 0.5)}><Plus className="h-4 w-4" /></Button>
-                                        </div>
-                                    </div>
-                                </div>
-                                 <div className="space-y-4 pt-4 border-t">
-                                     <div className="flex items-center space-x-2">
-                                         <Checkbox id="allow-children"/>
-                                         <Label htmlFor="allow-children">Do you allow children?</Label>
-                                     </div>
-                                      <div className="flex items-center space-x-2">
-                                         <Checkbox id="offer-cribs"/>
-                                         <Label htmlFor="offer-cribs">Do you offer cribs?</Label>
-                                     </div>
-                                     <div className="flex items-center gap-4">
-                                         <Label>Apartment size (Optional)</Label>
-                                         <Input type="number" className="w-32"/>
-                                         <Select defaultValue="sqft">
-                                             <SelectTrigger className="w-32"><SelectValue/></SelectTrigger>
-                                             <SelectContent>
-                                                 <SelectItem value="sqft">sq ft</SelectItem>
-                                                 <SelectItem value="sqm">sq m</SelectItem>
-                                             </SelectContent>
-                                         </Select>
-                                     </div>
-                                 </div>
-                            </CardContent>
-                        </div>
-                    )}
+                    {currentStep === 3 && <DetailsStep />}
                     {currentStep === 4 && <AmenitiesStep />}
                     {currentStep > 4 && (
                         <div className="text-center">
@@ -590,4 +577,3 @@ export default function ListPropertyPage() {
     </div>
   );
 }
-
