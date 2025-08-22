@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus } from "lucide-react";
+import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -36,6 +36,7 @@ const listingFormSchema = z.object({
   city: z.string().optional(),
   state: z.string().optional(),
   zip: z.string().optional(),
+  amenities: z.array(z.string()).optional(),
 });
 type ListingFormValues = z.infer<typeof listingFormSchema>;
 
@@ -43,8 +44,9 @@ type ListingFormValues = z.infer<typeof listingFormSchema>;
 const listingSteps = [
   { id: "type", title: "Select Type" },
   { id: "basics", title: "Basic Info", fields: ["propertyName", "propertyType", "listingType", "bedrooms", "bathrooms", "maxGuests"] },
-  { id: "location", title: "Location" },
+  { id: "location", title: "Location", fields: ["address"] },
   { id: "details", title: "Details" },
+  { id: "amenities", title: "Amenities", fields: ["amenities"] },
   { id: "photos", title: "Photos" },
   { id: "pricing", title: "Pricing & Availability" },
   { id: "publish", title: "Publish" },
@@ -211,7 +213,7 @@ const LocationStep = () => {
     const address = watch("address");
 
     return (
-        <div className="relative h-full w-full rounded-lg overflow-hidden">
+        <div className="relative h-full w-full rounded-lg overflow-hidden flex-grow -m-6 md:-m-8">
             <div className="absolute inset-0 z-0">
                  <InteractiveMapPlaceholder 
                     pickup={address} 
@@ -310,6 +312,91 @@ const LocationStep = () => {
 };
 
 
+const amenitiesList = {
+  general: [
+    { id: "Wifi", label: "Free Wifi", icon: Wifi },
+    { id: "Air conditioning", label: "Air conditioning", icon: Snowflake },
+    { id: "Heating", label: "Heating", icon: Wind },
+    { id: "Parking", label: "Parking", icon: SquareParking },
+  ],
+  cookingCleaning: [
+    { id: "Kitchen", label: "Kitchen", icon: Utensils },
+    { id: "Washing machine", label: "Washing machine", icon: WashingMachine },
+  ],
+  entertainment: [
+    { id: "Flat-screen TV", label: "Flat-screen TV", icon: Tv },
+    { id: "Swimming pool", label: "Swimming pool", icon: Waves },
+  ],
+  outsideView: [
+    { id: "Balcony", label: "Balcony", icon: Sun },
+    { id: "Terrace", label: "Terrace", icon: Eye },
+  ],
+};
+
+const AmenitiesStep = () => {
+    const { control } = useFormContext<ListingFormValues>();
+    return (
+        <div>
+            <CardHeader className="p-0 text-center md:text-left">
+                <CardTitle className="text-3xl font-headline text-primary">What amenities do you offer?</CardTitle>
+                <CardDescription className="pt-2">Select all the amenities available to guests.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 pt-8">
+                 <FormField
+                    control={control}
+                    name="amenities"
+                    render={() => (
+                        <FormItem className="space-y-6">
+                            {Object.entries(amenitiesList).map(([categoryKey, amenities]) => (
+                                <div key={categoryKey}>
+                                    <h3 className="text-lg font-semibold capitalize mb-3">{categoryKey.replace(/([A-Z])/g, ' $1')}</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        {amenities.map((item) => (
+                                        <FormField
+                                            key={item.id}
+                                            control={control}
+                                            name="amenities"
+                                            render={({ field }) => {
+                                            return (
+                                                <FormItem
+                                                key={item.id}
+                                                className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 hover:bg-muted/50 transition-colors"
+                                                >
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value?.includes(item.id)}
+                                                        onCheckedChange={(checked) => {
+                                                            return checked
+                                                            ? field.onChange([...(field.value || []), item.id])
+                                                            : field.onChange(
+                                                                field.value?.filter(
+                                                                (value) => value !== item.id
+                                                                )
+                                                            )
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                                <FormLabel className="font-normal flex items-center gap-2 cursor-pointer">
+                                                    <item.icon className="h-5 w-5 text-muted-foreground" />
+                                                    {item.label}
+                                                </FormLabel>
+                                                </FormItem>
+                                            )
+                                            }}
+                                        />
+                                        ))}
+                                    </div>
+                                </div>
+                             ))}
+                        </FormItem>
+                    )}
+                />
+            </CardContent>
+        </div>
+    );
+};
+
+
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const router = useRouter();
@@ -323,7 +410,8 @@ export default function ListPropertyPage() {
   const methods = useForm<ListingFormValues>({
     resolver: zodResolver(listingFormSchema),
     defaultValues: {
-        listingType: "FOR_RENT"
+        listingType: "FOR_RENT",
+        amenities: [],
     }
   });
 
@@ -466,7 +554,8 @@ export default function ListPropertyPage() {
                             </CardContent>
                         </div>
                     )}
-                    {currentStep > 3 && (
+                    {currentStep === 4 && <AmenitiesStep />}
+                    {currentStep > 4 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep + 1} content goes here.</h2>
                         </div>
@@ -501,3 +590,4 @@ export default function ListPropertyPage() {
     </div>
   );
 }
+
