@@ -269,7 +269,7 @@ const LocationStep = ({ onBack, onContinue }: { onBack: () => void; onContinue: 
                     </div>
                      <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
                 </CardContent>
-                <CardFooter className="flex justify-between">
+                <CardFooter className="flex justify-between mt-auto">
                     <Button variant="outline" onClick={onBack}>
                         <ArrowLeft className="mr-2 h-4 w-4"/> Back
                     </Button>
