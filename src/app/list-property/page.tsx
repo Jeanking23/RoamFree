@@ -316,7 +316,7 @@ export default function ListPropertyPage() {
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(prev => prev + 1);
     }
   };
   
@@ -371,8 +371,7 @@ export default function ListPropertyPage() {
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
                     {currentStep === 2 && <LocationStep />}
-                    {/* Add other steps as components here */}
-                    {currentStep > 2 && (
+                    {currentStep === 3 && (
                         <div>
                             <CardHeader className="p-0 text-center md:text-left">
                                 <CardTitle className="text-3xl font-headline text-primary">Property Details</CardTitle>
@@ -432,9 +431,11 @@ export default function ListPropertyPage() {
                                      </div>
                                  </div>
                             </CardContent>
-                             <CardFooter className="p-0 pt-8">
-                                <Button className="w-full md:w-auto" onClick={nextStep}>Continue</Button>
-                            </CardFooter>
+                        </div>
+                    )}
+                    {currentStep > 3 && (
+                        <div className="text-center">
+                            <h2 className="text-2xl font-semibold">Step {currentStep + 1} content goes here.</h2>
                         </div>
                     )}
                  </motion.div>
