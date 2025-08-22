@@ -1,3 +1,4 @@
+
 // src/app/list-property/page.tsx
 'use client';
 
@@ -205,7 +206,7 @@ const NameStep = () => {
     );
 };
 
-const LocationStep = () => {
+const LocationStep = ({ onBack, onContinue }: { onBack: () => void; onContinue: () => void; }) => {
     const [address, setAddress] = useState("");
 
     return (
@@ -268,6 +269,14 @@ const LocationStep = () => {
                     </div>
                      <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
                 </CardContent>
+                <CardFooter className="flex justify-between">
+                    <Button variant="outline" onClick={onBack}>
+                        <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                    </Button>
+                    <Button onClick={onContinue}>
+                        Continue
+                    </Button>
+                </CardFooter>
             </Card>
             <div className="h-full min-h-[400px] md:min-h-0 rounded-lg overflow-hidden">
                 <InteractiveMapPlaceholder pickup={address} />
@@ -370,7 +379,7 @@ export default function ListPropertyPage() {
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
-                    {currentStep === 2 && <LocationStep />}
+                    {currentStep === 2 && <LocationStep onBack={prevStep} onContinue={nextStep} />}
                     {currentStep === 3 && (
                         <div>
                             <CardHeader className="p-0 text-center md:text-left">
@@ -441,28 +450,30 @@ export default function ListPropertyPage() {
                  </motion.div>
             </AnimatePresence>
         </div>
-        <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
-            {currentStep === 0 ? (
-                <Button variant="outline" asChild>
-                    <Link href="/">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Exit
-                    </Link>
-                </Button>
-            ) : currentStep === 1 ? (
-                 <Button variant="outline" onClick={() => setCurrentStep(0)}>
-                     <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                </Button>
-            ) : (
-                <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
-                    <ArrowLeft className="mr-2 h-4 w-4"/> Back
-                </Button>
-            )}
-            {currentStep !== 0 && (
-                <Button onClick={nextStep}>
-                    {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
-                </Button>
-            )}
-        </CardFooter>
+        {currentStep !== 2 && (
+             <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
+                {currentStep === 0 ? (
+                    <Button variant="outline" asChild>
+                        <Link href="/">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Exit
+                        </Link>
+                    </Button>
+                ) : currentStep === 1 ? (
+                     <Button variant="outline" onClick={() => setCurrentStep(0)}>
+                         <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                    </Button>
+                ) : (
+                    <Button variant="outline" onClick={prevStep} disabled={currentStep < 1}>
+                        <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                    </Button>
+                )}
+                {currentStep !== 0 && (
+                    <Button onClick={nextStep}>
+                        {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
+                    </Button>
+                )}
+            </CardFooter>
+        )}
       </Card>
       </FormProvider>
     </div>
