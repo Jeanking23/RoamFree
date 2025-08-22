@@ -11,6 +11,7 @@ import { GoogleMapsProvider } from '@/context/google-maps-provider';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { AuthProvider } from '@/context/auth-provider';
+import PartnerHelpBot from '@/components/layout/partner-help-bot';
 
 export default function RootLayout({
   children,
@@ -19,6 +20,12 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const hideNavElements = pathname === '/transport/search' || pathname === '/signin' || pathname === '/signup';
+  
+  const showPartnerHelpBot = 
+    pathname.startsWith('/dashboard') || 
+    pathname.startsWith('/list-property') || 
+    pathname.startsWith('/cars-for-sale/new') || 
+    pathname.startsWith('/for-partners');
 
   return (
     <html lang="en" suppressHydrationWarning={true}>
@@ -41,6 +48,7 @@ export default function RootLayout({
                 </main>
                 {!hideNavElements && <Footer />}
                 {!hideNavElements && <BottomNavBar />}
+                {showPartnerHelpBot && <PartnerHelpBot />}
               </div>
               <Toaster />
             </LocaleProvider>
