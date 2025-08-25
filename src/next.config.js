@@ -41,7 +41,7 @@ const nextConfig = {
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Exclude server-only packages from client-side bundle
-      config.externals.push('long', 'protobufjs', '@grpc/grpc-js', 'nice-grpc-web');
+      config.externals = [...config.externals, 'long', 'protobufjs', '@grpc/grpc-js', 'nice-grpc-web'];
     }
     return config;
   },
