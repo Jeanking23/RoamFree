@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking, UploadCloud } from "lucide-react";
+import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking, UploadCloud, Smoking, PartyPopper, Dog } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Image from "next/image";
+import { Switch } from "@/components/ui/switch";
 
 
 const listingFormSchema = z.object({
@@ -51,6 +52,7 @@ const listingSteps = [
   { id: "amenities", title: "Amenities", fields: ["amenities"] },
   { id: "photos", title: "Photos" },
   { id: "languages", title: "Languages" },
+  { id: "houseRules", title: "House Rules" },
   { id: "pricing", title: "Pricing & Availability" },
   { id: "publish", title: "Publish" },
 ];
@@ -512,6 +514,79 @@ const LanguagesStep = () => {
     );
 };
 
+const HouseRulesStep = () => {
+    const timeOptions = Array.from({ length: 24 }, (_, i) => {
+        const hour = i.toString().padStart(2, '0');
+        return `${hour}:00`;
+    });
+
+    return (
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+            <div>
+                <CardHeader className="p-0 text-center md:text-left">
+                    <CardTitle className="text-3xl font-headline text-primary">House Rules</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 pt-8 space-y-6">
+                    <div className="space-y-4">
+                        <FormItem className="flex items-center justify-between p-3 border rounded-md">
+                            <FormLabel className="font-normal flex items-center gap-2"><Smoking className="h-4 w-4"/>Smoking allowed</FormLabel>
+                            <FormControl><Switch /></FormControl>
+                        </FormItem>
+                         <FormItem className="flex items-center justify-between p-3 border rounded-md">
+                            <FormLabel className="font-normal flex items-center gap-2"><PartyPopper className="h-4 w-4"/>Parties/events allowed</FormLabel>
+                            <FormControl><Switch /></FormControl>
+                        </FormItem>
+                    </div>
+                    <FormItem>
+                        <FormLabel className="text-base font-semibold flex items-center gap-2"><Dog className="h-5 w-5"/>Do you allow pets?</FormLabel>
+                        <RadioGroup defaultValue="no" className="flex gap-4 pt-2">
+                            <FormItem className="flex items-center space-x-2"><RadioGroupItem value="yes" id="pets-yes"/><Label htmlFor="pets-yes" className="font-normal">Yes</Label></FormItem>
+                            <FormItem className="flex items-center space-x-2"><RadioGroupItem value="request" id="pets-request"/><Label htmlFor="pets-request" className="font-normal">Upon request</Label></FormItem>
+                            <FormItem className="flex items-center space-x-2"><RadioGroupItem value="no" id="pets-no"/><Label htmlFor="pets-no" className="font-normal">No</Label></FormItem>
+                        </RadioGroup>
+                    </FormItem>
+                    <div className="space-y-4 pt-4 border-t">
+                        <div>
+                            <h3 className="text-base font-semibold">Check-in</h3>
+                            <div className="grid grid-cols-2 gap-4 mt-2">
+                                <FormItem>
+                                    <FormLabel>From</FormLabel>
+                                    <Select><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeOptions.map(t => <SelectItem key={`cin-from-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select>
+                                </FormItem>
+                                <FormItem>
+                                    <FormLabel>Until</FormLabel>
+                                    <Select><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeOptions.map(t => <SelectItem key={`cin-to-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select>
+                                </FormItem>
+                            </div>
+                        </div>
+                         <div>
+                            <h3 className="text-base font-semibold">Check-out</h3>
+                            <div className="grid grid-cols-2 gap-4 mt-2">
+                                 <FormItem>
+                                    <FormLabel>From</FormLabel>
+                                    <Select><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeOptions.map(t => <SelectItem key={`cout-from-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select>
+                                </FormItem>
+                                <FormItem>
+                                    <FormLabel>Until</FormLabel>
+                                    <Select><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeOptions.map(t => <SelectItem key={`cout-to-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select>
+                                </FormItem>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </div>
+            <Card className="bg-muted/30 border-dashed">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb className="h-5 w-5 text-yellow-400" />What if my house rules change?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-muted-foreground">You can easily customize these rules later from your partner dashboard. Be sure to inform any confirmed guests of changes.</p>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
 
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -606,7 +681,8 @@ export default function ListPropertyPage() {
                     {currentStep === 4 && <AmenitiesStep />}
                     {currentStep === 5 && <PhotosStep />}
                     {currentStep === 6 && <LanguagesStep />}
-                    {currentStep > 6 && (
+                    {currentStep === 7 && <HouseRulesStep />}
+                    {currentStep > 7 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep + 1} content goes here.</h2>
                         </div>
