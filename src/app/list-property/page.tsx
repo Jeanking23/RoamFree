@@ -474,9 +474,7 @@ const PhotosStep = () => {
           </FormControl>
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-4">
             {photoPreviews.map((src, index) => (
-              <div key={index} className="relative aspect-square rounded-md overflow-hidden">
-                <Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" />
-              </div>
+              <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" /></div>
             ))}
           </div>
         </FormItem>
@@ -713,4 +711,5 @@ export default function ListPropertyPage() {
     </div>
   );
 }
+
 
