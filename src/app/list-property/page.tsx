@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking } from "lucide-react";
+import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking, UploadCloud } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import Image from "next/image";
 
 
 const listingFormSchema = z.object({
@@ -225,7 +226,7 @@ const LocationStep = () => {
                     }}
                 />
             </div>
-            <div className="relative z-10 p-6 md:p-8 h-full flex items-center pointer-events-none">
+            <div className="relative z-10 p-6 md:p-8 h-full flex items-start pointer-events-none">
                 <Card className="w-full max-w-md pointer-events-auto">
                     <CardHeader>
                         <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
@@ -358,41 +359,6 @@ const DetailsStep = () => {
                          </div>
                     </div>
                 </div>
-
-                <FormItem>
-                    <FormLabel className="text-lg font-semibold">Do you serve guests breakfast?</FormLabel>
-                    <FormControl>
-                        <RadioGroup defaultValue="no" className="flex gap-4">
-                            <FormItem className="flex items-center space-x-2">
-                                <RadioGroupItem value="yes" id="breakfast-yes"/>
-                                <Label htmlFor="breakfast-yes" className="font-normal">Yes</Label>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-2">
-                                <RadioGroupItem value="no" id="breakfast-no"/>
-                                <Label htmlFor="breakfast-no" className="font-normal">No</Label>
-                            </FormItem>
-                        </RadioGroup>
-                    </FormControl>
-                </FormItem>
-                 <FormItem>
-                    <FormLabel className="text-lg font-semibold">Is parking available to guests?</FormLabel>
-                    <FormControl>
-                        <RadioGroup defaultValue="no" className="flex gap-4">
-                            <FormItem className="flex items-center space-x-2">
-                                <RadioGroupItem value="yes-free" id="parking-yes-free"/>
-                                <Label htmlFor="parking-yes-free" className="font-normal">Yes, free</Label>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-2">
-                                <RadioGroupItem value="yes-paid" id="parking-yes-paid"/>
-                                <Label htmlFor="parking-yes-paid" className="font-normal">Yes, paid</Label>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-2">
-                                <RadioGroupItem value="no" id="parking-no"/>
-                                <Label htmlFor="parking-no" className="font-normal">No</Label>
-                            </FormItem>
-                        </RadioGroup>
-                    </FormControl>
-                </FormItem>
             </CardContent>
         </div>
     );
@@ -481,6 +447,50 @@ const AmenitiesStep = () => {
             </CardContent>
         </div>
     );
+};
+
+const PhotosStep = () => {
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newPreviews: string[] = [];
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          newPreviews.push(reader.result as string);
+          if (newPreviews.length === files.length) {
+            setPhotoPreviews(prev => [...prev, ...newPreviews]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  return (
+    <div>
+      <CardHeader className="p-0 text-center md:text-left">
+        <CardTitle className="text-3xl font-headline text-primary">Add photos to your listing</CardTitle>
+        <CardDescription className="pt-2">Upload high-quality photos to attract guests.</CardDescription>
+      </CardHeader>
+      <CardContent className="p-0 pt-8">
+        <FormItem>
+          <FormLabel className="flex items-center gap-2"><UploadCloud className="h-5 w-5 text-primary"/>Upload Photos</FormLabel>
+          <FormControl>
+            <Input type="file" accept="image/*" multiple onChange={handlePhotoUpload} />
+          </FormControl>
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-4">
+            {photoPreviews.map((src, index) => (
+              <div key={index} className="relative aspect-square rounded-md overflow-hidden">
+                <Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" />
+              </div>
+            ))}
+          </div>
+        </FormItem>
+      </CardContent>
+    </div>
+  );
 };
 
 
@@ -575,7 +585,8 @@ export default function ListPropertyPage() {
                     {currentStep === 2 && <LocationStep />}
                     {currentStep === 3 && <DetailsStep />}
                     {currentStep === 4 && <AmenitiesStep />}
-                    {currentStep > 4 && (
+                    {currentStep === 5 && <PhotosStep />}
+                    {currentStep > 5 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep + 1} content goes here.</h2>
                         </div>
