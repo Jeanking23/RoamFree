@@ -225,8 +225,8 @@ const LocationStep = () => {
                     }}
                 />
             </div>
-            <div className="relative z-10 p-6 md:p-8 h-full flex items-center">
-                <Card className="w-full max-w-md">
+            <div className="relative z-10 p-6 md:p-8 h-full flex items-center pointer-events-none">
+                <Card className="w-full max-w-md pointer-events-auto">
                     <CardHeader>
                         <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
                         <CardDescription>Enter the address so guests can find you.</CardDescription>
