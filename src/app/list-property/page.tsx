@@ -50,6 +50,7 @@ const listingSteps = [
   { id: "details", title: "Details" },
   { id: "amenities", title: "Amenities", fields: ["amenities"] },
   { id: "photos", title: "Photos" },
+  { id: "languages", title: "Languages" },
   { id: "pricing", title: "Pricing & Availability" },
   { id: "publish", title: "Publish" },
 ];
@@ -312,53 +313,42 @@ const LocationStep = () => {
 };
 
 const DetailsStep = () => {
-    const { control } = useFormContext<ListingFormValues>();
-    const [bedrooms, setBedrooms] = useState([{ id: 1, beds: [{ type: 'Full', count: 1 }] }]);
-    const [guests, setGuests] = useState(2);
-    const [bathrooms, setBathrooms] = useState(1);
-
-    const addBedroom = () => {
-        setBedrooms([...bedrooms, { id: Date.now(), beds: [{ type: 'Full', count: 1 }] }]);
-    };
-    
     return (
         <div>
             <CardHeader className="p-0 text-center md:text-left">
-                <CardTitle className="text-3xl font-headline text-primary">Property Details</CardTitle>
-                <CardDescription className="pt-2">Tell us about the sleeping arrangements and capacity.</CardDescription>
+                <CardTitle className="text-3xl font-headline text-primary">Services at your property</CardTitle>
             </CardHeader>
             <CardContent className="p-0 pt-8 space-y-8">
-                <div>
-                    <h3 className="text-lg font-semibold mb-3">Where can people sleep?</h3>
-                    <div className="space-y-4">
-                        {bedrooms.map((room, index) => (
-                            <Card key={room.id} className="p-4">
-                                <p className="font-medium">Bedroom {index + 1}</p>
-                                {/* Add bed type/count logic here */}
-                            </Card>
-                        ))}
-                    </div>
-                    <Button variant="outline" size="sm" onClick={addBedroom} className="mt-3">Add bedroom</Button>
-                </div>
-
-                <div className="space-y-6">
-                    <div>
-                         <h3 className="text-lg font-semibold mb-3">How many guests can stay?</h3>
-                         <div className="flex items-center gap-4">
-                             <Button variant="outline" size="icon" onClick={() => setGuests(p => Math.max(1, p-1))}><Minus className="h-4 w-4"/></Button>
-                             <span className="text-xl font-bold w-12 text-center">{guests}</span>
-                             <Button variant="outline" size="icon" onClick={() => setGuests(p => p+1)}><Plus className="h-4 w-4"/></Button>
-                         </div>
-                    </div>
-                     <div>
-                         <h3 className="text-lg font-semibold mb-3">How many bathrooms are there?</h3>
-                         <div className="flex items-center gap-4">
-                             <Button variant="outline" size="icon" onClick={() => setBathrooms(p => Math.max(0.5, p-0.5))}><Minus className="h-4 w-4"/></Button>
-                             <span className="text-xl font-bold w-12 text-center">{bathrooms}</span>
-                             <Button variant="outline" size="icon" onClick={() => setBathrooms(p => p+0.5)}><Plus className="h-4 w-4"/></Button>
-                         </div>
-                    </div>
-                </div>
+                <FormItem>
+                    <FormLabel className="text-lg font-semibold">Do you serve guests breakfast?</FormLabel>
+                    <RadioGroup defaultValue="no" className="flex gap-4 pt-2">
+                        <FormItem className="flex items-center space-x-2">
+                            <RadioGroupItem value="yes" id="breakfast-yes"/>
+                            <Label htmlFor="breakfast-yes" className="font-normal">Yes</Label>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2">
+                            <RadioGroupItem value="no" id="breakfast-no"/>
+                            <Label htmlFor="breakfast-no" className="font-normal">No</Label>
+                        </FormItem>
+                    </RadioGroup>
+                </FormItem>
+                <FormItem>
+                    <FormLabel className="text-lg font-semibold">Is parking available to guests?</FormLabel>
+                    <RadioGroup defaultValue="no" className="flex gap-4 pt-2">
+                        <FormItem className="flex items-center space-x-2">
+                            <RadioGroupItem value="yes-free" id="parking-yes-free"/>
+                            <Label htmlFor="parking-yes-free" className="font-normal">Yes, free</Label>
+                        </FormItem>
+                         <FormItem className="flex items-center space-x-2">
+                            <RadioGroupItem value="yes-paid" id="parking-yes-paid"/>
+                            <Label htmlFor="parking-yes-paid" className="font-normal">Yes, paid</Label>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2">
+                            <RadioGroupItem value="no" id="parking-no"/>
+                            <Label htmlFor="parking-no" className="font-normal">No</Label>
+                        </FormItem>
+                    </RadioGroup>
+                </FormItem>
             </CardContent>
         </div>
     );
@@ -493,6 +483,35 @@ const PhotosStep = () => {
   );
 };
 
+const languages = ["Chinese", "English", "French", "Portuguese", "Spanish"];
+const LanguagesStep = () => {
+    return (
+        <div>
+            <CardHeader className="p-0 text-center md:text-left">
+                <CardTitle className="text-3xl font-headline text-primary">What languages do you or your staff speak?</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0 pt-8">
+                <FormItem>
+                    <FormLabel className="text-lg font-semibold">Select languages</FormLabel>
+                    <div className="space-y-2 pt-2">
+                        {languages.map(lang => (
+                             <FormItem key={lang} className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                    <Checkbox />
+                                </FormControl>
+                                <FormLabel className="font-normal">{lang}</FormLabel>
+                             </FormItem>
+                        ))}
+                    </div>
+                     <Button variant="link" className="px-0 mt-2" onClick={() => toast({ title: "Feature coming soon!" })}>
+                        Add additional languages
+                    </Button>
+                </FormItem>
+            </CardContent>
+        </div>
+    );
+};
+
 
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -586,7 +605,8 @@ export default function ListPropertyPage() {
                     {currentStep === 3 && <DetailsStep />}
                     {currentStep === 4 && <AmenitiesStep />}
                     {currentStep === 5 && <PhotosStep />}
-                    {currentStep > 5 && (
+                    {currentStep === 6 && <LanguagesStep />}
+                    {currentStep > 6 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep + 1} content goes here.</h2>
                         </div>
