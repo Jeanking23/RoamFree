@@ -1,3 +1,4 @@
+
 // src/app/list-property/page.tsx
 'use client';
 
@@ -712,3 +713,4 @@ export default function ListPropertyPage() {
     </div>
   );
 }
+
