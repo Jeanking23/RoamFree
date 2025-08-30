@@ -333,19 +333,19 @@ export default function AiTripPlannerSurveyPage() {
 
                 <div className="flex gap-4 justify-between pt-4">
                   <Button type="button" variant="outline" onClick={prevStep} disabled={currentStep === 0}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                    <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
                   </Button>
                   
                   {currentStep < formSteps.length - 1 && (
                      <Button type="button" onClick={nextStep}>
-                        Next <ArrowRight className="ml-2 h-4 w-4" />
+                        <span>Next <ArrowRight className="ml-2 h-4 w-4" /></span>
                     </Button>
                   )}
 
                   {currentStep === formSteps.length - 1 && (
                      <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-                        <Wand2 className="mr-2 h-5 w-5" />
-                        Generate My Trip Plan
+                        <span><Wand2 className="mr-2 h-5 w-5" />
+                        Generate My Trip Plan</span>
                     </Button>
                   )}
                 </div>
