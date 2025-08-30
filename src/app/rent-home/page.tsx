@@ -1,3 +1,4 @@
+
 // src/app/rent-home/page.tsx
 'use client';
 
@@ -653,7 +654,7 @@ export default function RentHomePage() {
               <li><Users className="inline h-4 w-4 mr-1 text-primary"/>Optional Tenant Background Checks (ID, income, rental history) for hosts.</li>
               <li><Building className="inline h-4 w-4 mr-1 text-primary"/>Detailed neighborhood insights: crime rates, schools, transport, walkability.</li>
             </ul>
-             <Button variant="link" asChild className="mt-2 px-0"><Link href="/list-property">List Your Rental Property</Link></Button>
+             <Button variant="link" asChild className="mt-2 px-0"><Link href="/list-property"><span>List Your Rental Property</span></Link></Button>
           </div>
 
         </CardContent>
