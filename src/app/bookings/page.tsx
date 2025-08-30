@@ -43,7 +43,7 @@ export default function BookingsPage() {
                       </div>
                     </div>
                     <Button variant="outline" asChild>
-                      <Link href={booking.link}>View Details</Link>
+                      <Link href={booking.link}><span>View Details</span></Link>
                     </Button>
                   </CardContent>
                 </Card>
