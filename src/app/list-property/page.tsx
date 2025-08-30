@@ -1,7 +1,7 @@
 // src/app/list-property/page.tsx
 'use client';
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -45,16 +45,14 @@ type ListingFormValues = z.infer<typeof listingFormSchema>;
 
 
 const listingSteps = [
-  { id: "type", title: "Select Type" },
-  { id: "basics", title: "Basic Info", fields: ["propertyName", "propertyType", "listingType", "bedrooms", "bathrooms", "maxGuests"] },
-  { id: "location", title: "Location", fields: ["address"] },
-  { id: "details", title: "Details" },
-  { id: "amenities", title: "Amenities", fields: ["amenities"] },
+  // Step 0 - Not in progress bar
+  { id: "type", title: "Select Type" }, 
+  // Progress bar steps start here (index 1)
+  { id: "basics", title: "Basic info", fields: ["propertyName", "propertyType", "listingType", "bedrooms", "bathrooms", "maxGuests"] },
+  { id: "setup", title: "Property setup", fields: ["address"] },
   { id: "photos", title: "Photos" },
-  { id: "languages", title: "Languages" },
-  { id: "houseRules", title: "House Rules" },
-  { id: "pricing", title: "Pricing & Availability" },
-  { id: "publish", title: "Publish" },
+  { id: "pricing", title: "Pricing and calendar" },
+  { id: "review", title: "Review and complete" },
 ];
 
 const ListingTypeStep = ({ onSelect }: { onSelect: (type: 'property' | 'car') => void }) => {
@@ -648,7 +646,7 @@ export default function ListPropertyPage() {
 
   const nextStep = async () => {
     // Trigger validation for the current step's fields before proceeding
-    const currentStepConfig = listingSteps.find((_, index) => index === currentStep);
+    const currentStepConfig = listingSteps[currentStep];
     const fields = currentStepConfig?.fields;
     const isValid = fields ? await methods.trigger(fields as any) : true;
 
@@ -657,8 +655,15 @@ export default function ListPropertyPage() {
         return;
     }
     
-    if (currentStep < listingSteps.length - 1) {
-        setCurrentStep(prev => prev + 1);
+    // Logic to jump over steps for "Land" property type
+    const propertyType = methods.getValues("propertyType");
+    let nextStepIndex = currentStep + 1;
+    if (propertyType === 'Land' && (currentStep >= 3 && currentStep <= 7)) { // Steps for Details, Amenities, Languages, House Rules
+      nextStepIndex = 8; // Jump to Pricing & Availability
+    }
+
+    if (nextStepIndex < listingSteps.length) {
+        setCurrentStep(nextStepIndex);
     } else {
         toast({ title: "Listing Submitted (Demo)", description: "Your property is now pending review."});
         console.log(methods.getValues());
@@ -667,7 +672,13 @@ export default function ListPropertyPage() {
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      // Logic to jump back correctly if coming from a skipped sequence
+      const propertyType = methods.getValues("propertyType");
+      let prevStepIndex = currentStep - 1;
+      if (propertyType === 'Land' && currentStep === 8) {
+        prevStepIndex = 2; // Jump back to Location
+      }
+      setCurrentStep(prevStepIndex);
     }
   };
   
@@ -679,7 +690,31 @@ export default function ListPropertyPage() {
     }
   };
   
-  const progress = ((currentStep) / (listingSteps.length - 1)) * 100;
+  const progressSteps = listingSteps.slice(1);
+  const currentProgressStep = currentStep -1;
+  const progress = ((currentProgressStep) / (progressSteps.length - 1)) * 100;
+  
+  // New 5-stage mapping
+  const fiveStages = [
+    { title: 'Basic info', steps: [1] },
+    { title: 'Property setup', steps: [2, 3, 4] },
+    { title: 'Photos', steps: [5] },
+    { title: 'Pricing and calendar', steps: [6, 7, 8] },
+    { title: 'Review and complete', steps: [9] }
+  ];
+
+  const getCurrentStageIndex = () => {
+    for (let i = 0; i < fiveStages.length; i++) {
+        if (fiveStages[i].steps.includes(currentStep)) {
+            return i;
+        }
+    }
+    return -1; // Should not happen if step is > 0
+  }
+  
+  const currentStageIndex = getCurrentStageIndex();
+  const fiveStageProgress = ((currentStageIndex) / (fiveStages.length - 1)) * 100;
+
 
   return (
     <div className="space-y-8">
@@ -694,17 +729,26 @@ export default function ListPropertyPage() {
           </div>
           {currentStep > 0 && (
             <div className="pt-4">
-               <Progress value={progress} className="w-full h-2" />
+              <div className="relative mb-2 h-2">
+                <Progress value={fiveStageProgress} className="w-full h-2 absolute" />
+              </div>
                <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                  {listingSteps.slice(1).map((step, index) => (
-                      <span key={step.id} className={cn(
-                          "font-medium",
-                          (index + 1) === currentStep && "text-primary",
-                          (index + 1) < currentStep && "text-primary/70"
-                      )}>
-                          {step.title}
-                      </span>
-                  ))}
+                  {fiveStages.map((stage, index) => {
+                      const isCompleted = currentStageIndex > index;
+                      const isCurrent = currentStageIndex === index;
+                      return (
+                          <div key={stage.title} className="flex items-center gap-1">
+                              {isCompleted && <CheckCircle className="h-4 w-4 text-green-500"/>}
+                              <span className={cn(
+                                  "font-medium",
+                                  isCurrent && "text-primary",
+                                  isCompleted && "text-green-600"
+                              )}>
+                                  {stage.title}
+                              </span>
+                          </div>
+                      )
+                  })}
                </div>
             </div>
           )}
@@ -730,6 +774,7 @@ export default function ListPropertyPage() {
                     {currentStep > 7 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep + 1} content goes here.</h2>
+                            <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
                         </div>
                     )}
                  </motion.div>
