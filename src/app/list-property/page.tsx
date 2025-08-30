@@ -1,7 +1,7 @@
 // src/app/list-property/page.tsx
 'use client';
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -690,17 +690,12 @@ export default function ListPropertyPage() {
     }
   };
   
-  const progressSteps = listingSteps.slice(1);
-  const currentProgressStep = currentStep -1;
-  const progress = ((currentProgressStep) / (progressSteps.length - 1)) * 100;
-  
-  // New 5-stage mapping
   const fiveStages = [
     { title: 'Basic info', steps: [1] },
-    { title: 'Property setup', steps: [2, 3, 4] },
-    { title: 'Photos', steps: [5] },
-    { title: 'Pricing and calendar', steps: [6, 7, 8] },
-    { title: 'Review and complete', steps: [9] }
+    { title: 'Property setup', steps: [2] }, // Simplified: just location for now
+    { title: 'Photos', steps: [3] },
+    { title: 'Pricing and calendar', steps: [4] },
+    { title: 'Review and complete', steps: [5] }
   ];
 
   const getCurrentStageIndex = () => {
@@ -713,7 +708,7 @@ export default function ListPropertyPage() {
   }
   
   const currentStageIndex = getCurrentStageIndex();
-  const fiveStageProgress = ((currentStageIndex) / (fiveStages.length - 1)) * 100;
+  const fiveStageProgress = currentStageIndex >= 0 ? ((currentStageIndex) / (fiveStages.length - 1)) * 100 : 0;
 
 
   return (
@@ -766,12 +761,8 @@ export default function ListPropertyPage() {
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
                     {currentStep === 2 && <LocationStep />}
-                    {currentStep === 3 && <DetailsStep />}
-                    {currentStep === 4 && <AmenitiesStep />}
-                    {currentStep === 5 && <PhotosStep />}
-                    {currentStep === 6 && <LanguagesStep />}
-                    {currentStep === 7 && <HouseRulesStep />}
-                    {currentStep > 7 && (
+                    {currentStep === 3 && <PhotosStep />}
+                    {currentStep > 3 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep + 1} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
@@ -792,7 +783,7 @@ export default function ListPropertyPage() {
                     <span><ArrowLeft className="mr-2 h-4 w-4"/> Back</span>
                 </Button>
             )}
-            {currentStep !== 0 && (
+            {currentStep > 0 && (
                 <Button onClick={nextStep}>
                     {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
                 </Button>
