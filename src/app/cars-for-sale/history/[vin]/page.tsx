@@ -1,3 +1,4 @@
+
 // src/app/cars-for-sale/history/[vin]/page.tsx
 'use client';
 
@@ -127,7 +128,7 @@ export default function CarHistoryPage() {
                 <CardFooter className="bg-muted/50 p-4">
                     <Button variant="outline" asChild>
                         <Link href="/cars-for-sale">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Listings
+                            <span><ArrowLeft className="mr-2 h-4 w-4" /> Back to Listings</span>
                         </Link>
                     </Button>
                 </CardFooter>
