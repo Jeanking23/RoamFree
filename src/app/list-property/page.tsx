@@ -1,4 +1,3 @@
-
 // src/app/list-property/page.tsx
 'use client';
 
@@ -34,7 +33,7 @@ const listingFormSchema = z.object({
   bedrooms: z.coerce.number().min(0, "Bedrooms cannot be negative.").optional(),
   bathrooms: z.coerce.number().min(0, "Bathrooms cannot be negative.").optional(),
   maxGuests: z.coerce.number().min(1, "Must accommodate at least 1 guest.").optional(),
-  address: z.string().optional(),
+  address: z.string().min(5, "Address is required.").optional(),
   aptSuite: z.string().optional(),
   country: z.string().optional(),
   city: z.string().optional(),
@@ -49,8 +48,7 @@ const listingSteps = [
   // Step 0 - Not in progress bar
   { id: "type", title: "Select Type" }, 
   // Progress bar steps start here (index 1)
-  { id: "basics", title: "Basic info", fields: ["propertyName", "propertyType", "listingType", "bedrooms", "bathrooms", "maxGuests"] },
-  { id: "setup", title: "Property setup", fields: ["address"] },
+  { id: "basics", title: "Basic info", fields: ["propertyName", "propertyType", "listingType", "bedrooms", "bathrooms", "maxGuests", "address", "city", "country", "state", "zip"] },
   { id: "photos", title: "Photos" },
   { id: "pricing", title: "Pricing and calendar" },
   { id: "review", title: "Review and complete" },
@@ -182,62 +180,10 @@ const NameStep = () => {
                             )}
                         </div>
                     )}
-                </CardContent>
-            </div>
-            <div className="space-y-6">
-                <Card className="bg-muted/30 border-dashed">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb className="h-5 w-5 text-yellow-400" />What should I consider when choosing a name?</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Keep it short and catchy</li>
-                            <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Avoid abbreviations</li>
-                            <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Stick to the facts</li>
-                        </ul>
-                    </CardContent>
-                </Card>
-                <Card className="bg-muted/30 border-dashed">
-                        <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg"><Info className="h-5 w-5 text-primary"/>Why do I need to name my property?</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-sm text-muted-foreground">The name is the first thing guests see. A good name can make your listing memorable.
-                        <br/><strong className="text-foreground">Do not use your property's address as the name.</strong>
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
-    );
-};
-
-const LocationStep = () => {
-    const { watch, control, setValue } = useFormContext<ListingFormValues>();
-    const address = watch("address");
-
-    return (
-        <div className="relative h-full w-full min-h-[60vh] -m-6 md:-m-8">
-            <div className="absolute inset-0 z-0">
-                <InteractiveMapPlaceholder 
-                    pickup={address} 
-                    onMapClick={(latLng) => {
-                        console.log("Map clicked at:", latLng);
-                        setValue("address", `Approx. location at ${latLng.lat.toFixed(4)}, ${latLng.lng.toFixed(4)}`, { shouldValidate: true });
-                        toast({ title: "Location Updated", description: "Address updated from map pin." });
-                    }}
-                />
-            </div>
-            <div className="relative z-10 p-6 md:p-8 h-full flex items-start">
-                <Card className="w-full max-w-md">
-                    <CardHeader>
-                        <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
-                        <CardDescription>Enter the address so guests can find you.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                        <FormField control={control} name="address" render={({ field }) => (
+                    <div className="space-y-3 pt-4 border-t">
+                         <FormField control={control} name="address" render={({ field }) => (
                             <FormItem>
-                                <FormLabel htmlFor="address-search">Find Your Address</FormLabel>
+                                <FormLabel htmlFor="address-search">Address</FormLabel>
                                 <FormControl>
                                     <Input 
                                         id="address-search" 
@@ -301,141 +247,33 @@ const LocationStep = () => {
                                 </FormItem>
                             )}/>
                         </div>
-                        <div className="flex items-center space-x-2 pt-2">
-                            <Checkbox id="update-pin" defaultChecked />
-                            <Label htmlFor="update-pin" className="text-sm font-normal">Update the address by moving the pin on the map.</Label>
-                        </div>
-                        <p className="text-xs text-muted-foreground">If the pin isn't quite right, you can drag it to the correct location.</p>
+                    </div>
+                </CardContent>
+            </div>
+            <div className="space-y-6">
+                <Card className="bg-muted/30 border-dashed">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb className="h-5 w-5 text-yellow-400" />What should I consider when choosing a name?</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                            <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Keep it short and catchy</li>
+                            <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Avoid abbreviations</li>
+                            <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Stick to the facts</li>
+                        </ul>
+                    </CardContent>
+                </Card>
+                <Card className="bg-muted/30 border-dashed">
+                        <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg"><Info className="h-5 w-5 text-primary"/>Why do I need to name my property?</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">The name is the first thing guests see. A good name can make your listing memorable.
+                        <br/><strong className="text-foreground">Do not use your property's address as the name.</strong>
+                        </p>
                     </CardContent>
                 </Card>
             </div>
-        </div>
-    );
-};
-
-const DetailsStep = () => {
-    return (
-        <div>
-            <CardHeader className="p-0 text-center md:text-left">
-                <CardTitle className="text-3xl font-headline text-primary">Services at your property</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0 pt-8 space-y-8">
-                <FormItem>
-                    <FormLabel className="text-lg font-semibold">Do you serve guests breakfast?</FormLabel>
-                    <RadioGroup defaultValue="no" className="flex gap-4 pt-2">
-                        <FormItem className="flex items-center space-x-2">
-                            <RadioGroupItem value="yes" id="breakfast-yes"/>
-                            <Label htmlFor="breakfast-yes" className="font-normal">Yes</Label>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2">
-                            <RadioGroupItem value="no" id="breakfast-no"/>
-                            <Label htmlFor="breakfast-no" className="font-normal">No</Label>
-                        </FormItem>
-                    </RadioGroup>
-                </FormItem>
-                <FormItem>
-                    <FormLabel className="text-lg font-semibold">Is parking available to guests?</FormLabel>
-                    <RadioGroup defaultValue="no" className="flex gap-4 pt-2">
-                        <FormItem className="flex items-center space-x-2">
-                            <RadioGroupItem value="yes-free" id="parking-yes-free"/>
-                            <Label htmlFor="parking-yes-free" className="font-normal">Yes, free</Label>
-                        </FormItem>
-                         <FormItem className="flex items-center space-x-2">
-                            <RadioGroupItem value="yes-paid" id="parking-yes-paid"/>
-                            <Label htmlFor="parking-yes-paid" className="font-normal">Yes, paid</Label>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2">
-                            <RadioGroupItem value="no" id="parking-no"/>
-                            <Label htmlFor="parking-no" className="font-normal">No</Label>
-                        </FormItem>
-                    </RadioGroup>
-                </FormItem>
-            </CardContent>
-        </div>
-    );
-};
-
-
-const amenitiesList = {
-  general: [
-    { id: "Wifi", label: "Free Wifi", icon: Wifi },
-    { id: "Air conditioning", label: "Air conditioning", icon: Snowflake },
-    { id: "Heating", label: "Heating", icon: Wind },
-    { id: "Parking", label: "Parking", icon: SquareParking },
-  ],
-  cookingCleaning: [
-    { id: "Kitchen", label: "Kitchen", icon: Utensils },
-    { id: "Washing machine", label: "Washing machine", icon: WashingMachine },
-  ],
-  entertainment: [
-    { id: "Flat-screen TV", label: "Flat-screen TV", icon: Tv },
-    { id: "Swimming pool", label: "Swimming pool", icon: Waves },
-  ],
-  outsideView: [
-    { id: "Balcony", label: "Balcony", icon: Sun },
-    { id: "Terrace", label: "Terrace", icon: Eye },
-  ],
-};
-
-const AmenitiesStep = () => {
-    const { control } = useFormContext<ListingFormValues>();
-    return (
-        <div>
-            <CardHeader className="p-0 text-center md:text-left">
-                <CardTitle className="text-3xl font-headline text-primary">What amenities do you offer?</CardTitle>
-                <CardDescription className="pt-2">Select all the amenities available to guests.</CardDescription>
-            </CardHeader>
-            <CardContent className="p-0 pt-8">
-                 <FormField
-                    control={control}
-                    name="amenities"
-                    render={() => (
-                        <FormItem className="space-y-6">
-                            {Object.entries(amenitiesList).map(([categoryKey, amenities]) => (
-                                <div key={categoryKey}>
-                                    <h3 className="text-lg font-semibold capitalize mb-3">{categoryKey.replace(/([A-Z])/g, ' $1')}</h3>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        {amenities.map((item) => (
-                                        <FormField
-                                            key={item.id}
-                                            control={control}
-                                            name="amenities"
-                                            render={({ field }) => {
-                                            return (
-                                                <FormItem
-                                                key={item.id}
-                                                className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 hover:bg-muted/50 transition-colors"
-                                                >
-                                                <FormControl>
-                                                    <Checkbox
-                                                        checked={field.value?.includes(item.id)}
-                                                        onCheckedChange={(checked) => {
-                                                            return checked
-                                                            ? field.onChange([...(field.value || []), item.id])
-                                                            : field.onChange(
-                                                                field.value?.filter(
-                                                                (value) => value !== item.id
-                                                                )
-                                                            )
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormLabel className="font-normal flex items-center gap-2 cursor-pointer">
-                                                    <item.icon className="h-5 w-5 text-muted-foreground" />
-                                                    {item.label}
-                                                </FormLabel>
-                                                </FormItem>
-                                            )
-                                            }}
-                                        />
-                                        ))}
-                                    </div>
-                                </div>
-                             ))}
-                        </FormItem>
-                    )}
-                />
-            </CardContent>
         </div>
     );
 };
@@ -494,8 +332,7 @@ const PhotosStep = () => {
                     <h4 className="font-semibold mb-2">Photo Previews ({photoPreviews.length}/5):</h4>
                     <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                         {photoPreviews.map((src, index) => (
-                        <div key={index} className="relative aspect-square rounded-md overflow-hidden">
-                          <Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" />
+                        <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" />
                           <button type="button" onClick={() => setPhotoPreviews(p => p.filter((_, i) => i !== index))} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5"><X className="h-3 w-3"/></button>
                         </div>
                         ))}
@@ -532,109 +369,6 @@ const PhotosStep = () => {
 };
 
 
-const languages = ["Chinese", "English", "French", "Portuguese", "Spanish"];
-const LanguagesStep = () => {
-    return (
-        <div>
-            <CardHeader className="p-0 text-center md:text-left">
-                <CardTitle className="text-3xl font-headline text-primary">What languages do you or your staff speak?</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0 pt-8">
-                <FormItem>
-                    <FormLabel className="text-lg font-semibold">Select languages</FormLabel>
-                    <div className="space-y-2 pt-2">
-                        {languages.map(lang => (
-                             <FormItem key={lang} className="flex flex-row items-center space-x-3 space-y-0">
-                                <FormControl>
-                                    <Checkbox />
-                                </FormControl>
-                                <FormLabel className="font-normal">{lang}</FormLabel>
-                             </FormItem>
-                        ))}
-                    </div>
-                     <Button variant="link" className="px-0 mt-2" onClick={() => toast({ title: "Feature coming soon!" })}>
-                        Add additional languages
-                    </Button>
-                </FormItem>
-            </CardContent>
-        </div>
-    );
-};
-
-const HouseRulesStep = () => {
-    const timeOptions = Array.from({ length: 24 }, (_, i) => {
-        const hour = i.toString().padStart(2, '0');
-        return `${hour}:00`;
-    });
-
-    return (
-        <div className="grid md:grid-cols-2 gap-8 items-start">
-            <div>
-                <CardHeader className="p-0 text-center md:text-left">
-                    <CardTitle className="text-3xl font-headline text-primary">House Rules</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0 pt-8 space-y-6">
-                    <div className="space-y-4">
-                        <FormItem className="flex items-center justify-between p-3 border rounded-md">
-                            <FormLabel className="font-normal flex items-center gap-2"><Smoking className="h-4 w-4"/>Smoking allowed</FormLabel>
-                            <FormControl><Switch /></FormControl>
-                        </FormItem>
-                         <FormItem className="flex items-center justify-between p-3 border rounded-md">
-                            <FormLabel className="font-normal flex items-center gap-2"><PartyPopper className="h-4 w-4"/>Parties/events allowed</FormLabel>
-                            <FormControl><Switch /></FormControl>
-                        </FormItem>
-                    </div>
-                    <FormItem>
-                        <FormLabel className="text-base font-semibold flex items-center gap-2"><Dog className="h-5 w-5"/>Do you allow pets?</FormLabel>
-                        <RadioGroup defaultValue="no" className="flex gap-4 pt-2">
-                            <FormItem className="flex items-center space-x-2"><RadioGroupItem value="yes" id="pets-yes"/><Label htmlFor="pets-yes" className="font-normal">Yes</Label></FormItem>
-                            <FormItem className="flex items-center space-x-2"><RadioGroupItem value="request" id="pets-request"/><Label htmlFor="pets-request" className="font-normal">Upon request</Label></FormItem>
-                            <FormItem className="flex items-center space-x-2"><RadioGroupItem value="no" id="pets-no"/><Label htmlFor="pets-no" className="font-normal">No</Label></FormItem>
-                        </RadioGroup>
-                    </FormItem>
-                    <div className="space-y-4 pt-4 border-t">
-                        <div>
-                            <h3 className="text-base font-semibold">Check-in</h3>
-                            <div className="grid grid-cols-2 gap-4 mt-2">
-                                <FormItem>
-                                    <FormLabel>From</FormLabel>
-                                    <Select><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeOptions.map(t => <SelectItem key={`cin-from-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select>
-                                </FormItem>
-                                <FormItem>
-                                    <FormLabel>Until</FormLabel>
-                                    <Select><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeOptions.map(t => <SelectItem key={`cin-to-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select>
-                                </FormItem>
-                            </div>
-                        </div>
-                         <div>
-                            <h3 className="text-base font-semibold">Check-out</h3>
-                            <div className="grid grid-cols-2 gap-4 mt-2">
-                                 <FormItem>
-                                    <FormLabel>From</FormLabel>
-                                    <Select><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeOptions.map(t => <SelectItem key={`cout-from-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select>
-                                </FormItem>
-                                <FormItem>
-                                    <FormLabel>Until</FormLabel>
-                                    <Select><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeOptions.map(t => <SelectItem key={`cout-to-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select>
-                                </FormItem>
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
-            </div>
-            <Card className="bg-muted/30 border-dashed">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb className="h-5 w-5 text-yellow-400" />What if my house rules change?</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground">You can easily customize these rules later from your partner dashboard. Be sure to inform any confirmed guests of changes.</p>
-                </CardContent>
-            </Card>
-        </div>
-    );
-};
-
-
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const router = useRouter();
@@ -649,25 +383,17 @@ export default function ListPropertyPage() {
 
 
   const nextStep = async () => {
-    // Trigger validation for the current step's fields before proceeding
     const currentStepConfig = listingSteps[currentStep];
     const fields = currentStepConfig?.fields;
-    const isValid = fields ? await methods.trigger(fields as any) : true;
+    const isValid = fields ? await methods.trigger(fields as (keyof ListingFormValues)[]) : true;
 
     if (!isValid) {
         toast({ title: "Please complete the required fields.", variant: "destructive" });
         return;
     }
     
-    // Logic to jump over steps for "Land" property type
-    const propertyType = methods.getValues("propertyType");
-    let nextStepIndex = currentStep + 1;
-    if (propertyType === 'Land' && (currentStep >= 3 && currentStep <= 7)) { // Steps for Details, Amenities, Languages, House Rules
-      nextStepIndex = 8; // Jump to Pricing & Availability
-    }
-
-    if (nextStepIndex < listingSteps.length) {
-        setCurrentStep(nextStepIndex);
+    if (currentStep < listingSteps.length - 1) {
+        setCurrentStep(currentStep + 1);
     } else {
         toast({ title: "Listing Submitted (Demo)", description: "Your property is now pending review."});
         console.log(methods.getValues());
@@ -676,19 +402,13 @@ export default function ListPropertyPage() {
 
   const prevStep = () => {
     if (currentStep > 0) {
-      // Logic to jump back correctly if coming from a skipped sequence
-      const propertyType = methods.getValues("propertyType");
-      let prevStepIndex = currentStep - 1;
-      if (propertyType === 'Land' && currentStep === 8) {
-        prevStepIndex = 2; // Jump back to Location
-      }
-      setCurrentStep(prevStepIndex);
+      setCurrentStep(currentStep - 1);
     }
   };
   
   const handleListingTypeSelect = (type: 'property' | 'car') => {
     if (type === 'property') {
-      setCurrentStep(1); // Move to the next step which is 'basics'
+      setCurrentStep(1);
     } else if (type === 'car') {
       router.push('/cars-for-sale/new');
     }
@@ -696,10 +416,9 @@ export default function ListPropertyPage() {
   
   const fiveStages = [
     { title: 'Basic info', steps: [1] },
-    { title: 'Property setup', steps: [2] }, // Simplified: just location for now
-    { title: 'Photos', steps: [3] },
-    { title: 'Pricing and calendar', steps: [4] },
-    { title: 'Review and complete', steps: [5] }
+    { title: 'Photos', steps: [2] },
+    { title: 'Pricing and calendar', steps: [3] },
+    { title: 'Review and complete', steps: [4] }
   ];
 
   const getCurrentStageIndex = () => {
@@ -708,7 +427,7 @@ export default function ListPropertyPage() {
             return i;
         }
     }
-    return -1; // Should not happen if step is > 0
+    return -1;
   }
   
   const currentStageIndex = getCurrentStageIndex();
@@ -752,7 +471,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("p-6 md:p-8 flex-grow flex flex-col", currentStep === 2 ? "p-0 md:p-0" : "")}>
+        <div className={cn("p-6 md:p-8 flex-grow flex flex-col", currentStep === 2 ? "" : "")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -764,9 +483,8 @@ export default function ListPropertyPage() {
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
-                    {currentStep === 2 && <LocationStep />}
-                    {currentStep === 3 && <PhotosStep />}
-                    {currentStep > 3 && (
+                    {currentStep === 2 && <PhotosStep />}
+                    {currentStep > 2 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep + 1} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
