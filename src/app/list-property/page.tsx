@@ -620,7 +620,7 @@ export default function ListPropertyPage() {
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(prev => prev + 1);
     }
   };
   
@@ -690,8 +690,12 @@ export default function ListPropertyPage() {
         </div>
         <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
             {currentStep === 0 ? (
-                <Button variant="outline" onClick={() => router.push('/')}>
-                  <ArrowLeft className="mr-2 h-4 w-4" /> Exit
+                <Button variant="outline" asChild>
+                    <Link href="/dashboard">
+                        <span>
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                        </span>
+                    </Link>
                 </Button>
             ) : (
                 <Button variant="outline" onClick={prevStep}>
