@@ -23,6 +23,7 @@ import Link from "next/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Image from "next/image";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
 
 const listingFormSchema = z.object({
@@ -468,11 +469,14 @@ const PhotosStep = () => {
           <CardTitle className="text-3xl font-headline text-primary">What does your place look like?</CardTitle>
           <CardDescription className="pt-2">Upload at least 5 high-quality photos to attract guests. The first photo will be your cover image.</CardDescription>
         </CardHeader>
-        <CardContent className="p-0 pt-8">
-           <div className="relative border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center h-80 flex flex-col justify-center items-center">
+        <CardContent className="p-0 pt-8 space-y-4">
+            <div 
+                className="relative border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center h-64 flex flex-col justify-center items-center cursor-pointer hover:border-primary transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+            >
                 <UploadCloud className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">Drag and drop or</p>
-                <Button type="button" onClick={() => fileInputRef.current?.click()}>
+                <p className="text-muted-foreground mb-2">Drag and drop or</p>
+                <Button type="button">
                     Upload photos
                 </Button>
                 <Input
@@ -484,11 +488,11 @@ const PhotosStep = () => {
                     className="hidden"
                 />
             </div>
-            <p className="text-xs text-muted-foreground mt-2 text-center">jpg/jpeg or png, maximum 47MB each</p>
+            <p className="text-xs text-muted-foreground text-center">jpg/jpeg or png, maximum 47MB each</p>
 
             {photoPreviews.length > 0 && (
-                <div className="mt-4">
-                    <h4 className="font-semibold mb-2">Uploaded Previews ({photoPreviews.length}/5):</h4>
+                <div>
+                    <h4 className="font-semibold mb-2">Photo Previews ({photoPreviews.length}/5):</h4>
                     <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                         {photoPreviews.map((src, index) => (
                         <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" /></div>
@@ -496,6 +500,13 @@ const PhotosStep = () => {
                     </div>
                 </div>
             )}
+            <FormItem>
+                <FormLabel>Photo descriptions</FormLabel>
+                <FormControl>
+                    <Textarea placeholder="Briefly describe what's in the photos to improve accessibility and search results." rows={3} />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
         </CardContent>
       </div>
        <Card className="bg-muted/30 border-dashed">
