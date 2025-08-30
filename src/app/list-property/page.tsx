@@ -1,7 +1,7 @@
 // src/app/list-property/page.tsx
 'use client';
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -442,7 +442,7 @@ const AmenitiesStep = () => {
 
 const PhotosStep = () => {
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
