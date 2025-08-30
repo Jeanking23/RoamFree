@@ -216,14 +216,17 @@ const LocationStep = () => {
     const address = watch('address');
 
     return (
-        <div className="grid md:grid-cols-2 gap-8 items-start h-full">
-            <div className="relative z-10 p-6 md:p-8 h-full flex items-start">
-                 <div className="w-full space-y-6">
-                    <CardHeader className="p-0">
+        <div className="relative h-full w-full">
+            <div className="absolute inset-0">
+                <InteractiveMapPlaceholder pickup={address} />
+            </div>
+            <div className="absolute top-4 left-4 z-10 w-full max-w-md">
+                <Card className="shadow-2xl bg-background/90 backdrop-blur-sm">
+                    <CardHeader>
                         <CardTitle className="text-3xl font-headline text-primary">Where is your property?</CardTitle>
                         <CardDescription className="pt-2">Enter the address so guests can find you.</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-0 pt-6 space-y-4">
+                    <CardContent className="space-y-4">
                         <FormField control={control} name="address" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Find Your Address</FormLabel>
@@ -269,16 +272,7 @@ const LocationStep = () => {
                             )}/>
                         </div>
                     </CardContent>
-                </div>
-            </div>
-            <div className="relative h-full min-h-[400px] md:min-h-0">
-                 <div className="absolute inset-0">
-                    <InteractiveMapPlaceholder pickup={address} />
-                 </div>
-                 <div className="absolute bottom-4 left-4 right-4 bg-background/80 backdrop-blur-sm p-3 rounded-md text-center text-sm">
-                    <p className="font-semibold">Update the address by moving the pin on the map.</p>
-                    <p className="text-muted-foreground text-xs">If the pin isn't quite right, you can drag it to the correct location.</p>
-                </div>
+                </Card>
             </div>
         </div>
     );
@@ -423,17 +417,17 @@ export default function ListPropertyPage() {
   
   const fiveStages = [
     { title: 'Basic info', steps: [1] },
-    { title: 'Property setup', steps: [2] }, // Location + Amenities + maybe more later
-    { title: 'Photos', steps: [3] },
-    { title: 'Pricing and calendar', steps: [4] },
-    { title: 'Review and complete', steps: [5] }
+    { title: 'Property setup', steps: [2, 3] }, // Location + Amenities + maybe more later
+    { title: 'Photos', steps: [4] },
+    { title: 'Pricing and calendar', steps: [5] }, // Placeholder step 5
+    { title: 'Review and complete', steps: [5] } // Placeholder step 5
   ];
 
   const getCurrentStageIndex = () => {
     if (currentStep >= 1 && currentStep <= 1) return 0; // Basic info
-    if (currentStep >= 2 && currentStep <= 2) return 1; // Property setup
-    if (currentStep === 3) return 2; // Photos (placeholder)
-    if (currentStep === 4) return 3; // Pricing and calendar
+    if (currentStep >= 2 && currentStep <= 3) return 1; // Property setup (Location, Amenities)
+    if (currentStep === 4) return 2; // Photos
+    if (currentStep === 5) return 3; // Pricing and calendar
     if (currentStep === 5) return 4; // Review
     return -1;
   }
@@ -479,7 +473,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("p-0 md:p-0 flex-grow flex flex-col", currentStep === 2 ? "" : "p-6 md:p-8")}>
+        <div className={cn("flex-grow flex flex-col", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
