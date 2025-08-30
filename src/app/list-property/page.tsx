@@ -1,4 +1,3 @@
-
 // src/app/list-property/page.tsx
 'use client';
 
@@ -212,6 +211,79 @@ const NameStep = () => {
     );
 };
 
+const LocationStep = () => {
+    const { control, watch, setValue } = useFormContext<ListingFormValues>();
+    const address = watch('address');
+
+    return (
+        <div className="grid md:grid-cols-2 gap-8 items-start h-full">
+            <div className="relative z-10 p-6 md:p-8 h-full flex items-start">
+                 <div className="w-full space-y-6">
+                    <CardHeader className="p-0">
+                        <CardTitle className="text-3xl font-headline text-primary">Where is your property?</CardTitle>
+                        <CardDescription className="pt-2">Enter the address so guests can find you.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-0 pt-6 space-y-4">
+                        <FormField control={control} name="address" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Find Your Address</FormLabel>
+                                <FormControl><Input placeholder="123 Main St, Anytown, USA" {...field} /></FormControl>
+                            </FormItem>
+                        )}/>
+                        <FormField control={control} name="aptSuite" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Apartment or floor number (Optional)</FormLabel>
+                                <FormControl><Input placeholder="e.g., Apt 4B" {...field} /></FormControl>
+                            </FormItem>
+                        )}/>
+                         <div className="grid grid-cols-2 gap-4">
+                            <FormField control={control} name="country" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Country/Region</FormLabel>
+                                    <FormControl>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <SelectTrigger><SelectValue placeholder="Select Country"/></SelectTrigger>
+                                            <SelectContent><SelectItem value="USA">United States</SelectItem><SelectItem value="Canada">Canada</SelectItem></SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                </FormItem>
+                            )}/>
+                             <FormField control={control} name="city" render={({ field }) => (
+                                <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field}/></FormControl></FormItem>
+                            )}/>
+                        </div>
+                         <div className="grid grid-cols-2 gap-4">
+                            <FormField control={control} name="state" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>State</FormLabel>
+                                    <FormControl>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <SelectTrigger><SelectValue placeholder="Select State"/></SelectTrigger>
+                                            <SelectContent><SelectItem value="CA">California</SelectItem><SelectItem value="NY">New York</SelectItem></SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                </FormItem>
+                            )}/>
+                            <FormField control={control} name="zip" render={({ field }) => (
+                                <FormItem><FormLabel>Zip Code</FormLabel><FormControl><Input {...field}/></FormControl></FormItem>
+                            )}/>
+                        </div>
+                    </CardContent>
+                </div>
+            </div>
+            <div className="relative h-full min-h-[400px] md:min-h-0">
+                 <div className="absolute inset-0">
+                    <InteractiveMapPlaceholder pickup={address} />
+                 </div>
+                 <div className="absolute bottom-4 left-4 right-4 bg-background/80 backdrop-blur-sm p-3 rounded-md text-center text-sm">
+                    <p className="font-semibold">Update the address by moving the pin on the map.</p>
+                    <p className="text-muted-foreground text-xs">If the pin isn't quite right, you can drag it to the correct location.</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 const PhotosStep = () => {
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -359,10 +431,10 @@ export default function ListPropertyPage() {
 
   const getCurrentStageIndex = () => {
     if (currentStep >= 1 && currentStep <= 1) return 0; // Basic info
-    if (currentStep >= 2 && currentStep <= 3) return 1; // Property setup
-    if (currentStep === 4) return 2; // Photos
-    if (currentStep === 5) return 3; // Pricing and calendar
-    if (currentStep === 6) return 4; // Review
+    if (currentStep >= 2 && currentStep <= 2) return 1; // Property setup
+    if (currentStep === 3) return 2; // Photos (placeholder)
+    if (currentStep === 4) return 3; // Pricing and calendar
+    if (currentStep === 5) return 4; // Review
     return -1;
   }
   
@@ -407,7 +479,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("p-6 md:p-8 flex-grow flex flex-col", currentStep === 2 ? "" : "")}>
+        <div className={cn("p-0 md:p-0 flex-grow flex flex-col", currentStep === 2 ? "" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -419,8 +491,9 @@ export default function ListPropertyPage() {
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
+                    {currentStep === 2 && <LocationStep />}
                     {currentStep === 4 && <PhotosStep />}
-                    {currentStep > 1 && currentStep !== 4 && (
+                    {currentStep > 2 && currentStep !== 4 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep + 1} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
