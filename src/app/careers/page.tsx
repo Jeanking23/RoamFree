@@ -28,7 +28,7 @@ export default function CareersPage() {
              <div className="mt-6">
                  <Button asChild>
                     <Link href="/about">
-                       <Building className="mr-2 h-4 w-4"/> Learn More About Us
+                       <span><Building className="mr-2 h-4 w-4"/> Learn More About Us</span>
                     </Link>
                 </Button>
             </div>
