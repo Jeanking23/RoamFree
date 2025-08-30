@@ -28,7 +28,7 @@ export default function OurMissionPage() {
              <div className="mt-6">
                  <Button asChild>
                     <Link href="/about">
-                       <Globe className="mr-2 h-4 w-4"/> About RoamFree
+                       <span><Globe className="mr-2 h-4 w-4"/> About RoamFree</span>
                     </Link>
                 </Button>
             </div>
