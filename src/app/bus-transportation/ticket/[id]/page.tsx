@@ -214,7 +214,7 @@ export default function BusTicketPage() {
                         <Button variant="outline" onClick={handleSaveToBookings}><Save className="mr-2 h-4 w-4"/> Save</Button>
                         <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
                             <Link href={`/bus-transportation/tracking/${bookingId}?routeId=${routeId}`}>
-                                Track Bus
+                                <span>Track Bus</span>
                             </Link>
                         </Button>
                     </div>
