@@ -692,9 +692,7 @@ export default function ListPropertyPage() {
             {currentStep === 0 ? (
                 <Button variant="outline" asChild>
                     <Link href="/">
-                        <span>
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Exit
-                        </span>
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Exit
                     </Link>
                 </Button>
             ) : (
