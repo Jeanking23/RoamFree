@@ -419,7 +419,7 @@ export default function AiTripPlannerSurveyPage() {
                             </CardContent>
                              <CardFooter>
                                 <Button className="w-full" onClick={handleBookStay}>
-                                    <BedDouble className="mr-2 h-4 w-4"/>Book this Stay
+                                    <span><BedDouble className="mr-2 h-4 w-4"/>Book this Stay</span>
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -428,7 +428,7 @@ export default function AiTripPlannerSurveyPage() {
                             <CardContent><p className="text-sm">{tripPlan.transportSuggestion}</p></CardContent>
                             <CardFooter>
                                 <Button className="w-full" onClick={handleArrangeTransport}>
-                                    <Car className="mr-2 h-4 w-4"/>Arrange Transport
+                                    <span><Car className="mr-2 h-4 w-4"/>Arrange Transport</span>
                                 </Button>
                             </CardFooter>
                         </Card>
