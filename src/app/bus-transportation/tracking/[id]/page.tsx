@@ -152,7 +152,7 @@ export default function BusTrackingPage() {
                  <CardFooter className="bg-muted/50 p-4">
                     <Button variant="outline" asChild>
                         <Link href={`/bus-transportation/ticket/${bookingId}?routeId=${routeId}`}>
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Ticket
+                            <span><ArrowLeft className="mr-2 h-4 w-4" /> Back to Ticket</span>
                         </Link>
                     </Button>
                 </CardFooter>
