@@ -691,7 +691,7 @@ export default function ListPropertyPage() {
         <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
             {currentStep === 0 ? (
                 <Button variant="outline" onClick={() => router.push('/')}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Exit
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Exit
                 </Button>
             ) : (
                 <Button variant="outline" onClick={prevStep}>
