@@ -175,10 +175,10 @@ function DashboardPage() {
                 <CardTitle>Manage Your Listings</CardTitle>
                 <div className="flex gap-2">
                     <Button asChild size="sm">
-                        <Link href="/list-property"><ListPlus className="mr-2 h-4 w-4" /> Add Property/Rental</Link>
+                        <Link href="/list-property"><span><ListPlus className="mr-2 h-4 w-4" /> Add Property/Rental</span></Link>
                     </Button>
-                    <Button asChild size="sm" variant="outline" onClick={() => toast({title: "List Car for Sale", description: "Navigating to car listing form."})}>
-                        <Link href="/cars-for-sale/new"><CarFront className="mr-2 h-4 w-4" /> List Car for Sale</Link>
+                    <Button asChild size="sm" variant="outline">
+                        <Link href="/cars-for-sale/new"><span><CarFront className="mr-2 h-4 w-4" /> List Car for Sale</span></Link>
                     </Button>
                  </div>
               </div>
