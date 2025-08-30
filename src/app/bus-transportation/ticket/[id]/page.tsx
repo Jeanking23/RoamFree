@@ -205,9 +205,7 @@ export default function BusTicketPage() {
                 <CardFooter className="bg-muted/50 p-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
                      <Button variant="outline" asChild className="col-span-2 sm:col-span-1">
                         <Link href="/bus-transportation">
-                           <span>
-                                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Search
-                           </span>
+                           <span><ArrowLeft className="mr-2 h-4 w-4" /> Back to Search</span>
                         </Link>
                     </Button>
                     <div className="col-span-2 grid grid-cols-2 gap-2">
