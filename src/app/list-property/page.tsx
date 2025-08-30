@@ -229,8 +229,8 @@ const LocationStep = () => {
                     }}
                 />
             </div>
-            <div className="relative z-10 p-6 md:p-8 h-full flex items-start pointer-events-none">
-                <Card className="w-full max-w-md pointer-events-auto">
+            <div className="relative z-10 p-6 md:p-8 h-full flex items-start">
+                <Card className="w-full max-w-md">
                     <CardHeader>
                         <CardTitle className="text-2xl font-headline text-primary">Where is your property?</CardTitle>
                         <CardDescription>Enter the address so guests can find you.</CardDescription>
@@ -620,7 +620,7 @@ export default function ListPropertyPage() {
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep(prev => prev - 1);
     }
   };
   
@@ -691,11 +691,11 @@ export default function ListPropertyPage() {
         <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
             {currentStep === 0 ? (
                 <Button variant="outline" asChild>
-                  <Link href="/">
-                    <span className="flex items-center">
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Exit
-                    </span>
-                  </Link>
+                    <Link href="/">
+                        <span className="flex items-center">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Exit
+                        </span>
+                    </Link>
                 </Button>
             ) : (
                 <Button variant="outline" onClick={prevStep}>
