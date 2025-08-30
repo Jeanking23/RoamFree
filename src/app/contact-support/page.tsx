@@ -241,7 +241,7 @@ export default function ContactSupportPage() {
                   </h3>
                   <p className="text-muted-foreground">Many common questions are answered in our FAQ section.</p>
                   <Button variant="outline" className="mt-2" asChild>
-                    <Link href="/faq">Visit our FAQ Page (Demo)</Link>
+                    <Link href="/faq"><span>Visit our FAQ Page (Demo)</span></Link>
                   </Button>
                 </div>
                  <div>
