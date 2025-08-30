@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking, UploadCloud, Smoking, PartyPopper, Dog } from "lucide-react";
+import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking, UploadCloud, Smoking, PartyPopper, Dog, Camera as CameraIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -442,6 +442,8 @@ const AmenitiesStep = () => {
 
 const PhotosStep = () => {
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
@@ -451,7 +453,7 @@ const PhotosStep = () => {
         reader.onloadend = () => {
           newPreviews.push(reader.result as string);
           if (newPreviews.length === files.length) {
-            setPhotoPreviews(prev => [...prev, ...newPreviews]);
+            setPhotoPreviews(prev => [...prev, ...newPreviews].slice(0, 5)); // Limit to 5 for preview
           }
         };
         reader.readAsDataURL(file);
@@ -460,27 +462,62 @@ const PhotosStep = () => {
   };
 
   return (
-    <div>
-      <CardHeader className="p-0 text-center md:text-left">
-        <CardTitle className="text-3xl font-headline text-primary">Add photos to your listing</CardTitle>
-        <CardDescription className="pt-2">Upload high-quality photos to attract guests.</CardDescription>
-      </CardHeader>
-      <CardContent className="p-0 pt-8">
-        <FormItem>
-          <FormLabel className="flex items-center gap-2"><UploadCloud className="h-5 w-5 text-primary"/>Upload Photos</FormLabel>
-          <FormControl>
-            <Input type="file" accept="image/*" multiple onChange={handlePhotoUpload} />
-          </FormControl>
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-4">
-            {photoPreviews.map((src, index) => (
-              <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" /></div>
-            ))}
-          </div>
-        </FormItem>
-      </CardContent>
+    <div className="grid md:grid-cols-2 gap-8 items-start">
+      <div>
+        <CardHeader className="p-0">
+          <CardTitle className="text-3xl font-headline text-primary">What does your place look like?</CardTitle>
+          <CardDescription className="pt-2">Upload at least 5 high-quality photos to attract guests. The first photo will be your cover image.</CardDescription>
+        </CardHeader>
+        <CardContent className="p-0 pt-8">
+           <div className="relative border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center h-80 flex flex-col justify-center items-center">
+                <UploadCloud className="h-12 w-12 text-muted-foreground mb-4" />
+                <p className="text-muted-foreground mb-4">Drag and drop or</p>
+                <Button type="button" onClick={() => fileInputRef.current?.click()}>
+                    Upload photos
+                </Button>
+                <Input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg, image/png"
+                    multiple
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                />
+            </div>
+            <p className="text-xs text-muted-foreground mt-2 text-center">jpg/jpeg or png, maximum 47MB each</p>
+
+            {photoPreviews.length > 0 && (
+                <div className="mt-4">
+                    <h4 className="font-semibold mb-2">Uploaded Previews ({photoPreviews.length}/5):</h4>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                        {photoPreviews.map((src, index) => (
+                        <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" /></div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </CardContent>
+      </div>
+       <Card className="bg-muted/30 border-dashed">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb className="h-5 w-5 text-yellow-400" />What if I don't have professional photos?</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">No problem! Photos taken with a smartphone can work well.</p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Clean up the space before taking photos.</li>
+                    <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Take photos during the day for the best natural light.</li>
+                    <li className="flex items-start"><CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />Use landscape (horizontal) orientation.</li>
+                </ul>
+                <Button variant="link" asChild className="p-0 h-auto">
+                    <a href="#" target="_blank" rel="noopener noreferrer">Read our guide to great photos</a>
+                </Button>
+            </CardContent>
+        </Card>
     </div>
   );
 };
+
 
 const languages = ["Chinese", "English", "French", "Portuguese", "Spanish"];
 const LanguagesStep = () => {
@@ -696,7 +733,7 @@ export default function ListPropertyPage() {
                 </Button>
             ) : (
                 <Button variant="outline" onClick={prevStep}>
-                    <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                    <span><ArrowLeft className="mr-2 h-4 w-4"/> Back</span>
                 </Button>
             )}
             {currentStep !== 0 && (
