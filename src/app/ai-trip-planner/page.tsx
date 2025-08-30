@@ -451,7 +451,7 @@ export default function AiTripPlannerSurveyPage() {
                     )}
 
                      <Button variant="link" onClick={() => setTripPlan(null)}>
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Start Over
+                        <span><ArrowLeft className="mr-2 h-4 w-4" /> Start Over</span>
                     </Button>
                 </motion.div>
             )}
