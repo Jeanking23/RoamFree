@@ -1,3 +1,4 @@
+
 // src/app/list-property/page.tsx
 'use client';
 
@@ -48,9 +49,10 @@ const listingSteps = [
   // Step 0 - Not in progress bar
   { id: "type", title: "Select Type" }, 
   // Progress bar steps start here (index 1)
-  { id: "basics", title: "Basic info", fields: ["propertyName", "propertyType", "listingType", "bedrooms", "bathrooms", "maxGuests", "address", "city", "country", "state", "zip"] },
+  { id: "basics", title: "Basic info", fields: ["propertyName", "propertyType", "listingType", "bedrooms", "bathrooms", "maxGuests"] },
+  { id: "location", title: "Location", fields: ["address", "city", "country", "state", "zip"] },
+  { id: "amenities", title: "Amenities" },
   { id: "photos", title: "Photos" },
-  { id: "pricing", title: "Pricing and calendar" },
   { id: "review", title: "Review and complete" },
 ];
 
@@ -180,74 +182,6 @@ const NameStep = () => {
                             )}
                         </div>
                     )}
-                    <div className="space-y-3 pt-4 border-t">
-                         <FormField control={control} name="address" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel htmlFor="address-search">Address</FormLabel>
-                                <FormControl>
-                                    <Input 
-                                        id="address-search" 
-                                        placeholder="Start typing your street address..." 
-                                        {...field}
-                                        value={field.value || ''}
-                                    />
-                                </FormControl>
-                                <FormMessage/>
-                            </FormItem>
-                        )}/>
-                        <FormField control={control} name="aptSuite" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Apartment or floor number (Optional)</FormLabel>
-                                <FormControl><Input placeholder="e.g., Apt 3B" {...field} value={field.value || ''}/></FormControl>
-                                <FormMessage/>
-                            </FormItem>
-                        )}/>
-                        <div className="grid grid-cols-2 gap-4">
-                            <FormField control={control} name="country" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Country/Region</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl><SelectTrigger><SelectValue placeholder="Select Country"/></SelectTrigger></FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="US">United States</SelectItem>
-                                            <SelectItem value="CA">Canada</SelectItem>
-                                            <SelectItem value="CM">Cameroon</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}/>
-                            <FormField control={control} name="city" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>City</FormLabel>
-                                    <FormControl><Input placeholder="e.g., Camden" {...field} value={field.value || ''}/></FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}/>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <FormField control={control} name="state" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>State</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl><SelectTrigger><SelectValue placeholder="Select State"/></SelectTrigger></FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="DE">Delaware</SelectItem>
-                                            <SelectItem value="CA">California</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}/>
-                            <FormField control={control} name="zip" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Zip Code</FormLabel>
-                                    <FormControl><Input placeholder="e.g., 19934" {...field} value={field.value || ''}/></FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}/>
-                        </div>
-                    </div>
                 </CardContent>
             </div>
             <div className="space-y-6">
@@ -308,14 +242,27 @@ const PhotosStep = () => {
         </CardHeader>
         <CardContent className="p-0 pt-8 space-y-4">
             <div 
-                className="relative border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center h-64 flex flex-col justify-center items-center cursor-pointer hover:border-primary transition-colors"
+                className="relative border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center min-h-64 flex flex-col justify-center items-center cursor-pointer hover:border-primary transition-colors"
                 onClick={() => fileInputRef.current?.click()}
             >
-                <UploadCloud className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-2">Drag and drop or</p>
-                <Button type="button">
-                    Upload photos
-                </Button>
+                {photoPreviews.length > 0 ? (
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                        {photoPreviews.map((src, index) => (
+                            <div key={index} className="relative aspect-square rounded-md overflow-hidden group/photo">
+                                <Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" />
+                                <button type="button" onClick={(e) => { e.stopPropagation(); setPhotoPreviews(p => p.filter((_, i) => i !== index))}} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 opacity-0 group-hover/photo:opacity-100 transition-opacity"><X className="h-3 w-3"/></button>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <>
+                        <UploadCloud className="h-12 w-12 text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground mb-2">Drag and drop or</p>
+                        <Button type="button">
+                            Upload photos
+                        </Button>
+                    </>
+                )}
                 <Input
                     ref={fileInputRef}
                     type="file"
@@ -327,18 +274,6 @@ const PhotosStep = () => {
             </div>
             <p className="text-xs text-muted-foreground text-center">jpg/jpeg or png, maximum 47MB each</p>
 
-            {photoPreviews.length > 0 && (
-                <div>
-                    <h4 className="font-semibold mb-2">Photo Previews ({photoPreviews.length}/5):</h4>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                        {photoPreviews.map((src, index) => (
-                        <div key={index} className="relative aspect-square rounded-md overflow-hidden"><Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" />
-                          <button type="button" onClick={() => setPhotoPreviews(p => p.filter((_, i) => i !== index))} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5"><X className="h-3 w-3"/></button>
-                        </div>
-                        ))}
-                    </div>
-                </div>
-            )}
             <FormItem>
                 <FormLabel>Photo descriptions</FormLabel>
                 <FormControl>
@@ -416,17 +351,18 @@ export default function ListPropertyPage() {
   
   const fiveStages = [
     { title: 'Basic info', steps: [1] },
-    { title: 'Photos', steps: [2] },
-    { title: 'Pricing and calendar', steps: [3] },
-    { title: 'Review and complete', steps: [4] }
+    { title: 'Property setup', steps: [2] }, // Location + Amenities + maybe more later
+    { title: 'Photos', steps: [3] },
+    { title: 'Pricing and calendar', steps: [4] },
+    { title: 'Review and complete', steps: [5] }
   ];
 
   const getCurrentStageIndex = () => {
-    for (let i = 0; i < fiveStages.length; i++) {
-        if (fiveStages[i].steps.includes(currentStep)) {
-            return i;
-        }
-    }
+    if (currentStep >= 1 && currentStep <= 1) return 0; // Basic info
+    if (currentStep >= 2 && currentStep <= 3) return 1; // Property setup
+    if (currentStep === 4) return 2; // Photos
+    if (currentStep === 5) return 3; // Pricing and calendar
+    if (currentStep === 6) return 4; // Review
     return -1;
   }
   
@@ -483,8 +419,8 @@ export default function ListPropertyPage() {
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
-                    {currentStep === 2 && <PhotosStep />}
-                    {currentStep > 2 && (
+                    {currentStep === 4 && <PhotosStep />}
+                    {currentStep > 1 && currentStep !== 4 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep + 1} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
