@@ -54,6 +54,13 @@ const listingFormSchema = z.object({
   breakfast: z.enum(["YES", "NO"]).optional(),
   parking: z.enum(["YES_FREE", "YES_PAID", "NO"]).optional(),
   languages: z.array(z.string()).optional(),
+  smokingAllowed: z.boolean().default(false),
+  partiesAllowed: z.boolean().default(false),
+  petsAllowed: z.enum(["YES", "UPON_REQUEST", "NO"]).default("NO"),
+  checkInFrom: z.string().optional(),
+  checkInUntil: z.string().optional(),
+  checkOutFrom: z.string().optional(),
+  checkOutUntil: z.string().optional(),
 });
 type ListingFormValues = z.infer<typeof listingFormSchema>;
 
@@ -68,6 +75,7 @@ const listingSteps = [
   { id: "amenities", title: "Amenities", fields: ["amenities"] },
   { id: "services", title: "Services", fields: ["breakfast", "parking"] },
   { id: "languages", title: "Languages", fields: ["languages"] },
+  { id: "rules", title: "House Rules", fields: ["smokingAllowed", "partiesAllowed", "petsAllowed", "checkInFrom", "checkInUntil", "checkOutFrom", "checkOutUntil"] },
   { id: "photos", title: "Photos" },
   { id: "review", title: "Review and complete" },
 ];
@@ -648,6 +656,58 @@ const LanguagesStep = () => {
     )
 };
 
+const HouseRulesStep = () => {
+    const { control } = useFormContext<ListingFormValues>();
+    const timeOptions = Array.from({ length: 24 }, (_, i) => {
+        const hour = i.toString().padStart(2, '0');
+        return `${hour}:00`;
+    });
+
+    return (
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+            <div>
+                <CardHeader className="p-0">
+                    <CardTitle className="text-3xl font-headline text-primary">House Rules</CardTitle>
+                    <CardDescription className="pt-2">Set the rules for your property.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0 pt-8 space-y-6">
+                    <FormField control={control} name="smokingAllowed" render={({ field }) => (
+                        <FormItem className="flex items-center justify-between p-4 border rounded-lg"><FormLabel className="flex items-center gap-2 text-base"><Smoking className="h-5 w-5"/>Smoking allowed</FormLabel><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>
+                    )}/>
+                    <FormField control={control} name="partiesAllowed" render={({ field }) => (
+                        <FormItem className="flex items-center justify-between p-4 border rounded-lg"><FormLabel className="flex items-center gap-2 text-base"><PartyPopper className="h-5 w-5"/>Parties/events allowed</FormLabel><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>
+                    )}/>
+                    <FormField control={control} name="petsAllowed" render={({ field }) => (
+                        <FormItem className="space-y-3 p-4 border rounded-lg"><FormLabel className="text-base font-semibold flex items-center gap-2"><Dog className="h-5 w-5"/>Do you allow pets?</FormLabel><FormControl><RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4"><FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES" /></FormControl><FormLabel className="font-normal">Yes</FormLabel></FormItem><FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="UPON_REQUEST" /></FormControl><FormLabel className="font-normal">Upon request</FormLabel></FormItem><FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="NO" /></FormControl><FormLabel className="font-normal">No</FormLabel></FormItem></RadioGroup></FormControl></FormItem>
+                    )}/>
+                    <div>
+                        <h3 className="text-lg font-semibold mb-2">Check-in</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={control} name="checkInFrom" render={({ field }) => (<FormItem><FormLabel>From</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(t => <SelectItem key={`cin-from-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select></FormItem>)} />
+                            <FormField control={control} name="checkInUntil" render={({ field }) => (<FormItem><FormLabel>Until</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(t => <SelectItem key={`cin-until-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select></FormItem>)} />
+                        </div>
+                    </div>
+                     <div>
+                        <h3 className="text-lg font-semibold mb-2">Check-out</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={control} name="checkOutFrom" render={({ field }) => (<FormItem><FormLabel>From</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(t => <SelectItem key={`cout-from-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select></FormItem>)} />
+                            <FormField control={control} name="checkOutUntil" render={({ field }) => (<FormItem><FormLabel>Until</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(t => <SelectItem key={`cout-until-${t}`} value={t}>{t}</SelectItem>)}</SelectContent></Select></FormItem>)} />
+                        </div>
+                    </div>
+                </CardContent>
+            </div>
+            <Card className="bg-muted/30 border-dashed">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb className="h-5 w-5 text-yellow-400" />What if my house rules change?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-muted-foreground">You can easily customize these rules later from your Partner Dashboard.</p>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
 
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -663,6 +723,9 @@ export default function ListPropertyPage() {
         bathrooms: 1,
         apartmentSizeUnit: 'sqm',
         languages: [],
+        smokingAllowed: false,
+        partiesAllowed: false,
+        petsAllowed: "NO",
     }
   });
 
@@ -701,17 +764,17 @@ export default function ListPropertyPage() {
   
   const fiveStages = [
     { title: 'Basic info', steps: [1, 2] },
-    { title: 'Property setup', steps: [3, 4, 5, 6] },
-    { title: 'Photos', steps: [7] },
-    { title: 'Pricing and calendar', steps: [8] },
-    { title: 'Review and complete', steps: [8] },
+    { title: 'Property setup', steps: [3, 4, 5, 6, 7] },
+    { title: 'Photos', steps: [8] },
+    { title: 'Pricing and calendar', steps: [9] },
+    { title: 'Review and complete', steps: [9] },
   ];
 
   const getCurrentStageIndex = () => {
     if (currentStep >= 1 && currentStep <= 2) return 0; // Basic info
-    if (currentStep >= 3 && currentStep <= 6) return 1; // Property setup
-    if (currentStep === 7) return 2; // Photos
-    if (currentStep === 8) return 4; // Review
+    if (currentStep >= 3 && currentStep <= 7) return 1; // Property setup
+    if (currentStep === 8) return 2; // Photos
+    if (currentStep === 9) return 4; // Review
     return -1;
   }
   
@@ -773,8 +836,9 @@ export default function ListPropertyPage() {
                     {currentStep === 4 && <AmenitiesStep />}
                     {currentStep === 5 && <ServicesStep />}
                     {currentStep === 6 && <LanguagesStep />}
-                    {currentStep === 7 && <PhotosStep />}
-                    {currentStep === 8 && (
+                    {currentStep === 7 && <HouseRulesStep />}
+                    {currentStep === 8 && <PhotosStep />}
+                    {currentStep === 9 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
