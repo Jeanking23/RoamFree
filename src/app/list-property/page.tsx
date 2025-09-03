@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking, UploadCloud, Smoking, PartyPopper, Dog, Camera as CameraIcon, X } from "lucide-react";
+import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking, UploadCloud, Smoking, PartyPopper, Dog, Camera as CameraIcon, X, Coffee, ParkingCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -51,6 +51,8 @@ const listingFormSchema = z.object({
   offerCribs: z.enum(["YES", "NO"]).optional(),
   apartmentSize: z.coerce.number().optional(),
   apartmentSizeUnit: z.enum(["sqm", "sqft"]).default("sqm"),
+  breakfast: z.enum(["YES", "NO"]).optional(),
+  parking: z.enum(["YES_FREE", "YES_PAID", "NO"]).optional(),
 });
 type ListingFormValues = z.infer<typeof listingFormSchema>;
 
@@ -63,6 +65,7 @@ const listingSteps = [
   { id: "location", title: "Location", fields: ["address", "city", "country", "state", "zip"] },
   { id: "details", title: "Property Details", fields: ["bedrooms", "maxGuests", "bathrooms"] },
   { id: "amenities", title: "Amenities", fields: ["amenities"] },
+  { id: "services", title: "Services", fields: ["breakfast", "parking"] },
   { id: "photos", title: "Photos" },
   { id: "review", title: "Review and complete" },
 ];
@@ -225,13 +228,13 @@ const LocationStep = () => {
                         <FormField control={control} name="address" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Find Your Address</FormLabel>
-                                <FormControl><Input placeholder="123 Main St, Anytown, USA" {...field} /></FormControl>
+                                <FormControl><Input placeholder="123 Main St, Anytown, USA" {...field} value={field.value || ''} /></FormControl>
                             </FormItem>
                         )}/>
                         <FormField control={control} name="aptSuite" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Apartment or floor number (Optional)</FormLabel>
-                                <FormControl><Input placeholder="e.g., Apt 4B" {...field} /></FormControl>
+                                <FormControl><Input placeholder="e.g., Apt 4B" {...field} value={field.value || ''}/></FormControl>
                             </FormItem>
                         )}/>
                          <div className="grid grid-cols-2 gap-4">
@@ -253,7 +256,7 @@ const LocationStep = () => {
                                 </FormItem>
                             )}/>
                              <FormField control={control} name="city" render={({ field }) => (
-                                <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field}/></FormControl></FormItem>
+                                <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} value={field.value || ''}/></FormControl></FormItem>
                             )}/>
                         </div>
                          <div className="grid grid-cols-2 gap-4">
@@ -275,7 +278,7 @@ const LocationStep = () => {
                                 </FormItem>
                             )}/>
                             <FormField control={control} name="zip" render={({ field }) => (
-                                <FormItem><FormLabel>Zip Code</FormLabel><FormControl><Input {...field}/></FormControl></FormItem>
+                                <FormItem><FormLabel>Zip Code</FormLabel><FormControl><Input {...field} value={field.value || ''}/></FormControl></FormItem>
                             )}/>
                         </div>
                     </CardContent>
@@ -418,7 +421,7 @@ const DetailsStep = () => {
                             <FormControl>
                                 <div className="flex items-center gap-2">
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('maxGuests', Math.max(1, (getValues('maxGuests') || 1) - 1))}><Minus className="h-4 w-4"/></Button>
-                                    <Input className="text-center w-20" {...field} type="number" min="1" />
+                                    <Input className="text-center w-20" {...field} type="number" min="1" value={field.value || ''}/>
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('maxGuests', ((getValues('maxGuests') || 0) + 1))}><Plus className="h-4 w-4"/></Button>
                                 </div>
                             </FormControl>
@@ -433,7 +436,7 @@ const DetailsStep = () => {
                             <FormControl>
                                 <div className="flex items-center gap-2">
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('bathrooms', Math.max(0, (getValues('bathrooms') || 0) - 0.5))}><Minus className="h-4 w-4"/></Button>
-                                    <Input className="text-center w-20" {...field} type="number" min="0" step="0.5" />
+                                    <Input className="text-center w-20" {...field} type="number" min="0" step="0.5" value={field.value || ''} />
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('bathrooms', ((getValues('bathrooms') || 0) + 0.5))}><Plus className="h-4 w-4"/></Button>
                                 </div>
                             </FormControl>
@@ -455,7 +458,7 @@ const DetailsStep = () => {
                     <h3 className="text-lg font-semibold mb-2">Apartment size (optional)</h3>
                     <div className="flex gap-2">
                          <FormField control={control} name="apartmentSize" render={({ field }) => (
-                            <FormItem className="flex-grow"><FormControl><Input type="number" placeholder="e.g., 80" {...field} /></FormControl><FormMessage/></FormItem>
+                            <FormItem className="flex-grow"><FormControl><Input type="number" placeholder="e.g., 80" {...field} value={field.value || ''}/></FormControl><FormMessage/></FormItem>
                          )}/>
                          <FormField control={control} name="apartmentSizeUnit" render={({ field }) => (
                              <FormItem>
@@ -539,6 +542,45 @@ const AmenitiesStep = () => {
     )
 };
 
+const ServicesStep = () => {
+    const { control } = useFormContext<ListingFormValues>();
+    return (
+        <div>
+            <CardHeader className="p-0 text-center md:text-left">
+                <CardTitle className="text-3xl font-headline text-primary">Services at your property</CardTitle>
+                <CardDescription className="pt-2">Let guests know about additional services you offer.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 pt-8 space-y-8">
+                <FormField control={control} name="breakfast" render={({ field }) => (
+                    <FormItem className="space-y-3 p-4 border rounded-lg">
+                        <FormLabel className="text-lg font-semibold flex items-center gap-2"><Coffee className="h-5 w-5"/>Do you serve guests breakfast?</FormLabel>
+                        <FormControl>
+                            <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
+                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES" /></FormControl><FormLabel className="font-normal">Yes</FormLabel></FormItem>
+                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="NO" /></FormControl><FormLabel className="font-normal">No</FormLabel></FormItem>
+                            </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}/>
+                <FormField control={control} name="parking" render={({ field }) => (
+                    <FormItem className="space-y-3 p-4 border rounded-lg">
+                        <FormLabel className="text-lg font-semibold flex items-center gap-2"><ParkingCircle className="h-5 w-5"/>Is parking available to guests?</FormLabel>
+                        <FormControl>
+                            <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col sm:flex-row sm:gap-4">
+                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES_FREE" /></FormControl><FormLabel className="font-normal">Yes, free</FormLabel></FormItem>
+                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES_PAID" /></FormControl><FormLabel className="font-normal">Yes, paid</FormLabel></FormItem>
+                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="NO" /></FormControl><FormLabel className="font-normal">No</FormLabel></FormItem>
+                            </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}/>
+            </CardContent>
+        </div>
+    );
+};
+
 
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -591,19 +633,17 @@ export default function ListPropertyPage() {
   
   const fiveStages = [
     { title: 'Basic info', steps: [1, 2] },
-    { title: 'Property setup', steps: [3, 4] },
-    { title: 'Photos', steps: [5] },
-    { title: 'Pricing and calendar', steps: [6] },
-    { title: 'Review and complete', steps: [6] },
+    { title: 'Property setup', steps: [3, 4, 5] },
+    { title: 'Photos', steps: [6] },
+    { title: 'Pricing and calendar', steps: [7] },
+    { title: 'Review and complete', steps: [7] },
   ];
 
   const getCurrentStageIndex = () => {
-    if (currentStep === 1) return 0; // Basic info (NameStep)
-    if (currentStep === 2) return 0; // Basic info (LocationStep)
-    if (currentStep === 3) return 1; // Property setup (DetailsStep)
-    if (currentStep === 4) return 1; // Property setup (AmenitiesStep)
-    if (currentStep === 5) return 2; // Photos
-    if (currentStep === 6) return 4; // Review
+    if (currentStep >= 1 && currentStep <= 2) return 0; // Basic info
+    if (currentStep >= 3 && currentStep <= 5) return 1; // Property setup
+    if (currentStep === 6) return 2; // Photos
+    if (currentStep === 7) return 4; // Review
     return -1;
   }
   
@@ -663,8 +703,9 @@ export default function ListPropertyPage() {
                     {currentStep === 2 && <LocationStep />}
                     {currentStep === 3 && <DetailsStep />}
                     {currentStep === 4 && <AmenitiesStep />}
-                    {currentStep === 5 && <PhotosStep />}
-                    {currentStep === 6 && (
+                    {currentStep === 5 && <ServicesStep />}
+                    {currentStep === 6 && <PhotosStep />}
+                    {currentStep === 7 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
