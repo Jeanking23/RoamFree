@@ -437,16 +437,16 @@ export default function ListPropertyPage() {
   };
   
   const fiveStages = [
-    { title: 'Basic info', steps: [1] },
-    { title: 'Property setup', steps: [2, 3] }, // Location + Amenities + maybe more later
+    { title: 'Basic info', steps: [1, 2] },
+    { title: 'Property setup', steps: [3] },
     { title: 'Photos', steps: [4] },
-    { title: 'Pricing and calendar', steps: [5] }, // Placeholder step 5
-    { title: 'Review and complete', steps: [5] } // Placeholder step 5
+    { title: 'Pricing and calendar', steps: [5] },
+    { title: 'Review and complete', steps: [5] },
   ];
 
   const getCurrentStageIndex = () => {
-    if (currentStep >= 1 && currentStep <= 1) return 0; // Basic info
-    if (currentStep >= 2 && currentStep <= 3) return 1; // Property setup (Location, Amenities)
+    if (currentStep >= 1 && currentStep <= 2) return 0; // Basic info (NameStep, LocationStep)
+    if (currentStep === 3) return 1; // Property setup (Amenities)
     if (currentStep === 4) return 2; // Photos
     if (currentStep === 5) return 3; // Pricing and calendar
     if (currentStep === 5) return 4; // Review
@@ -510,7 +510,7 @@ export default function ListPropertyPage() {
                     {currentStep === 4 && <PhotosStep />}
                     {currentStep > 2 && currentStep !== 4 && (
                         <div className="text-center">
-                            <h2 className="text-2xl font-semibold">Step {currentStep + 1} content goes here.</h2>
+                            <h2 className="text-2xl font-semibold">Step {currentStep} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
                         </div>
                     )}
@@ -540,3 +540,4 @@ export default function ListPropertyPage() {
     </div>
   );
 }
+
