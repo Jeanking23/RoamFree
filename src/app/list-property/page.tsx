@@ -1,3 +1,4 @@
+
 // src/app/list-property/page.tsx
 'use client';
 
@@ -27,6 +28,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { countries } from "@/lib/location-data";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 
 const listingFormSchema = z.object({
