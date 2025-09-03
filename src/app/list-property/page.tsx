@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking, UploadCloud, Smoking, PartyPopper, Dog, Camera as CameraIcon, X, Coffee, ParkingCircle } from "lucide-react";
+import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking, UploadCloud, Smoking, PartyPopper, Dog, Camera as CameraIcon, X, Coffee, ParkingCircle, Globe } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -53,6 +53,7 @@ const listingFormSchema = z.object({
   apartmentSizeUnit: z.enum(["sqm", "sqft"]).default("sqm"),
   breakfast: z.enum(["YES", "NO"]).optional(),
   parking: z.enum(["YES_FREE", "YES_PAID", "NO"]).optional(),
+  languages: z.array(z.string()).optional(),
 });
 type ListingFormValues = z.infer<typeof listingFormSchema>;
 
@@ -66,6 +67,7 @@ const listingSteps = [
   { id: "details", title: "Property Details", fields: ["bedrooms", "maxGuests", "bathrooms"] },
   { id: "amenities", title: "Amenities", fields: ["amenities"] },
   { id: "services", title: "Services", fields: ["breakfast", "parking"] },
+  { id: "languages", title: "Languages", fields: ["languages"] },
   { id: "photos", title: "Photos" },
   { id: "review", title: "Review and complete" },
 ];
@@ -581,6 +583,71 @@ const ServicesStep = () => {
     );
 };
 
+const languageList = [
+    { id: 'en', label: 'English' },
+    { id: 'es', label: 'Spanish' },
+    { id: 'fr', label: 'French' },
+    { id: 'de', label: 'German' },
+    { id: 'zh', label: 'Chinese' },
+    { id: 'pt', label: 'Portuguese' },
+];
+
+const LanguagesStep = () => {
+    const { control } = useFormContext<ListingFormValues>();
+    return (
+        <div>
+            <CardHeader className="p-0 text-center md:text-left">
+                <CardTitle className="text-3xl font-headline text-primary">What languages do you or your staff speak?</CardTitle>
+                <CardDescription className="pt-2">Select all languages that you can use to communicate with guests.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 pt-8">
+                <FormField
+                    control={control}
+                    name="languages"
+                    render={() => (
+                        <FormItem>
+                            <FormLabel className="text-lg font-semibold">Select languages</FormLabel>
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                                {languageList.map((item) => (
+                                    <FormField
+                                        key={item.id}
+                                        control={control}
+                                        name="languages"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm hover:bg-muted/50 transition-colors">
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            checked={field.value?.includes(item.id)}
+                                                            onCheckedChange={(checked) => {
+                                                                return checked
+                                                                    ? field.onChange([...(field.value || []), item.id])
+                                                                    : field.onChange(
+                                                                        field.value?.filter(
+                                                                            (value) => value !== item.id
+                                                                        )
+                                                                    )
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                    <FormLabel className="font-normal flex items-center gap-2">
+                                                        {item.label}
+                                                    </FormLabel>
+                                                </FormItem>
+                                            )
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                            <Button variant="link" className="px-0 mt-2">Add additional languages</Button>
+                        </FormItem>
+                    )}
+                />
+            </CardContent>
+        </div>
+    )
+};
+
 
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -595,6 +662,7 @@ export default function ListPropertyPage() {
         maxGuests: 2,
         bathrooms: 1,
         apartmentSizeUnit: 'sqm',
+        languages: [],
     }
   });
 
@@ -633,17 +701,17 @@ export default function ListPropertyPage() {
   
   const fiveStages = [
     { title: 'Basic info', steps: [1, 2] },
-    { title: 'Property setup', steps: [3, 4, 5] },
-    { title: 'Photos', steps: [6] },
-    { title: 'Pricing and calendar', steps: [7] },
-    { title: 'Review and complete', steps: [7] },
+    { title: 'Property setup', steps: [3, 4, 5, 6] },
+    { title: 'Photos', steps: [7] },
+    { title: 'Pricing and calendar', steps: [8] },
+    { title: 'Review and complete', steps: [8] },
   ];
 
   const getCurrentStageIndex = () => {
     if (currentStep >= 1 && currentStep <= 2) return 0; // Basic info
-    if (currentStep >= 3 && currentStep <= 5) return 1; // Property setup
-    if (currentStep === 6) return 2; // Photos
-    if (currentStep === 7) return 4; // Review
+    if (currentStep >= 3 && currentStep <= 6) return 1; // Property setup
+    if (currentStep === 7) return 2; // Photos
+    if (currentStep === 8) return 4; // Review
     return -1;
   }
   
@@ -704,8 +772,9 @@ export default function ListPropertyPage() {
                     {currentStep === 3 && <DetailsStep />}
                     {currentStep === 4 && <AmenitiesStep />}
                     {currentStep === 5 && <ServicesStep />}
-                    {currentStep === 6 && <PhotosStep />}
-                    {currentStep === 7 && (
+                    {currentStep === 6 && <LanguagesStep />}
+                    {currentStep === 7 && <PhotosStep />}
+                    {currentStep === 8 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
