@@ -62,6 +62,7 @@ const listingSteps = [
   { id: "basics", title: "Basic info", fields: ["propertyName", "propertyType", "listingType"] },
   { id: "location", title: "Location", fields: ["address", "city", "country", "state", "zip"] },
   { id: "details", title: "Property Details", fields: ["bedrooms", "maxGuests", "bathrooms"] },
+  { id: "amenities", title: "Amenities", fields: ["amenities"] },
   { id: "photos", title: "Photos" },
   { id: "review", title: "Review and complete" },
 ];
@@ -471,6 +472,73 @@ const DetailsStep = () => {
     );
 };
 
+const amenitiesList = {
+    "General": [{ id: "wifi", label: "Free Wifi", icon: Wifi }, { id: "ac", label: "Air conditioning", icon: Snowflake }, { id: "heating", label: "Heating", icon: Wind }],
+    "Cooking and cleaning": [{ id: "kitchen", label: "Kitchen", icon: Utensils }, { id: "washing_machine", label: "Washing machine", icon: WashingMachine }],
+    "Entertainment": [{ id: "tv", label: "Flat-screen TV", icon: Tv }, { id: "pool", label: "Swimming pool", icon: Waves }],
+    "Outside and view": [{ id: "balcony", label: "Balcony", icon: Sun }, { id: "terrace", label: "Terrace", icon: Eye }, { id: "parking", label: "Free parking", icon: SquareParking }],
+};
+
+const AmenitiesStep = () => {
+    const { control } = useFormContext<ListingFormValues>();
+    return (
+        <div>
+            <CardHeader className="p-0 text-center md:text-left">
+                <CardTitle className="text-3xl font-headline text-primary">What can guests use at your place?</CardTitle>
+                <CardDescription className="pt-2">Select all the amenities your property offers.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 pt-8">
+                <FormField
+                    control={control}
+                    name="amenities"
+                    render={() => (
+                        <FormItem className="space-y-6">
+                            {Object.entries(amenitiesList).map(([category, items]) => (
+                                <div key={category}>
+                                    <h3 className="text-lg font-semibold mb-3">{category}</h3>
+                                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {items.map((item) => (
+                                            <FormField
+                                                key={item.id}
+                                                control={control}
+                                                name="amenities"
+                                                render={({ field }) => {
+                                                    return (
+                                                        <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm hover:bg-muted/50 transition-colors">
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    checked={field.value?.includes(item.id)}
+                                                                    onCheckedChange={(checked) => {
+                                                                        return checked
+                                                                            ? field.onChange([...(field.value || []), item.id])
+                                                                            : field.onChange(
+                                                                                field.value?.filter(
+                                                                                    (value) => value !== item.id
+                                                                                )
+                                                                            )
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel className="font-normal flex items-center gap-2">
+                                                                <item.icon className="h-5 w-5 text-primary" />
+                                                                {item.label}
+                                                            </FormLabel>
+                                                        </FormItem>
+                                                    )
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </FormItem>
+                    )}
+                />
+            </CardContent>
+        </div>
+    )
+};
+
 
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -523,18 +591,19 @@ export default function ListPropertyPage() {
   
   const fiveStages = [
     { title: 'Basic info', steps: [1, 2] },
-    { title: 'Property setup', steps: [3] },
-    { title: 'Photos', steps: [4] },
-    { title: 'Pricing and calendar', steps: [5] },
-    { title: 'Review and complete', steps: [5] },
+    { title: 'Property setup', steps: [3, 4] },
+    { title: 'Photos', steps: [5] },
+    { title: 'Pricing and calendar', steps: [6] },
+    { title: 'Review and complete', steps: [6] },
   ];
 
   const getCurrentStageIndex = () => {
     if (currentStep === 1) return 0; // Basic info (NameStep)
     if (currentStep === 2) return 0; // Basic info (LocationStep)
     if (currentStep === 3) return 1; // Property setup (DetailsStep)
-    if (currentStep === 4) return 2; // Photos
-    if (currentStep === 5) return 4; // Review
+    if (currentStep === 4) return 1; // Property setup (AmenitiesStep)
+    if (currentStep === 5) return 2; // Photos
+    if (currentStep === 6) return 4; // Review
     return -1;
   }
   
@@ -593,8 +662,9 @@ export default function ListPropertyPage() {
                     {currentStep === 1 && <NameStep />}
                     {currentStep === 2 && <LocationStep />}
                     {currentStep === 3 && <DetailsStep />}
-                    {currentStep === 4 && <PhotosStep />}
-                    {currentStep === 5 && (
+                    {currentStep === 4 && <AmenitiesStep />}
+                    {currentStep === 5 && <PhotosStep />}
+                    {currentStep === 6 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
