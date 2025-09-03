@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import InteractiveMapPlaceholder from "@/components/map/interactive-map-placeholder";
-import { useForm, FormProvider, useFormContext } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, FormProvider, useFormContext, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@zod/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
@@ -26,15 +26,21 @@ import Image from "next/image";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { countries } from "@/lib/location-data";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 
 const listingFormSchema = z.object({
   propertyName: z.string().min(5, "Property name must be at least 5 characters."),
   propertyType: z.string({ required_error: "Please select a property type." }),
   listingType: z.enum(["FOR_RENT", "FOR_SALE"]),
-  bedrooms: z.coerce.number().min(0, "Bedrooms cannot be negative.").optional(),
-  bathrooms: z.coerce.number().min(0, "Bathrooms cannot be negative.").optional(),
+  bedrooms: z.array(z.object({
+    beds: z.array(z.object({
+        type: z.string(),
+        count: z.number().min(1)
+    }))
+  })).optional(),
   maxGuests: z.coerce.number().min(1, "Must accommodate at least 1 guest.").optional(),
+  bathrooms: z.coerce.number().min(0, "Bathrooms cannot be negative.").optional(),
   address: z.string().min(5, "Address is required.").optional(),
   aptSuite: z.string().optional(),
   country: z.string().optional(),
@@ -42,6 +48,10 @@ const listingFormSchema = z.object({
   state: z.string().optional(),
   zip: z.string().optional(),
   amenities: z.array(z.string()).optional(),
+  allowChildren: z.enum(["YES", "NO"]).optional(),
+  offerCribs: z.enum(["YES", "NO"]).optional(),
+  apartmentSize: z.coerce.number().optional(),
+  apartmentSizeUnit: z.enum(["sqm", "sqft"]).default("sqm"),
 });
 type ListingFormValues = z.infer<typeof listingFormSchema>;
 
@@ -50,9 +60,9 @@ const listingSteps = [
   // Step 0 - Not in progress bar
   { id: "type", title: "Select Type" }, 
   // Progress bar steps start here (index 1)
-  { id: "basics", title: "Basic info", fields: ["propertyName", "propertyType", "listingType", "bedrooms", "bathrooms", "maxGuests"] },
+  { id: "basics", title: "Basic info", fields: ["propertyName", "propertyType", "listingType"] },
   { id: "location", title: "Location", fields: ["address", "city", "country", "state", "zip"] },
-  { id: "amenities", title: "Amenities" },
+  { id: "details", title: "Property Details", fields: ["bedrooms", "maxGuests", "bathrooms"] },
   { id: "photos", title: "Photos" },
   { id: "review", title: "Review and complete" },
 ];
@@ -89,7 +99,7 @@ const ListingTypeStep = ({ onSelect }: { onSelect: (type: 'property' | 'car') =>
 
 const NameStep = () => {
     const { control, watch } = useFormContext<ListingFormValues>();
-    const listingType = watch("listingType");
+    
     const propertyType = watch("propertyType");
     
     const showPropertyDetails = propertyType && propertyType !== 'Land';
@@ -159,30 +169,6 @@ const NameStep = () => {
                             )}
                         />
                     </div>
-                     {showPropertyDetails && (
-                        <div className="grid grid-cols-3 gap-4 pt-2">
-                             <FormField control={control} name="bedrooms" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="flex items-center gap-1"><Bed className="h-4 w-4"/>Bedrooms</FormLabel>
-                                    <FormControl><Input type="number" min="0" placeholder="e.g., 3" {...field} /></FormControl>
-                                </FormItem>
-                            )}/>
-                            <FormField control={control} name="bathrooms" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="flex items-center gap-1"><Bath className="h-4 w-4"/>Bathrooms</FormLabel>
-                                    <FormControl><Input type="number" min="0" step="0.5" placeholder="e.g., 2.5" {...field} /></FormControl>
-                                </FormItem>
-                            )}/>
-                            {listingType === 'FOR_RENT' && (
-                                <FormField control={control} name="maxGuests" render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="flex items-center gap-1"><Users className="h-4 w-4"/>Guests</FormLabel>
-                                        <FormControl><Input type="number" min="1" placeholder="e.g., 6" {...field} /></FormControl>
-                                    </FormItem>
-                                )}/>
-                            )}
-                        </div>
-                    )}
                 </CardContent>
             </div>
             <div className="space-y-6">
@@ -390,6 +376,102 @@ const PhotosStep = () => {
   );
 };
 
+const DetailsStep = () => {
+    const { control, setValue, getValues } = useFormContext<ListingFormValues>();
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "bedrooms",
+    });
+
+    return (
+        <div>
+            <CardHeader className="p-0 text-center md:text-left">
+                <CardTitle className="text-3xl font-headline text-primary">Property Details</CardTitle>
+                <CardDescription className="pt-2">Provide key details about the space.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 pt-8 space-y-6">
+                 <div>
+                    <h3 className="text-lg font-semibold">Where can people sleep?</h3>
+                    <Accordion type="multiple" className="w-full mt-2">
+                        {fields.map((field, index) => (
+                             <AccordionItem value={`item-${index}`} key={field.id}>
+                                <AccordionTrigger>Bedroom {index + 1}</AccordionTrigger>
+                                <AccordionContent>
+                                    <p className="text-sm text-muted-foreground mb-2">Specify the number and type of beds in this room.</p>
+                                    {/* Placeholder for bed selection UI */}
+                                    <p>Bed selection controls go here.</p>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                    <Button type="button" variant="outline" size="sm" onClick={() => append({ beds: [] })} className="mt-2">
+                        Add Bedroom
+                    </Button>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                    <FormField
+                        control={control} name="maxGuests"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>How many guests can stay?</FormLabel>
+                            <FormControl>
+                                <div className="flex items-center gap-2">
+                                    <Button type="button" variant="outline" size="icon" onClick={() => setValue('maxGuests', Math.max(1, (getValues('maxGuests') || 1) - 1))}><Minus className="h-4 w-4"/></Button>
+                                    <Input className="text-center w-20" {...field} type="number" min="1" />
+                                    <Button type="button" variant="outline" size="icon" onClick={() => setValue('maxGuests', ((getValues('maxGuests') || 0) + 1))}><Plus className="h-4 w-4"/></Button>
+                                </div>
+                            </FormControl>
+                            <FormMessage/>
+                        </FormItem>
+                    )}/>
+                     <FormField
+                        control={control} name="bathrooms"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>How many bathrooms are there?</FormLabel>
+                            <FormControl>
+                                <div className="flex items-center gap-2">
+                                    <Button type="button" variant="outline" size="icon" onClick={() => setValue('bathrooms', Math.max(0, (getValues('bathrooms') || 0) - 0.5))}><Minus className="h-4 w-4"/></Button>
+                                    <Input className="text-center w-20" {...field} type="number" min="0" step="0.5" />
+                                    <Button type="button" variant="outline" size="icon" onClick={() => setValue('bathrooms', ((getValues('bathrooms') || 0) + 0.5))}><Plus className="h-4 w-4"/></Button>
+                                </div>
+                            </FormControl>
+                             <FormMessage/>
+                        </FormItem>
+                    )}/>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                    <FormField control={control} name="allowChildren" render={({ field }) => (
+                        <FormItem className="space-y-3"><FormLabel>Do you allow children?</FormLabel><FormControl><RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4"><FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES" /></FormControl><FormLabel className="font-normal">Yes</FormLabel></FormItem><FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="NO" /></FormControl><FormLabel className="font-normal">No</FormLabel></FormItem></RadioGroup></FormControl><FormMessage /></FormItem>
+                    )}/>
+                     <FormField control={control} name="offerCribs" render={({ field }) => (
+                        <FormItem className="space-y-3"><FormLabel>Do you offer cribs?</FormLabel><FormControl><RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4"><FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES" /></FormControl><FormLabel className="font-normal">Yes</FormLabel></FormItem><FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="NO" /></FormControl><FormLabel className="font-normal">No</FormLabel></FormItem></RadioGroup></FormControl><FormMessage /></FormItem>
+                    )}/>
+                </div>
+                
+                 <div>
+                    <h3 className="text-lg font-semibold mb-2">Apartment size (optional)</h3>
+                    <div className="flex gap-2">
+                         <FormField control={control} name="apartmentSize" render={({ field }) => (
+                            <FormItem className="flex-grow"><FormControl><Input type="number" placeholder="e.g., 80" {...field} /></FormControl><FormMessage/></FormItem>
+                         )}/>
+                         <FormField control={control} name="apartmentSizeUnit" render={({ field }) => (
+                             <FormItem>
+                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger className="w-[120px]"><SelectValue /></SelectTrigger></FormControl>
+                                    <SelectContent><SelectItem value="sqm">m²</SelectItem><SelectItem value="sqft">ft²</SelectItem></SelectContent>
+                                </Select>
+                             </FormItem>
+                         )}/>
+                    </div>
+                </div>
+            </CardContent>
+        </div>
+    );
+};
+
 
 export default function ListPropertyPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -400,6 +482,10 @@ export default function ListPropertyPage() {
     defaultValues: {
         listingType: "FOR_RENT",
         amenities: [],
+        bedrooms: [{beds: []}],
+        maxGuests: 2,
+        bathrooms: 1,
+        apartmentSizeUnit: 'sqm',
     }
   });
 
@@ -445,10 +531,10 @@ export default function ListPropertyPage() {
   ];
 
   const getCurrentStageIndex = () => {
-    if (currentStep >= 1 && currentStep <= 2) return 0; // Basic info (NameStep, LocationStep)
-    if (currentStep === 3) return 1; // Property setup (Amenities)
+    if (currentStep === 1) return 0; // Basic info (NameStep)
+    if (currentStep === 2) return 0; // Basic info (LocationStep)
+    if (currentStep === 3) return 1; // Property setup (DetailsStep)
     if (currentStep === 4) return 2; // Photos
-    if (currentStep === 5) return 3; // Pricing and calendar
     if (currentStep === 5) return 4; // Review
     return -1;
   }
@@ -507,8 +593,9 @@ export default function ListPropertyPage() {
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
                     {currentStep === 2 && <LocationStep />}
+                    {currentStep === 3 && <DetailsStep />}
                     {currentStep === 4 && <PhotosStep />}
-                    {currentStep > 2 && currentStep !== 4 && (
+                    {currentStep === 5 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
