@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking, UploadCloud, Smoking, PartyPopper, Dog, Camera as CameraIcon, X, Coffee, ParkingCircle, Globe, DollarSign, HandCoins } from "lucide-react";
+import { ArrowLeft, Building, Info, Lightbulb, CheckCircle, MapPin, HomeIcon, Car, Bed, Bath, Users, Minus, Plus, Wifi, Wind, Snowflake, Utensils, WashingMachine, Tv, Waves, Sun, Eye, SquareParking, UploadCloud, Smoking, PartyPopper, Dog, Camera as CameraIcon, X, Coffee, ParkingCircle, Globe, DollarSign, HandCoins, User, Home, Map as MapIconLucide } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -50,6 +50,12 @@ const listingFormSchema = z.object({
   state: z.string().optional(),
   zip: z.string().optional(),
   amenities: z.array(z.string()).optional(),
+  hostProfileHighlights: z.object({
+    property: z.boolean().default(false),
+    host: z.boolean().default(false),
+    neighborhood: z.boolean().default(false),
+    none: z.boolean().default(false),
+  }).optional(),
   allowChildren: z.enum(["YES", "NO"]).optional(),
   offerCribs: z.enum(["YES", "NO"]).optional(),
   apartmentSize: z.coerce.number().optional(),
@@ -76,6 +82,7 @@ const listingSteps = [
   { id: "basics", title: "Basic info", fields: ["propertyName", "propertyType", "listingType"] },
   { id: "location", title: "Location", fields: ["address", "city", "country", "state", "zip"] },
   { id: "details", title: "Property Details", fields: ["bedrooms", "maxGuests", "bathrooms"] },
+  { id: "host-profile", title: "Host Profile", fields: ["hostProfileHighlights"] },
   { id: "amenities", title: "Amenities", fields: ["amenities"] },
   { id: "services", title: "Services", fields: ["breakfast", "parking"] },
   { id: "languages", title: "Languages", fields: ["languages"] },
@@ -667,6 +674,86 @@ const LanguagesStep = () => {
     )
 };
 
+const HostProfileStep = () => {
+    const { control, watch, setValue } = useFormContext<ListingFormValues>();
+    const noneChecked = watch("hostProfileHighlights.none");
+
+    useEffect(() => {
+        if (noneChecked) {
+            setValue("hostProfileHighlights.property", false);
+            setValue("hostProfileHighlights.host", false);
+            setValue("hostProfileHighlights.neighborhood", false);
+        }
+    }, [noneChecked, setValue]);
+
+    const handleCheckboxChange = (name: "property" | "host" | "neighborhood", checked: boolean) => {
+        if (checked) {
+            setValue("hostProfileHighlights.none", false);
+        }
+        setValue(`hostProfileHighlights.${name}`, checked);
+    };
+
+    return (
+        <div>
+            <CardHeader className="p-0 text-center md:text-left">
+                <CardTitle className="text-3xl font-headline text-primary">Host profile</CardTitle>
+                <CardDescription className="pt-2">Tell us what makes your place unique. You can write about this later.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 pt-8">
+                <FormField
+                    control={control}
+                    name="hostProfileHighlights"
+                    render={() => (
+                        <FormItem className="space-y-4">
+                            <FormLabel className="text-lg font-semibold">What makes your place special?</FormLabel>
+                            <FormField
+                                control={control} name="hostProfileHighlights.property"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                        <FormControl>
+                                            <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("property", checked as boolean)} disabled={noneChecked} />
+                                        </FormControl>
+                                        <div className="space-y-1 leading-none"><FormLabel className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/>The property</FormLabel><FormDescription>Architecture, garden, art, history, view, etc.</FormDescription></div>
+                                    </FormItem>
+                                )} />
+                             <FormField
+                                control={control} name="hostProfileHighlights.host"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                        <FormControl>
+                                            <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("host", checked as boolean)} disabled={noneChecked} />
+                                        </FormControl>
+                                        <div className="space-y-1 leading-none"><FormLabel className="flex items-center gap-2"><User className="h-5 w-5"/>The host</FormLabel><FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription></div>
+                                    </FormItem>
+                                )} />
+                             <FormField
+                                control={control} name="hostProfileHighlights.neighborhood"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                        <FormControl>
+                                            <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("neighborhood", checked as boolean)} disabled={noneChecked} />
+                                        </FormControl>
+                                        <div className="space-y-1 leading-none"><FormLabel className="flex items-center gap-2"><MapIconLucide className="h-5 w-5"/>The neighborhood</FormLabel><FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription></div>
+                                    </FormItem>
+                                )} />
+                             <FormField
+                                control={control} name="hostProfileHighlights.none"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mt-6">
+                                        <FormControl>
+                                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                        </FormControl>
+                                        <div className="space-y-1 leading-none"><FormLabel>None of the above / I'll add these later</FormLabel></div>
+                                    </FormItem>
+                                )} />
+                        </FormItem>
+                    )}
+                />
+            </CardContent>
+        </div>
+    )
+};
+
 const HouseRulesStep = () => {
     const { control } = useFormContext<ListingFormValues>();
     const timeOptions = Array.from({ length: 24 }, (_, i) => {
@@ -737,6 +824,7 @@ export default function ListPropertyPage() {
         smokingAllowed: false,
         partiesAllowed: false,
         petsAllowed: "NO",
+        hostProfileHighlights: { property: false, host: false, neighborhood: false, none: false },
     }
   });
 
@@ -775,17 +863,17 @@ export default function ListPropertyPage() {
   
   const fiveStages = [
     { title: 'Basic info', steps: [1, 2] },
-    { title: 'Property setup', steps: [3, 4, 5, 6, 7] },
-    { title: 'Photos', steps: [8] },
-    { title: 'Pricing and calendar', steps: [9] },
-    { title: 'Review and complete', steps: [9] },
+    { title: 'Property setup', steps: [3, 4, 5, 6, 7, 8] },
+    { title: 'Photos', steps: [9] },
+    { title: 'Pricing and calendar', steps: [10] },
+    { title: 'Review and complete', steps: [10] },
   ];
 
   const getCurrentStageIndex = () => {
     if (currentStep >= 1 && currentStep <= 2) return 0; // Basic info
-    if (currentStep >= 3 && currentStep <= 7) return 1; // Property setup
-    if (currentStep === 8) return 2; // Photos
-    if (currentStep === 9) return 4; // Review
+    if (currentStep >= 3 && currentStep <= 8) return 1; // Property setup
+    if (currentStep === 9) return 2; // Photos
+    if (currentStep === 10) return 4; // Review
     return -1;
   }
   
@@ -844,12 +932,13 @@ export default function ListPropertyPage() {
                     {currentStep === 1 && <NameStep />}
                     {currentStep === 2 && <LocationStep />}
                     {currentStep === 3 && <DetailsStep />}
-                    {currentStep === 4 && <AmenitiesStep />}
-                    {currentStep === 5 && <ServicesStep />}
-                    {currentStep === 6 && <LanguagesStep />}
-                    {currentStep === 7 && <HouseRulesStep />}
-                    {currentStep === 8 && <PhotosStep />}
-                    {currentStep === 9 && (
+                    {currentStep === 4 && <HostProfileStep />}
+                    {currentStep === 5 && <AmenitiesStep />}
+                    {currentStep === 6 && <ServicesStep />}
+                    {currentStep === 7 && <LanguagesStep />}
+                    {currentStep === 8 && <HouseRulesStep />}
+                    {currentStep === 9 && <PhotosStep />}
+                    {currentStep === 10 && (
                         <div className="text-center">
                             <h2 className="text-2xl font-semibold">Step {currentStep} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
