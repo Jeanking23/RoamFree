@@ -1,4 +1,3 @@
-
 // src/app/list-property/page.tsx
 'use client';
 
@@ -24,9 +23,9 @@ import Link from "next/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Image from "next/image";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { countries } from "@/lib/location-data";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { countries } from "@/lib/location-data";
+import { Textarea } from "@/components/ui/textarea";
 
 
 const listingFormSchema = z.object({
