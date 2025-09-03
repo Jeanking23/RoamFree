@@ -62,6 +62,7 @@ const listingFormSchema = z.object({
   checkInUntil: z.string().optional(),
   checkOutFrom: z.string().optional(),
   checkOutUntil: z.string().optional(),
+  photoDescriptions: z.string().optional(),
 });
 type ListingFormValues = z.infer<typeof listingFormSchema>;
 
@@ -77,7 +78,7 @@ const listingSteps = [
   { id: "services", title: "Services", fields: ["breakfast", "parking"] },
   { id: "languages", title: "Languages", fields: ["languages"] },
   { id: "rules", title: "House Rules", fields: ["smokingAllowed", "partiesAllowed", "petsAllowed", "checkInFrom", "checkInUntil", "checkOutFrom", "checkOutUntil"] },
-  { id: "photos", title: "Photos" },
+  { id: "photos", title: "Photos", fields: ["photoDescriptions"] },
   { id: "review", title: "Review and complete" },
 ];
 
@@ -302,6 +303,7 @@ const LocationStep = () => {
 const PhotosStep = () => {
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { control } = useFormContext<ListingFormValues>();
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -361,13 +363,19 @@ const PhotosStep = () => {
             </div>
             <p className="text-xs text-muted-foreground text-center">jpg/jpeg or png, maximum 47MB each</p>
 
-            <FormItem>
-                <FormLabel>Photo descriptions</FormLabel>
-                <FormControl>
-                    <Textarea placeholder="Briefly describe what's in the photos to improve accessibility and search results." rows={3} />
-                </FormControl>
-                <FormMessage />
-            </FormItem>
+            <FormField
+              control={control}
+              name="photoDescriptions"
+              render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Photo descriptions</FormLabel>
+                    <FormControl>
+                        <Textarea placeholder="Briefly describe what's in the photos to improve accessibility and search results." rows={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+              )}
+            />
         </CardContent>
       </div>
        <Card className="bg-muted/30 border-dashed">
