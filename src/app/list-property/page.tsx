@@ -26,6 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { countries } from "@/lib/location-data";
 import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 const listingFormSchema = z.object({
