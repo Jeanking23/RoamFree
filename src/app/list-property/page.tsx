@@ -726,9 +726,14 @@ export default function ListPropertyPage() {
                     <span><ArrowLeft className="mr-2 h-4 w-4"/> Back</span>
                 </Button>
             )}
-            {currentStep > 0 && (
+            {currentStep > 0 && currentStep < listingSteps.length - 1 && (
                 <Button onClick={nextStep}>
-                    {currentStep === listingSteps.length - 1 ? 'Publish Listing' : 'Continue'}
+                    Continue
+                </Button>
+            )}
+            {currentStep === listingSteps.length - 1 && (
+                <Button onClick={nextStep}>
+                    Publish Listing
                 </Button>
             )}
         </CardFooter>
