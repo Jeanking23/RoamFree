@@ -87,10 +87,10 @@ export default function CorporateSolutionsDemoPage() {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-xl mx-auto space-y-6">
                             <div className="grid sm:grid-cols-2 gap-4">
-                                <FormField control={form.control} name="companyName" render={({ field }) => (<FormItem><FormLabel>Company Name</FormLabel><FormControl><Input placeholder="Your Company Inc." icon={<Building className="h-4 w-4 text-muted-foreground" />} {...field}/></FormControl><FormMessage/></FormItem>)}/>
-                                <FormField control={form.control} name="contactName" render={({ field }) => (<FormItem><FormLabel>Contact Name</FormLabel><FormControl><Input placeholder="John Doe" icon={<User className="h-4 w-4 text-muted-foreground" />} {...field}/></FormControl><FormMessage/></FormItem>)}/>
-                                <FormField control={form.control} name="contactEmail" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="you@company.com" icon={<Mail className="h-4 w-4 text-muted-foreground" />} {...field}/></FormControl><FormMessage/></FormItem>)}/>
-                                <FormField control={form.control} name="contactPhone" render={({ field }) => (<FormItem><FormLabel>Phone (Optional)</FormLabel><FormControl><Input type="tel" placeholder="+1 555-123-4567" icon={<Phone className="h-4 w-4 text-muted-foreground" />} {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                                <FormField control={form.control} name="companyName" render={({ field }) => (<FormItem><FormLabel>Company Name</FormLabel><FormControl><Input placeholder="Your Company Inc." {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                                <FormField control={form.control} name="contactName" render={({ field }) => (<FormItem><FormLabel>Contact Name</FormLabel><FormControl><Input placeholder="John Doe" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                                <FormField control={form.control} name="contactEmail" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="you@company.com" {...field}/></FormControl><FormMessage/></FormItem>)}/>
+                                <FormField control={form.control} name="contactPhone" render={({ field }) => (<FormItem><FormLabel>Phone (Optional)</FormLabel><FormControl><Input type="tel" placeholder="+1 555-123-4567" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                             </div>
                             <FormField
                                 control={form.control} name="serviceOfInterest"
@@ -112,7 +112,7 @@ export default function CorporateSolutionsDemoPage() {
                             />
                             <FormField control={form.control} name="message" render={({ field }) => (<FormItem><FormLabel>Your Message</FormLabel><FormControl><Textarea placeholder="Tell us about your company's travel needs..." {...field}/></FormControl><FormMessage/></FormItem>)}/>
                             <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                                <span><Send className="mr-2 h-4 w-4"/> Submit Inquiry</span>
+                                <Send className="mr-2 h-4 w-4"/> Submit Inquiry
                             </Button>
                         </form>
                     </Form>
