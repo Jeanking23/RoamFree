@@ -21,9 +21,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 // Mock data for nearby attractions (can be dynamic based on currentStay.location in a real app)
 const mockNearbyAttractions = [
-  { id: "attr1", name: "Local Landmark Example", category: "Landmark", image: "https://images.unsplash.com/photo-1723126906308-d42e5941f343?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsYW5kbWFyayUyMGhpc3RvcmljfGVufDB8fHx8MTc1MjcyODIzNnww&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint:"landmark historic", distance: "0.5 miles" },
-  { id: "attr2", name: "Popular Park Example", category: "Nature", image: "https://images.unsplash.com/photo-1678195057327-78b9d245de36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwYXJrJTIwbmF0dXJlfGVufDB8fHx8MTc1MjcyODIzNnww&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint:"park nature", distance: "3 miles" },
-  { id: "attr3", name: "Famous Restaurant Example", category: "Dining", image: "https://images.unsplash.com/photo-1502998070258-dc1338445ac2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxyZXN0YXVyYW50JTIwZm9vZHxlbnwwfHx8fDE3NTI3MjgyMzZ8MA&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint:"restaurant food", distance: "1 mile" },
+  { id: "attr1", name: "Local Landmark Example", category: "Landmark", image: "https://images.unsplash.com/photo-1723126906308-d42e5941f343?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsYW5kbWFyayUyMGhpc3RvcmljfGVufDB8fHx8MTc1MjcyODIzNnww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint:"landmark historic", distance: "0.5 miles" },
+  { id: "attr2", name: "Popular Park Example", category: "Nature", image: "https://images.unsplash.com/photo-1678195057327-78b9d245de36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwYXJrJTIwbmF0dXJlfGVufDB8fHx8MTc1MjcyODIzNnww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint:"park nature", distance: "3 miles" },
+  { id: "attr3", name: "Famous Restaurant Example", category: "Dining", image: "https://images.unsplash.com/photo-1502998070258-dc1338445ac2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxyZXN0YXVyYW50JTIwZm9vZHxlbnwwfHx8fDE3NTI3MjgyMzZ8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint:"restaurant food", distance: "1 mile" },
 ];
 
 async function getStayData(id: string): Promise<MockStay | null> {
@@ -222,13 +222,13 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
         </CardHeader>
 
         <CardContent className="px-0 md:px-6 pt-0">
-           <div className="grid grid-cols-2 md:grid-cols-4 md:grid-rows-2 gap-2 md:max-h-[500px] overflow-hidden rounded-md">
-            <div className="col-span-2 row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer" onClick={() => setCurrentImage(displayPhotos[0])}>
-              {displayPhotos.length > 0 && <Image src={displayPhotos[0].src} alt={displayPhotos[0].alt} fill className="object-cover rounded-l-md" data-ai-hint={displayPhotos[0].dataAiHint} />}
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 rounded-lg overflow-hidden">
+            <div className="relative aspect-[4/3] md:aspect-auto md:row-span-2 cursor-pointer" onClick={() => setCurrentImage(displayPhotos[0])}>
+              {displayPhotos.length > 0 && <Image src={displayPhotos[0].src} alt={displayPhotos[0].alt} fill className="object-cover" data-ai-hint={displayPhotos[0].dataAiHint} />}
             </div>
             {displayPhotos.slice(1, 5).map((photo, index) => (
-              <div key={photo.id} className={`relative aspect-[4/3] md:aspect-auto cursor-pointer ${index > 1 ? 'hidden md:block' : ''}`} onClick={() => setCurrentImage(photo)}>
-                <Image src={photo.src} alt={photo.alt} fill className={`object-cover ${index === 1 ? "md:rounded-tr-md" : index === 3 ? "md:rounded-br-md" : ""}`} data-ai-hint={photo.dataAiHint} />
+              <div key={photo.id} className="relative aspect-[4/3] cursor-pointer" onClick={() => setCurrentImage(photo)}>
+                <Image src={photo.src} alt={photo.alt} fill className="object-cover" data-ai-hint={photo.dataAiHint} />
               </div>
             ))}
           </div>
