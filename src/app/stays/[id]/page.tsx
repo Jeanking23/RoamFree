@@ -223,7 +223,7 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
         <CardContent className="px-0 md:px-6 pt-0">
            <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2 md:max-h-[500px] overflow-hidden rounded-md">
             <div className="md:col-span-2 md:row-span-2 relative aspect-[4/3] md:aspect-auto cursor-pointer" onClick={() => currentImage && setCurrentImage(displayPhotos[0])}>
-              {currentImage && <Image src={currentImage.src} alt={currentImage.alt} fill className="object-cover rounded-l-md" data-ai-hint={currentImage.dataAiHint} />}
+              {currentImage && <Image src={displayPhotos[0].src} alt={displayPhotos[0].alt} fill className="object-cover rounded-l-md" data-ai-hint={displayPhotos[0].dataAiHint} />}
             </div>
             {displayPhotos.slice(1, 5).map((photo, index) => (
               <div key={photo.id} className={`relative aspect-[4/3] md:aspect-auto cursor-pointer ${index > 1 ? 'hidden md:block' : ''}`} onClick={() => setCurrentImage(photo)}>
