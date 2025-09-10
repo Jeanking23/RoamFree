@@ -849,7 +849,7 @@ export default function ListPropertyPage() {
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      setCurrentStep(prev => prev - 1);
     }
   };
   
