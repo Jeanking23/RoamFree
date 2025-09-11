@@ -19,6 +19,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 
 const carForSaleSchema = z.object({
@@ -72,7 +74,8 @@ const carColors = ["Black", "White", "Silver", "Gray", "Red", "Blue", "Brown", "
 
 // Step Components
 const ListingTypeStep = () => {
-    const { control } = useFormContext<CarForSaleFormValues>();
+    const { control, watch } = useFormContext<CarForSaleFormValues>();
+    const listingType = watch("listingType");
     return (
         <div>
             <CardHeader className="p-0 text-center">
@@ -80,30 +83,42 @@ const ListingTypeStep = () => {
                 <CardDescription className="pt-2">Are you listing your car for sale or for rent?</CardDescription>
             </CardHeader>
             <CardContent className="p-0 pt-8">
-                 <FormField
+                <FormField
                     control={control}
                     name="listingType"
                     render={({ field }) => (
                     <FormItem className="space-y-3">
                         <FormControl>
-                            <div className="flex flex-col md:flex-row gap-6 justify-center">
-                                <Card
-                                    onClick={() => field.onChange("FOR_SALE")}
-                                    className={cn("w-full md:w-64 p-6 text-center cursor-pointer hover:shadow-lg transition-all group", field.value === "FOR_SALE" && "border-primary ring-2 ring-primary")}
-                                >
-                                    <DollarSign className="h-12 w-12 text-primary mx-auto mb-4 group-hover:scale-110 transition-transform" />
-                                    <h3 className="text-xl font-semibold">For Sale</h3>
-                                    <p className="text-sm text-muted-foreground mt-1">Sell your car to a buyer.</p>
-                                </Card>
-                                 <Card
-                                    onClick={() => field.onChange("FOR_RENT")}
-                                    className={cn("w-full md:w-64 p-6 text-center cursor-pointer hover:shadow-lg transition-all group", field.value === "FOR_RENT" && "border-primary ring-2 ring-primary")}
-                                >
-                                    <HandCoins className="h-12 w-12 text-primary mx-auto mb-4 group-hover:scale-110 transition-transform" />
-                                    <h3 className="text-xl font-semibold">For Rent</h3>
-                                    <p className="text-sm text-muted-foreground mt-1">Rent out your car to travelers.</p>
-                                </Card>
-                            </div>
+                             <RadioGroup
+                                onValueChange={field.onChange}
+                                value={field.value}
+                                className="flex flex-col md:flex-row gap-6 justify-center"
+                            >
+                                <FormItem>
+                                    <FormControl>
+                                        <RadioGroupItem value="FOR_SALE" className="sr-only" id="for-sale"/>
+                                    </FormControl>
+                                    <Label htmlFor="for-sale" className="cursor-pointer">
+                                        <Card className={cn("w-full md:w-64 p-6 text-center hover:shadow-lg transition-all group", listingType === "FOR_SALE" && "border-primary ring-2 ring-primary")}>
+                                            <DollarSign className="h-12 w-12 text-primary mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                                            <h3 className="text-xl font-semibold">For Sale</h3>
+                                            <p className="text-sm text-muted-foreground mt-1">Sell your car to a buyer.</p>
+                                        </Card>
+                                    </Label>
+                                </FormItem>
+                                <FormItem>
+                                    <FormControl>
+                                        <RadioGroupItem value="FOR_RENT" className="sr-only" id="for-rent"/>
+                                    </FormControl>
+                                     <Label htmlFor="for-rent" className="cursor-pointer">
+                                        <Card className={cn("w-full md:w-64 p-6 text-center hover:shadow-lg transition-all group", listingType === "FOR_RENT" && "border-primary ring-2 ring-primary")}>
+                                            <HandCoins className="h-12 w-12 text-primary mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                                            <h3 className="text-xl font-semibold">For Rent</h3>
+                                            <p className="text-sm text-muted-foreground mt-1">Rent out your car to travelers.</p>
+                                        </Card>
+                                     </Label>
+                                </FormItem>
+                            </RadioGroup>
                         </FormControl>
                         <FormMessage className="text-center" />
                     </FormItem>
