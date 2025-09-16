@@ -19,9 +19,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const mockPropertyTypes = [
-  { name: "Hotel", icon: Building, image: "https://images.unsplash.com/photo-1690314749019-2754cc7bfac9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3RlbCUyMGJ1aWxkaW5nfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "hotel building", filterType: "HOTEL" },
-  { name: "Apartment", icon: HomeIcon, image: "https://images.unsplash.com/photo-1612637968894-660373e23b03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhcGFydG1lbnQlMjBidWlsZGluZ3xlbnwwfHx8fDE3NTI3MjI3MzV8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "apartment building", filterType: "RENTAL" },
-  { name: "Resort", icon: Waves, image: "https://images.unsplash.com/photo-1586500036706-41963de24d8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxiZWFjaCUyMHJlc29ydHxlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "beach resort", filterType: "HOTEL" },
+  { name: "Hotel", icon: Building, image: "https://images.unsplash.com/photo-1690314749019-2754cc7bfac9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3RlbCUyMGJ1aWxkaW5nfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "hotel building", filterType: "HOTEL" },
+  { name: "Apartment", icon: HomeIcon, image: "https://images.unsplash.com/photo-1612637968894-660373e23b03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhcGFydG1lbnQlMjBidWlsZGluZ3xlbnwwfHx8fDE3NTI3MjI3MzV8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "apartment building", filterType: "RENTAL" },
+  { name: "Resort", icon: Waves, image: "https://images.unsplash.com/photo-1586500036706-41963de24d8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxiZWFjaCUyMHJlc29ydHxlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "beach resort", filterType: "HOTEL" },
   { name: "Villa", icon: HomeIcon, image: "https://images.unsplash.com/photo-1622015663319-e97e697503ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjB2aWxsYXxlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "luxury villa", filterType: "RENTAL" },
   { name: "Guest House", icon: BedDouble, image: "https://images.unsplash.com/photo-1750087752589-831d8be49851?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxndWVzdCUyMGhvdXNlJTIwZXh0ZXJpb3J8ZW58MHx8fHwxNzUyNzIyNzM0fDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "guest house exterior", filterType: "RENTAL" },
 ];
@@ -184,7 +184,7 @@ export default function HomePage() {
           <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto shadow-text">
             Discover amazing places to stay for your next adventure, from cozy cabins to luxury villas.
           </p>
-          <div className="max-w-4xl mx-auto bg-card p-3 md:p-4 rounded-xl shadow-lg border">
+          <div className="max-w-4xl mx-auto bg-card/70 backdrop-blur-sm p-3 md:p-4 rounded-xl shadow-lg border">
             <AccommodationSearchForm onSearch={() => { /* This prop is for navigating, handled by the form itself */ }} />
           </div>
         </div>
