@@ -217,8 +217,8 @@ const DetailsStep = () => {
         </div>
         {listingType === 'FOR_RENT' && (
              <FormField control={control} name="fuelPolicy" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Policy</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
+                <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -236,13 +236,13 @@ const DetailsStep = () => {
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
-                    </FormControl>
-                    <SelectContent>
-                        <SelectItem value="Full-to-Full">Full-to-Full</SelectItem>
-                        <SelectItem value="Like-for-Like">Like-for-Like</SelectItem>
-                        <SelectItem value="Pre-purchased">Pre-purchased Fuel</SelectItem>
-                    </SelectContent>
-                </Select>
+                        <SelectContent>
+                            <SelectItem value="Full-to-Full">Full-to-Full</SelectItem>
+                            <SelectItem value="Like-for-Like">Like-for-Like</SelectItem>
+                            <SelectItem value="Pre-purchased">Pre-purchased Fuel</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </FormControl>
              <FormMessage/></FormItem>)}/>
         )}
       </CardContent>
