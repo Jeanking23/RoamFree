@@ -216,34 +216,38 @@ const DetailsStep = () => {
             <FormField control={control} name="interiorColor" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Palette className="h-4 w-4"/>Interior Color</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a color"/></SelectTrigger></FormControl><SelectContent>{carColors.map(color => <SelectItem key={`int-${color}`} value={color}>{color}</SelectItem>)}</SelectContent></Select><FormMessage/></FormItem>)}/>
         </div>
         {listingType === 'FOR_RENT' && (
-             <FormField control={control} name="fuelPolicy" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Policy</FormLabel>
-                <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <SelectTrigger>
-                                        <div className="flex justify-between items-center w-full">
-                                            <SelectValue placeholder="Select a policy"/>
-                                            <Info className="h-4 w-4 text-muted-foreground ml-2 cursor-help" />
-                                        </div>
-                                    </SelectTrigger>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p><strong>Full-to-Full:</strong> Return with a full tank.</p>
-                                    <p><strong>Like-for-Like:</strong> Return with the same fuel level.</p>
-                                    <p><strong>Pre-purchased:</strong> Pay for a full tank upfront.</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                        <SelectContent>
-                            <SelectItem value="Full-to-Full">Full-to-Full</SelectItem>
-                            <SelectItem value="Like-for-Like">Like-for-Like</SelectItem>
-                            <SelectItem value="Pre-purchased">Pre-purchased Fuel</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </FormControl>
-             <FormMessage/></FormItem>)}/>
+             <FormField control={control} name="fuelPolicy" render={({ field }) => (
+                <FormItem>
+                    <FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Policy</FormLabel>
+                     <TooltipProvider>
+                        <FormControl>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <SelectTrigger>
+                                                <div className="flex justify-between items-center w-full">
+                                                    <SelectValue placeholder="Select a policy"/>
+                                                    <Info className="h-4 w-4 text-muted-foreground ml-2 cursor-help" />
+                                                </div>
+                                            </SelectTrigger>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p><strong>Full-to-Full:</strong> Return with a full tank.</p>
+                                            <p><strong>Like-for-Like:</strong> Return with the same fuel level.</p>
+                                            <p><strong>Pre-purchased:</strong> Pay for a full tank upfront.</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                    <SelectContent>
+                                        <SelectItem value="Full-to-Full">Full-to-Full</SelectItem>
+                                        <SelectItem value="Like-for-Like">Like-for-Like</SelectItem>
+                                        <SelectItem value="Pre-purchased">Pre-purchased Fuel</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                        </FormControl>
+                    </TooltipProvider>
+                    <FormMessage/>
+                </FormItem>
+            )}/>
         )}
       </CardContent>
     </div>
