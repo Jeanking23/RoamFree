@@ -218,33 +218,33 @@ const DetailsStep = () => {
         {listingType === 'FOR_RENT' && (
              <FormField control={control} name="fuelPolicy" render={({ field }) => (
                 <FormItem>
-                    <FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Policy</FormLabel>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                  <SelectTrigger>
-                                    <div className="flex justify-between items-center w-full">
-                                      <SelectValue placeholder="Select a policy"/>
-                                      <Info className="h-4 w-4 text-muted-foreground ml-2 cursor-help" />
-                                    </div>
-                                  </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                  <SelectItem value="Full-to-Full">Full-to-Full</SelectItem>
-                                  <SelectItem value="Like-for-Like">Like-for-Like</SelectItem>
-                                  <SelectItem value="Pre-purchased">Pre-purchased Fuel</SelectItem>
-                              </SelectContent>
-                          </Select>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p><strong>Full-to-Full:</strong> Return with a full tank.</p>
-                          <p><strong>Like-for-Like:</strong> Return with the same fuel level.</p>
-                          <p><strong>Pre-purchased:</strong> Pay for a full tank upfront.</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <FormLabel className="flex items-center gap-1">
+                        <Droplets className="h-4 w-4"/>Fuel Policy
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p><strong>Full-to-Full:</strong> Return with a full tank.</p>
+                                    <p><strong>Like-for-Like:</strong> Return with the same fuel level.</p>
+                                    <p><strong>Pre-purchased:</strong> Pay for a full tank upfront.</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a policy"/>
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="Full-to-Full">Full-to-Full</SelectItem>
+                            <SelectItem value="Like-for-Like">Like-for-Like</SelectItem>
+                            <SelectItem value="Pre-purchased">Pre-purchased Fuel</SelectItem>
+                        </SelectContent>
+                    </Select>
                     <FormMessage/>
                 </FormItem>
             )}/>
