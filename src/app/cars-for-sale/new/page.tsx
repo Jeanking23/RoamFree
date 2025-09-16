@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CarFront, UploadCloud, Send, X, Settings2, Droplets, Palette, ArrowLeft, DollarSign, Calendar, RefreshCw, HandCoins, Info } from 'lucide-react';
+import { CarFront, UploadCloud, Send, X, Settings2, Droplets, Palette, ArrowLeft, DollarSign, HandCoins, Info } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -138,7 +138,7 @@ const ListingTypeStep = () => {
 
 
 const BasicsStep = () => {
-  const { control, watch, setValue, formState: { errors } } = useFormContext<CarForSaleFormValues>();
+  const { control, watch, setValue } = useFormContext<CarForSaleFormValues>();
   const selectedMake = watch("make");
   const availableModels = selectedMake ? carMakesAndModels[selectedMake] : [];
 
@@ -208,7 +208,7 @@ const DetailsStep = () => {
         <FormField control={control} name="mileage" render={({ field }) => (<FormItem><FormLabel>Mileage</FormLabel><FormControl><Input type="number" placeholder="45000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
          <div className="grid md:grid-cols-3 gap-4">
             <FormField control={control} name="engine" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Engine</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Engine Type"/></SelectTrigger></FormControl><SelectContent><SelectItem value="4-Cylinder">4-Cylinder</SelectItem><SelectItem value="6-Cylinder">6-Cylinder</SelectItem><SelectItem value="8-Cylinder">8-Cylinder</SelectItem><SelectItem value="Electric">Electric</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
-            <FormField control={control} name="transmission" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><RefreshCw className="h-4 w-4"/>Transmission</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Transmission"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Automatic">Automatic</SelectItem><SelectItem value="Manual">Manual</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
+            <FormField control={control} name="transmission" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Transmission</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Transmission"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Automatic">Automatic</SelectItem><SelectItem value="Manual">Manual</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
             <FormField control={control} name="fuelType" render={({ field }) => (<FormItem><FormLabel className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Fuel Type"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Gasoline">Gasoline</SelectItem><SelectItem value="Diesel">Diesel</SelectItem><SelectItem value="Electric">Electric</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
@@ -218,28 +218,28 @@ const DetailsStep = () => {
         {listingType === 'FOR_RENT' && (
              <FormField control={control} name="fuelPolicy" render={({ field }) => (
                 <FormItem>
-                    <FormLabel className="flex items-center gap-1">
+                    <div className="flex items-center gap-1">
+                      <FormLabel className="flex items-center gap-1">
                         <Droplets className="h-4 w-4"/>Fuel Policy
-                    </FormLabel>
+                      </FormLabel>
+                      <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p><strong>Full-to-Full:</strong> Return with a full tank.</p>
+                                <p><strong>Like-for-Like:</strong> Return with the same fuel level.</p>
+                                <p><strong>Pre-purchased:</strong> Pay for a full tank upfront.</p>
+                            </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <SelectTrigger>
-                                            <div className="flex justify-between items-center w-full">
-                                                <SelectValue placeholder="Select a policy"/>
-                                                <Info className="h-4 w-4 text-muted-foreground cursor-help ml-2" />
-                                            </div>
-                                        </SelectTrigger>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p><strong>Full-to-Full:</strong> Return with a full tank.</p>
-                                        <p><strong>Like-for-Like:</strong> Return with the same fuel level.</p>
-                                        <p><strong>Pre-purchased:</strong> Pay for a full tank upfront.</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a policy"/>
+                          </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                             <SelectItem value="Full-to-Full">Full-to-Full</SelectItem>
@@ -466,3 +466,5 @@ export default function ListCarPage() {
     </div>
   );
 }
+
+    
