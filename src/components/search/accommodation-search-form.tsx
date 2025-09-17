@@ -119,16 +119,23 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-12 gap-4 items-end p-0 bg-card rounded-lg">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-12 gap-4 items-end p-0 bg-transparent rounded-lg">
         {/* Destination */}
         <FormField
           control={form.control}
           name="destination"
           render={({ field }) => (
             <FormItem className="col-span-12 md:col-span-3">
-              <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Destination</FormLabel>
+              <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
+                <MapPin className="h-4 w-4 text-primary" />Destination
+              </FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Paris, France" {...field} value={field.value || ''} />
+                <Input
+                  placeholder="e.g., Paris, France"
+                  {...field}
+                  value={field.value || ''}
+                  className={cn(!isResultsPage && "bg-transparent text-white placeholder:text-white/70 border-white/50 focus-visible:ring-white/50")}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -140,7 +147,9 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           name="dateRange"
           render={({ field }) => (
             <FormItem className="flex flex-col col-span-12 md:col-span-3">
-              <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Check-in - Check-out</FormLabel>
+              <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
+                <CalendarIcon className="h-4 w-4 text-primary" />Check-in - Check-out
+              </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -148,7 +157,8 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                       variant={"outline"}
                       className={cn(
                         "w-full justify-start text-left font-normal h-10",
-                        !field.value?.from && "text-muted-foreground"
+                        !field.value?.from && "text-muted-foreground",
+                        !isResultsPage && "bg-transparent text-white hover:text-white border-white/50"
                       )}
                     >
                       {hasMounted && field.value?.from ? (
@@ -188,12 +198,17 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           name="adults" 
           render={() => ( 
             <FormItem className="flex flex-col col-span-12 md:col-span-3">
-              <FormLabel className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests & Rooms</FormLabel>
+              <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
+                <Users className="h-4 w-4 text-primary" />Guests & Rooms
+              </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-between text-left font-normal flex items-center h-10"
+                    className={cn(
+                      "w-full justify-between text-left font-normal flex items-center h-10",
+                      !isResultsPage && "bg-transparent text-white hover:text-white border-white/50"
+                    )}
                   >
                     <span className="truncate">{`${adults} adult${adults !== 1 ? 's' : ''} · ${children} child${children !== 1 ? 'ren' : ''} · ${rooms} room${rooms !== 1 ? 's' : ''}`}</span>
                     <ChevronsUpDown className="ml-auto h-4 w-4 opacity-50 shrink-0" />
@@ -221,10 +236,67 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
         
         {/* Advanced Filters (Desktop/Tablet) */}
         <div className="col-span-12 grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-            <FormField control={form.control} name="propertyType" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="HOTEL">Hotel</SelectItem><SelectItem value="RENTAL">Rental</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
-            <FormField control={form.control} name="mood" render={({ field }) => ( <FormItem><FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-primary" />Mood</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="ANY">Any</SelectItem><SelectItem value="PEACEFUL">Peaceful</SelectItem><SelectItem value="ROMANTIC">Romantic</SelectItem><SelectItem value="ADVENTUROUS">Adventurous</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
-            <FormField control={form.control} name="wheelchairAccessible" render={({ field }) => ( <FormItem className="flex flex-row items-end space-x-2 pb-2"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-2 text-sm"><Accessibility className="h-4 w-4 text-primary"/>Accessible</FormLabel></FormItem> )}/>
-            <FormField control={form.control} name="ecoFriendly" render={({ field }) => ( <FormItem className="flex flex-row items-end space-x-2 pb-2"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-2 text-sm"><Leaf className="h-4 w-4 text-primary"/>Eco-Friendly</FormLabel></FormItem> )}/>
+            <FormField control={form.control} name="propertyType" render={({ field }) => ( <FormItem>
+                <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
+                    <Building2 className="h-4 w-4 text-primary" />Type
+                </FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                        <SelectTrigger className={cn(!isResultsPage && "bg-transparent text-white border-white/50")}>
+                            <SelectValue/>
+                        </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                        <SelectItem value="ANY">Any</SelectItem>
+                        <SelectItem value="HOTEL">Hotel</SelectItem>
+                        <SelectItem value="RENTAL">Rental</SelectItem>
+                    </SelectContent>
+                </Select>
+                <FormMessage />
+            </FormItem> )}/>
+            <FormField control={form.control} name="mood" render={({ field }) => ( <FormItem>
+                <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
+                    <Smile className="h-4 w-4 text-primary" />Mood
+                </FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                        <SelectTrigger className={cn(!isResultsPage && "bg-transparent text-white border-white/50")}>
+                            <SelectValue/>
+                        </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                        <SelectItem value="ANY">Any</SelectItem>
+                        <SelectItem value="PEACEFUL">Peaceful</SelectItem>
+                        <SelectItem value="ROMANTIC">Romantic</SelectItem>
+                        <SelectItem value="ADVENTUROUS">Adventurous</SelectItem>
+                    </SelectContent>
+                </Select>
+                <FormMessage />
+            </FormItem> )}/>
+            <FormField control={form.control} name="wheelchairAccessible" render={({ field }) => ( <FormItem className="flex flex-row items-end space-x-2 pb-2">
+                <FormControl>
+                    <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className={cn(!isResultsPage && "border-white/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground")}
+                    />
+                </FormControl>
+                <FormLabel className={cn("font-normal flex items-center gap-2 text-sm", !isResultsPage && "text-white")}>
+                    <Accessibility className="h-4 w-4 text-primary"/>Accessible
+                </FormLabel>
+            </FormItem> )}/>
+            <FormField control={form.control} name="ecoFriendly" render={({ field }) => ( <FormItem className="flex flex-row items-end space-x-2 pb-2">
+                <FormControl>
+                    <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className={cn(!isResultsPage && "border-white/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground")}
+                    />
+                </FormControl>
+                <FormLabel className={cn("font-normal flex items-center gap-2 text-sm", !isResultsPage && "text-white")}>
+                    <Leaf className="h-4 w-4 text-primary"/>Eco-Friendly
+                </FormLabel>
+            </FormItem> )}/>
         </div>
         
       </form>
