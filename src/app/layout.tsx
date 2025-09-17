@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const hideNavElements = pathname === '/transport/search' || pathname === '/signin' || pathname === '/signup' || pathname === '/list-property';
+  const hideNavElements = pathname === '/transport/search' || pathname === '/signin' || pathname === '/signup';
   
   const showPartnerHelpBot = 
     pathname.startsWith('/dashboard') || 
