@@ -43,8 +43,10 @@ export default function RootLayout({
             <LocaleProvider>
               <div className="relative flex min-h-screen flex-col">
                 {!hideNavElements && <Header />}
-                <main className={cn("flex-1", !hideNavElements && "container mx-auto px-4 py-8 pb-24 md:pb-8")}>
-                  {children}
+                <main className="flex-1">
+                  <div className={cn(!hideNavElements && "container mx-auto px-4 py-8 pb-24 md:pb-8")}>
+                    {children}
+                  </div>
                 </main>
                 {!hideNavElements && <Footer />}
                 {!hideNavElements && <BottomNavBar />}
