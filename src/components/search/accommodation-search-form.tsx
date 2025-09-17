@@ -176,7 +176,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className={cn("w-auto p-0", !isResultsPage && "bg-background/80 backdrop-blur-sm border-white/50 text-white")} align="start">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="range"
                     selected={field.value as DateRange | undefined} 
@@ -214,7 +214,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                     <ChevronsUpDown className="ml-auto h-4 w-4 opacity-50 shrink-0" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className={cn("w-[300px] p-4", !isResultsPage && "bg-background/80 backdrop-blur-sm border-white/50 text-white")} align="start">
+                <PopoverContent className="w-[300px] p-4" align="start">
                   <div className="space-y-4">
                     <FormField control={form.control} name="adults" render={({ field: adultField }) => ( <FormItem><FormLabel>Adults</FormLabel><FormControl><Input type="number" min="1" max="10" {...adultField} value={adultField.value || 1} onChange={e => adultField.onChange(parseInt(e.target.value,10) || 1)}/></FormControl><FormMessage /></FormItem> )}/>
                     <FormField control={form.control} name="children" render={({ field: childrenField }) => ( <FormItem><FormLabel>Children</FormLabel><FormControl><Input type="number" min="0" max="10" {...childrenField} value={childrenField.value || 0} onChange={e => childrenField.onChange(parseInt(e.target.value,10) || 0)}/></FormControl><FormMessage /></FormItem> )}/>
@@ -303,3 +303,5 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
     </Form>
   );
 }
+
+    
