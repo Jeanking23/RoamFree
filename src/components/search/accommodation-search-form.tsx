@@ -54,7 +54,6 @@ interface AccommodationSearchFormProps {
 export default function AccommodationSearchForm({ onSearch, isResultsPage = false }: AccommodationSearchFormProps) {
   const router = useRouter(); // Initialize router
   const [hasMounted, setHasMounted] = useState(false);
-  const [minDate, setMinDate] = useState<Date | undefined>(undefined);
 
   const form = useForm<AccommodationSearchFormValues>({
     resolver: zodResolver(accommodationSearchSchema),
@@ -76,17 +75,16 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
   
   useEffect(() => {
     setHasMounted(true);
-    
+    // Set default dates on the client to avoid hydration mismatch
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    setMinDate(today);
-
-    if (!form.getValues("dateRange.from") && !form.getValues("dateRange.to")) {
-      form.setValue("dateRange.from", new Date(), { shouldValidate: false });
-      form.setValue("dateRange.to", addDays(new Date(), 7), { shouldValidate: false });
+    const oneWeekFromNow = addDays(today, 7);
+    
+    if (!form.getValues('dateRange.from') && !form.getValues('dateRange.to')) {
+      form.setValue('dateRange.from', today);
+      form.setValue('dateRange.to', oneWeekFromNow);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [form]);
 
 
   function onSubmit(values: AccommodationSearchFormValues) {
@@ -182,7 +180,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                     selected={field.value as DateRange | undefined} 
                     onSelect={(range) => field.onChange(range || { from: undefined, to: undefined })}
                     numberOfMonths={2}
-                    disabled={(date) => minDate ? date < minDate : true} 
+                    disabled={(date) => hasMounted ? date < new Date(new Date().setHours(0, 0, 0, 0)) : true} 
                     initialFocus
                   />
                 </PopoverContent>
