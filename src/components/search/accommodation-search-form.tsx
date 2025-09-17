@@ -134,7 +134,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                   placeholder="e.g., Paris, France"
                   {...field}
                   value={field.value || ''}
-                  className={cn(!isResultsPage && "text-white placeholder:text-white/70 border-white/50 focus-visible:ring-white/50")}
+                  className={cn(!isResultsPage && "text-foreground placeholder:text-muted-foreground border-input focus-visible:ring-ring")}
                 />
               </FormControl>
               <FormMessage />
@@ -158,7 +158,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                       className={cn(
                         "w-full justify-start text-left font-normal h-10",
                         !field.value?.from && "text-muted-foreground",
-                        !isResultsPage && "text-white hover:text-white border-white/50"
+                        !isResultsPage && "text-foreground hover:text-foreground border-input"
                       )}
                     >
                       {hasMounted && field.value?.from ? (
@@ -207,7 +207,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                     variant="outline"
                     className={cn(
                       "w-full justify-between text-left font-normal flex items-center h-10",
-                      !isResultsPage && "text-white hover:text-white border-white/50"
+                      !isResultsPage && "text-foreground hover:text-foreground border-input"
                     )}
                   >
                     <span className="truncate">{`${adults} adult${adults !== 1 ? 's' : ''} · ${children} child${children !== 1 ? 'ren' : ''} · ${rooms} room${rooms !== 1 ? 's' : ''}`}</span>
@@ -242,7 +242,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                 </FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                        <SelectTrigger className={cn(!isResultsPage && "text-white border-white/50")}>
+                        <SelectTrigger className={cn(!isResultsPage && "text-foreground border-input")}>
                             <SelectValue/>
                         </SelectTrigger>
                     </FormControl>
@@ -260,7 +260,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                 </FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                        <SelectTrigger className={cn(!isResultsPage && "text-white border-white/50")}>
+                        <SelectTrigger className={cn(!isResultsPage && "text-foreground border-input")}>
                             <SelectValue/>
                         </SelectTrigger>
                     </FormControl>

@@ -23,7 +23,7 @@ const mockPropertyTypes = [
   { name: "Apartment", icon: HomeIcon, image: "https://images.unsplash.com/photo-1612637968894-660373e23b03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhcGFydG1lbnQlMjBidWlsZGluZ3xlbnwwfHx8fDE3NTI3MjI3MzV8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "apartment building", filterType: "RENTAL" },
   { name: "Resort", icon: Waves, image: "https://images.unsplash.com/photo-1586500036706-41963de24d8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxiZWFjaCUyMHJlc29ydHxlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "beach resort", filterType: "HOTEL" },
   { name: "Villa", icon: HomeIcon, image: "https://images.unsplash.com/photo-1622015663319-e97e697503ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjB2aWxsYXxlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "luxury villa", filterType: "RENTAL" },
-  { name: "Guest House", icon: BedDouble, image: "https://images.unsplash.com/photo-1750087752589-831d8be49851?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxndWVzdCUyMGhvdXNlJTIwZXh0ZXJpb3J8ZW58MHx8fHwxNzUyNzIyNzM0fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "guest house exterior", filterType: "RENTAL" },
+  { name: "Guest House", icon: BedDouble, image: "https://images.unsplash.com/photo-1750087752589-831d8be49851?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxndWVzdCUyMGhvdXNlJTIwZXh0ZXJpb3J8ZW58MHx8fHwxNzUyNzIyNzM0fDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "guest house exterior", filterType: "RENTAL" },
 ];
 
 const mockRecentSearches = [
