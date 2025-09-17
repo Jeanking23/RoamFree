@@ -23,7 +23,7 @@ const mockPropertyTypes = [
   { name: "Apartment", icon: HomeIcon, image: "https://images.unsplash.com/photo-1612637968894-660373e23b03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhcGFydG1lbnQlMjBidWlsZGluZ3xlbnwwfHx8fDE3NTI3MjI3MzV8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "apartment building", filterType: "RENTAL" },
   { name: "Resort", icon: Waves, image: "https://images.unsplash.com/photo-1586500036706-41963de24d8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxiZWFjaCUyMHJlc29ydHxlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "beach resort", filterType: "HOTEL" },
   { name: "Villa", icon: HomeIcon, image: "https://images.unsplash.com/photo-1622015663319-e97e697503ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjB2aWxsYXxlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "luxury villa", filterType: "RENTAL" },
-  { name: "Guest House", icon: BedDouble, image: "https://images.unsplash.com/photo-1750087752589-831d8be49851?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxndWVzdCUyMGhvdXNlJTIwZXh0ZXJpb3J8ZW58MHx8fHwxNzUyNzIyNzM0fDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "guest house exterior", filterType: "RENTAL" },
+  { name: "Guest House", icon: BedDouble, image: "https://images.unsplash.com/photo-1750087752589-831d8be49851?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxndWVzdCUyMGhvdXNlJTIwZXh0ZXJpb3J8ZW58MHx8fHwxNzUyNzIyNzM0fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "guest house exterior", filterType: "RENTAL" },
 ];
 
 const mockRecentSearches = [
@@ -33,10 +33,10 @@ const mockRecentSearches = [
 ];
 
 const mockTrendingDestinations = [
-  { id: "td1", name: "Top Hotels in Paris", image: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwYXJpcyUyMGVpZmZlbCUyMHRvd2VyfGVufDB8fHx8MTc1MjcyMjczNXww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "paris eiffel tower", price: "120", rating: 4.7, filter: { destination: "Paris", propertyType: "HOTEL" } },
-  { id: "td2", name: "Apartments in Douala", image: "https://images.unsplash.com/photo-1588334488081-06fca5a234f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjaXR5JTIwZG91YWxhfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "city douala", price: "80", rating: 4.3, filter: { destination: "Douala", propertyType: "RENTAL" } },
+  { id: "td1", name: "Top Hotels in Paris", image: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwYXJpcyUyMGVpZmZlbCUyMHRvd2VyfGVufDB8fHx8MTc1MjcyMjczNXww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "paris eiffel tower", price: "120", rating: 4.7, filter: { destination: "Paris", propertyType: "HOTEL" } },
+  { id: "td2", name: "Apartments in Douala", image: "https://images.unsplash.com/photo-1588334488081-06fca5a234f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjaXR5JTIwZG91YWxhfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "city douala", price: "80", rating: 4.3, filter: { destination: "Douala", propertyType: "RENTAL" } },
   { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://images.unsplash.com/photo-1705330409537-e6476e6ca90c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMGFiaWRqYW58ZW58MHx8fHwxNzUyNzIyNzM0fDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "beach abidjan", price: "150", rating: 4.5, filter: { destination: "Abidjan", propertyType: "HOTEL" } },
-  { id: "td4", name: "Villas in Aspen", image: "https://images.unsplash.com/photo-1601268615527-c02730fea66a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhc3BlbiUyMG1vdW50YWluc3xlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "aspen mountains", price: "300", rating: 4.9, filter: { destination: "Aspen", propertyType: "RENTAL" } },
+  { id: "td4", name: "Villas in Aspen", image: "https://images.unsplash.com/photo-1601268615527-c02730fea66a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhc3BlbiUyMG1vdW50YWluc3xlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "aspen mountains", price: "300", rating: 4.9, filter: { destination: "Aspen", propertyType: "RENTAL" } },
 ];
 
 const mockVibes = [
@@ -48,9 +48,9 @@ const mockVibes = [
 ];
 
 const mockNearbyGems = [
-  { id: "ng1", name: "Lake House Retreat", image: "https://images.unsplash.com/photo-1621571113981-f51bde2a125b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxsYWtlJTIwaG91c2V8ZW58MHx8fHwxNzUyNzIyNzM1fDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "lake house", distance: "30km", type: "Stay", link: "/stays/stay4" }, 
+  { id: "ng1", name: "Lake House Retreat", image: "https://images.unsplash.com/photo-1621571113981-f51bde2a125b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxsYWtlJTIwaG91c2V8ZW58MHx8fHwxNzUyNzIyNzM1fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "lake house", distance: "30km", type: "Stay", link: "/stays/stay4" }, 
   { id: "ng2", name: "City Park Resort", image: "https://images.unsplash.com/photo-1717584125850-136a4eac966c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaXR5JTIwcmVzb3J0fGVufDB8fHx8MTc1MjcyMjczNHww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "city resort", distance: "5km", type: "Stay", link: "/stays/stay5" },
-  { id: "ng3", name: "Affordable Guest House", image: "https://images.unsplash.com/photo-1570290870545-277c2f5ad465?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxndWVzdCUyMGhvdXNlfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "guest house", distance: "in your city", type: "Stay", link: "/stays/stay6" },
+  { id: "ng3", name: "Affordable Guest House", image: "https://images.unsplash.com/photo-1570290870545-277c2f5ad465?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxndWVzdCUyMGhvdXNlfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "guest house", distance: "in your city", type: "Stay", link: "/stays/stay6" },
 ];
 
 const mockDeals = [
@@ -95,9 +95,9 @@ const translations = {
 };
 
 const slideshowImages = [
-  { url: "https://images.unsplash.com/photo-1507525428034-b723a9ce6890?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMHN1bnJpc2V8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib-rb-4.1.0&q=80&w=1080", hint: "beach sunrise" },
-  { url: "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwwfHx8fDE3NTI4MTQxMzB8MA&ixlib-rb-4.1.0&q=80&w=1080", hint: "mountain landscape" },
-  { url: "https://images.unsplash.com/photo-1519010470956-6d877008eaa4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjaXR5c2NhcGUlMjBhJTIwbmlnaHR8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib-rb-4.1.0&q=80&w=1080", hint: "cityscape night" },
+  { url: "https://images.unsplash.com/photo-1507525428034-b723a9ce6890?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMHN1bnJpc2V8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", hint: "beach sunrise" },
+  { url: "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwwfHx8fDE3NTI4MTQxMzB8MA&ixlib=rb-4.1.0&q=80&w=1080", hint: "mountain landscape" },
+  { url: "https://images.unsplash.com/photo-1519010470956-6d877008eaa4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjaXR5c2NhcGUlMjBhJTIwbmlnaHR8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", hint: "cityscape night" },
 ];
 
 
@@ -184,7 +184,7 @@ export default function HomePage() {
           <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto shadow-text">
             Discover amazing places to stay for your next adventure, from cozy cabins to luxury villas.
           </p>
-          <div className="max-w-4xl mx-auto bg-card/70 backdrop-blur-sm p-3 md:p-4 rounded-xl shadow-lg border">
+          <div className="max-w-4xl mx-auto bg-card/80 backdrop-blur-sm p-3 md:p-4 rounded-xl shadow-lg border">
             <AccommodationSearchForm onSearch={() => { /* This prop is for navigating, handled by the form itself */ }} />
           </div>
         </div>
