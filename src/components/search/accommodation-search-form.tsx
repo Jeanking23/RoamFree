@@ -134,7 +134,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                   placeholder="e.g., Paris, France"
                   {...field}
                   value={field.value || ''}
-                  className={cn(!isResultsPage && "text-foreground placeholder:text-muted-foreground border-input focus-visible:ring-ring")}
+                  className={cn(!isResultsPage && "bg-background/80 hover:bg-background/90 text-foreground border-white/50")}
                 />
               </FormControl>
               <FormMessage />
@@ -158,7 +158,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                       className={cn(
                         "w-full justify-start text-left font-normal h-10",
                         !field.value?.from && "text-muted-foreground",
-                        !isResultsPage && "text-foreground hover:text-foreground border-input"
+                        !isResultsPage && "bg-background/80 hover:bg-background/90 text-foreground border-white/50"
                       )}
                     >
                       {hasMounted && field.value?.from ? (
@@ -207,7 +207,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                     variant="outline"
                     className={cn(
                       "w-full justify-between text-left font-normal flex items-center h-10",
-                      !isResultsPage && "text-foreground hover:text-foreground border-input"
+                      !isResultsPage && "bg-background/80 hover:bg-background/90 text-foreground border-white/50"
                     )}
                   >
                     <span className="truncate">{`${adults} adult${adults !== 1 ? 's' : ''} · ${children} child${children !== 1 ? 'ren' : ''} · ${rooms} room${rooms !== 1 ? 's' : ''}`}</span>
