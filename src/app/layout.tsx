@@ -19,13 +19,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const hideNavElements = pathname === '/transport/search' || pathname === '/signin' || pathname === '/signup';
+  const hideNavElements = pathname === '/transport/search' || pathname === '/signin' || pathname === '/signup' || pathname === '/list-property' || pathname === '/cars-for-sale/new';
   
   const showPartnerHelpBot = 
     pathname.startsWith('/dashboard') || 
     pathname.startsWith('/list-property') || 
     pathname.startsWith('/cars-for-sale/new') || 
     pathname.startsWith('/for-partners');
+    
+  const useContainer = !hideNavElements;
 
   return (
     <html lang="en" suppressHydrationWarning={true}>
@@ -43,8 +45,8 @@ export default function RootLayout({
             <LocaleProvider>
               <div className="relative flex min-h-screen flex-col">
                 {!hideNavElements && <Header />}
-                <main className="flex-1">
-                  <div className={cn(!hideNavElements && "container mx-auto px-4 py-8 pb-24 md:pb-8")}>
+                <main className="flex flex-1 flex-col">
+                  <div className={cn("flex-1", useContainer && "container mx-auto px-4 py-8 pb-24 md:pb-8")}>
                     {children}
                   </div>
                 </main>
