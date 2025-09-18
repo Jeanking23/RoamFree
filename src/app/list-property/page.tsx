@@ -918,7 +918,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("flex-grow flex flex-col", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
+        <div className={cn("flex-grow flex flex-col justify-center", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
