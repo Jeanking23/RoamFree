@@ -926,7 +926,7 @@ export default function ListPropertyPage() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="flex-grow flex flex-col justify-center"
+                    className="w-full max-w-4xl mx-auto"
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
