@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const hideNavElements = pathname === '/transport/search' || pathname === '/signin' || pathname === '/signup' || pathname === '/list-property' || pathname === '/cars-for-sale/new';
+  const hideNavElements = pathname === '/transport/search' || pathname === '/signin' || pathname === '/signup';
   
   const showPartnerHelpBot = 
     pathname.startsWith('/dashboard') || 
@@ -45,8 +45,8 @@ export default function RootLayout({
             <LocaleProvider>
               <div className="relative flex min-h-screen flex-col">
                 {!hideNavElements && <Header />}
-                <main className="flex flex-1 flex-col">
-                  <div className={cn("flex-1", useContainer && "container mx-auto px-4 py-8 pb-24 md:pb-8")}>
+                <main className="flex-1">
+                  <div className={cn("container mx-auto px-4 py-8 pb-24 md:pb-8", !useContainer && "px-0")}>
                     {children}
                   </div>
                 </main>
