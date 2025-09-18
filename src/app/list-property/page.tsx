@@ -239,7 +239,7 @@ const LocationStep = () => {
             <div className="absolute inset-0">
                 <InteractiveMapPlaceholder pickup={address} />
             </div>
-            <div className="absolute top-4 left-4 z-10 w-full max-w-md">
+            <div className="absolute top-4 left-4 z-10 w-full max-w-md h-[calc(100%-2rem)] overflow-y-auto no-scrollbar">
                 <Card className="shadow-2xl bg-background/90 backdrop-blur-sm">
                     <CardHeader>
                         <CardTitle className="text-3xl font-headline text-primary">Where is your property?</CardTitle>
@@ -918,7 +918,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("flex-grow flex flex-col justify-center", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
+        <div className={cn("flex-grow flex flex-col", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -926,7 +926,7 @@ export default function ListPropertyPage() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="w-full max-w-4xl mx-auto"
+                    className={cn("w-full max-w-4xl mx-auto my-auto", currentStep === 2 && "h-full w-full max-w-full")}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
