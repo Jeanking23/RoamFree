@@ -884,7 +884,7 @@ export default function ListPropertyPage() {
   return (
     <div className="space-y-8">
       <FormProvider {...methods}>
-      <Card className="shadow-lg rounded-lg overflow-hidden flex flex-col h-[85vh]">
+      <Card className="shadow-lg rounded-lg overflow-hidden flex flex-col min-h-[90vh]">
         <CardHeader className="bg-primary/10 border-b z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -918,7 +918,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("flex-grow flex flex-col", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
+        <div className={cn("flex-grow flex flex-col justify-center", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -926,7 +926,7 @@ export default function ListPropertyPage() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className={cn("w-full max-w-4xl mx-auto", currentStep === 2 ? "h-full w-full max-w-full" : "my-auto")}
+                    className={cn("w-full max-w-4xl mx-auto", currentStep === 2 ? "h-full w-full max-w-full" : "")}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
