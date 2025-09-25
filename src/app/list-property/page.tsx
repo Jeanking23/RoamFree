@@ -582,7 +582,9 @@ const ServicesStep = () => {
             <CardContent className="p-0 pt-8 space-y-8">
                 <FormField control={control} name="breakfast" render={({ field }) => (
                     <FormItem className="space-y-3 p-4 border rounded-lg">
-                        <FormLabel className="text-lg font-semibold flex items-center gap-2"><Coffee className="h-5 w-5"/>Do you serve guests breakfast?</FormLabel>
+                        <FormLabel className="text-lg font-semibold">
+                            <div className="flex items-center gap-2"><Coffee className="h-5 w-5"/>Do you serve guests breakfast?</div>
+                        </FormLabel>
                         <FormControl>
                             <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
                                 <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES" /></FormControl><FormLabel className="font-normal">Yes</FormLabel></FormItem>
@@ -594,7 +596,9 @@ const ServicesStep = () => {
                 )}/>
                 <FormField control={control} name="parking" render={({ field }) => (
                     <FormItem className="space-y-3 p-4 border rounded-lg">
-                        <FormLabel className="text-lg font-semibold flex items-center gap-2"><ParkingCircle className="h-5 w-5"/>Is parking available to guests?</FormLabel>
+                        <FormLabel className="text-lg font-semibold">
+                            <div className="flex items-center gap-2"><ParkingCircle className="h-5 w-5"/>Is parking available to guests?</div>
+                        </FormLabel>
                         <FormControl>
                             <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col sm:flex-row sm:gap-4">
                                 <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES_FREE" /></FormControl><FormLabel className="font-normal">Yes, free</FormLabel></FormItem>
@@ -919,7 +923,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("flex-grow flex flex-col justify-center", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
+        <div className={cn("flex-grow flex flex-col", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -927,7 +931,7 @@ export default function ListPropertyPage() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className={cn("w-full max-w-4xl mx-auto my-auto", currentStep === 2 && "h-full w-full max-w-full")}
+                    className={cn("w-full max-w-4xl mx-auto", currentStep === 2 && "h-full w-full max-w-full")}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
