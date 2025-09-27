@@ -931,7 +931,10 @@ export default function ListPropertyPage() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className={cn("w-full max-w-4xl mx-auto", currentStep === 2 && "h-full w-full max-w-full")}
+                    className={cn(
+                        "w-full my-auto",
+                        currentStep === 2 ? "h-full" : "max-w-4xl mx-auto"
+                    )}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
