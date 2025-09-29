@@ -235,7 +235,7 @@ const LocationStep = () => {
     }, [selectedCountryName, setValue]);
 
     return (
-        <div className="relative h-full w-full">
+        <div className="relative h-[calc(90vh-170px)] w-full">
             <div className="absolute inset-0">
                 <InteractiveMapPlaceholder pickup={address} />
             </div>
@@ -717,7 +717,7 @@ const HostProfileStep = () => {
                                         <FormControl>
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("property", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
-                                        <div className="space-y-1 leading-none"><FormLabel className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/>The property</FormLabel><FormDescription>Architecture, garden, art, history, view, etc.</FormDescription></div>
+                                        <div className="space-y-1 leading-none"><FormLabel><div className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/>The property</div></FormLabel><FormDescription>Architecture, garden, art, history, view, etc.</FormDescription></div>
                                     </FormItem>
                                 )} />
                              <FormField
@@ -727,7 +727,7 @@ const HostProfileStep = () => {
                                         <FormControl>
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("host", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
-                                        <div className="space-y-1 leading-none"><FormLabel className="flex items-center gap-2"><User className="h-5 w-5"/>The host</FormLabel><FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription></div>
+                                        <div className="space-y-1 leading-none"><FormLabel><div className="flex items-center gap-2"><User className="h-5 w-5"/>The host</div></FormLabel><FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription></div>
                                     </FormItem>
                                 )} />
                              <FormField
@@ -737,7 +737,7 @@ const HostProfileStep = () => {
                                         <FormControl>
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("neighborhood", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
-                                        <div className="space-y-1 leading-none"><FormLabel className="flex items-center gap-2"><MapIconLucide className="h-5 w-5"/>The neighborhood</FormLabel><FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription></div>
+                                        <div className="space-y-1 leading-none"><FormLabel><div className="flex items-center gap-2"><MapIconLucide className="h-5 w-5"/>The neighborhood</div></FormLabel><FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription></div>
                                     </FormItem>
                                 )} />
                              <FormField
@@ -953,7 +953,9 @@ export default function ListPropertyPage() {
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className={cn(
                         "w-full mx-auto",
-                         currentStep === 2 ? "h-full" : "max-w-4xl my-auto"
+                         currentStep === 0 ? "my-auto" : "",
+                         currentStep !== 2 ? "max-w-4xl" : "",
+                         currentStep === 2 ? "h-full" : ""
                     )}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
