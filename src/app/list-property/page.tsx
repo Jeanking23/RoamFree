@@ -378,9 +378,7 @@ const PhotosStep = () => {
               render={({ field }) => (
                 <FormItem>
                     <FormLabel>
-                        <div>
-                            Photo descriptions
-                        </div>
+                        <div>Photo descriptions</div>
                     </FormLabel>
                     <FormControl>
                         <Textarea placeholder="Briefly describe what's in the photos to improve accessibility and search results." rows={3} {...field} />
@@ -951,7 +949,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("flex-grow flex flex-col justify-center", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
+        <div className={cn("flex-grow flex flex-col", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -960,7 +958,7 @@ export default function ListPropertyPage() {
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className={cn(
-                        "w-full mx-auto",
+                        "w-full mx-auto my-auto",
                          currentStep !== 2 ? "max-w-4xl" : "",
                          currentStep === 2 ? "h-full" : ""
                     )}
