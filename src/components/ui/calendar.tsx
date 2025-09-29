@@ -15,6 +15,24 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  const [hasMounted, setHasMounted] = React.useState(false);
+  React.useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) {
+    // Render a skeleton or a placeholder on the server and initial client render
+    // to avoid using `new Date()` which can cause hydration mismatches.
+    // `defaultMonth` is one of the props that can cause this issue.
+    // By not rendering DayPicker until mounted, we ensure it only runs on the client.
+    return (
+      <div className={cn("p-3", className)}>
+        {/* You can use a more sophisticated skeleton component if you have one */}
+        <div className="w-[280px] h-[310px] bg-muted animate-pulse rounded-md" />
+      </div>
+    );
+  }
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
