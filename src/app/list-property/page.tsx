@@ -1,4 +1,3 @@
-
 // src/app/list-property/page.tsx
 'use client';
 
@@ -582,8 +581,8 @@ const ServicesStep = () => {
             <CardContent className="p-0 pt-8 space-y-8">
                 <FormField control={control} name="breakfast" render={({ field }) => (
                     <FormItem className="space-y-3 p-4 border rounded-lg">
-                        <FormLabel className="text-lg font-semibold">
-                            <div className="flex items-center gap-2"><Coffee className="h-5 w-5"/>Do you serve guests breakfast?</div>
+                        <FormLabel>
+                            <div className="flex items-center gap-2 text-lg font-semibold"><Coffee className="h-5 w-5"/>Do you serve guests breakfast?</div>
                         </FormLabel>
                         <FormControl>
                             <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
@@ -596,8 +595,8 @@ const ServicesStep = () => {
                 )}/>
                 <FormField control={control} name="parking" render={({ field }) => (
                     <FormItem className="space-y-3 p-4 border rounded-lg">
-                        <FormLabel className="text-lg font-semibold">
-                             <div className="flex items-center gap-2"><ParkingCircle className="h-5 w-5"/>Is parking available to guests?</div>
+                        <FormLabel>
+                             <div className="flex items-center gap-2 text-lg font-semibold"><ParkingCircle className="h-5 w-5"/>Is parking available to guests?</div>
                         </FormLabel>
                         <FormControl>
                             <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col sm:flex-row sm:gap-4">
@@ -944,7 +943,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("flex-grow flex flex-col justify-center", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
+        <div className={cn("flex-grow flex flex-col", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -953,8 +952,8 @@ export default function ListPropertyPage() {
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className={cn(
-                        "w-full",
-                         currentStep === 2 ? "h-full" : "max-w-4xl"
+                        "w-full mx-auto",
+                         currentStep === 2 ? "h-full" : "max-w-4xl my-auto"
                     )}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
