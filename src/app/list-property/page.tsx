@@ -597,7 +597,7 @@ const ServicesStep = () => {
                 <FormField control={control} name="parking" render={({ field }) => (
                     <FormItem className="space-y-3 p-4 border rounded-lg">
                         <FormLabel className="text-lg font-semibold">
-                            <div className="flex items-center gap-2"><ParkingCircle className="h-5 w-5"/>Is parking available to guests?</div>
+                             <div className="flex items-center gap-2"><ParkingCircle className="h-5 w-5"/>Is parking available to guests?</div>
                         </FormLabel>
                         <FormControl>
                             <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col sm:flex-row sm:gap-4">
@@ -775,13 +775,34 @@ const HouseRulesStep = () => {
                 </CardHeader>
                 <CardContent className="p-0 pt-8 space-y-6">
                     <FormField control={control} name="smokingAllowed" render={({ field }) => (
-                        <FormItem className="flex items-center justify-between p-4 border rounded-lg"><FormLabel className="flex items-center gap-2 text-base"><Smoking className="h-5 w-5"/>Smoking allowed</FormLabel><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>
+                        <FormItem className="flex items-center justify-between p-4 border rounded-lg">
+                            <FormLabel className="flex items-center gap-2 text-base">
+                                <Smoking className="h-5 w-5"/>Smoking allowed
+                            </FormLabel>
+                            <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                        </FormItem>
                     )}/>
                     <FormField control={control} name="partiesAllowed" render={({ field }) => (
-                        <FormItem className="flex items-center justify-between p-4 border rounded-lg"><FormLabel className="flex items-center gap-2 text-base"><PartyPopper className="h-5 w-5"/>Parties/events allowed</FormLabel><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>
+                        <FormItem className="flex items-center justify-between p-4 border rounded-lg">
+                            <FormLabel className="flex items-center gap-2 text-base">
+                                <PartyPopper className="h-5 w-5"/>Parties/events allowed
+                            </FormLabel>
+                            <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                        </FormItem>
                     )}/>
                     <FormField control={control} name="petsAllowed" render={({ field }) => (
-                        <FormItem className="space-y-3 p-4 border rounded-lg"><FormLabel className="text-base font-semibold flex items-center gap-2"><Dog className="h-5 w-5"/>Do you allow pets?</FormLabel><FormControl><RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4"><FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES" /></FormControl><FormLabel className="font-normal">Yes</FormLabel></FormItem><FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="UPON_REQUEST" /></FormControl><FormLabel className="font-normal">Upon request</FormLabel></FormItem><FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="NO" /></FormControl><FormLabel className="font-normal">No</FormLabel></FormItem></RadioGroup></FormControl></FormItem>
+                        <FormItem className="space-y-3 p-4 border rounded-lg">
+                            <FormLabel className="text-base font-semibold flex items-center gap-2">
+                                <Dog className="h-5 w-5"/>Do you allow pets?
+                            </FormLabel>
+                            <FormControl>
+                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
+                                    <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES" /></FormControl><FormLabel className="font-normal">Yes</FormLabel></FormItem>
+                                    <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="UPON_REQUEST" /></FormControl><FormLabel className="font-normal">Upon request</FormLabel></FormItem>
+                                    <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="NO" /></FormControl><FormLabel className="font-normal">No</FormLabel></FormItem>
+                                </RadioGroup>
+                            </FormControl>
+                        </FormItem>
                     )}/>
                     <div>
                         <h3 className="text-lg font-semibold mb-2">Check-in</h3>
@@ -932,8 +953,8 @@ export default function ListPropertyPage() {
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className={cn(
-                        "w-full my-auto",
-                         currentStep === 2 ? "h-full" : "max-w-4xl mx-auto"
+                        "w-full",
+                         currentStep === 2 ? "h-full" : "max-w-4xl mx-auto my-auto"
                     )}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
