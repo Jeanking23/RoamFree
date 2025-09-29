@@ -377,7 +377,11 @@ const PhotosStep = () => {
               name="photoDescriptions"
               render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Photo descriptions</FormLabel>
+                    <FormLabel>
+                        <div>
+                            Photo descriptions
+                        </div>
+                    </FormLabel>
                     <FormControl>
                         <Textarea placeholder="Briefly describe what's in the photos to improve accessibility and search results." rows={3} {...field} />
                     </FormControl>
@@ -717,7 +721,7 @@ const HostProfileStep = () => {
                                         <FormControl>
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("property", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
-                                        <div className="space-y-1 leading-none"><FormLabel><div className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/>The property</div></FormLabel><FormDescription>Architecture, garden, art, history, view, etc.</FormDescription></div>
+                                        <div className="space-y-1 leading-none"><FormLabel><div><div className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/>The property</div></div></FormLabel><FormDescription>Architecture, garden, art, history, view, etc.</FormDescription></div>
                                     </FormItem>
                                 )} />
                              <FormField
@@ -727,7 +731,7 @@ const HostProfileStep = () => {
                                         <FormControl>
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("host", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
-                                        <div className="space-y-1 leading-none"><FormLabel><div className="flex items-center gap-2"><User className="h-5 w-5"/>The host</div></FormLabel><FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription></div>
+                                        <div className="space-y-1 leading-none"><FormLabel><div><div className="flex items-center gap-2"><User className="h-5 w-5"/>The host</div></div></FormLabel><FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription></div>
                                     </FormItem>
                                 )} />
                              <FormField
@@ -737,7 +741,7 @@ const HostProfileStep = () => {
                                         <FormControl>
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("neighborhood", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
-                                        <div className="space-y-1 leading-none"><FormLabel><div className="flex items-center gap-2"><MapIconLucide className="h-5 w-5"/>The neighborhood</div></FormLabel><FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription></div>
+                                        <div className="space-y-1 leading-none"><FormLabel><div><div className="flex items-center gap-2"><MapIconLucide className="h-5 w-5"/>The neighborhood</div></div></FormLabel><FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription></div>
                                     </FormItem>
                                 )} />
                              <FormField
@@ -943,7 +947,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("flex-grow flex flex-col", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
+        <div className={cn("flex-grow flex flex-col justify-center", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -953,7 +957,6 @@ export default function ListPropertyPage() {
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className={cn(
                         "w-full mx-auto",
-                         currentStep === 0 ? "my-auto" : "",
                          currentStep !== 2 ? "max-w-4xl" : "",
                          currentStep === 2 ? "h-full" : ""
                     )}
