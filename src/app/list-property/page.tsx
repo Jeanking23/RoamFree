@@ -1,3 +1,4 @@
+
 // src/app/list-property/page.tsx
 'use client';
 
@@ -235,7 +236,7 @@ const LocationStep = () => {
     }, [selectedCountryName, setValue]);
 
     return (
-        <div className="relative h-full w-full">
+        <div className="relative h-[65vh] w-full">
             <div className="absolute inset-0">
                 <InteractiveMapPlaceholder pickup={address} />
             </div>
@@ -447,9 +448,7 @@ const DetailsStep = () => {
                         control={control} name="maxGuests"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>
-                                <div>How many guests can stay?</div>
-                            </FormLabel>
+                            <FormLabel>How many guests can stay?</FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('maxGuests', Math.max(1, (getValues('maxGuests') || 1) - 1))}><Minus className="h-4 w-4"/></Button>
@@ -464,9 +463,7 @@ const DetailsStep = () => {
                         control={control} name="bathrooms"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>
-                                <div>How many bathrooms are there?</div>
-                            </FormLabel>
+                            <FormLabel>How many bathrooms are there?</FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('bathrooms', Math.max(0, (getValues('bathrooms') || 0) - 0.5))}><Minus className="h-4 w-4"/></Button>
@@ -949,7 +946,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("flex-grow flex flex-col", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
+        <div className={cn("flex-grow flex flex-col justify-center", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -958,7 +955,7 @@ export default function ListPropertyPage() {
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className={cn(
-                        "w-full mx-auto my-auto",
+                        "w-full mx-auto",
                          currentStep !== 2 ? "max-w-4xl" : "",
                          currentStep === 2 ? "h-full" : ""
                     )}
