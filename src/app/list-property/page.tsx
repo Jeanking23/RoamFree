@@ -235,7 +235,7 @@ const LocationStep = () => {
     }, [selectedCountryName, setValue]);
 
     return (
-        <div className="relative h-[calc(90vh-170px)] w-full">
+        <div className="relative h-full w-full">
             <div className="absolute inset-0">
                 <InteractiveMapPlaceholder pickup={address} />
             </div>
@@ -449,7 +449,9 @@ const DetailsStep = () => {
                         control={control} name="maxGuests"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>How many guests can stay?</FormLabel>
+                            <FormLabel>
+                                <div>How many guests can stay?</div>
+                            </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('maxGuests', Math.max(1, (getValues('maxGuests') || 1) - 1))}><Minus className="h-4 w-4"/></Button>
@@ -464,7 +466,9 @@ const DetailsStep = () => {
                         control={control} name="bathrooms"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>How many bathrooms are there?</FormLabel>
+                            <FormLabel>
+                                <div>How many bathrooms are there?</div>
+                            </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('bathrooms', Math.max(0, (getValues('bathrooms') || 0) - 0.5))}><Minus className="h-4 w-4"/></Button>
