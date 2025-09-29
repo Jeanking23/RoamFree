@@ -944,7 +944,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("flex-grow flex flex-col", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
+        <div className={cn("flex-grow flex flex-col justify-center", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -954,7 +954,7 @@ export default function ListPropertyPage() {
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className={cn(
                         "w-full",
-                         currentStep === 2 ? "h-full" : "max-w-4xl mx-auto my-auto"
+                         currentStep === 2 ? "h-full" : "max-w-4xl"
                     )}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
