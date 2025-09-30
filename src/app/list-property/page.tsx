@@ -39,7 +39,7 @@ const listingFormSchema = z.object({
   bedrooms: z.array(z.object({
     beds: z.array(z.object({
         type: z.string().min(1, 'Bed type is required.'),
-        count: z.number().min(1)
+        count: z.coerce.number().min(1)
     }))
   })).optional(),
   maxGuests: z.coerce.number().min(1, "Must accommodate at least 1 guest.").optional(),
@@ -446,7 +446,7 @@ const Bedroom = ({ bedroomIndex }: { bedroomIndex: number }) => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Count</FormLabel>
-                                <FormControl><Input type="number" min="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))}/></FormControl>
+                                <FormControl><Input type="number" min="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10) || 1)}/></FormControl>
                             </FormItem>
                         )}
                     />
@@ -517,7 +517,7 @@ const DetailsStep = () => {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                               <div className="flex items-center gap-2"><Bath className="h-5 w-5"/>How many bathrooms are there?</div>
+                                <div className="flex items-center gap-2"><Bath className="h-5 w-5"/>How many bathrooms are there?</div>
                             </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
@@ -914,7 +914,7 @@ export default function ListPropertyPage() {
     defaultValues: {
         listingType: "FOR_RENT",
         amenities: [],
-        bedrooms: [{beds: []}],
+        bedrooms: [{beds: [{type: 'double', count: 1}]}],
         maxGuests: 2,
         bathrooms: 1,
         apartmentSizeUnit: 'sqm',
