@@ -378,13 +378,13 @@ const PhotosStep = () => {
               name="photoDescriptions"
               render={({ field }) => (
                 <FormItem>
-                    <FormLabel>
-                        <div className="flex items-center gap-2"><UploadCloud className="h-5 w-5 text-primary"/>Photo descriptions</div>
-                    </FormLabel>
-                    <FormControl>
-                        <Textarea placeholder="Briefly describe what's in the photos to improve accessibility and search results." rows={3} {...field} />
-                    </FormControl>
-                    <FormMessage />
+                  <FormLabel>
+                      <div className="flex items-center gap-2"><UploadCloud className="h-5 w-5 text-primary"/>Photo descriptions</div>
+                  </FormLabel>
+                  <FormControl>
+                      <Textarea placeholder="Briefly describe what's in the photos to improve accessibility and search results." rows={3} {...field} />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -448,7 +448,7 @@ const DetailsStep = () => {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                <div className="flex items-center gap-2"><Users className="h-5 w-5"/>How many guests can stay?</div>
+                               <div className="flex items-center gap-2"><Users className="h-5 w-5"/>How many guests can stay?</div>
                             </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
@@ -588,7 +588,7 @@ const ServicesStep = () => {
                 <FormField control={control} name="breakfast" render={({ field }) => (
                     <FormItem className="space-y-3 p-4 border rounded-lg">
                         <FormLabel>
-                            <div className="flex items-center gap-2 text-lg font-semibold"><Coffee className="h-5 w-5"/>Do you serve guests breakfast?</div>
+                           <div className="flex items-center gap-2 text-lg font-semibold"><Coffee className="h-5 w-5"/>Do you serve guests breakfast?</div>
                         </FormLabel>
                         <FormControl>
                             <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
@@ -675,7 +675,7 @@ const LanguagesStep = () => {
                                     />
                                 ))}
                             </div>
-                            <Button variant="link" className="px-0 mt-2">Add additional languages</Button>
+                           <Button type="button" variant="link" className="px-0 mt-2">Add additional languages</Button>
                         </FormItem>
                     )}
                 />
