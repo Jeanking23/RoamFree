@@ -776,7 +776,7 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("property", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel>
+                                            <FormLabel className="font-normal">
                                                 <div className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/>The property</div>
                                             </FormLabel>
                                             <FormDescription>Architecture, garden, art, history, view, etc.</FormDescription>
@@ -791,7 +791,7 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("host", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel>
+                                            <FormLabel className="font-normal">
                                                 <div className="flex items-center gap-2"><User className="h-5 w-5"/>The host</div>
                                             </FormLabel>
                                             <FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription>
@@ -806,7 +806,7 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("neighborhood", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel>
+                                            <FormLabel className="font-normal">
                                                 <div className="flex items-center gap-2"><MapIconLucide className="h-5 w-5"/>The neighborhood</div>
                                             </FormLabel>
                                             <FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription>
@@ -820,7 +820,7 @@ const HostProfileStep = () => {
                                         <FormControl>
                                             <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
-                                        <div className="space-y-1 leading-none"><FormLabel>None of the above / I'll add these later</FormLabel></div>
+                                        <div className="space-y-1 leading-none"><FormLabel className="font-normal">None of the above / I'll add these later</FormLabel></div>
                                     </FormItem>
                                 )} />
                         </FormItem>
@@ -848,7 +848,7 @@ const HouseRulesStep = () => {
                 <CardContent className="p-0 pt-8 space-y-6">
                     <FormField control={control} name="smokingAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
-                             <FormLabel>
+                             <FormLabel className="font-normal">
                                 <div className="flex items-center gap-2 text-base"><Smoking className="h-5 w-5"/>Smoking allowed</div>
                              </FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
@@ -856,7 +856,7 @@ const HouseRulesStep = () => {
                     )}/>
                     <FormField control={control} name="partiesAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
-                           <FormLabel>
+                           <FormLabel className="font-normal">
                                <div className="flex items-center gap-2 text-base"><PartyPopper className="h-5 w-5"/>Parties/events allowed</div>
                            </FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
@@ -1049,12 +1049,12 @@ export default function ListPropertyPage() {
             {currentStep === 0 ? (
                 <Button variant="outline" asChild>
                     <Link href="/dashboard">
-                        <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
                     </Link>
                 </Button>
             ) : (
                 <Button variant="outline" onClick={prevStep}>
-                    <span><ArrowLeft className="mr-2 h-4 w-4"/> Back</span>
+                    <ArrowLeft className="mr-2 h-4 w-4"/> Back
                 </Button>
             )}
             {currentStep > 0 && currentStep < listingSteps.length - 1 && (
