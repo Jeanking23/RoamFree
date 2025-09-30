@@ -776,8 +776,8 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("property", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal">
-                                                <div className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/>The property</div>
+                                            <FormLabel className="font-normal flex items-center gap-2">
+                                                <HomeIcon className="h-5 w-5"/>The property
                                             </FormLabel>
                                             <FormDescription>Architecture, garden, art, history, view, etc.</FormDescription>
                                         </div>
@@ -791,8 +791,8 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("host", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal">
-                                                <div className="flex items-center gap-2"><User className="h-5 w-5"/>The host</div>
+                                            <FormLabel className="font-normal flex items-center gap-2">
+                                                <User className="h-5 w-5"/>The host
                                             </FormLabel>
                                             <FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription>
                                         </div>
@@ -806,8 +806,8 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("neighborhood", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal">
-                                                <div className="flex items-center gap-2"><MapIconLucide className="h-5 w-5"/>The neighborhood</div>
+                                            <FormLabel className="font-normal flex items-center gap-2">
+                                               <MapIconLucide className="h-5 w-5"/>The neighborhood
                                             </FormLabel>
                                             <FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription>
                                         </div>
