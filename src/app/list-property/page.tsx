@@ -379,7 +379,7 @@ const PhotosStep = () => {
               render={({ field }) => (
                 <FormItem>
                     <FormLabel>
-                        <div>Photo descriptions</div>
+                        <div className="flex items-center gap-2"><UploadCloud className="h-5 w-5 text-primary"/>Photo descriptions</div>
                     </FormLabel>
                     <FormControl>
                         <Textarea placeholder="Briefly describe what's in the photos to improve accessibility and search results." rows={3} {...field} />
@@ -448,7 +448,9 @@ const DetailsStep = () => {
                         control={control} name="maxGuests"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>How many guests can stay?</FormLabel>
+                            <FormLabel>
+                                <div className="flex items-center gap-2"><Users className="h-5 w-5"/>How many guests can stay?</div>
+                            </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('maxGuests', Math.max(1, (getValues('maxGuests') || 1) - 1))}><Minus className="h-4 w-4"/></Button>
@@ -463,7 +465,9 @@ const DetailsStep = () => {
                         control={control} name="bathrooms"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>How many bathrooms are there?</FormLabel>
+                            <FormLabel>
+                                <div className="flex items-center gap-2"><Bath className="h-5 w-5"/>How many bathrooms are there?</div>
+                            </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('bathrooms', Math.max(0, (getValues('bathrooms') || 0) - 0.5))}><Minus className="h-4 w-4"/></Button>
@@ -720,7 +724,10 @@ const HostProfileStep = () => {
                                         <FormControl>
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("property", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
-                                        <div className="space-y-1 leading-none"><FormLabel><div><div className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/>The property</div></div></FormLabel><FormDescription>Architecture, garden, art, history, view, etc.</FormDescription></div>
+                                        <div className="space-y-1 leading-none">
+                                            <FormLabel><div className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/>The property</div></FormLabel>
+                                            <FormDescription>Architecture, garden, art, history, view, etc.</FormDescription>
+                                        </div>
                                     </FormItem>
                                 )} />
                              <FormField
@@ -730,7 +737,10 @@ const HostProfileStep = () => {
                                         <FormControl>
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("host", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
-                                        <div className="space-y-1 leading-none"><FormLabel><div><div className="flex items-center gap-2"><User className="h-5 w-5"/>The host</div></div></FormLabel><FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription></div>
+                                        <div className="space-y-1 leading-none">
+                                            <FormLabel><div className="flex items-center gap-2"><User className="h-5 w-5"/>The host</div></FormLabel>
+                                            <FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription>
+                                        </div>
                                     </FormItem>
                                 )} />
                              <FormField
@@ -740,7 +750,10 @@ const HostProfileStep = () => {
                                         <FormControl>
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("neighborhood", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
-                                        <div className="space-y-1 leading-none"><FormLabel><div><div className="flex items-center gap-2"><MapIconLucide className="h-5 w-5"/>The neighborhood</div></div></FormLabel><FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription></div>
+                                        <div className="space-y-1 leading-none">
+                                            <FormLabel><div className="flex items-center gap-2"><MapIconLucide className="h-5 w-5"/>The neighborhood</div></FormLabel>
+                                            <FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription>
+                                        </div>
                                     </FormItem>
                                 )} />
                              <FormField
@@ -946,7 +959,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <div className={cn("flex-grow flex flex-col justify-center", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
+        <CardContent className={cn("flex-grow flex flex-col justify-center", currentStep === 2 ? "p-0" : "p-6 md:p-8")}>
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -954,11 +967,7 @@ export default function ListPropertyPage() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className={cn(
-                        "w-full mx-auto",
-                         currentStep !== 2 ? "max-w-4xl" : "",
-                         currentStep === 2 ? "h-full" : ""
-                    )}
+                    className={cn("w-full mx-auto my-auto", currentStep !== 2 ? "max-w-4xl" : "", currentStep === 2 ? "h-full" : "")}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
@@ -978,7 +987,7 @@ export default function ListPropertyPage() {
                     )}
                  </motion.div>
             </AnimatePresence>
-        </div>
+        </CardContent>
         <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
             {currentStep === 0 ? (
                 <Button variant="outline" asChild>
