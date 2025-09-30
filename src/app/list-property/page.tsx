@@ -38,7 +38,7 @@ const listingFormSchema = z.object({
   listingType: z.enum(["FOR_RENT", "FOR_SALE"]),
   bedrooms: z.array(z.object({
     beds: z.array(z.object({
-        type: z.string(),
+        type: z.string().min(1, 'Bed type is required.'),
         count: z.number().min(1)
     }))
   })).optional(),
@@ -236,7 +236,7 @@ const LocationStep = () => {
     }, [selectedCountryName, setValue]);
 
     return (
-        <div className="relative h-[65vh] w-full">
+        <div className="relative h-full w-full">
             <div className="absolute inset-0">
                 <InteractiveMapPlaceholder pickup={address} />
             </div>
@@ -410,6 +410,55 @@ const PhotosStep = () => {
   );
 };
 
+const Bedroom = ({ bedroomIndex }: { bedroomIndex: number }) => {
+    const { control } = useFormContext<ListingFormValues>();
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: `bedrooms.${bedroomIndex}.beds`,
+    });
+
+    return (
+        <div className="space-y-4">
+            {fields.map((field, bedIndex) => (
+                <div key={field.id} className="grid grid-cols-3 gap-2 items-end">
+                    <FormField
+                        control={control}
+                        name={`bedrooms.${bedroomIndex}.beds.${bedIndex}.type`}
+                        render={({ field }) => (
+                            <FormItem className="col-span-2">
+                                <FormLabel>Bed Type</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue placeholder="Select bed type"/></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="single">Single</SelectItem>
+                                        <SelectItem value="double">Double</SelectItem>
+                                        <SelectItem value="queen">Queen</SelectItem>
+                                        <SelectItem value="king">King</SelectItem>
+                                        <SelectItem value="bunk">Bunk Bed</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={control}
+                        name={`bedrooms.${bedroomIndex}.beds.${bedIndex}.count`}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Count</FormLabel>
+                                <FormControl><Input type="number" min="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))}/></FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8 self-end" onClick={() => remove(bedIndex)}><X className="h-4 w-4"/></Button>
+                </div>
+            ))}
+            <Button type="button" variant="outline" size="sm" onClick={() => append({ type: 'double', count: 1 })}>Add a bed</Button>
+        </div>
+    );
+};
+
+
 const DetailsStep = () => {
     const { control, setValue, getValues } = useFormContext<ListingFormValues>();
     const { fields, append, remove } = useFieldArray({
@@ -431,15 +480,18 @@ const DetailsStep = () => {
                              <AccordionItem value={`item-${index}`} key={field.id}>
                                 <AccordionTrigger>Bedroom {index + 1}</AccordionTrigger>
                                 <AccordionContent>
-                                    <p className="text-sm text-muted-foreground mb-2">Specify the number and type of beds in this room.</p>
-                                    <p>Bed selection controls go here.</p>
+                                    <p className="text-sm text-muted-foreground mb-4">Specify the number and type of beds in this room.</p>
+                                    <Bedroom bedroomIndex={index}/>
                                 </AccordionContent>
                             </AccordionItem>
                         ))}
                     </Accordion>
-                    <Button type="button" variant="outline" size="sm" onClick={() => append({ beds: [] })} className="mt-2">
-                        Add Bedroom
-                    </Button>
+                     <div className="flex gap-2 mt-2">
+                        <Button type="button" variant="outline" size="sm" onClick={() => append({ beds: [] })}>
+                            Add Bedroom
+                        </Button>
+                         {fields.length > 1 && <Button type="button" variant="ghost" size="sm" onClick={() => remove(fields.length - 1)}>Remove last bedroom</Button>}
+                    </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
@@ -453,7 +505,7 @@ const DetailsStep = () => {
                             <FormControl>
                                 <div className="flex items-center gap-2">
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('maxGuests', Math.max(1, (getValues('maxGuests') || 1) - 1))}><Minus className="h-4 w-4"/></Button>
-                                    <Input className="text-center w-20" {...field} type="number" min="1" value={field.value || ''}/>
+                                    <Input className="text-center w-20" {...field} type="number" min="1"/>
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('maxGuests', ((getValues('maxGuests') || 0) + 1))}><Plus className="h-4 w-4"/></Button>
                                 </div>
                             </FormControl>
@@ -470,7 +522,7 @@ const DetailsStep = () => {
                             <FormControl>
                                 <div className="flex items-center gap-2">
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('bathrooms', Math.max(0, (getValues('bathrooms') || 0) - 0.5))}><Minus className="h-4 w-4"/></Button>
-                                    <Input className="text-center w-20" {...field} type="number" min="0" step="0.5" value={field.value || ''} />
+                                    <Input className="text-center w-20" {...field} type="number" min="0" step="0.5"/>
                                     <Button type="button" variant="outline" size="icon" onClick={() => setValue('bathrooms', ((getValues('bathrooms') || 0) + 0.5))}><Plus className="h-4 w-4"/></Button>
                                 </div>
                             </FormControl>
@@ -724,7 +776,9 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("property", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel><div className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/>The property</div></FormLabel>
+                                            <FormLabel>
+                                                <div className="flex items-center gap-2"><HomeIcon className="h-5 w-5"/>The property</div>
+                                            </FormLabel>
                                             <FormDescription>Architecture, garden, art, history, view, etc.</FormDescription>
                                         </div>
                                     </FormItem>
@@ -737,7 +791,9 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("host", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel><div className="flex items-center gap-2"><User className="h-5 w-5"/>The host</div></FormLabel>
+                                            <FormLabel>
+                                                <div className="flex items-center gap-2"><User className="h-5 w-5"/>The host</div>
+                                            </FormLabel>
                                             <FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription>
                                         </div>
                                     </FormItem>
@@ -750,7 +806,9 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("neighborhood", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel><div className="flex items-center gap-2"><MapIconLucide className="h-5 w-5"/>The neighborhood</div></FormLabel>
+                                            <FormLabel>
+                                                <div className="flex items-center gap-2"><MapIconLucide className="h-5 w-5"/>The neighborhood</div>
+                                            </FormLabel>
                                             <FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription>
                                         </div>
                                     </FormItem>
@@ -790,19 +848,25 @@ const HouseRulesStep = () => {
                 <CardContent className="p-0 pt-8 space-y-6">
                     <FormField control={control} name="smokingAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
-                             <FormLabel><div className="flex items-center gap-2 text-base"><Smoking className="h-5 w-5"/>Smoking allowed</div></FormLabel>
+                             <FormLabel>
+                                <div className="flex items-center gap-2 text-base"><Smoking className="h-5 w-5"/>Smoking allowed</div>
+                             </FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         </FormItem>
                     )}/>
                     <FormField control={control} name="partiesAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
-                           <FormLabel><div className="flex items-center gap-2 text-base"><PartyPopper className="h-5 w-5"/>Parties/events allowed</div></FormLabel>
+                           <FormLabel>
+                               <div className="flex items-center gap-2 text-base"><PartyPopper className="h-5 w-5"/>Parties/events allowed</div>
+                           </FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         </FormItem>
                     )}/>
                     <FormField control={control} name="petsAllowed" render={({ field }) => (
                         <FormItem className="space-y-3 p-4 border rounded-lg">
-                            <FormLabel><div className="text-base font-semibold flex items-center gap-2"><Dog className="h-5 w-5"/>Do you allow pets?</div></FormLabel>
+                            <FormLabel>
+                                <div className="text-base font-semibold flex items-center gap-2"><Dog className="h-5 w-5"/>Do you allow pets?</div>
+                            </FormLabel>
                             <FormControl>
                                 <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
                                     <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES" /></FormControl><FormLabel className="font-normal">Yes</FormLabel></FormItem>
