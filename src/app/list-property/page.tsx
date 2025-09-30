@@ -210,7 +210,7 @@ const NameStep = () => {
                     </CardContent>
                 </Card>
                 <Card className="bg-muted/30 border-dashed">
-                        <CardHeader>
+                    <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg"><Info className="h-5 w-5 text-primary"/>Why do I need to name my property?</CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -1073,3 +1073,4 @@ export default function ListPropertyPage() {
     </div>
   );
 }
+
