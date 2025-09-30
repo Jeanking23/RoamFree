@@ -432,7 +432,6 @@ const DetailsStep = () => {
                                 <AccordionTrigger>Bedroom {index + 1}</AccordionTrigger>
                                 <AccordionContent>
                                     <p className="text-sm text-muted-foreground mb-2">Specify the number and type of beds in this room.</p>
-                                    {/* Placeholder for bed selection UI */}
                                     <p>Bed selection controls go here.</p>
                                 </AccordionContent>
                             </AccordionItem>
@@ -466,7 +465,7 @@ const DetailsStep = () => {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                <div className="flex items-center gap-2"><Bath className="h-5 w-5"/>How many bathrooms are there?</div>
+                               <div className="flex items-center gap-2"><Bath className="h-5 w-5"/>How many bathrooms are there?</div>
                             </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
@@ -791,25 +790,19 @@ const HouseRulesStep = () => {
                 <CardContent className="p-0 pt-8 space-y-6">
                     <FormField control={control} name="smokingAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
-                            <FormLabel className="flex items-center gap-2 text-base">
-                                <Smoking className="h-5 w-5"/>Smoking allowed
-                            </FormLabel>
+                             <FormLabel><div className="flex items-center gap-2 text-base"><Smoking className="h-5 w-5"/>Smoking allowed</div></FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         </FormItem>
                     )}/>
                     <FormField control={control} name="partiesAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
-                            <FormLabel className="flex items-center gap-2 text-base">
-                                <PartyPopper className="h-5 w-5"/>Parties/events allowed
-                            </FormLabel>
+                           <FormLabel><div className="flex items-center gap-2 text-base"><PartyPopper className="h-5 w-5"/>Parties/events allowed</div></FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         </FormItem>
                     )}/>
                     <FormField control={control} name="petsAllowed" render={({ field }) => (
                         <FormItem className="space-y-3 p-4 border rounded-lg">
-                            <FormLabel className="text-base font-semibold flex items-center gap-2">
-                                <Dog className="h-5 w-5"/>Do you allow pets?
-                            </FormLabel>
+                            <FormLabel><div className="text-base font-semibold flex items-center gap-2"><Dog className="h-5 w-5"/>Do you allow pets?</div></FormLabel>
                             <FormControl>
                                 <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
                                     <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="YES" /></FormControl><FormLabel className="font-normal">Yes</FormLabel></FormItem>
@@ -967,7 +960,7 @@ export default function ListPropertyPage() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className={cn("w-full mx-auto my-auto", currentStep !== 2 ? "max-w-4xl" : "", currentStep === 2 ? "h-full" : "")}
+                    className={cn("w-full my-auto", currentStep !== 2 ? "max-w-4xl mx-auto" : "", currentStep === 2 ? "h-full" : "")}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
                     {currentStep === 1 && <NameStep />}
