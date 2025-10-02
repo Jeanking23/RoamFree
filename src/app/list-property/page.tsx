@@ -379,7 +379,10 @@ const PhotosStep = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                      <div className="flex items-center gap-2"><UploadCloud className="h-5 w-5 text-primary"/>Photo descriptions</div>
+                    <div className="flex items-center gap-2">
+                      <UploadCloud className="h-5 w-5 text-primary"/>
+                      Photo descriptions
+                    </div>
                   </FormLabel>
                   <FormControl>
                       <Textarea placeholder="Briefly describe what's in the photos to improve accessibility and search results." rows={3} {...field} />
@@ -420,12 +423,12 @@ const Bedroom = ({ bedroomIndex }: { bedroomIndex: number }) => {
     return (
         <div className="space-y-4">
             {fields.map((field, bedIndex) => (
-                <div key={field.id} className="grid grid-cols-3 gap-2 items-end">
+                <div key={field.id} className="grid grid-cols-[1fr,auto,auto] gap-2 items-end">
                     <FormField
                         control={control}
                         name={`bedrooms.${bedroomIndex}.beds.${bedIndex}.type`}
                         render={({ field }) => (
-                            <FormItem className="col-span-2">
+                            <FormItem>
                                 <FormLabel>Bed Type</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl><SelectTrigger><SelectValue placeholder="Select bed type"/></SelectTrigger></FormControl>
@@ -450,7 +453,7 @@ const Bedroom = ({ bedroomIndex }: { bedroomIndex: number }) => {
                             </FormItem>
                         )}
                     />
-                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8 self-end" onClick={() => remove(bedIndex)}><X className="h-4 w-4"/></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-9 w-9 self-end" onClick={() => remove(bedIndex)}><X className="h-4 w-4"/></Button>
                 </div>
             ))}
             <Button type="button" variant="outline" size="sm" onClick={() => append({ type: 'double', count: 1 })}>Add a bed</Button>
@@ -720,8 +723,10 @@ const LanguagesStep = () => {
                                                             }}
                                                         />
                                                     </FormControl>
-                                                    <FormLabel className="font-normal flex items-center gap-2">
-                                                        {item.label}
+                                                    <FormLabel className="font-normal">
+                                                        <div className="flex items-center gap-2">
+                                                          {item.label}
+                                                        </div>
                                                     </FormLabel>
                                                 </FormItem>
                                             )
@@ -778,8 +783,10 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("property", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal flex items-center gap-2">
-                                                <HomeIcon className="h-5 w-5"/>The property
+                                            <FormLabel className="font-normal">
+                                                <div className="flex items-center gap-2">
+                                                  <HomeIcon className="h-5 w-5"/>The property
+                                                </div>
                                             </FormLabel>
                                             <FormDescription>Architecture, garden, art, history, view, etc.</FormDescription>
                                         </div>
@@ -793,8 +800,10 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("host", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal flex items-center gap-2">
-                                                <User className="h-5 w-5"/>The host
+                                            <FormLabel className="font-normal">
+                                                <div className="flex items-center gap-2">
+                                                  <User className="h-5 w-5"/>The host
+                                                </div>
                                             </FormLabel>
                                             <FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription>
                                         </div>
@@ -808,8 +817,10 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("neighborhood", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal flex items-center gap-2">
-                                               <MapIconLucide className="h-5 w-5"/>The neighborhood
+                                            <FormLabel className="font-normal">
+                                               <div className="flex items-center gap-2">
+                                                  <MapIconLucide className="h-5 w-5"/>The neighborhood
+                                               </div>
                                             </FormLabel>
                                             <FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription>
                                         </div>
