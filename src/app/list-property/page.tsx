@@ -199,7 +199,10 @@ const NameStep = () => {
             <div className="space-y-6">
                 <Card className="bg-muted/30 border-dashed">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb className="h-5 w-5 text-yellow-400" />What should I consider when choosing a name?</CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                            <Lightbulb className="h-5 w-5 text-yellow-400" />
+                            What should I consider when choosing a name?
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-2 text-sm text-muted-foreground">
@@ -211,7 +214,10 @@ const NameStep = () => {
                 </Card>
                 <Card className="bg-muted/30 border-dashed">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg"><Info className="h-5 w-5 text-primary"/>Why do I need to name my property?</CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                            <Info className="h-5 w-5 text-primary"/>
+                            Why do I need to name my property?
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p className="text-sm text-muted-foreground">The name is the first thing guests see. A good name can make your listing memorable.
@@ -395,7 +401,10 @@ const PhotosStep = () => {
       </div>
        <Card className="bg-muted/30 border-dashed">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb className="h-5 w-5 text-yellow-400" />What if I don't have professional photos?</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                    <Lightbulb className="h-5 w-5 text-yellow-400" />
+                    What if I don't have professional photos?
+                </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">No problem! Photos taken with a smartphone can work well.</p>
@@ -659,7 +668,10 @@ const ServicesStep = () => {
                 <FormField control={control} name="parking" render={({ field }) => (
                     <FormItem className="space-y-3 p-4 border rounded-lg">
                         <FormLabel>
-                             <div className="flex items-center gap-2 text-lg font-semibold"><ParkingCircle className="h-5 w-5"/>Is parking available to guests?</div>
+                            <div className="flex items-center gap-2 text-lg font-semibold">
+                                <ParkingCircle className="h-5 w-5"/>
+                                Is parking available to guests?
+                            </div>
                         </FormLabel>
                         <FormControl>
                             <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col sm:flex-row sm:gap-4">
@@ -724,9 +736,7 @@ const LanguagesStep = () => {
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal">
-                                                        <div className="flex items-center gap-2">
-                                                          {item.label}
-                                                        </div>
+                                                      {item.label}
                                                     </FormLabel>
                                                 </FormItem>
                                             )
@@ -783,10 +793,8 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("property", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal">
-                                                <div className="flex items-center gap-2">
-                                                  <HomeIcon className="h-5 w-5"/>The property
-                                                </div>
+                                            <FormLabel className="font-normal flex items-center gap-2">
+                                                <HomeIcon className="h-5 w-5"/>The property
                                             </FormLabel>
                                             <FormDescription>Architecture, garden, art, history, view, etc.</FormDescription>
                                         </div>
@@ -800,10 +808,8 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("host", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal">
-                                                <div className="flex items-center gap-2">
-                                                  <User className="h-5 w-5"/>The host
-                                                </div>
+                                            <FormLabel className="font-normal flex items-center gap-2">
+                                                <User className="h-5 w-5"/>The host
                                             </FormLabel>
                                             <FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription>
                                         </div>
@@ -817,10 +823,8 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("neighborhood", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal">
-                                               <div className="flex items-center gap-2">
+                                            <FormLabel className="font-normal flex items-center gap-2">
                                                   <MapIconLucide className="h-5 w-5"/>The neighborhood
-                                               </div>
                                             </FormLabel>
                                             <FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription>
                                         </div>
@@ -861,24 +865,24 @@ const HouseRulesStep = () => {
                 <CardContent className="p-0 pt-8 space-y-6">
                     <FormField control={control} name="smokingAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
-                             <FormLabel className="font-normal">
-                                <div className="flex items-center gap-2 text-base"><Smoking className="h-5 w-5"/>Smoking allowed</div>
+                             <FormLabel className="font-normal flex items-center gap-2 text-base">
+                                <Smoking className="h-5 w-5"/>Smoking allowed
                              </FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         </FormItem>
                     )}/>
                     <FormField control={control} name="partiesAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
-                           <FormLabel className="font-normal">
-                               <div className="flex items-center gap-2 text-base"><PartyPopper className="h-5 w-5"/>Parties/events allowed</div>
+                           <FormLabel className="font-normal flex items-center gap-2 text-base">
+                               <PartyPopper className="h-5 w-5"/>Parties/events allowed
                            </FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         </FormItem>
                     )}/>
                     <FormField control={control} name="petsAllowed" render={({ field }) => (
                         <FormItem className="space-y-3 p-4 border rounded-lg">
-                            <FormLabel>
-                                <div className="text-base font-semibold flex items-center gap-2"><Dog className="h-5 w-5"/>Do you allow pets?</div>
+                            <FormLabel className="text-base font-semibold flex items-center gap-2">
+                                <Dog className="h-5 w-5"/>Do you allow pets?
                             </FormLabel>
                             <FormControl>
                                 <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
@@ -907,7 +911,10 @@ const HouseRulesStep = () => {
             </div>
             <Card className="bg-muted/30 border-dashed">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb className="h-5 w-5 text-yellow-400" />What if my house rules change?</CardTitle>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                        <Lightbulb className="h-5 w-5 text-yellow-400" />
+                        What if my house rules change?
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p className="text-sm text-muted-foreground">You can easily customize these rules later from your Partner Dashboard.</p>
