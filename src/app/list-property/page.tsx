@@ -735,7 +735,8 @@ const LanguagesStep = () => {
                                                             }}
                                                         />
                                                     </FormControl>
-                                                    <FormLabel className="font-normal">
+                                                    <FormLabel className="font-normal flex items-center gap-2">
+                                                      <Globe className="h-5 w-5 text-primary"/>
                                                       {item.label}
                                                     </FormLabel>
                                                 </FormItem>
@@ -793,8 +794,10 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("property", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal flex items-center gap-2">
-                                                <HomeIcon className="h-5 w-5"/>The property
+                                            <FormLabel className="font-normal">
+                                                <div className="flex items-center gap-2">
+                                                    <HomeIcon className="h-5 w-5"/>The property
+                                                </div>
                                             </FormLabel>
                                             <FormDescription>Architecture, garden, art, history, view, etc.</FormDescription>
                                         </div>
@@ -808,8 +811,10 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("host", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal flex items-center gap-2">
-                                                <User className="h-5 w-5"/>The host
+                                            <FormLabel className="font-normal">
+                                                <div className="flex items-center gap-2">
+                                                    <User className="h-5 w-5"/>The host
+                                                </div>
                                             </FormLabel>
                                             <FormDescription>Hobbies, work, helpfulness, breakfast, etc.</FormDescription>
                                         </div>
@@ -823,8 +828,10 @@ const HostProfileStep = () => {
                                             <Checkbox checked={field.value} onCheckedChange={(checked) => handleCheckboxChange("neighborhood", checked as boolean)} disabled={noneChecked} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal flex items-center gap-2">
-                                                  <MapIconLucide className="h-5 w-5"/>The neighborhood
+                                            <FormLabel className="font-normal">
+                                                <div className="flex items-center gap-2">
+                                                      <MapIconLucide className="h-5 w-5"/>The neighborhood
+                                                </div>
                                             </FormLabel>
                                             <FormDescription>Quiet, restaurants, safety, public transportation, etc.</FormDescription>
                                         </div>
@@ -881,8 +888,10 @@ const HouseRulesStep = () => {
                     )}/>
                     <FormField control={control} name="petsAllowed" render={({ field }) => (
                         <FormItem className="space-y-3 p-4 border rounded-lg">
-                            <FormLabel className="text-base font-semibold flex items-center gap-2">
-                                <Dog className="h-5 w-5"/>Do you allow pets?
+                            <FormLabel className="text-base font-semibold">
+                                <div className="flex items-center gap-2">
+                                    <Dog className="h-5 w-5"/>Do you allow pets?
+                                </div>
                             </FormLabel>
                             <FormControl>
                                 <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
