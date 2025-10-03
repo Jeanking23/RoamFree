@@ -303,3 +303,5 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
 }
 
     
+
+    
