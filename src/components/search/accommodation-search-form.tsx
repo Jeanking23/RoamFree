@@ -125,7 +125,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           render={({ field }) => (
             <FormItem className="col-span-12 md:col-span-3">
               <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
-                <MapPin className="h-4 w-4 text-primary" />Destination
+                <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Destination</div>
               </FormLabel>
               <FormControl>
                 <Input
@@ -146,7 +146,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           render={({ field }) => (
             <FormItem className="flex flex-col col-span-12 md:col-span-3">
               <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
-                <CalendarIcon className="h-4 w-4 text-primary" />Check-in - Check-out
+                <div className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Check-in - Check-out</div>
               </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -197,7 +197,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           render={() => ( 
             <FormItem className="flex flex-col col-span-12 md:col-span-3">
               <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
-                <Users className="h-4 w-4 text-primary" />Guests & Rooms
+                <div className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests & Rooms</div>
               </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -236,7 +236,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
         <div className="col-span-12 grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
             <FormField control={form.control} name="propertyType" render={({ field }) => ( <FormItem>
                 <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
-                    <Building2 className="h-4 w-4 text-primary" />Type
+                    <div className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Type</div>
                 </FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
@@ -254,7 +254,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
             </FormItem> )}/>
             <FormField control={form.control} name="mood" render={({ field }) => ( <FormItem>
                 <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
-                    <Smile className="h-4 w-4 text-primary" />Mood
+                    <div className="flex items-center gap-2"><Smile className="h-4 w-4 text-primary" />Mood</div>
                 </FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
@@ -280,7 +280,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                     />
                 </FormControl>
                 <FormLabel className={cn("font-normal flex items-center gap-2 text-sm", !isResultsPage && "text-white")}>
-                    <Accessibility className="h-4 w-4 text-primary"/>Accessible
+                    <div className="flex items-center gap-2"><Accessibility className="h-4 w-4 text-primary"/>Accessible</div>
                 </FormLabel>
             </FormItem> )}/>
             <FormField control={form.control} name="ecoFriendly" render={({ field }) => ( <FormItem className="flex flex-row items-end space-x-2 pb-2">
@@ -292,7 +292,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                     />
                 </FormControl>
                 <FormLabel className={cn("font-normal flex items-center gap-2 text-sm", !isResultsPage && "text-white")}>
-                    <Leaf className="h-4 w-4 text-primary"/>Eco-Friendly
+                    <div className="flex items-center gap-2"><Leaf className="h-4 w-4 text-primary"/>Eco-Friendly</div>
                 </FormLabel>
             </FormItem> )}/>
         </div>
