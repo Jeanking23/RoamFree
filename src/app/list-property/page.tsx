@@ -625,10 +625,10 @@ const AmenitiesStep = () => {
                                                                 />
                                                             </FormControl>
                                                             <FormLabel className="font-normal">
-                                                              <div className="flex items-center gap-2">
-                                                                <item.icon className="h-5 w-5 text-primary" />
-                                                                {item.label}
-                                                              </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <item.icon className="h-5 w-5 text-primary" />
+                                                                    {item.label}
+                                                                </div>
                                                             </FormLabel>
                                                         </FormItem>
                                                     )
