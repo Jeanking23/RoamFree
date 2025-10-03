@@ -1,3 +1,4 @@
+
 // src/app/transport/page.tsx
 'use client';
 
@@ -61,7 +62,7 @@ const suggestionItems = [
     {
       title: 'Courier',
       description: 'Send packages to friends and family.',
-      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib-rb-4.1.0&q=80&w=1080',
+      imageSrc: 'https://images.unsplash.com/photo-1686632979221-62fab48a9028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZWxpdmVyeSUyMHBhY2thZ2V8ZW58MHx8fHwxNzUyNzI3NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080',
       dataAiHint: 'delivery package',
       link: '/courier-delivery',
     },
@@ -594,7 +595,7 @@ export default function TransportPage() {
                         <div className="px-1">
                             <div className="flex items-center space-x-2">
                                 <Switch id="round-trip" checked={isRoundTrip} onCheckedChange={setIsRoundTrip} />
-                                <Label htmlFor="round-trip" className="flex items-center gap-2 text-sm"><Repeat className="h-4 w-4" />Round Trip / Return Way</Label>
+                                <Label htmlFor="round-trip" className="flex items-center gap-2 text-sm"><div className="flex items-center gap-2"><Repeat className="h-4 w-4" />Round Trip / Return Way</div></Label>
                             </div>
                         </div>
                         
@@ -683,7 +684,7 @@ export default function TransportPage() {
                         </div>
 
                         <div className="px-1">
-                            <Label htmlFor="comment" className="flex items-center gap-2 text-xs"><MessageSquare className="h-4 w-4"/>Comment (Optional)</Label>
+                            <Label htmlFor="comment" className="flex items-center gap-2 text-xs"><div className="flex items-center gap-2"><MessageSquare className="h-4 w-4"/>Comment (Optional)</div></Label>
                             <Textarea 
                                 id="comment"
                                 placeholder="Luggage info, special needs..."
@@ -695,7 +696,7 @@ export default function TransportPage() {
 
                         <div className="flex items-center space-x-2 px-1">
                             <Switch id="ride-for-other" checked={rideForSomeoneElse} onCheckedChange={setRideForSomeoneElse} />
-                            <Label htmlFor="ride-for-other" className="flex items-center gap-2 text-sm"><UserPlus className="h-4 w-4" />Ride for someone else</Label>
+                            <Label htmlFor="ride-for-other" className="flex items-center gap-2 text-sm"><div className="flex items-center gap-2"><UserPlus className="h-4 w-4" />Ride for someone else</div></Label>
                         </div>
 
                         <AnimatePresence>
