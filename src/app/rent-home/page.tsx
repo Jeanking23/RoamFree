@@ -90,8 +90,8 @@ export default function RentHomePage() {
         const requiredBeds = data.bedrooms ? parseInt(data.bedrooms.replace('+', ''), 10) : 0;
         if (requiredBeds > 0 && (rental.bedrooms ?? 0) < requiredBeds) matches = false;
 
-        const requiredBaths = data.bathrooms ? parseInt(data.bathrooms.replace(/[^0-9]/g, ''), 10) : 0;
-        if (requiredBaths > 0 && (rental.bathrooms ?? 0) < requiredBaths) matches = false;
+        const requiredBaths = data.bathrooms ? parseFloat(data.bathrooms.replace(/[^0-9.]/g, '')) : 0;
+        if (requiredBaths > 0 && (rental.bathrooms ? parseFloat(rental.bathrooms.toString()) : 0) < requiredBaths) matches = false;
         
         return matches;
     });
