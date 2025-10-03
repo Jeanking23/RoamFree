@@ -77,7 +77,7 @@ function RideBookingForm() {
             name="pickupLocation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Pickup Location</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Pickup Location</div></FormLabel>
                 <FormControl><Input placeholder="Enter pickup address" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -88,7 +88,7 @@ function RideBookingForm() {
             name="dropoffLocation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Dropoff Location</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Dropoff Location</div></FormLabel>
                 <FormControl><Input placeholder="Enter dropoff address" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -101,7 +101,7 @@ function RideBookingForm() {
             name="pickupDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Pickup Date</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Pickup Date</div></FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -123,7 +123,7 @@ function RideBookingForm() {
             name="pickupTime"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</div></FormLabel>
                 <FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -157,7 +157,7 @@ function RentalCarForm() {
             name="pickupLocation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Pickup Location</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Pickup Location</div></FormLabel>
                 <FormControl><Input placeholder="Enter pickup city or airport" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -168,7 +168,7 @@ function RentalCarForm() {
             name="dropoffLocation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Dropoff Location (Optional)</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Dropoff Location (Optional)</div></FormLabel>
                 <FormControl><Input placeholder="Leave blank if same as pickup" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -181,7 +181,7 @@ function RentalCarForm() {
             name="pickupDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Pickup Date</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Pickup Date</div></FormLabel>
                  <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -203,7 +203,7 @@ function RentalCarForm() {
             name="pickupTime"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Pickup Time</div></FormLabel>
                 <FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -216,7 +216,7 @@ function RentalCarForm() {
             name="dropoffDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Dropoff Date</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Dropoff Date</div></FormLabel>
                  <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -238,7 +238,7 @@ function RentalCarForm() {
             name="dropoffTime"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Dropoff Time</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Dropoff Time</div></FormLabel>
                 <FormControl><Input type="time" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -272,7 +272,7 @@ function FlightSearchForm() {
             name="origin"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform -rotate-45" />Origin</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform -rotate-45" />Origin</div></FormLabel>
                 <FormControl><Input placeholder="Enter origin airport/city (e.g., JFK)" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -283,7 +283,7 @@ function FlightSearchForm() {
             name="destination"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform rotate-45" />Destination</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><Plane className="h-4 w-4 text-primary transform rotate-45" />Destination</div></FormLabel>
                 <FormControl><Input placeholder="Enter destination airport/city (e.g., LHR)" {...field} value={field.value || ''} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -296,7 +296,7 @@ function FlightSearchForm() {
             name="departureDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Departure Date</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Departure Date</div></FormLabel>
                  <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -318,7 +318,7 @@ function FlightSearchForm() {
             name="returnDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Return Date (Optional)</FormLabel>
+                <FormLabel><div className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Return Date (Optional)</div></FormLabel>
                  <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
