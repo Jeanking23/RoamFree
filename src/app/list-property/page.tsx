@@ -386,8 +386,8 @@ const PhotosStep = () => {
                 <FormItem>
                   <FormLabel>
                     <div className="flex items-center gap-2">
-                      <UploadCloud className="h-5 w-5 text-primary"/>
-                      Photo descriptions
+                        <UploadCloud className="h-5 w-5 text-primary"/>
+                        Photo descriptions
                     </div>
                   </FormLabel>
                   <FormControl>
@@ -512,7 +512,7 @@ const DetailsStep = () => {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                               <div className="flex items-center gap-2"><Users className="h-5 w-5"/>How many guests can stay?</div>
+                                <div className="flex items-center gap-2"><Users className="h-5 w-5"/>How many guests can stay?</div>
                             </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
@@ -735,9 +735,11 @@ const LanguagesStep = () => {
                                                             }}
                                                         />
                                                     </FormControl>
-                                                    <FormLabel className="font-normal flex items-center gap-2">
-                                                      <Globe className="h-5 w-5 text-primary"/>
-                                                      {item.label}
+                                                    <FormLabel className="font-normal">
+                                                        <div className="flex items-center gap-2">
+                                                            <Globe className="h-5 w-5 text-primary"/>
+                                                            {item.label}
+                                                        </div>
                                                     </FormLabel>
                                                 </FormItem>
                                             )
@@ -873,7 +875,7 @@ const HouseRulesStep = () => {
                     <FormField control={control} name="smokingAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
                              <FormLabel className="font-normal flex items-center gap-2 text-base">
-                                <Smoking className="h-5 w-5"/>Smoking allowed
+                                <div className="flex items-center gap-2"><Smoking className="h-5 w-5"/>Smoking allowed</div>
                              </FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         </FormItem>
@@ -881,7 +883,7 @@ const HouseRulesStep = () => {
                     <FormField control={control} name="partiesAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
                            <FormLabel className="font-normal flex items-center gap-2 text-base">
-                               <PartyPopper className="h-5 w-5"/>Parties/events allowed
+                               <div className="flex items-center gap-2"><PartyPopper className="h-5 w-5"/>Parties/events allowed</div>
                            </FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         </FormItem>
