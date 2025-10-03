@@ -512,7 +512,7 @@ const DetailsStep = () => {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                <div className="flex items-center gap-2"><Users className="h-5 w-5"/>How many guests can stay?</div>
+                                <div><Users className="h-5 w-5"/>How many guests can stay?</div>
                             </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
@@ -529,7 +529,7 @@ const DetailsStep = () => {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                <div className="flex items-center gap-2"><Bath className="h-5 w-5"/>How many bathrooms are there?</div>
+                                <div><Bath className="h-5 w-5"/>How many bathrooms are there?</div>
                             </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
@@ -875,7 +875,7 @@ const HouseRulesStep = () => {
                     <FormField control={control} name="smokingAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
                              <FormLabel className="font-normal text-base">
-                                <div className="flex items-center gap-2"><Smoking className="h-5 w-5"/>Smoking allowed</div>
+                                <div><Smoking className="h-5 w-5"/>Smoking allowed</div>
                              </FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         </FormItem>
@@ -883,7 +883,7 @@ const HouseRulesStep = () => {
                     <FormField control={control} name="partiesAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
                            <FormLabel className="font-normal text-base">
-                               <div className="flex items-center gap-2"><PartyPopper className="h-5 w-5"/>Parties/events allowed</div>
+                               <div><PartyPopper className="h-5 w-5"/>Parties/events allowed</div>
                            </FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         </FormItem>
