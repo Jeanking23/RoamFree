@@ -21,6 +21,7 @@ import { signOut } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import LanguageCurrencySelector from './language-currency-selector';
+import { useState, useEffect } from 'react';
 
 
 // Main navigation items for desktop view
@@ -62,6 +63,11 @@ export default function Header() {
   const router = useRouter();
   const { language } = useLocale();
   const { user, loading } = useAuth();
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   const handleSignOut = async () => {
     await signOut();
@@ -89,8 +95,13 @@ export default function Header() {
   };
 
   const renderUserActions = () => {
-    if (loading) {
-      return null;
+    if (!hasMounted || loading) {
+      return (
+        <div className="flex items-center gap-1">
+          <div className="h-9 w-[70px] bg-muted/50 rounded-md animate-pulse"></div>
+          <div className="h-9 w-[70px] bg-muted/50 rounded-md animate-pulse"></div>
+        </div>
+      );
     }
 
     if (user) {
@@ -99,7 +110,7 @@ export default function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-9 w-9 relative rounded-full">
               <Avatar className="h-9 w-9">
-                <AvatarImage src="https://images.unsplash.com/photo-1633957897986-70e83293f3ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwZXJzb24lMjBhdmF0YXJ8ZW58MHx8fHwxNzUzODk0OTY2fDA&ixlib-rb-4.1.0&q=80&w=1080" alt="User Avatar" data-ai-hint="person avatar"/>
+                <AvatarImage src="https://images.unsplash.com/photo-1633957897986-70e83293f3ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwZXJzb24lMjBhdmF0YXJ8ZW58MHx8fHwxNzUzODk0OTY2fDA&ixlib=rb-4.1.0&q=80&w=1080" alt="User Avatar" data-ai-hint="person avatar"/>
                 <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
               </Avatar>
             </Button>
@@ -215,12 +226,12 @@ export default function Header() {
           <div className="flex items-center gap-1">
               <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={() => toast({title: "Notifications (Demo)", description:"No new notifications."})}><Bell className="h-5 w-5" /></Button>
               <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={() => toast({title: "Messages (Demo)", description:"No new messages."})}><MessageSquare className="h-5 w-5"/></Button>
-              {user ? (
+              {hasMounted && user ? (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="relative rounded-full">
                             <Avatar className="h-8 w-8">
-                                <AvatarImage src="https://images.unsplash.com/photo-1724435811349-32d27f4d5806?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBhdmF0YXJ8ZW58MHx8fHwxNzUzODk0OTY2fDA&ixlib-rb-4.1.0&q=80&w=1080" alt="User Avatar" data-ai-hint="person avatar"/>
+                                <AvatarImage src="https://images.unsplash.com/photo-1724435811349-32d27f4d5806?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBhdmF0YXJ8ZW58MHx8fHwxNzUzODk0OTY2fDA&ixlib=rb-4.1.0&q=80&w=1080" alt="User Avatar" data-ai-hint="person avatar"/>
                                 <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
                             </Avatar>
                         </Button>
@@ -229,7 +240,7 @@ export default function Header() {
                          <DropdownMenuItem onClick={handleSignOut}><LogOut className="mr-2 h-4 w-4" />Log out</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-              ) : (
+              ) : hasMounted && !user ? (
                 <Button asChild variant="ghost" size="icon"><Link href="/signin">
                   <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6">
                     <defs>
@@ -243,6 +254,8 @@ export default function Header() {
                     <path d="M 20 85 A 30 30 0 0 1 80 85" stroke="white" strokeWidth="4" fill="none" />
                   </svg>
                 </Link></Button>
+              ) : (
+                <div className="h-8 w-8 bg-muted/50 rounded-full animate-pulse"></div>
               )}
               <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" aria-label="SOS Emergency" onClick={handleSosClick}><ShieldAlert className="h-5 w-5" /></Button>
           </div>
