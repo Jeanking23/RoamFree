@@ -438,7 +438,9 @@ const Bedroom = ({ bedroomIndex }: { bedroomIndex: number }) => {
                         name={`bedrooms.${bedroomIndex}.beds.${bedIndex}.type`}
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Bed Type</FormLabel>
+                                <FormLabel>
+                                    <div>Bed Type</div>
+                                </FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl><SelectTrigger><SelectValue placeholder="Select bed type"/></SelectTrigger></FormControl>
                                     <SelectContent>
@@ -457,7 +459,9 @@ const Bedroom = ({ bedroomIndex }: { bedroomIndex: number }) => {
                         name={`bedrooms.${bedroomIndex}.beds.${bedIndex}.count`}
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Count</FormLabel>
+                                <FormLabel>
+                                    <div>Count</div>
+                                </FormLabel>
                                 <FormControl><Input type="number" min="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10) || 1)}/></FormControl>
                             </FormItem>
                         )}
@@ -512,7 +516,7 @@ const DetailsStep = () => {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                <div><Users className="h-5 w-5"/>How many guests can stay?</div>
+                                <div className="flex items-center gap-2"><Users className="h-5 w-5"/>How many guests can stay?</div>
                             </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
@@ -529,7 +533,7 @@ const DetailsStep = () => {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                <div><Bath className="h-5 w-5"/>How many bathrooms are there?</div>
+                                <div className="flex items-center gap-2"><Bath className="h-5 w-5"/>How many bathrooms are there?</div>
                             </FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-2">
@@ -875,7 +879,7 @@ const HouseRulesStep = () => {
                     <FormField control={control} name="smokingAllowed" render={({ field }) => (
                         <FormItem className="flex items-center justify-between p-4 border rounded-lg">
                              <FormLabel className="font-normal text-base">
-                                <div><Smoking className="h-5 w-5"/>Smoking allowed</div>
+                               <div><Smoking className="h-5 w-5"/>Smoking allowed</div>
                              </FormLabel>
                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         </FormItem>
