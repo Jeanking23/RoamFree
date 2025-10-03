@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -130,7 +129,9 @@ export default function ContactSupportPage() {
                     name="fullName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-1"><User className="h-4 w-4 text-primary" />Full Name</FormLabel>
+                        <FormLabel>
+                          <div className="flex items-center gap-1"><User className="h-4 w-4 text-primary" />Full Name</div>
+                        </FormLabel>
                         <FormControl><Input placeholder="John Doe" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
@@ -141,7 +142,9 @@ export default function ContactSupportPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-1"><Mail className="h-4 w-4 text-primary" />Email Address</FormLabel>
+                        <FormLabel>
+                            <div className="flex items-center gap-1"><Mail className="h-4 w-4 text-primary" />Email Address</div>
+                        </FormLabel>
                         <FormControl><Input type="email" placeholder="you@example.com" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
@@ -152,7 +155,9 @@ export default function ContactSupportPage() {
                     name="subject"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-1"><MessageSquare className="h-4 w-4 text-primary" />Subject</FormLabel>
+                        <FormLabel>
+                            <div className="flex items-center gap-1"><MessageSquare className="h-4 w-4 text-primary" />Subject</div>
+                        </FormLabel>
                         <FormControl><Input placeholder="e.g., Issue with booking #12345" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
