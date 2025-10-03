@@ -658,7 +658,10 @@ const ServicesStep = () => {
                 <FormField control={control} name="breakfast" render={({ field }) => (
                     <FormItem className="space-y-3 p-4 border rounded-lg">
                         <FormLabel>
-                           <div className="flex items-center gap-2 text-lg font-semibold"><Coffee className="h-5 w-5"/>Do you serve guests breakfast?</div>
+                           <div className="flex items-center gap-2 text-lg font-semibold">
+                                <Coffee className="h-5 w-5"/>
+                                Do you serve guests breakfast?
+                           </div>
                         </FormLabel>
                         <FormControl>
                             <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
