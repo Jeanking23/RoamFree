@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CarFront, UploadCloud, Send, X, Settings2, Droplets, Palette, ArrowLeft, DollarSign, HandCoins, Info } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray, FormProvider, useFormContext } from 'react-hook-form';
 import * as z from 'zod';
 import Image from 'next/image';
@@ -466,4 +466,3 @@ export default function ListCarPage() {
     </div>
   );
 }
-
