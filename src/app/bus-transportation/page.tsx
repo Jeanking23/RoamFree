@@ -413,7 +413,7 @@ export default function BusTransportationPage() {
                   name="originCity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-1"><MapPin className="h-4 w-4 text-primary" />Origin City</FormLabel>
+                      <FormLabel><div className="flex items-center gap-1"><MapPin className="h-4 w-4 text-primary" />Origin City</div></FormLabel>
                       <FormControl><Input placeholder="e.g., Douala" {...field} value={field.value || ''} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -424,7 +424,7 @@ export default function BusTransportationPage() {
                   name="destinationCity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-1"><MapPin className="h-4 w-4 text-primary" />Destination City</FormLabel>
+                      <FormLabel><div className="flex items-center gap-1"><MapPin className="h-4 w-4 text-primary" />Destination City</div></FormLabel>
                       <FormControl><Input placeholder="e.g., Yaoundé" {...field} value={field.value || ''} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -437,7 +437,7 @@ export default function BusTransportationPage() {
                   name="departureDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel className="flex items-center gap-1"><CalendarIcon className="h-4 w-4 text-primary" />Departure Date</FormLabel>
+                      <FormLabel><div className="flex items-center gap-1"><CalendarIcon className="h-4 w-4 text-primary" />Departure Date</div></FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -486,7 +486,7 @@ export default function BusTransportationPage() {
                   name="passengers"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-1"><Users className="h-4 w-4 text-primary" />Passengers</FormLabel>
+                      <FormLabel><div className="flex items-center gap-1"><Users className="h-4 w-4 text-primary" />Passengers</div></FormLabel>
                       <FormControl><Input type="number" min="1" max="20" placeholder="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))} value={field.value || 1} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -500,7 +500,7 @@ export default function BusTransportationPage() {
                         <FormControl>
                           <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
-                        <FormLabel className="font-normal flex items-center gap-2"><Repeat className="h-4 w-4" />Round Trip</FormLabel>
+                        <FormLabel className="font-normal"><div className="flex items-center gap-2"><Repeat className="h-4 w-4" />Round Trip</div></FormLabel>
                       </FormItem>
                     )}
                   />
@@ -510,15 +510,15 @@ export default function BusTransportationPage() {
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-2 p-4 border rounded-md">
                   <FormField
                     control={form.control} name="hasAC"
-                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-1"><Snowflake className="h-4 w-4 text-blue-500" />Air Conditioned</FormLabel></FormItem>)}
+                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><div className="flex items-center gap-1"><Snowflake className="h-4 w-4 text-blue-500" />Air Conditioned</div></FormLabel></FormItem>)}
                   />
                   <FormField
                     control={form.control} name="hasWifi"
-                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-1"><Wifi className="h-4 w-4 text-sky-500" />WiFi Onboard</FormLabel></FormItem>)}
+                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><div className="flex items-center gap-1"><Wifi className="h-4 w-4 text-sky-500" />WiFi Onboard</div></FormLabel></FormItem>)}
                   />
                   <FormField
                     control={form.control} name="hasUsb"
-                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal flex items-center gap-1"><Power className="h-4 w-4 text-yellow-500" />USB Charging</FormLabel></FormItem>)}
+                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><div className="flex items-center gap-1"><Power className="h-4 w-4 text-yellow-500" />USB Charging</div></FormLabel></FormItem>)}
                   />
                   <FormField
                     control={form.control} name="tripType"
@@ -531,9 +531,9 @@ export default function BusTransportationPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="ANY"><Sun className="inline h-4 w-4 mr-1" /><Moon className="inline h-4 w-4 mr-1" />Any Trip Type</SelectItem>
-                            <SelectItem value="DAY"><Sun className="inline h-4 w-4 mr-1" />Day Trip</SelectItem>
-                            <SelectItem value="OVERNIGHT"><Moon className="inline h-4 w-4 mr-1" />Overnight Trip</SelectItem>
+                            <SelectItem value="ANY"><div className="flex items-center gap-1"><Sun className="inline h-4 w-4 mr-1" /><Moon className="inline h-4 w-4 mr-1" />Any Trip Type</div></SelectItem>
+                            <SelectItem value="DAY"><div className="flex items-center gap-1"><Sun className="inline h-4 w-4 mr-1" />Day Trip</div></SelectItem>
+                            <SelectItem value="OVERNIGHT"><div className="flex items-center gap-1"><Moon className="inline h-4 w-4 mr-1" />Overnight Trip</div></SelectItem>
                           </SelectContent>
                         </Select>
                       </FormItem>
@@ -603,7 +603,7 @@ export default function BusTransportationPage() {
                     <span>Duration: {route.duration}</span>
                     <span>{route.stops !== undefined ? (route.stops > 0 ? `${route.stops} Stop(s)` : "Direct") : ""}</span>
                   </div>
-                  <p className="text-sm"><Info className="inline h-4 w-4 mr-1 text-primary"/>Bus Type: {route.busType}</p>
+                  <p className="text-sm"><div className="flex items-center gap-1"><Info className="inline h-4 w-4 mr-1 text-primary"/>Bus Type: {route.busType}</div></p>
                   <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs pt-1">
                     {route.amenities.ac && <span className="flex items-center"><Snowflake className="h-3.5 w-3.5 mr-1 text-blue-500"/>AC</span>}
                     {route.amenities.wifi && <span className="flex items-center"><Wifi className="h-3.5 w-3.5 mr-1 text-sky-500"/>WiFi</span>}
