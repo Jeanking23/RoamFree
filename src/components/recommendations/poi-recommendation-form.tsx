@@ -122,7 +122,11 @@ export default function POIRecommendationForm() {
             name="userInterests"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-1"><User className="h-4 w-4 text-primary" />Your Interests (Optional)</FormLabel>
+                <FormLabel>
+                  <div className="flex items-center gap-1">
+                    <User className="h-4 w-4 text-primary" />Your Interests (Optional)
+                  </div>
+                </FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="e.g., Interested in history, nature, local cuisine, nightlife."
@@ -148,4 +152,3 @@ export default function POIRecommendationForm() {
     </div>
   );
 }
-
