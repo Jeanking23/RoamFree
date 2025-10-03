@@ -1,5 +1,5 @@
 
-// src/app/transport/page.tsx
+// src/app/transportation/page.tsx
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -27,7 +27,7 @@ import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import BusTransportationSearchForm from './bus-transportation-search-form';
+import BusTransportationSearchForm from '../transport/bus-transportation-search-form';
 
 
 const serviceCategories = [
