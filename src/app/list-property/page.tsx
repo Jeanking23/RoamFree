@@ -1,4 +1,3 @@
-
 // src/app/list-property/page.tsx
 'use client';
 
@@ -1055,9 +1054,8 @@ export default function ListPropertyPage() {
           )}
         </CardHeader>
         <CardContent className={cn(
-          "flex-grow",
-          currentStep === 0 && "flex flex-col justify-center", // Only center for the first step
-          currentStep === 2 ? "p-0" : "p-6 md:p-8"
+            "flex-grow relative",
+            currentStep === 0 && "flex flex-col justify-center"
         )}>
             <AnimatePresence mode="wait">
                  <motion.div
@@ -1067,8 +1065,8 @@ export default function ListPropertyPage() {
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className={cn(
-                        "w-full", 
-                        currentStep === 2 ? "h-full" : "max-w-4xl mx-auto my-auto"
+                        "w-full h-full", 
+                        currentStep !== 2 && "max-w-4xl mx-auto my-auto p-6 md:p-8"
                     )}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
