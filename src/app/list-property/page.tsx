@@ -1055,7 +1055,8 @@ export default function ListPropertyPage() {
           )}
         </CardHeader>
         <CardContent className={cn(
-          "flex-grow flex flex-col justify-center",
+          "flex-grow",
+          currentStep === 0 && "flex flex-col justify-center", // Only center for the first step
           currentStep === 2 ? "p-0" : "p-6 md:p-8"
         )}>
             <AnimatePresence mode="wait">
@@ -1066,8 +1067,8 @@ export default function ListPropertyPage() {
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className={cn(
-                        "w-full my-auto", 
-                        currentStep === 2 ? "h-full" : "max-w-4xl mx-auto"
+                        "w-full", 
+                        currentStep === 2 ? "h-full" : "max-w-4xl mx-auto my-auto"
                     )}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
