@@ -1,3 +1,4 @@
+
 // src/app/list-property/page.tsx
 'use client';
 
@@ -93,7 +94,7 @@ const listingSteps = [
 
 const ListingTypeStep = ({ onSelect }: { onSelect: (type: 'property' | 'car') => void }) => {
     return (
-        <div>
+        <div className="max-w-4xl mx-auto">
             <CardHeader className="p-0 text-center">
                 <CardTitle className="text-3xl font-headline text-primary">What would you like to list?</CardTitle>
                 <CardDescription className="pt-2">Choose a category to get started.</CardDescription>
@@ -129,7 +130,7 @@ const NameStep = () => {
     const showPropertyDetails = propertyType && propertyType !== 'Land';
 
     return (
-        <div className="grid md:grid-cols-2 gap-8 items-start">
+        <div className="grid md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto">
             <div>
                 <CardHeader className="p-0">
                     <CardTitle className="text-3xl font-headline text-primary">Let's start with the basics</CardTitle>
@@ -338,7 +339,7 @@ const PhotosStep = () => {
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-8 items-start">
+    <div className="grid md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto">
       <div>
         <CardHeader className="p-0">
           <CardTitle className="text-3xl font-headline text-primary">What does your place look like?</CardTitle>
@@ -482,7 +483,7 @@ const DetailsStep = () => {
     });
 
     return (
-        <div>
+        <div className="max-w-4xl mx-auto">
             <CardHeader className="p-0 text-center md:text-left">
                 <CardTitle className="text-3xl font-headline text-primary">Property Details</CardTitle>
                 <CardDescription className="pt-2">Provide key details about the space.</CardDescription>
@@ -586,7 +587,7 @@ const amenitiesList = {
 const AmenitiesStep = () => {
     const { control } = useFormContext<ListingFormValues>();
     return (
-        <div>
+        <div className="max-w-4xl mx-auto">
             <CardHeader className="p-0 text-center md:text-left">
                 <CardTitle className="text-3xl font-headline text-primary">What can guests use at your place?</CardTitle>
                 <CardDescription className="pt-2">Select all the amenities your property offers.</CardDescription>
@@ -648,7 +649,7 @@ const AmenitiesStep = () => {
 const ServicesStep = () => {
     const { control } = useFormContext<ListingFormValues>();
     return (
-        <div>
+        <div className="max-w-4xl mx-auto">
             <CardHeader className="p-0 text-center md:text-left">
                 <CardTitle className="text-3xl font-headline text-primary">Services at your property</CardTitle>
                 <CardDescription className="pt-2">Let guests know about additional services you offer.</CardDescription>
@@ -706,7 +707,7 @@ const languageList = [
 const LanguagesStep = () => {
     const { control } = useFormContext<ListingFormValues>();
     return (
-        <div>
+        <div className="max-w-4xl mx-auto">
             <CardHeader className="p-0 text-center md:text-left">
                 <CardTitle className="text-3xl font-headline text-primary">What languages do you or your staff speak?</CardTitle>
                 <CardDescription className="pt-2">Select all languages that you can use to communicate with guests.</CardDescription>
@@ -782,7 +783,7 @@ const HostProfileStep = () => {
     };
 
     return (
-        <div>
+        <div className="max-w-4xl mx-auto">
             <CardHeader className="p-0 text-center md:text-left">
                 <CardTitle className="text-3xl font-headline text-primary">Host profile</CardTitle>
                 <CardDescription className="pt-2">Tell us what makes your place unique. You can write about this later.</CardDescription>
@@ -871,7 +872,7 @@ const HouseRulesStep = () => {
     });
 
     return (
-        <div className="grid md:grid-cols-2 gap-8 items-start">
+        <div className="grid md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto">
             <div>
                 <CardHeader className="p-0">
                     <CardTitle className="text-3xl font-headline text-primary">House Rules</CardTitle>
@@ -1053,10 +1054,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <CardContent className={cn(
-            "flex-grow relative",
-            currentStep === 0 && "flex flex-col justify-center"
-        )}>
+        <CardContent className="flex-grow p-0 flex flex-col">
             <AnimatePresence mode="wait">
                  <motion.div
                     key={currentStep}
@@ -1065,8 +1063,8 @@ export default function ListPropertyPage() {
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className={cn(
-                        "w-full h-full", 
-                        currentStep !== 2 && "max-w-4xl mx-auto my-auto p-6 md:p-8"
+                        "w-full",
+                        currentStep === 2 ? "flex-grow" : "my-auto p-6 md:p-8"
                     )}
                  >
                     {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
@@ -1080,7 +1078,7 @@ export default function ListPropertyPage() {
                     {currentStep === 8 && <HouseRulesStep />}
                     {currentStep === 9 && <PhotosStep />}
                     {currentStep === 10 && (
-                        <div className="text-center">
+                        <div className="text-center max-w-4xl mx-auto">
                             <h2 className="text-2xl font-semibold">Step {currentStep} content goes here.</h2>
                             <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
                         </div>
