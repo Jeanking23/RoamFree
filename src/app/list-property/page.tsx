@@ -1,4 +1,3 @@
-
 // src/app/list-property/page.tsx
 'use client';
 
@@ -77,18 +76,16 @@ type ListingFormValues = z.infer<typeof listingFormSchema>;
 
 
 const listingSteps = [
-  // Step 0 - Not in progress bar
   { id: "type", title: "Select Type" }, 
-  // Progress bar steps start here (index 1)
-  { id: "basics", title: "Basic info", fields: ["propertyName", "propertyType", "listingType"] },
-  { id: "location", title: "Location", fields: ["address", "city", "country", "state", "zip"] },
-  { id: "details", title: "Property Details", fields: ["bedrooms", "maxGuests", "bathrooms"] },
-  { id: "host-profile", title: "Host Profile", fields: ["hostProfileHighlights"] },
-  { id: "amenities", title: "Amenities", fields: ["amenities"] },
-  { id: "services", title: "Services", fields: ["breakfast", "parking"] },
-  { id: "languages", title: "Languages", fields: ["languages"] },
-  { id: "rules", title: "House Rules", fields: ["smokingAllowed", "partiesAllowed", "petsAllowed", "checkInFrom", "checkInUntil", "checkOutFrom", "checkOutUntil"] },
-  { id: "photos", title: "Photos", fields: ["photoDescriptions"] },
+  { id: "basics", title: "Basic info" },
+  { id: "location", title: "Location" },
+  { id: "details", title: "Property Details" },
+  { id: "host-profile", title: "Host Profile" },
+  { id: "amenities", title: "Amenities" },
+  { id: "services", title: "Services" },
+  { id: "languages", title: "Languages" },
+  { id: "rules", title: "House Rules" },
+  { id: "photos", title: "Photos" },
   { id: "review", title: "Review and complete" },
 ];
 
@@ -476,11 +473,27 @@ const Bedroom = ({ bedroomIndex }: { bedroomIndex: number }) => {
 
 
 const DetailsStep = () => {
-    const { control, setValue, getValues } = useFormContext<ListingFormValues>();
+    const { control, setValue, getValues, watch } = useFormContext<ListingFormValues>();
     const { fields, append, remove } = useFieldArray({
         control,
         name: "bedrooms",
     });
+
+    const propertyType = watch('propertyType');
+
+    if (propertyType === 'Land') {
+        return (
+            <div className="max-w-4xl mx-auto text-center">
+                <CardHeader className="p-0">
+                    <CardTitle className="text-3xl font-headline text-primary">Land Details</CardTitle>
+                    <CardDescription className="pt-2">Since you're listing land, we'll skip the bedroom and bathroom details.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0 pt-8">
+                     <p className="text-muted-foreground">Click "Continue" to proceed to the next step.</p>
+                </CardContent>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto">
@@ -966,9 +979,27 @@ export default function ListPropertyPage() {
 
 
   const nextStep = async () => {
-    const currentStepConfig = listingSteps[currentStep];
-    const fields = currentStepConfig?.fields;
-    const isValid = fields ? await methods.trigger(fields as (keyof ListingFormValues)[]) : true;
+    let fieldsToValidate: (keyof ListingFormValues)[] = [];
+    const propertyType = methods.getValues("propertyType");
+
+    switch(currentStep) {
+        case 1: // Basic info
+            fieldsToValidate = ['propertyName', 'propertyType', 'listingType'];
+            break;
+        case 2: // Location
+            fieldsToValidate = ['address', 'city', 'country'];
+            break;
+        case 3: // Details
+            if (propertyType !== 'Land') {
+                fieldsToValidate = ['bedrooms', 'maxGuests', 'bathrooms'];
+            }
+            break;
+        // Add other cases if they have validation
+        default:
+            break;
+    }
+    
+    const isValid = fieldsToValidate.length > 0 ? await methods.trigger(fieldsToValidate) : true;
 
     if (!isValid) {
         toast({ title: "Please complete the required fields.", variant: "destructive" });
@@ -1006,10 +1037,10 @@ export default function ListPropertyPage() {
   ];
 
   const getCurrentStageIndex = () => {
-    if (currentStep >= 1 && currentStep <= 2) return 0; // Basic info
-    if (currentStep >= 3 && currentStep <= 8) return 1; // Property setup
-    if (currentStep === 9) return 2; // Photos
-    if (currentStep === 10) return 4; // Review
+    if (currentStep >= 1 && currentStep <= 2) return 0;
+    if (currentStep >= 3 && currentStep <= 8) return 1;
+    if (currentStep === 9) return 2; 
+    if (currentStep === 10) return 4;
     return -1;
   }
   
@@ -1075,26 +1106,29 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <CardContent className="flex-grow flex flex-col p-0">
+        <CardContent className="flex-1 flex flex-col p-0">
           {currentStep === 2 ? (
             <div className="flex-grow min-h-0">
-              <LocationStep />
+              {renderStepContent()}
             </div>
           ) : (
-             <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className="w-full h-full my-auto flex flex-col justify-center p-6 md:p-8"
-              >
-                {renderStepContent()}
-              </motion.div>
-            </AnimatePresence>
+            <div className="w-full h-full flex flex-col justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentStep}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-full p-6 md:p-8"
+                >
+                  {renderStepContent()}
+                </motion.div>
+              </AnimatePresence>
+            </div>
           )}
         </CardContent>
+
         <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
             {currentStep === 0 ? (
                 <Button variant="outline" asChild>
