@@ -991,10 +991,9 @@ export default function ListPropertyPage() {
             break;
         case 3: // Details
             if (propertyType !== 'Land') {
-                fieldsToValidate = ['bedrooms', 'maxGuests', 'bathrooms'];
+                fieldsToValidate = ['maxGuests', 'bathrooms'];
             }
             break;
-        // Add other cases if they have validation
         default:
             break;
     }
@@ -1106,7 +1105,7 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col p-0">
+        <CardContent className="flex-grow flex flex-col p-0">
           {currentStep === 2 ? (
             <div className="flex-grow min-h-0">
               {renderStepContent()}
