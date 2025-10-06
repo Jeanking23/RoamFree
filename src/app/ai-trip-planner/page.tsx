@@ -333,12 +333,12 @@ export default function AiTripPlannerSurveyPage() {
 
                 <div className="flex gap-4 justify-between pt-4">
                   <Button type="button" variant="outline" onClick={prevStep} disabled={currentStep === 0}>
-                    <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Back
                   </Button>
                   
                   {currentStep < formSteps.length - 1 && (
                      <Button type="button" onClick={nextStep}>
-                        <span>Next <ArrowRight className="ml-2 h-4 w-4" /></span>
+                        Next <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   )}
 
