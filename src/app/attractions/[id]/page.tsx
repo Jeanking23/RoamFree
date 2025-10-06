@@ -1,3 +1,4 @@
+
 // src/app/attractions/[id]/page.tsx
 'use client';
 
@@ -195,7 +196,9 @@ export default function AttractionProfilePage() {
              ))}
           </div>
            <div className="text-center mt-2 flex justify-center gap-2">
-             <Button variant="outline" onClick={() => setIsArViewActive(true)}><Camera className="mr-2 h-4 w-4" /> Try AR Guide</Button>
+             <Button variant="outline" onClick={() => setIsArViewActive(true)}>
+                <span><Camera className="mr-2 h-4 w-4" /> Try AR Guide</span>
+             </Button>
              <Button variant="outline" onClick={() => setIsAudioGuideActive(true)} className="ml-2"><Ear className="mr-2 h-4 w-4" /> Start Audio Guide</Button>
            </div>
         </CardContent>
