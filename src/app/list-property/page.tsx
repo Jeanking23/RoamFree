@@ -1081,14 +1081,14 @@ export default function ListPropertyPage() {
               <LocationStep />
             </div>
           ) : (
-            <AnimatePresence mode="wait">
+             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="my-auto p-6 md:p-8"
+                className="w-full h-full my-auto flex flex-col justify-center p-6 md:p-8"
               >
                 {renderStepContent()}
               </motion.div>
@@ -1099,7 +1099,7 @@ export default function ListPropertyPage() {
             {currentStep === 0 ? (
                 <Button variant="outline" asChild>
                     <Link href="/dashboard">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                        <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
                     </Link>
                 </Button>
             ) : (
