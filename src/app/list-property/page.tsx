@@ -1015,7 +1015,28 @@ export default function ListPropertyPage() {
   
   const currentStageIndex = getCurrentStageIndex();
   const fiveStageProgress = currentStageIndex >= 0 ? ((currentStageIndex) / (fiveStages.length - 1)) * 100 : 0;
-
+  
+  const renderStepContent = () => {
+    switch (currentStep) {
+        case 0: return <ListingTypeStep onSelect={handleListingTypeSelect} />;
+        case 1: return <NameStep />;
+        case 2: return <LocationStep />;
+        case 3: return <DetailsStep />;
+        case 4: return <HostProfileStep />;
+        case 5: return <AmenitiesStep />;
+        case 6: return <ServicesStep />;
+        case 7: return <LanguagesStep />;
+        case 8: return <HouseRulesStep />;
+        case 9: return <PhotosStep />;
+        case 10: return (
+            <div className="text-center max-w-4xl mx-auto">
+                <h2 className="text-2xl font-semibold">Step {currentStep} content goes here.</h2>
+                <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
+            </div>
+        );
+        default: return null;
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -1054,37 +1075,25 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <CardContent className="flex-grow p-0 flex flex-col">
+        <CardContent className="flex-grow flex flex-col p-0">
+          {currentStep === 2 ? (
+            <div className="flex-grow min-h-0">
+              <LocationStep />
+            </div>
+          ) : (
             <AnimatePresence mode="wait">
-                 <motion.div
-                    key={currentStep}
-                    initial={{ x: 300, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -300, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className={cn(
-                        "w-full",
-                        currentStep === 2 ? "flex-grow" : "my-auto p-6 md:p-8"
-                    )}
-                 >
-                    {currentStep === 0 && <ListingTypeStep onSelect={handleListingTypeSelect} />}
-                    {currentStep === 1 && <NameStep />}
-                    {currentStep === 2 && <LocationStep />}
-                    {currentStep === 3 && <DetailsStep />}
-                    {currentStep === 4 && <HostProfileStep />}
-                    {currentStep === 5 && <AmenitiesStep />}
-                    {currentStep === 6 && <ServicesStep />}
-                    {currentStep === 7 && <LanguagesStep />}
-                    {currentStep === 8 && <HouseRulesStep />}
-                    {currentStep === 9 && <PhotosStep />}
-                    {currentStep === 10 && (
-                        <div className="text-center max-w-4xl mx-auto">
-                            <h2 className="text-2xl font-semibold">Step {currentStep} content goes here.</h2>
-                            <p className="text-muted-foreground">{listingSteps[currentStep].title}</p>
-                        </div>
-                    )}
-                 </motion.div>
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="my-auto p-6 md:p-8"
+              >
+                {renderStepContent()}
+              </motion.div>
             </AnimatePresence>
+          )}
         </CardContent>
         <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
             {currentStep === 0 ? (
