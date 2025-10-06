@@ -79,7 +79,8 @@ export default function RentHomePage() {
         }
         if (data.priceRange) {
             const [minPrice, maxPrice] = data.priceRange;
-            if (rental.price && (rental.price < minPrice || (maxPrice < 10000 && rental.price > maxPrice))) {
+            const rentalPrice = rental.price ?? rental.pricePerNight;
+            if (rentalPrice && (rentalPrice < minPrice || (maxPrice < 10000 && rentalPrice > maxPrice))) {
                 matches = false;
             }
         }
@@ -432,7 +433,7 @@ export default function RentHomePage() {
                                 <Input placeholder="Select a keyword below or type here"/>
                                 <div className="flex flex-wrap gap-2 mt-2">
                                     {["Pool", "Water front", "Basement", "Gated", "Pond"].map(keyword => (
-                                        <Button key={keyword} variant="outline" size="sm" type="button"><Plus className="h-4 w-4 mr-1"/>{keyword}</Button>
+                                        <Button key={keyword} variant="outline" size="sm" type="button"><span><Plus className="h-4 w-4 mr-1"/>{keyword}</span></Button>
                                     ))}
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-2">Note: To increase accuracy, the keyword filter suggests the most commonly searched terms. Results may vary.</p>
