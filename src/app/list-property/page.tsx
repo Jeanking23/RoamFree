@@ -1,3 +1,4 @@
+
 // src/app/list-property/page.tsx
 'use client';
 
@@ -984,7 +985,7 @@ export default function ListPropertyPage() {
 
     switch(currentStep) {
         case 1: // Basic info
-            fieldsToValidate = ['propertyName', 'propertyType', 'listingType'];
+             fieldsToValidate = ['propertyName', 'propertyType', 'listingType'];
             break;
         case 2: // Location
             fieldsToValidate = ['address', 'city', 'country'];
@@ -1105,13 +1106,13 @@ export default function ListPropertyPage() {
             </div>
           )}
         </CardHeader>
-        <CardContent className="flex-grow flex flex-col p-0">
-          {currentStep === 2 ? (
-            <div className="flex-grow min-h-0">
-              {renderStepContent()}
-            </div>
-          ) : (
-            <div className="w-full h-full flex flex-col justify-center">
+        
+        {currentStep === 2 ? (
+          <CardContent className="flex-grow p-0">
+             {renderStepContent()}
+          </CardContent>
+        ) : (
+           <CardContent className="flex-grow flex flex-col justify-center p-6 md:p-8">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentStep}
@@ -1119,20 +1120,19 @@ export default function ListPropertyPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="w-full p-6 md:p-8"
+                  className="w-full"
                 >
                   {renderStepContent()}
                 </motion.div>
               </AnimatePresence>
-            </div>
-          )}
-        </CardContent>
+            </CardContent>
+        )}
 
         <CardFooter className="border-t p-4 flex justify-between bg-muted/50 mt-auto z-10">
             {currentStep === 0 ? (
                 <Button variant="outline" asChild>
                     <Link href="/dashboard">
-                        <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
                     </Link>
                 </Button>
             ) : (
@@ -1156,3 +1156,4 @@ export default function ListPropertyPage() {
     </div>
   );
 }
+
