@@ -603,7 +603,7 @@ export default function BusTransportationPage() {
                     <span>Duration: {route.duration}</span>
                     <span>{route.stops !== undefined ? (route.stops > 0 ? `${route.stops} Stop(s)` : "Direct") : ""}</span>
                   </div>
-                  <p className="text-sm"><div className="flex items-center gap-1"><Info className="inline h-4 w-4 mr-1 text-primary"/>Bus Type: {route.busType}</div></p>
+                  <p className="text-sm"><span className="flex items-center gap-1"><Info className="inline h-4 w-4 mr-1 text-primary"/>Bus Type: {route.busType}</span></p>
                   <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs pt-1">
                     {route.amenities.ac && <span className="flex items-center"><Snowflake className="h-3.5 w-3.5 mr-1 text-blue-500"/>AC</span>}
                     {route.amenities.wifi && <span className="flex items-center"><Wifi className="h-3.5 w-3.5 mr-1 text-sky-500"/>WiFi</span>}

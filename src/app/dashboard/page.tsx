@@ -199,9 +199,9 @@ function DashboardPage() {
                         }
                       </div>
                       <div className="flex gap-2 mt-2 md:mt-0 flex-shrink-0">
-                        <Button variant="outline" size="sm" onClick={() => toast({title: "View Listing"})}><Eye className="mr-1 h-4 w-4" /> View</Button>
-                        <Button variant="outline" size="sm" onClick={() => toast({title: "Edit Listing"})}><Edit3 className="mr-1 h-4 w-4" /> Edit</Button>
-                        <Button variant="destructive" size="sm" onClick={() => handleDeleteListing(listing.id, listing.name)}><Trash2 className="mr-1 h-4 w-4" /> Delete</Button>
+                        <Button variant="outline" size="sm" onClick={() => toast({title: "View Listing"})}><span><Eye className="mr-1 h-4 w-4" /> View</span></Button>
+                        <Button variant="outline" size="sm" onClick={() => toast({title: "Edit Listing"})}><span><Edit3 className="mr-1 h-4 w-4" /> Edit</span></Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDeleteListing(listing.id, listing.name)}><span><Trash2 className="mr-1 h-4 w-4" /> Delete</span></Button>
                       </div>
                     </Card>
                   ))}
@@ -374,7 +374,7 @@ function DashboardPage() {
                         <Card className="p-4">
                             <CardTitle className="text-lg mb-2 flex items-center gap-2"><AlertTriangle className="h-5 w-5"/>Damage &amp; Dispute Resolution</CardTitle>
                             <p className="text-sm text-muted-foreground mb-3">Submit photo/video-based damage claims for rentals and access mediation services.</p>
-                            <Button variant="secondary" onClick={() => handleToolClick("Dispute System")}><Wrench className="mr-2 h-4 w-4"/>Open Dispute System</Button>
+                            <Button variant="secondary" onClick={() => handleToolClick("Dispute System")}><span><Wrench className="mr-2 h-4 w-4"/>Open Dispute System</span></Button>
                         </Card>
                          <Card className="p-4">
                             <CardTitle className="text-lg mb-2 flex items-center gap-2"><Users className="h-5 w-5"/>Tenant/Buyer Screening</CardTitle>
