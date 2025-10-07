@@ -60,8 +60,8 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 const slideshowImages = [
   { url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmF2ZWwlMjBtb3VudGFpbnN8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", hint: "travel mountains" },
   { url: "https://images.unsplash.com/photo-1507525428034-b723a9ce6890?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMHN1bnJpc2V8ZW58MHx8fHwxNzUyODE0MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", hint: "beach sunrise" },
-  { url: "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwwfHx8fDE3NTI4MTQxMzB8MA&ixlib-rb-4.1.0&q=80&w=1080", hint: "mountain landscape" },
-  { url: "https://images.unsplash.com/photo-1519010470956-6d877008eaa4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjaXR5c2NhcGUlMjBhJ25pZ2h0fGVufDB8fHx8MTc1MjgwMzcwN3ww&ixlib-rb-4.1.0&q=80&w=1080", hint: "cityscape night" },
+  { url: "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwwfHx8fDE3NTI4MTQxMzB8MA&ixlib=rb-4.1.0&q=80&w=1080", hint: "mountain landscape" },
+  { url: "https://images.unsplash.com/photo-1519010470956-6d877008eaa4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjaXR5c2NhcGUlMjBhJ25pZ2h0fGVufDB8fHx8MTc1MjgwMzcwN3ww&ixlib=rb-4.1.0&q=80&w=1080", hint: "cityscape night" },
 ];
 
 function ForgotPasswordDialog({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {
@@ -214,8 +214,8 @@ export default function SignInPage() {
         </CardHeader>
         <CardContent>
            <Button variant="outline" className="w-full mb-6" onClick={handleGoogleSignIn} disabled={isLoading}>
-                <GoogleIcon className="mr-2 h-5 w-5" />
-                Sign in with Google
+                <span><GoogleIcon className="mr-2 h-5 w-5" />
+                Sign in with Google</span>
             </Button>
             <div className="relative mb-6">
                 <div className="absolute inset-0 flex items-center">
@@ -264,8 +264,8 @@ export default function SignInPage() {
                 )}
               />
               <Button type="submit" disabled={isLoading} className="w-full">
-                <LogIn className="mr-2 h-4 w-4" />
-                {isLoading ? 'Signing In...' : 'Sign In'}
+                <span><LogIn className="mr-2 h-4 w-4" />
+                {isLoading ? 'Signing In...' : 'Sign In'}</span>
               </Button>
             </form>
           </Form>

@@ -151,8 +151,8 @@ export default function SignUpPage() {
         </CardHeader>
         <CardContent>
           <Button variant="outline" className="w-full mb-6" onClick={handleGoogleSignIn} disabled={isLoading}>
-              <GoogleIcon className="mr-2 h-5 w-5" />
-              Sign up with Google
+              <span><GoogleIcon className="mr-2 h-5 w-5" />
+              Sign up with Google</span>
           </Button>
           <div className="relative mb-6">
               <div className="absolute inset-0 flex items-center">
@@ -227,8 +227,8 @@ export default function SignUpPage() {
                 )}
               />
               <Button type="submit" disabled={isLoading} className="w-full">
-                <UserPlus className="mr-2 h-4 w-4" />
-                {isLoading ? 'Creating Account...' : 'Create Account'}
+                <span><UserPlus className="mr-2 h-4 w-4" />
+                {isLoading ? 'Creating Account...' : 'Create Account'}</span>
               </Button>
             </form>
           </Form>

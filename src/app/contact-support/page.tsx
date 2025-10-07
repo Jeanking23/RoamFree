@@ -130,7 +130,7 @@ export default function ContactSupportPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          <div className="flex items-center gap-1"><User className="h-4 w-4 text-primary" />Full Name</div>
+                          <span className="flex items-center gap-1"><User className="h-4 w-4 text-primary" />Full Name</span>
                         </FormLabel>
                         <FormControl><Input placeholder="John Doe" {...field} /></FormControl>
                         <FormMessage />
@@ -143,7 +143,7 @@ export default function ContactSupportPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                            <div className="flex items-center gap-1"><Mail className="h-4 w-4 text-primary" />Email Address</div>
+                            <span className="flex items-center gap-1"><Mail className="h-4 w-4 text-primary" />Email Address</span>
                         </FormLabel>
                         <FormControl><Input type="email" placeholder="you@example.com" {...field} /></FormControl>
                         <FormMessage />
@@ -156,7 +156,7 @@ export default function ContactSupportPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                            <div className="flex items-center gap-1"><MessageSquare className="h-4 w-4 text-primary" />Subject</div>
+                            <span className="flex items-center gap-1"><MessageSquare className="h-4 w-4 text-primary" />Subject</span>
                         </FormLabel>
                         <FormControl><Input placeholder="e.g., Issue with booking #12345" {...field} /></FormControl>
                         <FormMessage />
@@ -184,7 +184,7 @@ export default function ContactSupportPage() {
             <div className="space-y-8">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><Bot className="h-6 w-6 text-primary" /> AI Personal Travel Assistant</CardTitle>
+                  <CardTitle className="flex items-center gap-2"><span><Bot className="h-6 w-6 text-primary" /> AI Personal Travel Assistant</span></CardTitle>
                   <CardDescription>Get instant help for planning, booking, adjusting trips, or general support from our AI.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -222,7 +222,7 @@ export default function ContactSupportPage() {
 
               <Card className="border-destructive">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-destructive"><ShieldAlert className="h-6 w-6" /> Emergency SOS</CardTitle>
+                  <CardTitle className="flex items-center gap-2"><span><ShieldAlert className="h-6 w-6" /> Emergency SOS</span></CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground mb-3">For urgent help or emergencies during your trip, use the SOS feature. This is a simulated feature for demo purposes.</p>
@@ -235,14 +235,14 @@ export default function ContactSupportPage() {
               <div className="space-y-4">
                 <div>
                   <h3 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2">
-                    <Phone className="h-5 w-5 text-primary" /> Call Us
+                    <span><Phone className="h-5 w-5 text-primary" /> Call Us</span>
                   </h3>
                   <p className="text-muted-foreground">For urgent matters: <span className="text-lg font-semibold text-primary">1-800-ROAMFREE</span></p>
                   <p className="text-sm text-muted-foreground">(Available 9 AM - 6 PM, Mon-Fri)</p>
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2">
-                    <HelpCircleIcon className="h-5 w-5 text-primary" /> FAQs & Self-Help
+                    <span><HelpCircleIcon className="h-5 w-5 text-primary" /> FAQs & Self-Help</span>
                   </h3>
                   <p className="text-muted-foreground">Many common questions are answered in our FAQ section.</p>
                   <Button variant="outline" className="mt-2" asChild>
@@ -251,7 +251,7 @@ export default function ContactSupportPage() {
                 </div>
                  <div>
                   <h3 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2">
-                    <Info className="h-5 w-5 text-primary" /> Trust & Safety
+                    <span><Info className="h-5 w-5 text-primary" /> Trust & Safety</span>
                   </h3>
                   <p className="text-muted-foreground">Learn about our security measures, including Blockchain verification for property (Future Feature) and cultural travel advisories.</p>
                   <Button variant="link" className="mt-1 px-0" asChild>
