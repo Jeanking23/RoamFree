@@ -333,18 +333,18 @@ export default function AiTripPlannerSurveyPage() {
 
                 <div className="flex gap-4 justify-between pt-4">
                   <Button type="button" variant="outline" onClick={prevStep} disabled={currentStep === 0}>
-                    <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Back
                   </Button>
                   
                   {currentStep < formSteps.length - 1 && (
                      <Button type="button" onClick={nextStep}>
-                        <span>Next <ArrowRight className="ml-2 h-4 w-4" /></span>
+                        Next <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   )}
 
                   {currentStep === formSteps.length - 1 && (
                      <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-                        <span><Wand2 className="mr-2 h-5 w-5" />Generate My Trip Plan</span>
+                        <Wand2 className="mr-2 h-5 w-5" />Generate My Trip Plan
                     </Button>
                   )}
                 </div>
@@ -418,7 +418,7 @@ export default function AiTripPlannerSurveyPage() {
                             </CardContent>
                              <CardFooter>
                                 <Button className="w-full" onClick={handleBookStay}>
-                                    <span><BedDouble className="mr-2 h-4 w-4"/>Book this Stay</span>
+                                    <BedDouble className="mr-2 h-4 w-4"/>Book this Stay
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -427,7 +427,7 @@ export default function AiTripPlannerSurveyPage() {
                             <CardContent><p className="text-sm">{tripPlan.transportSuggestion}</p></CardContent>
                             <CardFooter>
                                 <Button className="w-full" onClick={handleArrangeTransport}>
-                                    <span><Car className="mr-2 h-4 w-4"/>Arrange Transport</span>
+                                    <Car className="mr-2 h-4 w-4"/>Arrange Transport
                                 </Button>
                             </CardFooter>
                         </Card>
