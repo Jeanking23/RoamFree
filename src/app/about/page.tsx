@@ -30,7 +30,11 @@ export default function AboutPage() {
         <CardContent className="p-6 md:p-8 space-y-12">
           {/* Our Story Section */}
           <section>
-            <h2 className="text-2xl font-semibold text-center mb-4 flex items-center justify-center gap-2"><span><Rocket className="h-6 w-6 text-accent"/> Our Story</span></h2>
+            <h2 className="text-2xl font-semibold text-center mb-4 flex items-center justify-center gap-2">
+                <span>
+                    <Rocket className="h-6 w-6 text-accent"/> Our Story
+                </span>
+            </h2>
             <p className="text-muted-foreground max-w-3xl mx-auto text-center">
               RoamFree was founded by a team of passionate travelers who believed that planning an adventure should be as exciting as the journey itself. Frustrated by fragmented booking platforms and a lack of integrated services, we set out to build an all-in-one solution. From finding the perfect eco-friendly cabin to securing a rental car and discovering local gems with our AI planner, RoamFree is designed to be your ultimate travel companion.
             </p>
@@ -71,7 +75,11 @@ export default function AboutPage() {
 
           {/* Partner Section */}
           <section className="text-center bg-accent/10 p-8 rounded-lg">
-            <h2 className="text-2xl font-semibold mb-4 flex items-center justify-center gap-2"><span><TrendingUp className="h-6 w-6 text-accent"/> Bringing Value to Our Partners</span></h2>
+            <h2 className="text-2xl font-semibold mb-4 flex items-center justify-center gap-2">
+                <span>
+                    <TrendingUp className="h-6 w-6 text-accent"/> Bringing Value to Our Partners
+                </span>
+            </h2>
             <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
                 We provide property owners and service providers with the tools they need to succeed. Our platform offers access to a global audience, an intuitive dashboard with performance analytics, dynamic pricing tools, and secure payment processing to help you maximize your revenue and streamline operations.
             </p>
