@@ -1,3 +1,4 @@
+
 // src/app/corporate-solutions-demo/page.tsx
 'use client';
 
@@ -112,7 +113,7 @@ export default function CorporateSolutionsDemoPage() {
                             />
                             <FormField control={form.control} name="message" render={({ field }) => (<FormItem><FormLabel>Your Message</FormLabel><FormControl><Textarea placeholder="Tell us about your company's travel needs..." {...field}/></FormControl><FormMessage/></FormItem>)}/>
                             <Button type="submit" size="lg" className="w-full sm:w-auto">
-                                <Send className="mr-2 h-4 w-4"/> Submit Inquiry
+                                <span><Send className="mr-2 h-4 w-4"/> Submit Inquiry</span>
                             </Button>
                         </form>
                     </Form>
