@@ -24,7 +24,7 @@ export default function OurMissionPage() {
           <div className="text-center py-12 bg-muted/30 rounded-md">
             <p className="text-xl font-semibold">Our Vision for the Future of Travel</p>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-              This page is under construction. Our mission is to build a seamless, trustworthy, and comprehensive platform that empowers everyone to explore the world with confidence and joy.
+              This page is currently under construction. Our mission is to build a seamless, trustworthy, and comprehensive platform that empowers everyone to explore the world with confidence and joy.
             </p>
              <div className="mt-6">
                  <Button asChild>

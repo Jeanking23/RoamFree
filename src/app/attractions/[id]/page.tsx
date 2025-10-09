@@ -199,7 +199,9 @@ export default function AttractionProfilePage() {
              <Button variant="outline" onClick={() => setIsArViewActive(true)}>
                 <span><Camera className="mr-2 h-4 w-4" /> Try AR Guide</span>
              </Button>
-             <Button variant="outline" onClick={() => setIsAudioGuideActive(true)} className="ml-2"><Ear className="mr-2 h-4 w-4" /> Start Audio Guide</Button>
+             <Button variant="outline" onClick={() => setIsAudioGuideActive(true)}>
+              <span><Ear className="mr-2 h-4 w-4" /> Start Audio Guide</span>
+            </Button>
            </div>
         </CardContent>
         
@@ -239,7 +241,9 @@ export default function AttractionProfilePage() {
                  ))}
               </div>
                <div className="flex items-center gap-2 mt-2">
-                <Button variant="outline" size="sm" onClick={() => toast({title: "Liked!", description:"Thanks for your feedback."})}><ThumbsUp className="h-4 w-4 mr-1"/> Like Gallery</Button>
+                <Button variant="outline" size="sm" onClick={() => toast({title: "Liked!", description:"Thanks for your feedback."})}>
+                  <span><ThumbsUp className="h-4 w-4 mr-1"/> Like Gallery</span>
+                </Button>
                 <Button variant="link" size="sm" onClick={() => toast({title: "Upload Photos", description:"This would open a file upload dialog."})}>+ Add Your Photos</Button>
                </div>
             </div>
@@ -255,7 +259,7 @@ export default function AttractionProfilePage() {
                  <Dialog>
                     <DialogTrigger asChild>
                         <Button variant="accent" size="lg" className="w-full">
-                            <Ticket className="mr-2 h-5 w-5" /> Book Tickets
+                            <span><Ticket className="mr-2 h-5 w-5" /> Book Tickets</span>
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
@@ -284,7 +288,7 @@ export default function AttractionProfilePage() {
                     </DialogContent>
                 </Dialog>
                 <Button variant="outline" className="w-full" onClick={handleGetDirections}>
-                  <MapPin className="mr-2 h-4 w-4" /> Get Directions
+                  <span><MapPin className="mr-2 h-4 w-4" /> Get Directions</span>
                 </Button>
               </CardContent>
             </Card>

@@ -82,7 +82,7 @@ export default function AttractionsPage() {
                 </div>
               </div>
               <Button onClick={handleArDiscovery} variant="outline" className="w-full md:w-auto self-end">
-                <Camera className="mr-2 h-4 w-4" /> Try AR Discovery Mode
+                <span><Camera className="mr-2 h-4 w-4" /> Try AR Discovery Mode</span>
               </Button>
             </div>
             <div>
@@ -126,7 +126,7 @@ export default function AttractionsPage() {
                   </CardContent>
                   <CardFooter>
                     <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => handleBookTickets(attraction.name)}>
-                      <Ticket className="mr-2 h-4 w-4" /> Book Tickets
+                      <span><Ticket className="mr-2 h-4 w-4" /> Book Tickets</span>
                     </Button>
                   </CardFooter>
                 </Card>
