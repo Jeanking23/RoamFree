@@ -1,3 +1,4 @@
+
 // src/app/flights/page.tsx
 'use client';
 
@@ -122,8 +123,8 @@ const FlightSearchPage = () => {
               </div>
             </div>
             <Button type="submit" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
-              <Search className="mr-2 h-4 w-4" />
-              {isLoading ? 'Searching...' : 'Search Flights'}
+              <span><Search className="mr-2 h-4 w-4" />
+              {isLoading ? 'Searching...' : 'Search Flights'}</span>
             </Button>
           </form>
 
