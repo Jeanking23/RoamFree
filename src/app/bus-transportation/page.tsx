@@ -616,7 +616,7 @@ export default function BusTransportationPage() {
                 <div className="md:col-span-3 flex flex-col items-center md:items-end justify-center space-y-2 pt-2 md:pt-0">
                   <p className="text-2xl font-bold text-primary">${route.price.toFixed(2)}</p>
                   <Button className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => handleStartBooking(route)}>
-                    <Armchair className="mr-2 h-4 w-4"/>Select Seats &amp; Book
+                    <span><Armchair className="mr-2 h-4 w-4"/>Select Seats &amp; Book</span>
                   </Button>
                   <p className="text-xs text-muted-foreground">Price per passenger</p>
                 </div>
