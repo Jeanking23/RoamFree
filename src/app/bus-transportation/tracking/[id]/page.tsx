@@ -145,7 +145,7 @@ export default function BusTrackingPage() {
                                 </Button>
                                  <Button variant="destructive" size="sm" className="w-full mt-2">
                                     <AlertCircle className="mr-2 h-4 w-4"/> Report Emergency (SOS)
-                                </Button>
+                                 </Button>
                             </CardContent>
                         </Card>
                     </div>
