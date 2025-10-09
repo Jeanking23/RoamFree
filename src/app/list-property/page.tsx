@@ -1132,12 +1132,12 @@ export default function ListPropertyPage() {
             {currentStep === 0 ? (
                 <Button variant="outline" asChild>
                     <Link href="/dashboard">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                        <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
                     </Link>
                 </Button>
             ) : (
                 <Button variant="outline" onClick={prevStep}>
-                    <ArrowLeft className="mr-2 h-4 w-4"/> Back
+                    <span><ArrowLeft className="mr-2 h-4 w-4"/> Back</span>
                 </Button>
             )}
             {currentStep > 0 && currentStep < listingSteps.length - 1 && (
@@ -1156,4 +1156,3 @@ export default function ListPropertyPage() {
     </div>
   );
 }
-
