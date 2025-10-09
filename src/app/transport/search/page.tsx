@@ -282,7 +282,7 @@ function RideSearchResults() {
             <div className="flex flex-col h-full bg-background border-l">
                  <div className="p-4 border-b flex-shrink-0">
                     <Button variant="ghost" onClick={() => router.back()} className="mb-2 -ml-4">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Search
+                        <span><ArrowLeft className="mr-2 h-4 w-4" /> Back to Search</span>
                     </Button>
                     <div className="space-y-1">
                         <div className="flex items-start gap-2">
