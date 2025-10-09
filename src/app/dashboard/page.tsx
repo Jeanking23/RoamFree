@@ -94,11 +94,21 @@ function DashboardPage() {
         <CardContent className="p-0 md:p-6">
           <Tabs defaultValue="overview" className="w-full">
             <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5 mb-6 p-1 h-auto">
-              <TabsTrigger value="overview" className="py-2"><BarChart3 className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Overview</TabsTrigger>
-              <TabsTrigger value="listings" className="py-2"><ListPlus className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Listings</TabsTrigger>
-              <TabsTrigger value="bookings" className="py-2"><CalendarCheck2 className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Bookings/Offers</TabsTrigger>
-              <TabsTrigger value="messages" className="py-2"><MessageSquare className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Messages</TabsTrigger>
-              <TabsTrigger value="tools" className="py-2"><Settings className="h-5 w-5 mr-2 md:hidden lg:inline-block" />Partner Tools</TabsTrigger>
+              <TabsTrigger value="overview">
+                <span className="flex items-center gap-2"><BarChart3 className="h-5 w-5 md:hidden lg:inline-block" />Overview</span>
+              </TabsTrigger>
+              <TabsTrigger value="listings">
+                <span className="flex items-center gap-2"><ListPlus className="h-5 w-5 md:hidden lg:inline-block" />Listings</span>
+              </TabsTrigger>
+              <TabsTrigger value="bookings">
+                <span className="flex items-center gap-2"><CalendarCheck2 className="h-5 w-5 md:hidden lg:inline-block" />Bookings/Offers</span>
+              </TabsTrigger>
+              <TabsTrigger value="messages">
+                <span className="flex items-center gap-2"><MessageSquare className="h-5 w-5 md:hidden lg:inline-block" />Messages</span>
+              </TabsTrigger>
+              <TabsTrigger value="tools">
+                <span className="flex items-center gap-2"><Settings className="h-5 w-5 md:hidden lg:inline-block" />Partner Tools</span>
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="p-4 md:p-0">
