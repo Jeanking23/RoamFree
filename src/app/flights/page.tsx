@@ -1,3 +1,4 @@
+
 // src/app/flights/page.tsx
 'use client';
 
