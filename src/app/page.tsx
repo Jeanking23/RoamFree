@@ -35,8 +35,8 @@ const mockRecentSearches = [
 const mockTrendingDestinations = [
   { id: "td1", name: "Top Hotels in Paris", image: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwYXJpcyUyMGVpZmZlbCUyMHRvd2VyfGVufDB8fHx8MTc1MjcyMjczNXww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "paris eiffel tower", price: "120", rating: 4.7, filter: { destination: "Paris", propertyType: "HOTEL" } },
   { id: "td2", name: "Apartments in Douala", image: "https://images.unsplash.com/photo-1588334488081-06fca5a234f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjaXR5JTIwZG91YWxhfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "city douala", price: "80", rating: 4.3, filter: { destination: "Douala", propertyType: "RENTAL" } },
-  { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://images.unsplash.com/photo-1705330409537-e6476e6ca90c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMGFiaWRqYW58ZW58MHx8fHwxNzUyNzIyNzM0fDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "beach abidjan", price: "150", rating: 4.5, filter: { destination: "Abidjan", propertyType: "HOTEL" } },
-  { id: "td4", name: "Villas in Aspen", image: "https://images.unsplash.com/photo-1601268615527-c02730fea66a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhc3BlbiUyMG1vdW50YWluc3xlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "aspen mountains", price: "300", rating: 4.9, filter: { destination: "Aspen", propertyType: "RENTAL" } },
+  { id: "td3", name: "Weekend Resorts in Abidjan", image: "https://images.unsplash.com/photo-1705330409537-e6476e6ca90c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFjaCUyMGFiaWRqYW58ZW58MHx8fHwxNzUyNzIyNzM0fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "beach abidjan", price: "150", rating: 4.5, filter: { destination: "Abidjan", propertyType: "HOTEL" } },
+  { id: "td4", name: "Villas in Aspen", image: "https://images.unsplash.com/photo-1601268615527-c02730fea66a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhc3BlbiUyMG1vdW50YWluc3xlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "aspen mountains", price: "300", rating: 4.9, filter: { destination: "Aspen", propertyType: "RENTAL" } },
 ];
 
 const mockVibes = [
@@ -56,7 +56,7 @@ const mockNearbyGems = [
 const mockDeals = [
   { id: "deal1", title: "Up to 30% off Resorts", image: "https://images.unsplash.com/photo-1671362962572-50cf4edca731?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxyZXNvcnQlMjBwb29sfGVufDB8fHx8MTc1MjcyMjczNHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "resort pool", urgency: 75, urgencyText: "75% Claimed!", filter: { propertyType: "HOTEL" } },
   { id: "deal2", title: "Last-minute Apartment Deals - Save 20%", image: "https://images.unsplash.com/photo-1627811732414-45c003f9eeec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhcGFydG1lbnQlMjBjaXR5fGVufDB8fHx8MTc1MjcyMjczNHww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "apartment city", urgency: 3, urgencyText: "Only 3 left!", filter: { propertyType: "RENTAL" } },
-  { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://images.unsplash.com/photo-1700131572514-f7c7900e6f43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx2aWxsYSUyMGdhcmRlbnxlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", filter: { propertyType: "RENTAL", priceMax: 100 } },
+  { id: "deal3", title: "Flash Sale: Villas under $100", image: "https://images.unsplash.com/photo-1700131572514-f7c7900e6f43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx2aWxsYSUyMGdhcmRlbnxlbnwwfHx8fDE3NTI3MjI3MzR8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "villa garden", urgency: 90, urgencyText: "Selling Fast!", filter: { propertyType: "RENTAL", priceMax: 100 } },
 ];
 
 const translations = {
@@ -261,7 +261,7 @@ export default function HomePage() {
             Featured Stays
           </h2>
            <Button variant="link" asChild className="text-primary hover:text-primary/80 text-md">
-              <Link href="/stays/search">View All Stays &rarr;</Link>
+              <Link href="/stays/search"><span>View All Stays &rarr;</span></Link>
             </Button>
         </div>
         {isLoading ? (
