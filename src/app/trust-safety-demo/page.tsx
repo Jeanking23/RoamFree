@@ -112,7 +112,7 @@ export default function TrustSafetyDemoPage() {
                              <FormField control={form.control} name="bookingId" render={({ field }) => (<FormItem><FormLabel>Booking ID (Optional)</FormLabel><FormControl><Input placeholder="e.g., BK123456" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                              <FormField control={form.control} name="details" render={({ field }) => (<FormItem><FormLabel>Detailed Description</FormLabel><FormControl><Textarea placeholder="Please provide a detailed account of the issue." rows={5} {...field}/></FormControl><FormMessage/></FormItem>)}/>
                               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                                <Send className="mr-2 h-4 w-4"/> Submit Report
+                                <span><Send className="mr-2 h-4 w-4"/> Submit Report</span>
                             </Button>
                         </form>
                     </Form>
