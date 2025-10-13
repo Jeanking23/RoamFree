@@ -449,7 +449,7 @@ export default function ListCarPage() {
             {currentStep === 0 ? (
                 <Button variant="outline" asChild>
                     <Link href="/list-property">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                        <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
                     </Link>
                 </Button>
             ) : (
