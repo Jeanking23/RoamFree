@@ -1,4 +1,5 @@
 
+// src/app/bus-transportation/page.tsx
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -510,15 +511,15 @@ export default function BusTransportationPage() {
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-2 p-4 border rounded-md">
                   <FormField
                     control={form.control} name="hasAC"
-                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><div className="flex items-center gap-1"><Snowflake className="h-4 w-4 text-blue-500" />Air Conditioned</div></FormLabel></FormItem>)}
+                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><span className="flex items-center gap-1"><Snowflake className="h-4 w-4 text-blue-500" />Air Conditioned</span></FormLabel></FormItem>)}
                   />
                   <FormField
                     control={form.control} name="hasWifi"
-                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><div className="flex items-center gap-1"><Wifi className="h-4 w-4 text-sky-500" />WiFi Onboard</div></FormLabel></FormItem>)}
+                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><span className="flex items-center gap-1"><Wifi className="h-4 w-4 text-sky-500" />WiFi Onboard</span></FormLabel></FormItem>)}
                   />
                   <FormField
                     control={form.control} name="hasUsb"
-                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><div className="flex items-center gap-1"><Power className="h-4 w-4 text-yellow-500" />USB Charging</div></FormLabel></FormItem>)}
+                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><span className="flex items-center gap-1"><Power className="h-4 w-4 text-yellow-500" />USB Charging</span></FormLabel></FormItem>)}
                   />
                   <FormField
                     control={form.control} name="tripType"
@@ -531,9 +532,9 @@ export default function BusTransportationPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="ANY"><div className="flex items-center gap-1"><Sun className="inline h-4 w-4 mr-1" /><Moon className="inline h-4 w-4 mr-1" />Any Trip Type</div></SelectItem>
-                            <SelectItem value="DAY"><div className="flex items-center gap-1"><Sun className="inline h-4 w-4 mr-1" />Day Trip</div></SelectItem>
-                            <SelectItem value="OVERNIGHT"><div className="flex items-center gap-1"><Moon className="inline h-4 w-4 mr-1" />Overnight Trip</div></SelectItem>
+                            <SelectItem value="ANY"><span className="flex items-center gap-1"><Sun className="inline h-4 w-4 mr-1" /><Moon className="inline h-4 w-4 mr-1" />Any Trip Type</span></SelectItem>
+                            <SelectItem value="DAY"><span className="flex items-center gap-1"><Sun className="inline h-4 w-4 mr-1" />Day Trip</span></SelectItem>
+                            <SelectItem value="OVERNIGHT"><span className="flex items-center gap-1"><Moon className="inline h-4 w-4 mr-1" />Overnight Trip</span></SelectItem>
                           </SelectContent>
                         </Select>
                       </FormItem>
@@ -542,7 +543,7 @@ export default function BusTransportationPage() {
                 </div>
               </div>
               <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Search className="mr-2 h-5 w-5" /> {isLoading ? "Searching Buses..." : "Search Buses"}
+                <span className="flex items-center gap-2"><Search className="h-5 w-5" /> {isLoading ? "Searching Buses..." : "Search Buses"}</span>
               </Button>
             </form>
           </Form>

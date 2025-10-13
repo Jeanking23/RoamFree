@@ -595,7 +595,9 @@ export default function TransportPage() {
                         <div className="px-1">
                             <div className="flex items-center space-x-2">
                                 <Switch id="round-trip" checked={isRoundTrip} onCheckedChange={setIsRoundTrip} />
-                                <Label htmlFor="round-trip" className="flex items-center gap-2 text-sm"><Repeat className="h-4 w-4" />Round Trip / Return Way</Label>
+                                <Label htmlFor="round-trip" className="flex items-center gap-2 text-sm">
+                                    <span className="flex items-center gap-2"><Repeat className="h-4 w-4" />Round Trip / Return Way</span>
+                                </Label>
                             </div>
                         </div>
                         
@@ -684,7 +686,9 @@ export default function TransportPage() {
                         </div>
 
                         <div className="px-1">
-                            <Label htmlFor="comment" className="flex items-center gap-2 text-xs"><MessageSquare className="h-4 w-4"/>Comment (Optional)</Label>
+                            <Label htmlFor="comment" className="flex items-center gap-2 text-xs">
+                                <span className="flex items-center gap-2"><MessageSquare className="h-4 w-4"/>Comment (Optional)</span>
+                            </Label>
                             <Textarea 
                                 id="comment"
                                 placeholder="Luggage info, special needs..."
@@ -696,7 +700,9 @@ export default function TransportPage() {
 
                         <div className="flex items-center space-x-2 px-1">
                             <Switch id="ride-for-other" checked={rideForSomeoneElse} onCheckedChange={setRideForSomeoneElse} />
-                            <Label htmlFor="ride-for-other" className="flex items-center gap-2 text-sm"><UserPlus className="h-4 w-4" />Ride for someone else</Label>
+                            <Label htmlFor="ride-for-other" className="flex items-center gap-2 text-sm">
+                                <span className="flex items-center gap-2"><UserPlus className="h-4 w-4" />Ride for someone else</span>
+                            </Label>
                         </div>
 
                         <AnimatePresence>
