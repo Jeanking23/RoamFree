@@ -138,8 +138,8 @@ export default function BusTrackingPage() {
                                 <CardTitle>Driver & Bus Info</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-2 text-sm">
-                                <p><User className="inline h-4 w-4 mr-1"/>Driver: {trackingInfo.driver.name} (⭐ {trackingInfo.driver.rating})</p>
-                                <p><BusIcon className="inline h-4 w-4 mr-1"/>Bus Plate: {trackingInfo.busPlate}</p>
+                                <p><span><User className="inline h-4 w-4 mr-1"/>Driver: {trackingInfo.driver.name} (⭐ {trackingInfo.driver.rating})</span></p>
+                                <p><span><BusIcon className="inline h-4 w-4 mr-1"/>Bus Plate: {trackingInfo.busPlate}</span></p>
                                 <Button variant="outline" size="sm" className="w-full mt-2" onClick={handleContactDriver}>
                                     <MessageSquare className="mr-2 h-4 w-4"/> Contact Driver
                                 </Button>
