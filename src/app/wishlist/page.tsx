@@ -164,7 +164,7 @@ export default function WishlistPage() {
                         </label>
                         </div>
                       <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive/80" onClick={() => handleRemoveFromWishlist(item.id)}>
-                        <Trash2 className="mr-2 h-4 w-4" /> Remove
+                        <span><Trash2 className="mr-2 h-4 w-4" /> Remove</span>
                       </Button>
                     </CardFooter>
                   </Card>
