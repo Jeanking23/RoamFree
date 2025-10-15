@@ -124,7 +124,7 @@ export default function WishlistPage() {
             <>
               <div className="mb-6 flex justify-end">
                 <Button onClick={handleCompareSelected} disabled={selectedToCompare.length < 2} className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                  <GitCompareArrows className="mr-2 h-4 w-4" /> Compare Selected ({selectedToCompare.length})
+                  <span><GitCompareArrows className="mr-2 h-4 w-4" /> Compare Selected ({selectedToCompare.length})</span>
                 </Button>
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
