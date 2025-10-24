@@ -44,11 +44,12 @@ function CarImageSlider({ car }: { car: CarListing }) {
 
   return (
     <div className="relative w-full h-56 group">
-      <Image 
-        src={car.photos[currentIndex].src} 
-        alt={car.photos[currentIndex].alt} 
-        fill 
-        className="object-cover transition-transform duration-300 ease-in-out" 
+      <Image
+        src={car.photos[currentIndex].src}
+        alt={car.photos[currentIndex].alt}
+        width={600}
+        height={400}
+        className="object-cover w-full h-full transition-transform duration-300 ease-in-out"
         data-ai-hint={car.photos[currentIndex].dataAiHint}
       />
       {car.ecoFriendly && <Badge variant="secondary" className="absolute top-2 right-2 bg-green-500 text-white border-green-600">Eco-Friendly</Badge>}
