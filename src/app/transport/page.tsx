@@ -734,7 +734,7 @@ export default function TransportPage() {
 
                         <div className="p-1">
                             <Button className="w-full" onClick={handleSearch}>
-                                Search Rides
+                                <span><Search className="mr-2 h-4 w-4" />Search Rides</span>
                             </Button>
                         </div>
                       </div>
