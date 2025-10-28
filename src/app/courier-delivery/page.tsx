@@ -1,3 +1,4 @@
+
 // src/app/courier-delivery/page.tsx
 'use client';
 
@@ -241,7 +242,7 @@ export default function CourierDeliveryPage() {
                     </CardContent>
                   </Card>
                   <Button type="submit" disabled={isBooking || currentPackageStatusIndex !== -1} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                    <Send className="mr-2 h-4 w-4" /> {isBooking ? "Processing..." : "Request Courier & Get Estimate"}
+                    <span><Send className="mr-2 h-4 w-4" /> {isBooking ? "Processing..." : "Request Courier & Get Estimate"}</span>
                   </Button>
                 </form>
               </Form>
