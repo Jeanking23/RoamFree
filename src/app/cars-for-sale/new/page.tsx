@@ -457,7 +457,7 @@ export default function ListCarPage() {
                 </Button>
             )}
             <Button onClick={nextStep}>
-              {currentStep === listingSteps.length - 1 ? <span><Send className="mr-2 h-4 w-4"/>Publish Listing</span> : 'Continue'}
+              {currentStep === listingSteps.length - 1 ? <span><Send className="mr-2 h-4 w-4"/>Publish Listing</span> : <span>Continue</span>}
             </Button>
           </CardFooter>
         </Card>

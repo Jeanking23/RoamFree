@@ -312,8 +312,7 @@ export default function CarsForSalePage() {
                      <Sheet>
                         <SheetTrigger asChild>
                              <Button variant="outline" className="h-11 rounded-full text-sm shrink-0">
-                                <span><Filter className="mr-2 h-4 w-4" />
-                                <span className="hidden sm:inline">Filter</span></span>
+                                <span><Filter className="mr-2 h-4 w-4" /><span className="hidden sm:inline">Filter</span></span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent className="w-full sm:max-w-md p-0 flex flex-col">
@@ -351,7 +350,7 @@ export default function CarsForSalePage() {
                                 <FormField control={sellCarForm.control} name="mileage" render={({ field }) => (<FormItem><FormLabel>Mileage</FormLabel><FormControl><Input type="number" placeholder="e.g., 30000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                             </div>
                             <Button type="submit" className="w-full" disabled={isOfferLoading}>
-                               {isOfferLoading ? 'Calculating...' : 'Get My Offer'}
+                               <span>{isOfferLoading ? 'Calculating...' : 'Get My Offer'}</span>
                             </Button>
                         </form>
                     </Form>
@@ -394,7 +393,9 @@ export default function CarsForSalePage() {
                         <SelectItem value="newest">Newest</SelectItem>
                     </SelectContent>
                 </Select>
-                <Button variant="ghost" size="sm" onClick={() => toast({title: "Saved!"})} className="shrink-0"><Heart className="mr-2 h-4 w-4"/>Save</Button>
+                <Button variant="ghost" size="sm" onClick={() => toast({title: "Saved!"})} className="shrink-0">
+                    <span><Heart className="mr-2 h-4 w-4"/>Save</span>
+                </Button>
             </div>
             
             <div className="flex flex-nowrap gap-2 items-center justify-between mt-4">
