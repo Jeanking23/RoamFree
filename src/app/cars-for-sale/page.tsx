@@ -1,9 +1,8 @@
-
 // src/app/cars-for-sale/page.tsx
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -313,8 +312,8 @@ export default function CarsForSalePage() {
                      <Sheet>
                         <SheetTrigger asChild>
                              <Button variant="outline" className="h-11 rounded-full text-sm shrink-0">
-                                <Filter className="mr-2 h-4 w-4" />
-                                <span className="hidden sm:inline">Filter</span>
+                                <span><Filter className="mr-2 h-4 w-4" />
+                                <span className="hidden sm:inline">Filter</span></span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent className="w-full sm:max-w-md p-0 flex flex-col">
