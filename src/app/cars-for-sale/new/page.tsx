@@ -1,4 +1,3 @@
-
 // src/app/cars-for-sale/new/page.tsx
 'use client';
 
@@ -317,7 +316,7 @@ export default function ListCarPage() {
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep(prev => prev - 1);
     }
   };
 
@@ -454,7 +453,7 @@ export default function ListCarPage() {
                 </Button>
             ) : (
                 <Button variant="outline" onClick={prevStep}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                    <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
                 </Button>
             )}
             <Button onClick={nextStep}>

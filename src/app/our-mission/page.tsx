@@ -1,4 +1,3 @@
-
 // src/app/our-mission/page.tsx
 'use client';
 
