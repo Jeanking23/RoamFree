@@ -1,3 +1,4 @@
+
 // src/app/cars-for-sale/page.tsx
 'use client';
 
@@ -351,7 +352,7 @@ export default function CarsForSalePage() {
                                 <FormField control={sellCarForm.control} name="mileage" render={({ field }) => (<FormItem><FormLabel>Mileage</FormLabel><FormControl><Input type="number" placeholder="e.g., 30000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
                             </div>
                             <Button type="submit" className="w-full" disabled={isOfferLoading}>
-                               {isOfferLoading ? 'Calculating...' : 'Get My Offer'}
+                               <span>{isOfferLoading ? 'Calculating...' : 'Get My Offer'}</span>
                             </Button>
                         </form>
                     </Form>
