@@ -1,3 +1,4 @@
+
 // src/app/rent-home/page.tsx
 'use client';
 
