@@ -474,8 +474,7 @@ export default function RentHomePage() {
                   <Sheet>
                       <SheetTrigger asChild>
                           <Button type="button" variant="outline" className="h-11 flex-shrink-0">
-                              <Filter className="h-4 w-4 mr-0 sm:mr-2" />
-                              <span className="hidden sm:inline">Filter</span>
+                              <span><Filter className="h-4 w-4 mr-0 sm:mr-2" /><span className="hidden sm:inline">Filter</span></span>
                           </Button>
                       </SheetTrigger>
                       <SheetContent>
@@ -501,7 +500,7 @@ export default function RentHomePage() {
                                   </div>
                                </div>
                                <div>
-                                  <h4 className="font-medium mb-2">Beds & Baths</h4>
+                                  <h4 className="font-medium mb-2">Beds &amp; Baths</h4>
                                   <div className="p-4 space-y-4 border rounded-md">
                                     <FormField control={rentalSearchForm.control} name="bedrooms" render={({ field }) => (<FormItem><FormLabel>Bedrooms</FormLabel><div className="flex rounded-md border p-1 bg-muted">{(["ANY", "1+", "2+", "3+", "4+", "5+"] as const).map(val => (<Button key={val} type="button" variant={field.value === val ? "secondary" : "ghost"} onClick={() => field.onChange(val)} className="flex-1 h-8 text-xs">{val === "ANY" ? "Any" : val}</Button>))}</div></FormItem>)} />
                                     <FormField control={rentalSearchForm.control} name="bathrooms" render={({ field }) => (<FormItem><FormLabel>Bathrooms</FormLabel><div className="flex rounded-md border p-1 bg-muted">{(["ANY", "1+", "2+", "3+", "4+", "5+"] as const).map(val => (<Button key={val} type="button" variant={field.value === val ? "secondary" : "ghost"} onClick={() => field.onChange(val)} className="flex-1 h-8 text-xs">{val === "ANY" ? "Any" : val}</Button>))}</div></FormItem>)} />
@@ -598,7 +597,7 @@ export default function RentHomePage() {
                                 </div>
                             </CardContent>
                             <CardFooter className="flex flex-col gap-2 pt-4 border-t">
-                                <Button asChild className="w-full"><Link href={`/rent-home/${prop.id}`}>View Details & Apply</Link></Button>
+                                <Button asChild className="w-full"><Link href={`/rent-home/${prop.id}`}>View Details &amp; Apply</Link></Button>
                             </CardFooter>
                         </Card>
                     ))}
@@ -646,11 +645,11 @@ export default function RentHomePage() {
                 </div>
             )}
           <div className="mt-8 p-4 border rounded-md bg-muted/30">
-            <h4 className="font-semibold text-foreground mb-2">Tenant & Landlord Features:</h4>
+            <h4 className="font-semibold text-foreground mb-2">Tenant &amp; Landlord Features:</h4>
             <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-              <li><ShieldCheck className="inline h-4 w-4 mr-1 text-primary"/>Secure Document Upload & E-signature for lease agreements.</li>
+              <li><ShieldCheck className="inline h-4 w-4 mr-1 text-primary"/>Secure Document Upload &amp; E-signature for lease agreements.</li>
               <li><CalendarDays className="inline h-4 w-4 mr-1 text-primary"/>Real-time availability calendar with sync options (Airbnb, Booking.com).</li>
-              <li><DollarSign className="inline h-4 w-4 mr-1 text-primary"/>In-app rent payment with due date reminders & recurring billing.</li>
+              <li><DollarSign className="inline h-4 w-4 mr-1 text-primary"/>In-app rent payment with due date reminders &amp; recurring billing.</li>
               <li><Users className="inline h-4 w-4 mr-1 text-primary"/>Optional Tenant Background Checks (ID, income, rental history) for hosts.</li>
               <li><Building className="inline h-4 w-4 mr-1 text-primary"/>Detailed neighborhood insights: crime rates, schools, transport, walkability.</li>
             </ul>

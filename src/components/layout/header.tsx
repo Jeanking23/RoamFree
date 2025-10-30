@@ -123,13 +123,13 @@ export default function Header() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild><Link href="/profile"><UserCircle className="mr-2 h-4 w-4" />Profile</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" />Partner Dashboard</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href="/bookings"><CalendarCheck2 className="mr-2 h-4 w-4" />Bookings</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href="/community-forum-demo"><Users className="mr-2 h-4 w-4" />Community Forum</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href="/contact-support"><Phone className="mr-2 h-4 w-4" />Contact Support</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/profile"><span><UserCircle className="mr-2 h-4 w-4" />Profile</span></Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/dashboard"><span><LayoutDashboard className="mr-2 h-4 w-4" />Partner Dashboard</span></Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/bookings"><span><CalendarCheck2 className="mr-2 h-4 w-4" />Bookings</span></Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/community-forum-demo"><span><Users className="mr-2 h-4 w-4" />Community Forum</span></Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/contact-support"><span><Phone className="mr-2 h-4 w-4" />Contact Support</span></Link></DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}><LogOut className="mr-2 h-4 w-4" />Log out</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSignOut}><span><LogOut className="mr-2 h-4 w-4" />Log out</span></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -206,16 +206,16 @@ export default function Header() {
                         )
                       })}
                       <Separator className="my-2" />
-                        <Link href="/bus-transportation" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Bus className="h-5 w-5 text-primary" /><span className="text-lg">Bus Tickets</span></Link>
-                        <Link href="/courier-delivery" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Truck className="h-5 w-5 text-primary" /><span className="text-lg">Courier</span></Link>
+                        <Link href="/bus-transportation" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><span><Bus className="h-5 w-5 text-primary" /><span className="text-lg">Bus Tickets</span></span></Link>
+                        <Link href="/courier-delivery" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><span><Truck className="h-5 w-5 text-primary" /><span className="text-lg">Courier</span></span></Link>
                       <Separator className="my-2"/>
                         <div className="px-0">
                             <LanguageCurrencySelector isMobile={true} />
                         </div>
                       <Separator className="my-2"/>
-                        <Link href="/community-forum-demo" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Users className="h-5 w-5 text-primary" /><span className="text-lg">Forum</span></Link>
-                        <Link href="/contact-support" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><Phone className="h-5 w-5 text-primary" /><span className="text-lg">Contact</span></Link>
-                        <Link href="/profile" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><UserCircle className="h-5 w-5 text-primary" /><span className="text-lg">My Account</span></Link>
+                        <Link href="/community-forum-demo" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><span><Users className="h-5 w-5 text-primary" /><span className="text-lg">Forum</span></span></Link>
+                        <Link href="/contact-support" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><span><Phone className="h-5 w-5 text-primary" /><span className="text-lg">Contact</span></span></Link>
+                        <Link href="/profile" className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-muted"><span><UserCircle className="h-5 w-5 text-primary" /><span className="text-lg">My Account</span></span></Link>
                     </nav>
                   </ScrollArea>
             </SheetContent>
@@ -237,7 +237,7 @@ export default function Header() {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                         <DropdownMenuItem onClick={handleSignOut}><LogOut className="mr-2 h-4 w-4" />Log out</DropdownMenuItem>
+                         <DropdownMenuItem onClick={handleSignOut}><span><LogOut className="mr-2 h-4 w-4" />Log out</span></DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
               ) : hasMounted && !user ? (

@@ -12,7 +12,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsContent } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from '@/components/ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -113,7 +113,7 @@ const FilterContent = () => {
     <div className="space-y-4">
         <Accordion type="multiple" defaultValue={['payment_price', 'make_model', 'body_type']} className="w-full">
             <AccordionItem value="payment_price">
-                <AccordionTrigger>Payment & Price</AccordionTrigger>
+                <AccordionTrigger>Payment &amp; Price</AccordionTrigger>
                 <AccordionContent className="space-y-4">
                     <div className="space-y-2">
                         <Label>Price Range</Label>
@@ -125,7 +125,7 @@ const FilterContent = () => {
                 </AccordionContent>
             </AccordionItem>
              <AccordionItem value="make_model">
-                <AccordionTrigger>Make & Model</AccordionTrigger>
+                <AccordionTrigger>Make &amp; Model</AccordionTrigger>
                 <AccordionContent className="space-y-2">
                     <Input placeholder="Search Make..." />
                     <div className="max-h-60 overflow-y-auto space-y-1 pr-2">
@@ -159,7 +159,7 @@ const FilterContent = () => {
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="year_mileage">
-                <AccordionTrigger>Year & Mileage</AccordionTrigger>
+                <AccordionTrigger>Year &amp; Mileage</AccordionTrigger>
                 <AccordionContent className="space-y-4">
                     <div className="space-y-2"><Label>Year</Label><div className="flex gap-2"><Select><SelectTrigger><SelectValue placeholder="Min"/></SelectTrigger></Select><Select><SelectTrigger><SelectValue placeholder="Max"/></SelectTrigger></Select></div></div>
                     <div className="space-y-2"><Label>Mileage</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
@@ -173,14 +173,14 @@ const FilterContent = () => {
                 </AccordionContent>
             </AccordionItem>
              <AccordionItem value="fuel_type">
-                <AccordionTrigger>Fuel Type & MPG</AccordionTrigger>
+                <AccordionTrigger>Fuel Type &amp; MPG</AccordionTrigger>
                 <AccordionContent className="space-y-4">
                      <div className="space-y-2"><Label>Fuel Type</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
                      <div className="space-y-2"><Label>MPG (City/Hwy)</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="features">
-                <AccordionTrigger>Features & Colors</AccordionTrigger>
+                <AccordionTrigger>Features &amp; Colors</AccordionTrigger>
                 <AccordionContent className="space-y-4">
                      <div className="space-y-2"><Label>Features</Label><Input placeholder="e.g., Sunroof, AWD"/></div>
                      <div className="space-y-2"><Label>Exterior Color</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
@@ -188,7 +188,7 @@ const FilterContent = () => {
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="specs">
-                <AccordionTrigger>Seating, Drivetrain & More</AccordionTrigger>
+                <AccordionTrigger>Seating, Drivetrain &amp; More</AccordionTrigger>
                 <AccordionContent className="space-y-4">
                      <div className="space-y-2"><Label>Seating Capacity</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
                      <div className="space-y-2"><Label>Drivetrain</Label><Select><SelectTrigger><SelectValue placeholder="Any"/></SelectTrigger></Select></div>
@@ -296,7 +296,7 @@ export default function CarsForSalePage() {
                 <TabsTrigger value="financing" onClick={() => toast({title: "Feature Coming Soon"})} className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Financing</TabsTrigger>
               </TabsList>
               <TabsContent value="search" className="space-y-4">
-                <h4 className="font-semibold text-foreground">Used & New Cars in your area</h4>
+                <h4 className="font-semibold text-foreground">Used &amp; New Cars in your area</h4>
                  <div className="flex items-center gap-2">
                     <div className="relative flex-grow">
                         <Input
@@ -312,7 +312,7 @@ export default function CarsForSalePage() {
                      <Sheet>
                         <SheetTrigger asChild>
                              <Button variant="outline" className="h-11 rounded-full text-sm shrink-0">
-                                <span><Filter className="mr-2 h-4 w-4" /><span className="hidden sm:inline">Filter</span></span>
+                                <span><Filter className="mr-2 h-4 w-4" />Filter</span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent className="w-full sm:max-w-md p-0 flex flex-col">
@@ -331,7 +331,7 @@ export default function CarsForSalePage() {
                             </SheetFooter>
                         </SheetContent>
                     </Sheet>
-                </div>
+               </div>
               </TabsContent>
               <TabsContent value="sell_trade">
                 <div className="grid md:grid-cols-2 gap-8 items-center">
@@ -361,7 +361,7 @@ export default function CarsForSalePage() {
                         <p className="text-muted-foreground">Your Estimated Offer</p>
                         <p className="text-4xl font-bold text-primary my-2">${offerValue.toLocaleString()}</p>
                         <p className="text-xs text-muted-foreground mb-4">This offer is valid for 7 days. We will contact you to schedule a quick inspection and finalize the sale.</p>
-                        <Button className="w-full" onClick={() => toast({title: "Sale Initiated!", description: "We will contact you shortly."})}>Accept & Continue</Button>
+                        <Button className="w-full" onClick={() => toast({title: "Sale Initiated!", description: "We will contact you shortly."})}>Accept &amp; Continue</Button>
                       </>
                     ) : (
                       <>
