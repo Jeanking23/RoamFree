@@ -294,7 +294,7 @@ export default function AttractionProfilePage() {
             </Card>
              <Card className="shadow-md border">
                 <CardHeader>
-                    <CardTitle className="text-xl flex items-center gap-2"><Percent className="h-5 w-5"/>Deals & Combos</CardTitle>
+                    <CardTitle className="text-xl flex items-center gap-2"><Percent className="h-5 w-5"/>Deals &amp; Combos</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {attraction.deals.map(deal => (
