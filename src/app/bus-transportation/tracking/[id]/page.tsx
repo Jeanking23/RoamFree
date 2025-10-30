@@ -1,3 +1,4 @@
+
 // src/app/bus-transportation/tracking/[id]/page.tsx
 'use client';
 
@@ -137,13 +138,13 @@ export default function BusTrackingPage() {
                                 <CardTitle>Driver &amp; Bus Info</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-2 text-sm">
-                                <p>&lt;span&gt;&lt;User className="inline h-4 w-4 mr-1"/&gt;Driver: {trackingInfo.driver.name} (⭐ {trackingInfo.driver.rating})&lt;/span&gt;</p>
-                                <p>&lt;span&gt;&lt;BusIcon className="inline h-4 w-4 mr-1"/&gt;Bus Plate: {trackingInfo.busPlate}&lt;/span&gt;</p>
+                                <p><span><User className="inline h-4 w-4 mr-1"/>Driver: {trackingInfo.driver.name} (⭐ {trackingInfo.driver.rating})</span></p>
+                                <p><span><BusIcon className="inline h-4 w-4 mr-1"/>Bus Plate: {trackingInfo.busPlate}</span></p>
                                 <Button variant="outline" size="sm" className="w-full mt-2" onClick={handleContactDriver}>
-                                    &lt;MessageSquare className="mr-2 h-4 w-4"/&gt; Contact Driver
+                                    <MessageSquare className="mr-2 h-4 w-4"/> Contact Driver
                                 </Button>
                                  <Button variant="destructive" size="sm" className="w-full mt-2">
-                                    &lt;AlertCircle className="mr-2 h-4 w-4"/&gt; Report Emergency (SOS)
+                                    <AlertCircle className="mr-2 h-4 w-4"/> Report Emergency (SOS)
                                  </Button>
                             </CardContent>
                         </Card>
@@ -151,9 +152,9 @@ export default function BusTrackingPage() {
                 </CardContent>
                  <CardFooter className="bg-muted/50 p-4">
                     <Button variant="outline" asChild>
-                        &lt;Link href={`/bus-transportation/ticket/${bookingId}?routeId=${routeId}`}&gt;
-                           &lt;span&gt;&lt;ArrowLeft className="mr-2 h-4 w-4" /&gt; Back to Ticket&lt;/span&gt;
-                        &lt;/Link&gt;
+                        <Link href={`/bus-transportation/ticket/${bookingId}?routeId=${routeId}`}>
+                           <span><ArrowLeft className="mr-2 h-4 w-4" /> Back to Ticket</span>
+                        </Link>
                     </Button>
                 </CardFooter>
             </Card>
