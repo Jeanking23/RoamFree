@@ -542,7 +542,7 @@ export default function BusTransportationPage() {
                 </div>
               </div>
               <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-                <span className="flex items-center gap-2"><Search className="h-5 w-5" /> {isLoading ? "Searching Buses..." : "Search Buses"}</span>
+                <span className="flex items-center gap-2"><Search className="h-5 w-5" />{isLoading ? "Searching Buses..." : "Search Buses"}</span>
               </Button>
             </form>
           </Form>
