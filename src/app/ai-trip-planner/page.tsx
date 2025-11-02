@@ -4,7 +4,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type FieldError } from "react-hook-form";
-import * as z from "zod";
+import * * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -461,5 +461,7 @@ export default function AiTripPlannerSurveyPage() {
     </div>
   );
 }
+
+    
 
     
