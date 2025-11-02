@@ -85,7 +85,7 @@ export default function AboutPage() {
             </p>
             <Button asChild>
                 <Link href="/list-property">
-                    <span><Building2 className="mr-2 h-4 w-4"/>List Your Property</span>
+                    <Building2 className="mr-2 h-4 w-4"/>List Your Property
                 </Link>
             </Button>
           </section>
