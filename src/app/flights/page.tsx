@@ -33,7 +33,7 @@ const FlightSearchPage = () => {
     const formData = new FormData(event.currentTarget);
     const origin = formData.get('origin');
     const destination = formData.get('destination');
-    const departureDate = formData.get('departure-date');
+    const departureDateValue = formData.get('departure-date');
     const returnDate = formData.get('return-date');
     const passengers = formData.get('passengers');
     const cabinClass = formData.get('cabin-class');
@@ -41,7 +41,7 @@ const FlightSearchPage = () => {
     console.log('Searching for flights with:', {
       origin,
       destination,
-      departureDate,
+      departureDate: departureDateValue,
       returnDate,
       passengers,
       cabinClass,
@@ -94,7 +94,7 @@ const FlightSearchPage = () => {
                     name="departure-date" 
                     value={departureDate}
                     onChange={(e) => setDepartureDate(e.target.value)}
-                    min={format(new Date(), 'yyyy-MM-dd')}
+                    min={departureDate}
                 />
               </div>
               <div>
@@ -123,7 +123,7 @@ const FlightSearchPage = () => {
               </div>
             </div>
             <Button type="submit" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
-              <span><Search className="mr-2 h-4 w-4" />
+              <span className="flex items-center gap-2"><Search className="mr-2 h-4 w-4" />
               {isLoading ? 'Searching...' : 'Search Flights'}</span>
             </Button>
           </form>
