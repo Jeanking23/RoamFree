@@ -60,15 +60,20 @@ export default function BusTrackingPage() {
                 const newDelay = isDelayed ? 15 : 0;
                 
                 // Update ETA based on delay
-                const [hourStr, minuteStr] = prev.initialEta.split(/:| /);
-                const hour = parseInt(hourStr, 10);
-                const minute = parseInt(minuteStr, 10);
-                const isPM = prev.initialEta.toUpperCase().includes('PM');
+                if (prev.initialEta) {
+                    const [hourStr, minuteStr] = prev.initialEta.split(/:| /);
+                    const hour = parseInt(hourStr, 10);
+                    const minute = parseInt(minuteStr, 10);
+                    const isPM = prev.initialEta.toUpperCase().includes('PM');
 
-                let newEtaDate = new Date();
-                newEtaDate.setHours(isPM && hour !== 12 ? hour + 12 : (isPM === false && hour === 12 ? 0 : hour), minute, 0, 0);
-                newEtaDate.setMinutes(newEtaDate.getMinutes() + newDelay);
-                setCurrentEta(newEtaDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+                    let newEtaDate = new Date();
+                    newEtaDate.setHours(isPM && hour !== 12 ? hour + 12 : (isPM === false && hour === 12 ? 0 : hour), minute, 0, 0);
+                    newEtaDate.setMinutes(newEtaDate.getMinutes() + newDelay);
+                    
+                    // This update should be safe as it's inside a client-side effect
+                    setCurrentEta(newEtaDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+                }
+
 
                 return {
                     ...prev,
@@ -80,7 +85,7 @@ export default function BusTrackingPage() {
         }, 3000);
 
         return () => clearInterval(interval);
-    }, [hasMounted, currentEta]);
+    }, [hasMounted, currentEta, mockTrackingData.initialEta]);
 
     const handleContactDriver = () => {
         toast({ title: "Contacting Driver (Demo)", description: "This would open a secure chat with the driver."});

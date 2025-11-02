@@ -41,7 +41,9 @@ export default function AttractionProfilePage() {
 
   useEffect(() => {
     // Set a default visit date for the booking dialog
-    setVisitDate(format(new Date(), 'yyyy-MM-dd'));
+    if (!visitDate) {
+      setVisitDate(format(new Date(), 'yyyy-MM-dd'));
+    }
 
     // Format review dates on the client side to avoid hydration mismatch
     if (attraction?.userReviews) {
@@ -51,7 +53,7 @@ export default function AttractionProfilePage() {
         }, {} as { [key: string]: string });
         setReviewDates(formattedDates);
     }
-  }, [attraction]);
+  }, [attraction, visitDate]);
   
   useEffect(() => {
     // In a real app, this would be the place to fetch data based on params.id if it wasn't pre-loaded
