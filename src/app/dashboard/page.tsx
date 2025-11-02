@@ -185,10 +185,10 @@ function DashboardPage() {
                 <CardTitle>Manage Your Listings</CardTitle>
                 <div className="flex gap-2">
                     <Button asChild size="sm">
-                        <Link href="/list-property"><span><ListPlus className="mr-2 h-4 w-4" /> Add Property/Rental</span></Link>
+                        <Link href="/list-property"><span><ListPlus className="mr-2 h-4 w-4" />Add Property/Rental</span></Link>
                     </Button>
                     <Button asChild size="sm" variant="outline">
-                        <Link href="/cars-for-sale/new"><span><CarFront className="mr-2 h-4 w-4" /> List Car for Sale</span></Link>
+                        <Link href="/cars-for-sale/new"><span><CarFront className="mr-2 h-4 w-4" />List Car for Sale</span></Link>
                     </Button>
                  </div>
               </div>
@@ -209,9 +209,9 @@ function DashboardPage() {
                         }
                       </div>
                       <div className="flex gap-2 mt-2 md:mt-0 flex-shrink-0">
-                        <Button variant="outline" size="sm" onClick={() => toast({title: "View Listing"})}><span><Eye className="mr-1 h-4 w-4" /> View</span></Button>
-                        <Button variant="outline" size="sm" onClick={() => toast({title: "Edit Listing"})}><span><Edit3 className="mr-1 h-4 w-4" /> Edit</span></Button>
-                        <Button variant="destructive" size="sm" onClick={() => handleDeleteListing(listing.id, listing.name)}><span><Trash2 className="mr-1 h-4 w-4" /> Delete</span></Button>
+                        <Button variant="outline" size="sm" onClick={() => toast({title: "View Listing"})}><span><Eye className="mr-1 h-4 w-4" />View</span></Button>
+                        <Button variant="outline" size="sm" onClick={() => toast({title: "Edit Listing"})}><span><Edit3 className="mr-1 h-4 w-4" />Edit</span></Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDeleteListing(listing.id, listing.name)}><span><Trash2 className="mr-1 h-4 w-4" />Delete</span></Button>
                       </div>
                     </Card>
                   ))}

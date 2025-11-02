@@ -460,7 +460,7 @@ const Bedroom = ({ bedroomIndex }: { bedroomIndex: number }) => {
                                 <FormLabel>
                                     <div>Count</div>
                                 </FormLabel>
-                                <FormControl><Input type="number" min="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10) || 1)}/></FormControl>
+                                <FormControl><Input type="number" min="1" {...field} onChange={e => field.onChange(parseInt(e.target.value,10) || 1)}/></FormControl>
                             </FormItem>
                         )}
                     />
@@ -1132,12 +1132,12 @@ export default function ListPropertyPage() {
             {currentStep === 0 ? (
                 <Button variant="outline" asChild>
                     <Link href="/dashboard">
-                        <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
+                        <span><ArrowLeft className="mr-2 h-4 w-4" />Back</span>
                     </Link>
                 </Button>
             ) : (
                 <Button variant="outline" onClick={prevStep}>
-                    <span><ArrowLeft className="mr-2 h-4 w-4"/> Back</span>
+                    <span className="flex items-center gap-2"><ArrowLeft className="h-4 w-4" />Back</span>
                 </Button>
             )}
             {currentStep > 0 && currentStep < listingSteps.length - 1 && (

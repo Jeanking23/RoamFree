@@ -475,7 +475,7 @@ export default function RentHomePage() {
                   <Sheet>
                       <SheetTrigger asChild>
                           <Button type="button" variant="outline" className="h-11 flex-shrink-0">
-                              <span><Filter className="h-4 w-4 mr-0 sm:mr-2" /><span className="hidden sm:inline">Filter</span></span>
+                              <span className="flex items-center"><Filter className="h-4 w-4 mr-0 sm:mr-2" /><span className="hidden sm:inline">Filter</span></span>
                           </Button>
                       </SheetTrigger>
                       <SheetContent>

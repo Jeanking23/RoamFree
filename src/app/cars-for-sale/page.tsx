@@ -244,7 +244,7 @@ export default function CarsForSalePage() {
     resolver: zodResolver(sellCarSchema),
   });
 
-  const handleGetOffer = async (values: SellCarFormValues) => {
+  async function handleGetOffer(values: SellCarFormValues) {
     setIsOfferLoading(true);
     setOfferValue(null);
     console.log("Getting offer for:", values);
@@ -313,7 +313,8 @@ export default function CarsForSalePage() {
                      <Sheet>
                         <SheetTrigger asChild>
                              <Button variant="outline" className="h-11 rounded-full text-sm shrink-0">
-                                <span><Filter className="mr-2 h-4 w-4" />Filter</span>
+                                <Filter className="mr-2 h-4 w-4" />
+                                <span className="hidden sm:inline">Filter</span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent className="w-full sm:max-w-md p-0 flex flex-col">
@@ -395,7 +396,7 @@ export default function CarsForSalePage() {
                     </SelectContent>
                 </Select>
                 <Button variant="ghost" size="sm" onClick={() => toast({title: "Saved!"})} className="shrink-0">
-                    <span><Heart className="mr-2 h-4 w-4"/>Save</span>
+                    <Heart className="mr-2 h-4 w-4"/>Save
                 </Button>
             </div>
             

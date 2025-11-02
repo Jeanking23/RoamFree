@@ -88,7 +88,7 @@ export default function BusTransportationSearchForm() {
                     <FormField control={form.control} name="returnDate" render={({ field }) => ( <FormItem className="flex flex-col"> <FormLabel>Return Date</FormLabel> <Popover> <PopoverTrigger asChild> <FormControl> <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}> {field.value ? format(field.value, "PPP") : <span>Pick a date</span>} </Button> </FormControl> </PopoverTrigger> <PopoverContent className="w-auto p-0" align="start"> <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < (form.getValues("departureDate") || new Date(new Date().setHours(0,0,0,0)))} initialFocus /> </PopoverContent> </Popover> <FormMessage /> </FormItem> )}/>
                 )}
                 <Button type="submit" size="lg" className="w-full">
-                    <span><Search className="mr-2 h-5 w-5" /> Search Buses</span>
+                    <span className="flex items-center gap-2"><Search className="h-5 w-5" />Search Buses</span>
                 </Button>
             </form>
         </Form>
