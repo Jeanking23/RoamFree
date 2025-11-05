@@ -175,7 +175,7 @@ export default function ContactSupportPage() {
                     )}
                   />
                   <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                    Send Message
+                    <span>Send Message</span>
                   </Button>
                 </form>
               </Form>
@@ -255,7 +255,7 @@ export default function ContactSupportPage() {
                   </h3>
                   <p className="text-muted-foreground">Learn about our security measures, including Blockchain verification for property (Future Feature) and cultural travel advisories.</p>
                   <Button variant="link" className="mt-1 px-0" asChild>
-                    <Link href="/trust-safety-demo">Learn More (Demo)</Link>
+                    <Link href="/trust-safety-demo"><span>Learn More (Demo)</span></Link>
                   </Button>
                 </div>
               </div>
