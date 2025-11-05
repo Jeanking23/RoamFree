@@ -292,7 +292,7 @@ export default function CarsForSalePage() {
           <div className="mb-8 p-4 border rounded-lg bg-muted/30">
             <Tabs defaultValue="search" className="w-full">
               <TabsList className="mb-4 bg-transparent p-0 h-auto">
-                <TabsTrigger value="search" className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2"><Search className="mr-2 h-4 w-4"/>Search</TabsTrigger>
+                <TabsTrigger value="search" className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2"><span className="flex items-center gap-2"><Search className="h-4 w-4"/>Search</span></TabsTrigger>
                 <TabsTrigger value="sell_trade" className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Sell/Trade</TabsTrigger>
                 <TabsTrigger value="financing" onClick={() => toast({title: "Feature Coming Soon"})} className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Financing</TabsTrigger>
               </TabsList>
@@ -313,8 +313,8 @@ export default function CarsForSalePage() {
                      <Sheet>
                         <SheetTrigger asChild>
                              <Button variant="outline" className="h-11 rounded-full text-sm shrink-0">
-                                <Filter className="mr-2 h-4 w-4" />
-                                <span className="hidden sm:inline">Filter</span>
+                                <span className="flex items-center gap-2"><Filter className="h-4 w-4" />
+                                <span className="hidden sm:inline">Filter</span></span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent className="w-full sm:max-w-md p-0 flex flex-col">

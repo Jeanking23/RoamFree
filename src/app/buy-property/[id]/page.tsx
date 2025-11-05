@@ -229,10 +229,10 @@ export default function SalePropertyProfilePage() {
             </div>
           )}
           <div className="flex flex-wrap gap-2 justify-center mt-4">
-             <Button variant="outline" onClick={() => handleMediaTool("Virtual Walkthrough", property.name)}><TvIcon className="mr-2 h-4 w-4" /> Virtual Walkthrough</Button>
-             <Button variant="outline" onClick={() => handleMediaTool("Drone View", property.name)}><Plane className="mr-2 h-4 w-4" /> Drone View</Button>
-             <Button variant="outline" onClick={() => handleMediaTool("3D Floor Plan", property.name)}><Contact className="mr-2 h-4 w-4" /> 3D Floor Plan</Button>
-             {property.propertyType === "Land" && <Button variant="outline" onClick={() => handleMediaTool("Plot Map View", property.name)}><MapPin className="mr-2 h-4 w-4"/>Plot Map View</Button>}
+             <Button variant="outline" onClick={() => handleMediaTool("Virtual Walkthrough", property.name)}><span><TvIcon className="mr-2 h-4 w-4" /> Virtual Walkthrough</span></Button>
+             <Button variant="outline" onClick={() => handleMediaTool("Drone View", property.name)}><span><Plane className="mr-2 h-4 w-4" /> Drone View</span></Button>
+             <Button variant="outline" onClick={() => handleMediaTool("3D Floor Plan", property.name)}><span><Contact className="mr-2 h-4 w-4" /> 3D Floor Plan</span></Button>
+             {property.propertyType === "Land" && <Button variant="outline" onClick={() => handleMediaTool("Plot Map View", property.name)}><span><MapPin className="mr-2 h-4 w-4"/>Plot Map View</span></Button>}
           </div>
         </CardContent>
         
@@ -274,7 +274,7 @@ export default function SalePropertyProfilePage() {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5"/>Legal & Documents</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5"/>Legal &amp; Documents</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                     <p><strong>Title Deed:</strong> <Button variant="link" size="sm" className="px-0 h-auto">View Document (Uploaded)</Button></p>
@@ -292,7 +292,7 @@ export default function SalePropertyProfilePage() {
                    <Image src={property.host.avatar} alt={property.host.name} width={60} height={60} className="rounded-full" data-ai-hint={property.host.dataAiHint} />
                    <div>
                      <p className="font-semibold">{property.host.name}</p>
-                     <Button variant="outline" size="sm" className="mt-1" onClick={handleContactAgent}><MessageSquare className="mr-2 h-4 w-4"/>Message</Button>
+                     <Button variant="outline" size="sm" className="mt-1" onClick={handleContactAgent}><span><MessageSquare className="mr-2 h-4 w-4"/>Message</span></Button>
                    </div>
                 </CardContent>
               </Card>
@@ -310,7 +310,7 @@ export default function SalePropertyProfilePage() {
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button variant="accent" size="lg" className="w-full">
-                            <DollarSign className="mr-2 h-5 w-5" /> Make an Offer
+                            <span><DollarSign className="mr-2 h-5 w-5" /> Make an Offer</span>
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
@@ -337,7 +337,7 @@ export default function SalePropertyProfilePage() {
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button variant="outline" className="w-full">
-                          <CalendarDays className="mr-2 h-4 w-4" /> Schedule Viewing
+                          <span><CalendarDays className="mr-2 h-4 w-4" /> Schedule Viewing</span>
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
@@ -361,7 +361,7 @@ export default function SalePropertyProfilePage() {
                     </DialogContent>
                 </Dialog>
                 <Button variant="outline" className="w-full" onClick={() => toast({title: "Video Call Agent", description: "Initiating virtual consultation with agent."})}>
-                  <Video className="mr-2 h-4 w-4" /> Video Call Agent
+                  <span><Video className="mr-2 h-4 w-4" /> Video Call Agent</span>
                 </Button>
                  <p className="text-xs text-muted-foreground text-center">Secure Escrow Payment Available</p>
               </CardContent>
@@ -376,7 +376,7 @@ export default function SalePropertyProfilePage() {
                    <div>
                      <p className="font-semibold">{property.host.name}</p>
                      <p className="text-xs text-muted-foreground">Rating: {property.rating}/5</p>
-                     <Button variant="outline" size="sm" className="mt-1" onClick={handleContactAgent}><MessageSquare className="mr-2 h-4 w-4"/>Message</Button>
+                     <Button variant="outline" size="sm" className="mt-1" onClick={handleContactAgent}><span><MessageSquare className="mr-2 h-4 w-4"/>Message</span></Button>
                    </div>
                 </CardContent>
               </Card>
