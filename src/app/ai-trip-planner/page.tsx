@@ -4,7 +4,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type FieldError } from "react-hook-form";
-import * * as z from "zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -333,20 +333,18 @@ export default function AiTripPlannerSurveyPage() {
 
                 <div className="flex gap-4 justify-between pt-4">
                   <Button type="button" variant="outline" onClick={prevStep} disabled={currentStep === 0}>
-                    <span>
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                    </span>
+                    <span className="flex items-center gap-2"><ArrowLeft className="h-4 w-4" /> Back</span>
                   </Button>
                   
                   {currentStep < formSteps.length - 1 && (
                      <Button type="button" onClick={nextStep}>
-                        <span>Next <ArrowRight className="ml-2 h-4 w-4" /></span>
+                        <span className="flex items-center gap-2">Next <ArrowRight className="h-4 w-4" /></span>
                     </Button>
                   )}
 
                   {currentStep === formSteps.length - 1 && (
                      <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-                        <span><Wand2 className="mr-2 h-5 w-5" />Generate My Trip Plan</span>
+                        <span className="flex items-center gap-2"><Wand2 className="h-5 w-5" />Generate My Trip Plan</span>
                     </Button>
                   )}
                 </div>
@@ -420,7 +418,7 @@ export default function AiTripPlannerSurveyPage() {
                             </CardContent>
                              <CardFooter>
                                 <Button className="w-full" onClick={handleBookStay}>
-                                    <span><BedDouble className="mr-2 h-4 w-4"/>Book this Stay</span>
+                                    <span className="flex items-center gap-2"><BedDouble className="h-4 w-4"/>Book this Stay</span>
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -429,7 +427,7 @@ export default function AiTripPlannerSurveyPage() {
                             <CardContent><p className="text-sm">{tripPlan.transportSuggestion}</p></CardContent>
                             <CardFooter>
                                 <Button className="w-full" onClick={handleArrangeTransport}>
-                                    <span><Car className="mr-2 h-4 w-4"/>Arrange Transport</span>
+                                    <span className="flex items-center gap-2"><Car className="h-4 w-4"/>Arrange Transport</span>
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -452,7 +450,7 @@ export default function AiTripPlannerSurveyPage() {
                     )}
 
                      <Button variant="link" onClick={() => setTripPlan(null)}>
-                        <span><ArrowLeft className="mr-2 h-4 w-4" /> Start Over</span>
+                        <span className="flex items-center gap-2"><ArrowLeft className="mr-2 h-4 w-4" /> Start Over</span>
                     </Button>
                 </motion.div>
             )}
@@ -461,6 +459,8 @@ export default function AiTripPlannerSurveyPage() {
     </div>
   );
 }
+
+    
 
     
 
