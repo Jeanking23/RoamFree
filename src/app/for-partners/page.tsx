@@ -169,8 +169,8 @@ export default function ForPartnersPage() {
             </CardHeader>
             <CardContent className="space-y-4">
                <Button variant="outline" className="w-full">
-                    <GoogleIcon className="mr-2 h-5 w-5" />
-                    Sign up with Google
+                    <span><GoogleIcon className="mr-2 h-5 w-5" />
+                    Sign up with Google</span>
                 </Button>
                 <div className="relative">
                     <div className="absolute inset-0 flex items-center">
