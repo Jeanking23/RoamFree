@@ -131,10 +131,12 @@ function ForgotPasswordDialog({ onOpenChange }: { onOpenChange: (open: boolean) 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
+    setHasMounted(true);
     const slideshowTimer = setInterval(() => {
       setCurrentImageIndex(prevIndex => (prevIndex + 1) % slideshowImages.length);
     }, 5000);
@@ -248,14 +250,16 @@ export default function SignInPage() {
                   <FormItem>
                      <div className="flex justify-between items-center">
                         <FormLabel>Password</FormLabel>
-                        <Dialog open={isForgotPasswordOpen} onOpenChange={setIsForgotPasswordOpen}>
-                          <DialogTrigger asChild>
-                             <button type="button" className="text-xs text-primary hover:underline">
-                                Forgot password?
-                             </button>
-                          </DialogTrigger>
-                          <ForgotPasswordDialog onOpenChange={setIsForgotPasswordOpen} />
-                        </Dialog>
+                        {hasMounted && (
+                          <Dialog open={isForgotPasswordOpen} onOpenChange={setIsForgotPasswordOpen}>
+                            <DialogTrigger asChild>
+                              <button type="button" className="text-xs text-primary hover:underline">
+                                  Forgot password?
+                              </button>
+                            </DialogTrigger>
+                            <ForgotPasswordDialog onOpenChange={setIsForgotPasswordOpen} />
+                          </Dialog>
+                        )}
                     </div>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" icon={<Lock className="h-4 w-4 text-muted-foreground" />} {...field} />

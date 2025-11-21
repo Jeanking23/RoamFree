@@ -1,7 +1,7 @@
 // src/app/cars-for-sale/new/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -206,13 +206,13 @@ const DetailsStep = () => {
       <CardContent className="p-0 pt-8 space-y-6">
         <FormField control={control} name="mileage" render={({ field }) => (<FormItem><FormLabel>Mileage</FormLabel><FormControl><Input type="number" placeholder="45000" {...field}/></FormControl><FormMessage/></FormItem>)}/>
          <div className="grid md:grid-cols-3 gap-4">
-            <FormField control={control} name="engine" render={({ field }) => (<FormItem><FormLabel><div><div className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Engine</div></div></FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Engine Type"/></SelectTrigger></FormControl><SelectContent><SelectItem value="4-Cylinder">4-Cylinder</SelectItem><SelectItem value="6-Cylinder">6-Cylinder</SelectItem><SelectItem value="8-Cylinder">8-Cylinder</SelectItem><SelectItem value="Electric">Electric</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
-            <FormField control={control} name="transmission" render={({ field }) => (<FormItem><FormLabel><div><div className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Transmission</div></div></FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Transmission"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Automatic">Automatic</SelectItem><SelectItem value="Manual">Manual</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
-            <FormField control={control} name="fuelType" render={({ field }) => (<FormItem><FormLabel><div><div className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Type</div></div></FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Fuel Type"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Gasoline">Gasoline</SelectItem><SelectItem value="Diesel">Diesel</SelectItem><SelectItem value="Electric">Electric</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
+            <FormField control={control} name="engine" render={({ field }) => (<FormItem><FormLabel><div><span className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Engine</span></div></FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Engine Type"/></SelectTrigger></FormControl><SelectContent><SelectItem value="4-Cylinder">4-Cylinder</SelectItem><SelectItem value="6-Cylinder">6-Cylinder</SelectItem><SelectItem value="8-Cylinder">8-Cylinder</SelectItem><SelectItem value="Electric">Electric</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
+            <FormField control={control} name="transmission" render={({ field }) => (<FormItem><FormLabel><div><span className="flex items-center gap-1"><Settings2 className="h-4 w-4"/>Transmission</span></div></FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Transmission"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Automatic">Automatic</SelectItem><SelectItem value="Manual">Manual</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
+            <FormField control={control} name="fuelType" render={({ field }) => (<FormItem><FormLabel><div><span className="flex items-center gap-1"><Droplets className="h-4 w-4"/>Fuel Type</span></div></FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Fuel Type"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Gasoline">Gasoline</SelectItem><SelectItem value="Diesel">Diesel</SelectItem><SelectItem value="Electric">Electric</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem></SelectContent></Select><FormMessage/></FormItem>)}/>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-            <FormField control={control} name="exteriorColor" render={({ field }) => (<FormItem><FormLabel><div><div className="flex items-center gap-1"><Palette className="h-4 w-4"/>Exterior Color</div></div></FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a color"/></SelectTrigger></FormControl><SelectContent>{carColors.map(color => <SelectItem key={`ext-${color}`} value={color}>{color}</SelectItem>)}</SelectContent></Select><FormMessage/></FormItem>)}/>
-            <FormField control={control} name="interiorColor" render={({ field }) => (<FormItem><FormLabel><div><div className="flex items-center gap-1"><Palette className="h-4 w-4"/>Interior Color</div></div></FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a color"/></SelectTrigger></FormControl><SelectContent>{carColors.map(color => <SelectItem key={`int-${color}`} value={color}>{color}</SelectItem>)}</SelectContent></Select><FormMessage/></FormItem>)}/>
+            <FormField control={control} name="exteriorColor" render={({ field }) => (<FormItem><FormLabel><div><span className="flex items-center gap-1"><Palette className="h-4 w-4"/>Exterior Color</span></div></FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a color"/></SelectTrigger></FormControl><SelectContent>{carColors.map(color => <SelectItem key={`ext-${color}`} value={color}>{color}</SelectItem>)}</SelectContent></Select><FormMessage/></FormItem>)}/>
+            <FormField control={control} name="interiorColor" render={({ field }) => (<FormItem><FormLabel><div><span className="flex items-center gap-1"><Palette className="h-4 w-4"/>Interior Color</span></div></FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a color"/></SelectTrigger></FormControl><SelectContent>{carColors.map(color => <SelectItem key={`int-${color}`} value={color}>{color}</SelectItem>)}</SelectContent></Select><FormMessage/></FormItem>)}/>
         </div>
         {listingType === 'FOR_RENT' && (
              <FormField control={control} name="fuelPolicy" render={({ field }) => (
@@ -259,6 +259,7 @@ const DetailsStep = () => {
 export default function ListCarPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [hasMounted, setHasMounted] = useState(false);
   const router = useRouter();
 
   const methods = useForm<CarForSaleFormValues>({
@@ -271,6 +272,10 @@ export default function ListCarPage() {
   });
   const [featureInput, setFeatureInput] = useState("");
   const listingType = methods.watch("listingType");
+  
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -369,10 +374,12 @@ export default function ListCarPage() {
                             <FormField control={methods.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the vehicle's features, condition, and history." rows={5} {...field}/></FormControl><FormMessage/></FormItem>)}/>
                             <FormItem>
                                 <FormLabel>Key Features</FormLabel>
+                                {hasMounted &&
                                 <div className="flex gap-2">
                                     <Input value={featureInput} onChange={(e) => setFeatureInput(e.target.value)} placeholder="e.g., Rearview Camera, Bluetooth" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddFeature(); } }}/>
                                     <Button type="button" onClick={handleAddFeature}>Add</Button>
                                 </div>
+                                }
                                 <div className="mt-2 space-y-2">
                                     {features.map((field, index) => (
                                         <div key={field.id} className="flex items-center justify-between p-2 bg-muted rounded-md text-sm">
@@ -393,7 +400,7 @@ export default function ListCarPage() {
                         </CardHeader>
                          <CardContent className="p-0 pt-8">
                              <FormItem>
-                                <FormLabel><div><div className="flex items-center gap-2"><UploadCloud className="h-5 w-5 text-primary"/>Photos</div></div></FormLabel>
+                                <FormLabel><div><span className="flex items-center gap-2"><UploadCloud className="h-5 w-5 text-primary"/>Photos</span></div></FormLabel>
                                 <FormControl><Input type="file" accept="image/*" multiple onChange={handlePhotoUpload} /></FormControl>
                                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
                                     {photoPreviews.map((src, index) => (
