@@ -81,7 +81,7 @@ export default function AttractionsPage() {
                 </div>
               </div>
               <Button onClick={handleArDiscovery} variant="outline" className="w-full md:w-auto self-end">
-                <span><Camera className="mr-2 h-4 w-4" /> Try AR Discovery Mode</span>
+                <span><Camera className="mr-2 h-4 w-4" />Try AR Discovery Mode</span>
               </Button>
             </div>
             <div>
