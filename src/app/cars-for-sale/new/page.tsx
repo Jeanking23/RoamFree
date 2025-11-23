@@ -1,7 +1,8 @@
+
 // src/app/cars-for-sale/new/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -455,7 +456,7 @@ export default function ListCarPage() {
             {currentStep === 0 ? (
                 <Button variant="outline" asChild>
                     <Link href="/list-property">
-                        <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
+                       <span><ArrowLeft className="mr-2 h-4 w-4" /> Back</span>
                     </Link>
                 </Button>
             ) : (
