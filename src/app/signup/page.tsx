@@ -228,8 +228,10 @@ export default function SignUpPage() {
                 )}
               />
               <Button type="submit" disabled={isLoading} className="w-full">
-                <span><UserPlus className="mr-2 h-4 w-4" />
-                {isLoading ? 'Creating Account...' : 'Create Account'}</span>
+                <span className="flex items-center gap-2">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  {isLoading ? 'Creating Account...' : 'Create Account'}
+                </span>
               </Button>
             </form>
           </Form>
