@@ -269,7 +269,7 @@ export default function SignInPage() {
                 )}
               />
               <Button type="submit" disabled={isLoading} className="w-full">
-                <span><LogIn className="mr-2 h-4 w-4" />
+                <span className="flex items-center gap-2"><LogIn className="mr-2 h-4 w-4" />
                 {isLoading ? 'Signing In...' : 'Sign In'}</span>
               </Button>
             </form>
