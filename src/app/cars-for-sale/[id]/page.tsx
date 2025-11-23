@@ -151,7 +151,7 @@ export default function CarSaleProfilePage() {
                   alt={currentImage.alt}
                   fill
                   className="object-cover transition-transform duration-500 ease-in-out"
-                  dataAiHint={currentImage.dataAiHint}
+                  data-ai-hint={currentImage.dataAiHint}
                 />
               )}
             </div>
@@ -184,7 +184,7 @@ export default function CarSaleProfilePage() {
                 height={60}
                 className={`rounded object-cover cursor-pointer transition-all ${currentImageIndex === index ? 'ring-2 ring-primary scale-105' : 'opacity-70 hover:opacity-100'}`}
                 onClick={() => setCurrentImageIndex(index)}
-                dataAiHint={photo.dataAiHint}
+                data-ai-hint={photo.dataAiHint}
               />
             ))}
           </div>
@@ -279,7 +279,7 @@ export default function CarSaleProfilePage() {
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button variant="outline" className="w-full">
-                            <CarFront className="mr-2 h-4 w-4" /> Request Test Drive
+                            <span><CarFront className="mr-2 h-4 w-4" /> Request Test Drive</span>
                         </Button>
                     </DialogTrigger>
                      <DialogContent>
