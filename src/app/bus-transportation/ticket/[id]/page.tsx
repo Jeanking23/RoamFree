@@ -1,10 +1,11 @@
+
 // src/app/bus-transportation/ticket/[id]/page.tsx
 'use client';
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from "@/components/ui/button";
-import { TicketIcon, User, MapPin, Clock, BusIcon, QrCode, Download, Share2, ArrowLeft, Save, ArrowRight } from 'lucide-react';
+import { TicketIcon, User, MapPin, Clock, BusIcon, QrCode, Download, Share2, ArrowLeft, Save, ArrowRight, Navigation } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -213,7 +214,7 @@ export default function BusTicketPage() {
                         <Button variant="outline" onClick={handleSaveToBookings}><Save className="mr-2 h-4 w-4"/> Save</Button>
                         <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
                             <Link href={`/bus-transportation/tracking/${bookingId}?routeId=${routeId}`}>
-                                <span>Track Bus</span>
+                                <span><Navigation className="mr-2 h-4 w-4"/>Track Bus</span>
                             </Link>
                         </Button>
                     </div>
