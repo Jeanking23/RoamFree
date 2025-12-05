@@ -212,7 +212,7 @@ export default function AiTripPlannerSurveyPage() {
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(step => step - 1);
+      setCurrentStep(step => step + 1);
     }
   };
 
@@ -450,7 +450,7 @@ export default function AiTripPlannerSurveyPage() {
                     )}
 
                      <Button variant="link" onClick={() => setTripPlan(null)}>
-                        <span className="flex items-center gap-2"><ArrowLeft className="mr-2 h-4 w-4" /> Start Over</span>
+                        <span className="flex items-center gap-2"><ArrowLeft className="h-4 w-4" /> Start Over</span>
                     </Button>
                 </motion.div>
             )}
@@ -467,4 +467,5 @@ export default function AiTripPlannerSurveyPage() {
     
 
     
+
 

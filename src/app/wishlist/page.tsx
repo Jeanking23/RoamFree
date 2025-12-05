@@ -124,7 +124,7 @@ export default function WishlistPage() {
             <>
               <div className="mb-6 flex justify-end">
                 <Button onClick={handleCompareSelected} disabled={selectedToCompare.length < 2} className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                  <span><GitCompareArrows className="mr-2 h-4 w-4" /> Compare Selected ({selectedToCompare.length})</span>
+                  <span className="flex items-center gap-2"><GitCompareArrows className="h-4 w-4" /> Compare Selected ({selectedToCompare.length})</span>
                 </Button>
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -164,7 +164,7 @@ export default function WishlistPage() {
                         </label>
                         </div>
                       <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive/80" onClick={() => handleRemoveFromWishlist(item.id)}>
-                        <span><Trash2 className="mr-2 h-4 w-4" /> Remove</span>
+                        <span className="flex items-center gap-2"><Trash2 className="h-4 w-4" /> Remove</span>
                       </Button>
                     </CardFooter>
                   </Card>
