@@ -152,7 +152,7 @@ export default function SignUpPage() {
         </CardHeader>
         <CardContent>
           <Button variant="outline" className="w-full mb-6" onClick={handleGoogleSignIn} disabled={isLoading}>
-              <span><GoogleIcon className="mr-2 h-5 w-5" />
+              <span className="flex items-center gap-2"><GoogleIcon className="h-5 w-5" />
               Sign up with Google</span>
           </Button>
           <div className="relative mb-6">
@@ -229,7 +229,7 @@ export default function SignUpPage() {
               />
               <Button type="submit" disabled={isLoading} className="w-full">
                 <span className="flex items-center gap-2">
-                  <UserPlus className="mr-2 h-4 w-4" />
+                  <UserPlus className="h-4 w-4" />
                   {isLoading ? 'Creating Account...' : 'Create Account'}
                 </span>
               </Button>
@@ -248,5 +248,3 @@ export default function SignUpPage() {
     </div>
   );
 }
-
-    

@@ -29,7 +29,7 @@ export default function OurMissionPage() {
              <div className="mt-6">
                  <Button asChild>
                     <Link href="/about">
-                       <span><Globe className="mr-2 h-4 w-4"/> About RoamFree</span>
+                       <span className="flex items-center gap-2"><Globe className="mr-2 h-4 w-4"/> About RoamFree</span>
                     </Link>
                 </Button>
             </div>
@@ -39,5 +39,3 @@ export default function OurMissionPage() {
     </div>
   );
 }
-
-    

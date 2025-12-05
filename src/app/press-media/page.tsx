@@ -29,7 +29,7 @@ export default function PressMediaPage() {
              <div className="mt-6">
                  <Button asChild>
                     <Link href="/contact-support">
-                       <span><Mail className="mr-2 h-4 w-4"/> Contact Us</span>
+                       <span className="flex items-center gap-2"><Mail className="mr-2 h-4 w-4"/> Contact Us</span>
                     </Link>
                 </Button>
             </div>
@@ -39,5 +39,3 @@ export default function PressMediaPage() {
     </div>
   );
 }
-
-    

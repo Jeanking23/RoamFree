@@ -217,7 +217,7 @@ export default function SignInPage() {
         </CardHeader>
         <CardContent>
            <Button variant="outline" className="w-full mb-6" onClick={handleGoogleSignIn} disabled={isLoading}>
-                <span><GoogleIcon className="mr-2 h-5 w-5" />
+                <span className="flex items-center gap-2"><GoogleIcon className="h-5 w-5" />
                 Sign in with Google</span>
             </Button>
             <div className="relative mb-6">
@@ -269,7 +269,7 @@ export default function SignInPage() {
                 )}
               />
               <Button type="submit" disabled={isLoading} className="w-full">
-                <span className="flex items-center gap-2"><LogIn className="mr-2 h-4 w-4" />
+                <span className="flex items-center gap-2"><LogIn className="h-4 w-4" />
                 {isLoading ? 'Signing In...' : 'Sign In'}</span>
               </Button>
             </form>
@@ -287,5 +287,3 @@ export default function SignInPage() {
     </div>
   );
 }
-
-    

@@ -116,7 +116,7 @@ export default function WishlistPage() {
               <p className="text-muted-foreground mb-4">Start exploring and save items you love!</p>
               <Button asChild>
                 <Link href="/">
-                  <span><Search className="mr-2 h-4 w-4" /> Explore RoamFree</span>
+                  <span className="flex items-center gap-2"><Search className="mr-2 h-4 w-4" /> Explore RoamFree</span>
                 </Link>
               </Button>
             </div>
