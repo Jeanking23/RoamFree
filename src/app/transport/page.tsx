@@ -733,9 +733,9 @@ export default function TransportPage() {
                         </AnimatePresence>
 
                         <div className="p-1">
-                            <Button className="w-full" onClick={handleSearch}>
-                                <span><Search className="mr-2 h-4 w-4" />Search Rides</span>
-                            </Button>
+                          <Button className="w-full" onClick={handleSearch}>
+                            <span><Search className="mr-2 h-4 w-4" />Search Rides</span>
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
