@@ -414,8 +414,8 @@ export default function BusTransportationPage() {
                   name="originCity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel><span><MapPin className="h-4 w-4 text-primary inline-block mr-1" />Origin City</span></FormLabel>
-                      <FormControl><Input placeholder="e.g., Douala" {...field} value={field.value || ''} /></FormControl>
+                      <FormLabel>&lt;span&gt;&lt;MapPin className="h-4 w-4 text-primary inline-block mr-1" /&gt;Origin City&lt;/span&gt;</FormLabel>
+                      <FormControl>&lt;Input placeholder="e.g., Douala" {...field} value={field.value || ''} /&gt;</FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -425,8 +425,8 @@ export default function BusTransportationPage() {
                   name="destinationCity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel><span><MapPin className="h-4 w-4 text-primary inline-block mr-1" />Destination City</span></FormLabel>
-                      <FormControl><Input placeholder="e.g., Yaoundé" {...field} value={field.value || ''} /></FormControl>
+                      <FormLabel>&lt;span&gt;&lt;MapPin className="h-4 w-4 text-primary inline-block mr-1" /&gt;Destination City&lt;/span&gt;</FormLabel>
+                      <FormControl>&lt;Input placeholder="e.g., Yaoundé" {...field} value={field.value || ''} /&gt;</FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -438,7 +438,7 @@ export default function BusTransportationPage() {
                   name="departureDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel><span><CalendarIcon className="h-4 w-4 text-primary inline-block mr-1" />Departure Date</span></FormLabel>
+                      <FormLabel>&lt;span&gt;&lt;CalendarIcon className="h-4 w-4 text-primary inline-block mr-1" /&gt;Departure Date&lt;/span&gt;</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -446,12 +446,12 @@ export default function BusTransportationPage() {
                               variant={"outline"}
                               className={cn("w-full justify-start text-left font-normal",!field.value && "text-muted-foreground")}
                             >
-                              {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                              {field.value ? format(field.value, "PPP") : &lt;span&gt;Pick a date&lt;/span&gt;}
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus/>
+                          &lt;Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date &lt; new Date(new Date().setHours(0,0,0,0))} initialFocus/&gt;
                         </PopoverContent>
                       </Popover>
                       <FormMessage />
@@ -469,12 +469,12 @@ export default function BusTransportationPage() {
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>
-                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                {field.value ? format(field.value, "PPP") : &lt;span&gt;Pick a date&lt;/span&gt;}
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < (form.getValues("departureDate") || new Date(new Date().setHours(0,0,0,0)))} initialFocus />
+                            &lt;Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date &lt; (form.getValues("departureDate") || new Date(new Date().setHours(0,0,0,0)))} initialFocus /&gt;
                           </PopoverContent>
                         </Popover>
                         <FormMessage />
@@ -487,8 +487,8 @@ export default function BusTransportationPage() {
                   name="passengers"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel><span><Users className="h-4 w-4 text-primary inline-block mr-1" />Passengers</span></FormLabel>
-                      <FormControl><Input type="number" min="1" max="20" placeholder="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))} value={field.value || 1} /></FormControl>
+                      <FormLabel>&lt;span&gt;&lt;Users className="h-4 w-4 text-primary inline-block mr-1" /&gt;Passengers&lt;/span&gt;</FormLabel>
+                      <FormControl>&lt;Input type="number" min="1" max="20" placeholder="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))} value={field.value || 1} /&gt;</FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -499,9 +499,9 @@ export default function BusTransportationPage() {
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center space-x-2 space-y-0 pb-1.5">
                         <FormControl>
-                          <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                          &lt;Checkbox checked={field.value} onCheckedChange={field.onChange} /&gt;
                         </FormControl>
-                        <FormLabel className="font-normal"><span><Repeat className="h-4 w-4 inline-block mr-1" />Round Trip</span></FormLabel>
+                        <FormLabel className="font-normal">&lt;span&gt;&lt;Repeat className="h-4 w-4 inline-block mr-1" /&gt;Round Trip&lt;/span&gt;</FormLabel>
                       </FormItem>
                     )}
                   />
@@ -511,15 +511,15 @@ export default function BusTransportationPage() {
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-2 p-4 border rounded-md">
                   <FormField
                     control={form.control} name="hasAC"
-                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><span><Snowflake className="h-4 w-4 text-blue-500 inline-block mr-1" />Air Conditioned</span></FormLabel></FormItem>)}
+                    render={({ field }) => (&lt;FormItem className="flex flex-row items-center space-x-2 space-y-0"&gt;&lt;FormControl&gt;&lt;Checkbox checked={field.value} onCheckedChange={field.onChange} /&gt;&lt;/FormControl&gt;&lt;FormLabel className="font-normal"&gt;&lt;span&gt;&lt;Snowflake className="h-4 w-4 text-blue-500 inline-block mr-1" /&gt;Air Conditioned&lt;/span&gt;&lt;/FormLabel&gt;&lt;/FormItem&gt;)}
                   />
                   <FormField
                     control={form.control} name="hasWifi"
-                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><span><Wifi className="h-4 w-4 text-sky-500 inline-block mr-1" />WiFi Onboard</span></FormLabel></FormItem>)}
+                    render={({ field }) => (&lt;FormItem className="flex flex-row items-center space-x-2 space-y-0"&gt;&lt;FormControl&gt;&lt;Checkbox checked={field.value} onCheckedChange={field.onChange} /&gt;&lt;/FormControl&gt;&lt;FormLabel className="font-normal"&gt;&lt;span&gt;&lt;Wifi className="h-4 w-4 text-sky-500 inline-block mr-1" /&gt;WiFi Onboard&lt;/span&gt;&lt;/FormLabel&gt;&lt;/FormItem&gt;)}
                   />
                   <FormField
                     control={form.control} name="hasUsb"
-                    render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="font-normal"><span><Power className="h-4 w-4 text-yellow-500 inline-block mr-1" />USB Charging</span></FormLabel></FormItem>)}
+                    render={({ field }) => (&lt;FormItem className="flex flex-row items-center space-x-2 space-y-0"&gt;&lt;FormControl&gt;&lt;Checkbox checked={field.value} onCheckedChange={field.onChange} /&gt;&lt;/FormControl&gt;&lt;FormLabel className="font-normal"&gt;&lt;span&gt;&lt;Power className="h-4 w-4 text-yellow-500 inline-block mr-1" /&gt;USB Charging&lt;/span&gt;&lt;/FormLabel&gt;&lt;/FormItem&gt;)}
                   />
                   <FormField
                     control={form.control} name="tripType"
@@ -532,9 +532,9 @@ export default function BusTransportationPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="ANY"><span><Sun className="inline h-4 w-4 mr-1" /><Moon className="inline h-4 w-4 mr-1" />Any Trip Type</span></SelectItem>
-                            <SelectItem value="DAY"><span><Sun className="inline h-4 w-4 mr-1" />Day Trip</span></SelectItem>
-                            <SelectItem value="OVERNIGHT"><span><Moon className="inline h-4 w-4 mr-1" />Overnight Trip</span></SelectItem>
+                            <SelectItem value="ANY">&lt;span&gt;&lt;Sun className="inline h-4 w-4 mr-1" /&gt;&lt;Moon className="inline h-4 w-4 mr-1" /&gt;Any Trip Type&lt;/span&gt;</SelectItem>
+                            <SelectItem value="DAY">&lt;span&gt;&lt;Sun className="inline h-4 w-4 mr-1" /&gt;Day Trip&lt;/span&gt;</SelectItem>
+                            <SelectItem value="OVERNIGHT">&lt;span&gt;&lt;Moon className="inline h-4 w-4 mr-1" /&gt;Overnight Trip&lt;/span&gt;</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormItem>
@@ -543,7 +543,7 @@ export default function BusTransportationPage() {
                 </div>
               </div>
               <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-                <span className="flex items-center gap-2"><Search className="h-5 w-5" />{isLoading ? "Searching Buses..." : "Search Buses"}</span>
+                &lt;span className="flex items-center gap-2"&gt;&lt;Search className="h-5 w-5" /&gt;{isLoading ? "Searching Buses..." : "Search Buses"}&lt;/span&gt;
               </Button>
             </form>
           </Form>
@@ -560,10 +560,10 @@ export default function BusTransportationPage() {
       {departureTrip && isRoundTrip && (
           <Card className="mt-8 border-primary">
               <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-primary"><ArrowRight className="h-5 w-5"/>Departure Trip Selected</CardTitle>
+                  <CardTitle className="flex items-center gap-2 text-primary">&lt;ArrowRight className="h-5 w-5"/&gt;Departure Trip Selected</CardTitle>
               </CardHeader>
               <CardContent>
-                  <p><strong>{departureTrip.route.operator}</strong> from {departureTrip.route.departureStation} at {departureTrip.route.departureTime}</p>
+                  <p>&lt;strong&gt;{departureTrip.route.operator}&lt;/strong&gt; from {departureTrip.route.departureStation} at {departureTrip.route.departureTime}</p>
                   <p>Seats: {departureTrip.seats.join(', ')}</p>
               </CardContent>
           </Card>
@@ -578,11 +578,11 @@ export default function BusTransportationPage() {
             <Card key={route.id} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
               <div className="grid md:grid-cols-12 gap-4 p-4 items-stretch">
                 <div className="md:col-span-2 flex flex-col items-center justify-center text-center">
-                   {route.operatorLogo && <Image src={route.operatorLogo} alt={`${route.operator} logo`} width={100} height={50} className="object-contain mb-1" data-ai-hint={route.dataAiHint || "bus company logo"} />}
+                   {route.operatorLogo && &lt;Image src={route.operatorLogo} alt={`${route.operator} logo`} width={100} height={50} className="object-contain mb-1" data-ai-hint={route.dataAiHint || "bus company logo"} /&gt;}
                   <p className="text-sm font-medium">{route.operator}</p>
                   {route.operatorRating && (
                     <div className="flex items-center text-xs text-muted-foreground">
-                        <StarIcon className="h-3 w-3 mr-0.5 text-yellow-400 fill-yellow-400" /> {route.operatorRating}/5 (Demo)
+                        &lt;StarIcon className="h-3 w-3 mr-0.5 text-yellow-400 fill-yellow-400" /&gt; {route.operatorRating}/5 (Demo)
                     </div>
                   )}
                 </div>
@@ -590,36 +590,36 @@ export default function BusTransportationPage() {
                   <div className="flex flex-col sm:flex-row justify-between items-baseline gap-1">
                     <div className="font-semibold text-lg flex items-center">
                         {route.departureTime}
-                        <MapPin className="inline h-4 w-4 text-muted-foreground mx-1"/>
-                        <span className="text-sm text-muted-foreground font-normal">{route.departureStation}</span>
+                        &lt;MapPin className="inline h-4 w-4 text-muted-foreground mx-1"/&gt;
+                        &lt;span className="text-sm text-muted-foreground font-normal"&gt;{route.departureStation}&lt;/span&gt;
                     </div>
                     <div className="text-sm text-muted-foreground hidden sm:block self-center">➔</div>
                     <div className="font-semibold text-lg flex items-center">
                         {route.arrivalTime}
-                        <MapPin className="inline h-4 w-4 text-muted-foreground mx-1"/>
-                        <span className="text-sm text-muted-foreground font-normal">{route.arrivalStation}</span>
+                        &lt;MapPin className="inline h-4 w-4 text-muted-foreground mx-1"/&gt;
+                        &lt;span className="text-sm text-muted-foreground font-normal"&gt;{route.arrivalStation}&lt;/span&gt;
                     </div>
                   </div>
                   <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>Duration: {route.duration}</span>
-                    <span>{route.stops !== undefined ? (route.stops > 0 ? `${route.stops} Stop(s)` : "Direct") : ""}</span>
+                    &lt;span&gt;Duration: {route.duration}&lt;/span&gt;
+                    &lt;span&gt;{route.stops !== undefined ? (route.stops > 0 ? `${route.stops} Stop(s)` : "Direct") : ""}&lt;/span&gt;
                   </div>
-                  <p className="text-sm"><span><Info className="inline h-4 w-4 mr-1 text-primary"/>Bus Type: {route.busType}</span></p>
+                  <p className="text-sm">&lt;span&gt;&lt;Info className="inline h-4 w-4 mr-1 text-primary"/&gt;Bus Type: {route.busType}&lt;/span&gt;</p>
                   <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs pt-1">
-                    {route.amenities.ac && <span className="flex items-center"><Snowflake className="h-3.5 w-3.5 mr-1 text-blue-500"/>AC</span>}
-                    {route.amenities.wifi && <span className="flex items-center"><Wifi className="h-3.5 w-3.5 mr-1 text-sky-500"/>WiFi</span>}
-                    {route.amenities.usb && <span className="flex items-center"><Power className="h-3.5 w-3.5 mr-1 text-yellow-500"/>USB</span>}
-                    {route.amenities.tv && <span className="flex items-center"><Tv className="h-3.5 w-3.5 mr-1 text-gray-500"/>TV</span>}
-                    {route.amenities.toilet && <span className="flex items-center"><Wind className="h-3.5 w-3.5 mr-1 text-teal-500"/>Toilet</span>}
+                    {route.amenities.ac && &lt;span className="flex items-center"&gt;&lt;Snowflake className="h-3.5 w-3.5 mr-1 text-blue-500"/&gt;AC&lt;/span&gt;}
+                    {route.amenities.wifi && &lt;span className="flex items-center"&gt;&lt;Wifi className="h-3.5 w-3.5 mr-1 text-sky-500"/&gt;WiFi&lt;/span&gt;}
+                    {route.amenities.usb && &lt;span className="flex items-center"&gt;&lt;Power className="h-3.5 w-3.5 mr-1 text-yellow-500"/&gt;USB&lt;/span&gt;}
+                    {route.amenities.tv && &lt;span className="flex items-center"&gt;&lt;Tv className="h-3.5 w-3.5 mr-1 text-gray-500"/&gt;TV&lt;/span&gt;}
+                    {route.amenities.toilet && &lt;span className="flex items-center"&gt;&lt;Wind className="h-3.5 w-3.5 mr-1 text-teal-500"/&gt;Toilet&lt;/span&gt;}
                   </div>
-                   <p className="text-xs text-muted-foreground pt-1">{route.tripType} Trip | {route.availableSeats} seats available</p>
+                   &lt;p className="text-xs text-muted-foreground pt-1"&gt;{route.tripType} Trip | {route.availableSeats} seats available&lt;/p&gt;
                 </div>
                 <div className="md:col-span-3 flex flex-col items-center md:items-end justify-center space-y-2 pt-2 md:pt-0">
-                  <p className="text-2xl font-bold text-primary">${route.price.toFixed(2)}</p>
+                  &lt;p className="text-2xl font-bold text-primary"&gt;${route.price.toFixed(2)}&lt;/p&gt;
                   <Button className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => handleStartBooking(route)}>
-                    <span><Armchair className="mr-2 h-4 w-4"/>Select Seats &amp; Book</span>
+                    &lt;span&gt;&lt;Armchair className="mr-2 h-4 w-4"/&gt;Select Seats &amp; Book&lt;/span&gt;
                   </Button>
-                  <p className="text-xs text-muted-foreground">Price per passenger</p>
+                  &lt;p className="text-xs text-muted-foreground"&gt;Price per passenger&lt;/p&gt;
                 </div>
               </div>
             </Card>
@@ -631,42 +631,42 @@ export default function BusTransportationPage() {
          <Card className="mt-8 text-center py-12 bg-muted/50">
             <CardContent>
                 <BusIcon className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-                <p className="text-xl font-semibold">No bus routes found for your criteria.</p>
-                <p className="text-muted-foreground mt-2">Try adjusting your search filters or dates.</p>
+                &lt;p className="text-xl font-semibold"&gt;No bus routes found for your criteria.&lt;/p&gt;
+                &lt;p className="text-muted-foreground mt-2"&gt;Try adjusting your search filters or dates.&lt;/p&gt;
             </CardContent>
         </Card>
       )}
 
       {activeRouteForDialog && (
-        <Dialog open={isBookingDialogOpen} onOpenChange={setIsBookingDialogOpen}>
-          <DialogContent className="sm:max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>
+        &lt;Dialog open={isBookingDialogOpen} onOpenChange={setIsBookingDialogOpen}&gt;
+          &lt;DialogContent className="sm:max-w-4xl"&gt;
+            &lt;DialogHeader&gt;
+              &lt;DialogTitle&gt;
                 {isRoundTrip && roundTripStage === 'return' ? `Select Seats for Return Trip` : isRoundTrip && roundTripStage === 'confirm' ? `Confirm Your Round Trip` : `Book your trip with ${activeRouteForDialog.operator}`}
-              </DialogTitle>
-              <DialogDescription>
-                 Step {currentStep} of 3: {currentStep === 1 ? 'Select Your Seats' : currentStep === 2 ? 'Enter Passenger Details' : 'Add-ons & Payment'}
-              </DialogDescription>
-            </DialogHeader>
-             <AnimatePresence mode="wait">
-             <motion.div
+              &lt;/DialogTitle&gt;
+              &lt;DialogDescription&gt;
+                 Step {currentStep} of 3: {currentStep === 1 ? 'Select Your Seats' : currentStep === 2 ? 'Enter Passenger Details' : 'Add-ons &amp; Payment'}
+              &lt;/DialogDescription&gt;
+            &lt;/DialogHeader&gt;
+             &lt;AnimatePresence mode="wait"&gt;
+             &lt;motion.div
                 key={currentStep}
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
                 className="py-4"
-              >
+              &gt;
               {currentStep === 1 && (
-                  <div>
-                    <div className="mb-4 flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-sm">
-                        <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-green-500" /> Available</span>
-                        <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-blue-500" /> Selected</span>
-                        <span className="flex items-center"><Armchair className="h-5 w-5 mr-1 text-red-500 opacity-50" /> Taken</span>
-                    </div>
-                    <div className="w-16 h-8 bg-gray-300 rounded-t-md mx-auto mb-2 flex items-center justify-center text-xs">Front</div>
-                    <div className="bg-muted/30 p-2 sm:p-4 rounded-md flex justify-center">
-                        <div className="grid gap-1 sm:gap-1.5" style={{ gridTemplateColumns: `repeat(${activeRouteForDialog.seatsLayout?.cols || 4}, minmax(0, 1fr))` }}>
+                  &lt;div&gt;
+                    &lt;div className="mb-4 flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-sm"&gt;
+                        &lt;span className="flex items-center"&gt;&lt;Armchair className="h-5 w-5 mr-1 text-green-500" /&gt; Available&lt;/span&gt;
+                        &lt;span className="flex items-center"&gt;&lt;Armchair className="h-5 w-5 mr-1 text-blue-500" /&gt; Selected&lt;/span&gt;
+                        &lt;span className="flex items-center"&gt;&lt;Armchair className="h-5 w-5 mr-1 text-red-500 opacity-50" /&gt; Taken&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;div className="w-16 h-8 bg-gray-300 rounded-t-md mx-auto mb-2 flex items-center justify-center text-xs"&gt;Front&lt;/div&gt;
+                    &lt;div className="bg-muted/30 p-2 sm:p-4 rounded-md flex justify-center"&gt;
+                        &lt;div className="grid gap-1 sm:gap-1.5" style={{ gridTemplateColumns: `repeat(${activeRouteForDialog.seatsLayout?.cols || 4}, minmax(0, 1fr))` }}&gt;
                         {Array.from({ length: activeRouteForDialog.totalSeats || 40 }).map((_, index) => {
                             const layout = activeRouteForDialog.seatsLayout || { rows: 10, cols: 4, aisleAfter: 2 };
                             const rowIndex = Math.floor(index / layout.cols);
@@ -676,7 +676,7 @@ export default function BusTransportationPage() {
                             const isSelected = selectedSeats.includes(seatId);
                             
                             return (
-                                <Button
+                                &lt;Button
                                 key={seatId}
                                 variant={isSelected ? "default" : "outline"}
                                 size="icon"
@@ -690,91 +690,91 @@ export default function BusTransportationPage() {
                                 onClick={() => !isTaken && toggleSeatSelection(seatId)}
                                 disabled={isTaken}
                                 title={`Seat ${seatId}`}
-                                >
-                                <Armchair className="h-4 w-4 sm:h-5 sm:w-5" />
-                                <span className="sr-only">{seatId}</span>
-                                </Button>
+                                &gt;
+                                &lt;Armchair className="h-4 w-4 sm:h-5 sm:w-5" /&gt;
+                                &lt;span className="sr-only"&gt;{seatId}&lt;/span&gt;
+                                &lt;/Button&gt;
                             );
                         })}
-                        </div>
-                    </div>
-                  </div>
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
               )}
               {currentStep === 2 && (
-                  <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-4">
+                  &lt;div className="space-y-4 max-h-[60vh] overflow-y-auto pr-4"&gt;
                       {passengers.map((p, index) => (
-                          <Card key={index} className="p-4">
-                              <CardTitle className="text-lg mb-2">
+                          &lt;Card key={index} className="p-4"&gt;
+                              &lt;CardTitle className="text-lg mb-2"&gt;
                                   Passenger {index + 1}
                                   {isRoundTrip && departureTrip && returnTrip ? ` (Dep: ${departureTrip.seats[index]}, Ret: ${returnTrip.seats[index]})` : ` (Seat: ${selectedSeats[index]})`}
-                              </CardTitle>
-                              <div className="grid sm:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Full Name</Label>
-                                    <Input value={p.name} onChange={e => handlePassengerDetailChange(index, 'name', e.target.value)} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Use Saved Passenger</Label>
-                                    <Select onValueChange={(val) => handleUseSavedPassenger(index, savedPassengers.find(sp => sp.id.toString() === val)!)}>
-                                        <SelectTrigger><SelectValue placeholder="Select a saved passenger" /></SelectTrigger>
-                                        <SelectContent>
-                                            {savedPassengers.map(sp => <SelectItem key={sp.id} value={sp.id.toString()}>{sp.name}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>ID Type</Label>
-                                    <Select value={p.idType} onValueChange={val => handlePassengerDetailChange(index, 'idType', val as any)}>
-                                        <SelectTrigger><SelectValue/></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="National ID">National ID</SelectItem>
-                                            <SelectItem value="Passport">Passport</SelectItem>
-                                            <SelectItem value="Driver's License">Driver's License</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>ID Number</Label>
-                                    <Input value={p.idNumber} onChange={e => handlePassengerDetailChange(index, 'idNumber', e.target.value)} />
-                                </div>
-                              </div>
-                          </Card>
+                              &lt;/CardTitle&gt;
+                              &lt;div className="grid sm:grid-cols-2 gap-4"&gt;
+                                &lt;div className="space-y-2"&gt;
+                                    &lt;Label&gt;Full Name&lt;/Label&gt;
+                                    &lt;Input value={p.name} onChange={e => handlePassengerDetailChange(index, 'name', e.target.value)} /&gt;
+                                &lt;/div&gt;
+                                &lt;div className="space-y-2"&gt;
+                                    &lt;Label&gt;Use Saved Passenger&lt;/Label&gt;
+                                    &lt;Select onValueChange={(val) => handleUseSavedPassenger(index, savedPassengers.find(sp => sp.id.toString() === val)!)}&gt;
+                                        &lt;SelectTrigger&gt;&lt;SelectValue placeholder="Select a saved passenger" /&gt;&lt;/SelectTrigger&gt;
+                                        &lt;SelectContent&gt;
+                                            {savedPassengers.map(sp => &lt;SelectItem key={sp.id} value={sp.id.toString()}&gt;{sp.name}&lt;/SelectItem&gt;)}
+                                        &lt;/SelectContent&gt;
+                                    &lt;/Select&gt;
+                                &lt;/div&gt;
+                                &lt;div className="space-y-2"&gt;
+                                    &lt;Label&gt;ID Type&lt;/Label&gt;
+                                    &lt;Select value={p.idType} onValueChange={val => handlePassengerDetailChange(index, 'idType', val as any)}&gt;
+                                        &lt;SelectTrigger&gt;&lt;SelectValue/&gt;&lt;/SelectTrigger&gt;
+                                        &lt;SelectContent&gt;
+                                            &lt;SelectItem value="National ID"&gt;National ID&lt;/SelectItem&gt;
+                                            &lt;SelectItem value="Passport"&gt;Passport&lt;/SelectItem&gt;
+                                            &lt;SelectItem value="Driver's License"&gt;Driver's License&lt;/SelectItem&gt;
+                                        &lt;/SelectContent&gt;
+                                    &lt;/Select&gt;
+                                &lt;/div&gt;
+                                &lt;div className="space-y-2"&gt;
+                                    &lt;Label&gt;ID Number&lt;/Label&gt;
+                                    &lt;Input value={p.idNumber} onChange={e => handlePassengerDetailChange(index, 'idNumber', e.target.value)} /&gt;
+                                &lt;/div&gt;
+                              &lt;/div&gt;
+                          &lt;/Card&gt;
                       ))}
-                  </div>
+                  &lt;/div&gt;
               )}
               {currentStep === 3 && (
-                  <div className="space-y-4">
-                    <Card>
-                        <CardHeader><CardTitle>Add-ons</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="extra-luggage" className="flex items-center gap-2"><BaggageClaim className="h-5 w-5"/>Extra Luggage ($5 per bag)</Label>
-                                <Input id="extra-luggage" type="number" min="0" value={extraLuggage} onChange={e => setExtraLuggage(Number(e.target.value))} className="w-20" />
-                            </div>
-                             <div className="flex items-center justify-between">
-                                <Label htmlFor="travel-insurance" className="flex items-center gap-2"><ShieldCheck className="h-5 w-5"/>Travel Insurance ($2.50 per person)</Label>
-                                <Checkbox id="travel-insurance" checked={travelInsurance} onCheckedChange={(checked) => setTravelInsurance(checked as boolean)} />
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader><CardTitle>Fare Breakdown</CardTitle></CardHeader>
-                        <CardContent className="text-sm space-y-1">
+                  &lt;div className="space-y-4"&gt;
+                    &lt;Card&gt;
+                        &lt;CardHeader&gt;&lt;CardTitle&gt;Add-ons&lt;/CardTitle&gt;&lt;/CardHeader&gt;
+                        &lt;CardContent className="space-y-4"&gt;
+                            &lt;div className="flex items-center justify-between"&gt;
+                                &lt;Label htmlFor="extra-luggage" className="flex items-center gap-2"&gt;&lt;BaggageClaim className="h-5 w-5"/&gt;Extra Luggage ($5 per bag)&lt;/Label&gt;
+                                &lt;Input id="extra-luggage" type="number" min="0" value={extraLuggage} onChange={e => setExtraLuggage(Number(e.target.value))} className="w-20" /&gt;
+                            &lt;/div&gt;
+                             &lt;div className="flex items-center justify-between"&gt;
+                                &lt;Label htmlFor="travel-insurance" className="flex items-center gap-2"&gt;&lt;ShieldCheck className="h-5 w-5"/&gt;Travel Insurance ($2.50 per person)&lt;/Label&gt;
+                                &lt;Checkbox id="travel-insurance" checked={travelInsurance} onCheckedChange={(checked) => setTravelInsurance(checked as boolean)} /&gt;
+                            &lt;/div&gt;
+                        &lt;/CardContent&gt;
+                    &lt;/Card&gt;
+                    &lt;Card&gt;
+                        &lt;CardHeader&gt;&lt;CardTitle&gt;Fare Breakdown&lt;/CardTitle&gt;&lt;/CardHeader&gt;
+                        &lt;CardContent className="text-sm space-y-1"&gt;
                             {isRoundTrip && departureTrip && returnTrip ? (
-                                <>
-                                <div className="flex justify-between"><span>Departure Fare ({passengers.length} x ${departureTrip.route.price})</span><span>${(passengers.length * departureTrip.route.price).toFixed(2)}</span></div>
-                                <div className="flex justify-between"><span>Return Fare ({passengers.length} x ${returnTrip.route.price})</span><span>${(passengers.length * returnTrip.route.price).toFixed(2)}</span></div>
-                                </>
+                                &lt;&gt;
+                                &lt;div className="flex justify-between"&gt;&lt;span&gt;Departure Fare ({passengers.length} x ${departureTrip.route.price})&lt;/span&gt;&lt;span&gt;${(passengers.length * departureTrip.route.price).toFixed(2)}&lt;/span&gt;&lt;/div&gt;
+                                &lt;div className="flex justify-between"&gt;&lt;span&gt;Return Fare ({passengers.length} x ${returnTrip.route.price})&lt;/span&gt;&lt;span&gt;${(passengers.length * returnTrip.route.price).toFixed(2)}&lt;/span&gt;&lt;/div&gt;
+                                &lt;/&gt;
                             ) : (
-                                <div className="flex justify-between"><span>Base Fare ({passengers.length} x ${activeRouteForDialog.price})</span><span>${(passengers.length * activeRouteForDialog.price).toFixed(2)}</span></div>
+                                &lt;div className="flex justify-between"&gt;&lt;span&gt;Base Fare ({passengers.length} x ${activeRouteForDialog.price})&lt;/span&gt;&lt;span&gt;${(passengers.length * activeRouteForDialog.price).toFixed(2)}&lt;/span&gt;&lt;/div&gt;
                             )}
 
-                            <div className="flex justify-between"><span>Extra Luggage ({extraLuggage} x $5)</span><span>${(extraLuggage * 5).toFixed(2)}</span></div>
-                            {travelInsurance && <div className="flex justify-between"><span>Travel Insurance ({passengers.length} x $2.50)</span><span>${(passengers.length * 2.5).toFixed(2)}</span></div>}
-                            <Separator className="my-2"/>
-                            <div className="flex justify-between font-bold text-lg">
-                                <span>Total</span>
-                                <span>
+                            &lt;div className="flex justify-between"&gt;&lt;span&gt;Extra Luggage ({extraLuggage} x $5)&lt;/span&gt;&lt;span&gt;${(extraLuggage * 5).toFixed(2)}&lt;/span&gt;&lt;/div&gt;
+                            {travelInsurance && &lt;div className="flex justify-between"&gt;&lt;span&gt;Travel Insurance ({passengers.length} x $2.50)&lt;/span&gt;&lt;span&gt;${(passengers.length * 2.5).toFixed(2)}&lt;/span&gt;&lt;/div&gt;}
+                            &lt;Separator className="my-2"/&gt;
+                            &lt;div className="flex justify-between font-bold text-lg"&gt;
+                                &lt;span&gt;Total&lt;/span&gt;
+                                &lt;span&gt;
                                     ${
                                         (
                                             (isRoundTrip && departureTrip && returnTrip ? 
@@ -785,28 +785,28 @@ export default function BusTransportationPage() {
                                             (travelInsurance ? passengers.length * 2.5 : 0)
                                         ).toFixed(2)
                                     }
-                                </span>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <p className="text-xs text-muted-foreground">You will be redirected to a secure payment gateway. Reserve now, pay later options available.</p>
-                  </div>
+                                &lt;/span&gt;
+                            &lt;/div&gt;
+                        &lt;/CardContent&gt;
+                    &lt;/Card&gt;
+                    &lt;p className="text-xs text-muted-foreground"&gt;You will be redirected to a secure payment gateway. Reserve now, pay later options available.&lt;/p&gt;
+                  &lt;/div&gt;
               )}
-              </motion.div>
-              </AnimatePresence>
-            <DialogFooter className="sm:justify-between items-center">
-                <div>
-                   {currentStep > 1 && <Button type="button" variant="outline" onClick={handlePrevStep}>Back</Button>}
-                </div>
-                <div className="flex gap-2">
-                  <DialogClose asChild><Button type="button" variant="outline">Cancel Booking</Button></DialogClose>
-                  {currentStep < 3 && <Button type="button" onClick={handleNextStep}>{ isRoundTrip && roundTripStage !== 'confirm' && currentStep === 1 ? 'Confirm Seats & Select Return' : 'Next' }</Button>}
-                  {currentStep === 3 && <Button type="button" onClick={handleConfirmBooking}>Confirm & Pay</Button>}
-                </div>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              &lt;/motion.div&gt;
+              &lt;/AnimatePresence&gt;
+            &lt;DialogFooter className="sm:justify-between items-center"&gt;
+                &lt;div&gt;
+                   {currentStep > 1 && &lt;Button type="button" variant="outline" onClick={handlePrevStep}&gt;Back&lt;/Button&gt;}
+                &lt;/div&gt;
+                &lt;div className="flex gap-2"&gt;
+                  &lt;DialogClose asChild&gt;&lt;Button type="button" variant="outline"&gt;Cancel Booking&lt;/Button&gt;&lt;/DialogClose&gt;
+                  {currentStep &lt; 3 && &lt;Button type="button" onClick={handleNextStep}&gt;{ isRoundTrip && roundTripStage !== 'confirm' && currentStep === 1 ? 'Confirm Seats &amp; Select Return' : 'Next' }&lt;/Button&gt;}
+                  {currentStep === 3 && &lt;Button type="button" onClick={handleConfirmBooking}&gt;Confirm &amp; Pay&lt;/Button&gt;}
+                &lt;/div&gt;
+            &lt;/DialogFooter&gt;
+          &lt;/DialogContent&gt;
+        &lt;/Dialog&gt;
       )}
-    </div>
+    &lt;/div&gt;
   );
 }
