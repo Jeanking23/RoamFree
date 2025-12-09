@@ -46,9 +46,11 @@ export default function AboutPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
               {offerings.map(offering => (
                 <div key={offering.title} className="p-4 bg-muted/30 rounded-lg">
-                  <offering.icon className="h-8 w-8 text-primary mx-auto mb-2"/>
-                  <h3 className="font-semibold">{offering.title}</h3>
-                  <p className="text-xs text-muted-foreground">{offering.description}</p>
+                  <div>
+                    <offering.icon className="h-8 w-8 text-primary mx-auto mb-2"/>
+                    <h3 className="font-semibold">{offering.title}</h3>
+                    <p className="text-xs text-muted-foreground">{offering.description}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -57,19 +59,25 @@ export default function AboutPage() {
           {/* Our Values Section */}
           <section className="grid md:grid-cols-3 gap-6 text-center">
             <div className="p-4 bg-muted/30 rounded-lg">
-              <Target className="h-8 w-8 text-primary mx-auto mb-2"/>
-              <h3 className="font-semibold">Our Mission</h3>
-              <p className="text-xs text-muted-foreground">To empower seamless travel experiences through innovative technology and a comprehensive, user-friendly platform.</p>
+              <div>
+                <Target className="h-8 w-8 text-primary mx-auto mb-2"/>
+                <h3 className="font-semibold">Our Mission</h3>
+                <p className="text-xs text-muted-foreground">To empower seamless travel experiences through innovative technology and a comprehensive, user-friendly platform.</p>
+              </div>
             </div>
             <div className="p-4 bg-muted/30 rounded-lg">
-              <Handshake className="h-8 w-8 text-primary mx-auto mb-2"/>
-              <h3 className="font-semibold">Our Vision</h3>
-              <p className="text-xs text-muted-foreground">To be the world's most trusted and integrated travel hub, connecting people to places and experiences effortlessly.</p>
+              <div>
+                <Handshake className="h-8 w-8 text-primary mx-auto mb-2"/>
+                <h3 className="font-semibold">Our Vision</h3>
+                <p className="text-xs text-muted-foreground">To be the world's most trusted and integrated travel hub, connecting people to places and experiences effortlessly.</p>
+              </div>
             </div>
             <div className="p-4 bg-muted/30 rounded-lg">
-              <ShieldCheck className="h-8 w-8 text-primary mx-auto mb-2"/>
-              <h3 className="font-semibold">Our Commitment</h3>
-              <p className="text-xs text-muted-foreground">To prioritize safety, sustainability, and community, ensuring every journey is responsible and respectful.</p>
+              <div>
+                <ShieldCheck className="h-8 w-8 text-primary mx-auto mb-2"/>
+                <h3 className="font-semibold">Our Commitment</h3>
+                <p className="text-xs text-muted-foreground">To prioritize safety, sustainability, and community, ensuring every journey is responsible and respectful.</p>
+              </div>
             </div>
           </section>
 
