@@ -175,7 +175,9 @@ export default function ContactSupportPage() {
                     )}
                   />
                   <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                    Send Message
+                    <span className="flex items-center gap-2">
+                        <Send className="mr-2 h-4 w-4"/> Send Message
+                    </span>
                   </Button>
                 </form>
               </Form>
