@@ -29,7 +29,7 @@ export default function CareersPage() {
              <div className="mt-6">
                  <Button asChild>
                     <Link href="/about">
-                       <span><Building className="mr-2 h-4 w-4"/> Learn More About Us</span>
+                       <span className="flex items-center gap-2"><Building className="mr-2 h-4 w-4"/> Learn More About Us</span>
                     </Link>
                 </Button>
             </div>
