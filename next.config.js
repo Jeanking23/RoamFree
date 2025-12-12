@@ -1,3 +1,4 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /* config options here */
@@ -35,13 +36,13 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      // Exclude server-only packages from client-side bundle
-      config.externals = [...config.externals, 'long', 'protobufjs', '@grpc/grpc-js', 'nice-grpc-web'];
+  experimental: {
+    turbopack: {
+      resolveAlias: {
+        './google-gax': 'next/dist/build/webpack/loaders/noop-loader.js'
+      }
     }
-    return config;
-  },
+  }
 };
 
 module.exports = nextConfig;
