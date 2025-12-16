@@ -40,7 +40,9 @@ const nextConfig = {
     turbopack: {
       resolveAlias: {
         './google-gax': 'next/dist/build/webpack/loaders/noop-loader.js'
-      }
+      },
+      // Correctly defining the project root for Turbopack
+      root: '.'
     }
   }
 };
