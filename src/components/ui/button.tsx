@@ -43,12 +43,18 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+    
+    // When using asChild, suppressHydrationWarning should not be passed to Slot
+    // but rather handled by the actual element being passed as a child.
+    const componentProps = asChild 
+      ? props 
+      : { ...props, suppressHydrationWarning: true };
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        suppressHydrationWarning
-        {...props}
+        {...componentProps}
       />
     )
   }
