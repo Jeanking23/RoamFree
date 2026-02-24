@@ -16,13 +16,7 @@ interface Message {
 }
 
 export default function LiveChatPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      sender: 'bot',
-      text: "Hello! Welcome to RoamFree Live Support. How can I assist you today?",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isBotTyping, setIsBotTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -30,6 +24,17 @@ export default function LiveChatPage() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    // Initialize with a welcome message on the client to avoid hydration mismatch
+    setMessages([
+      {
+        sender: 'bot',
+        text: "Hello! Welcome to RoamFree Live Support. How can I assist you today?",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      }
+    ]);
+  }, []);
 
   useEffect(() => {
     scrollToBottom();

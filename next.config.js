@@ -1,7 +1,5 @@
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -30,21 +28,18 @@ const nextConfig = {
         hostname: 'photos.google.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
   env: {
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   },
-  experimental: {
-    turbopack: {
-      resolveAlias: {
-        './google-gax': 'next/dist/build/webpack/loaders/noop-loader.js'
-      },
-      // Correctly defining the project root for Turbopack
-      root: '.'
-    }
-  }
 };
 
 module.exports = nextConfig;

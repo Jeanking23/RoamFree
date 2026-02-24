@@ -1,0 +1,116 @@
+
+{
+    "slideshow": [
+        {
+            "id": "slide1",
+            "url": "https://picsum.photos/seed/slide1/1200/800",
+            "hint": "travel mountains"
+        },
+        {
+            "id": "slide2",
+            "url": "https://picsum.photos/seed/slide2/1200/800",
+            "hint": "beach sunrise"
+        },
+        {
+            "id": "slide3",
+            "url": "https://picsum.photos/seed/slide3/1200/800",
+            "hint": "mountain landscape"
+        },
+        {
+            "id": "slide4",
+            "url": "https://picsum.photos/seed/slide4/1200/800",
+            "hint": "cityscape night"
+        }
+    ],
+    "attractions": {
+        "museum": {
+            "id": "att_museum",
+            "url": "https://picsum.photos/seed/museum/800/600",
+            "hint": "art museum"
+        },
+        "park": {
+            "id": "att_park",
+            "url": "https://picsum.photos/seed/park/800/600",
+            "hint": "park nature"
+        },
+        "concert_hall": {
+            "id": "att_concert",
+            "url": "https://picsum.photos/seed/concert/800/600",
+            "hint": "concert hall"
+        },
+        "zipline": {
+            "id": "att_zipline",
+            "url": "https://picsum.photos/seed/zipline/800/600",
+            "hint": "zipline adventure"
+        },
+        "kids_museum": {
+            "id": "att_kids",
+            "url": "https://picsum.photos/seed/kidsmuseum/800/600",
+            "hint": "kids museum"
+        }
+    },
+    "attraction_details": {
+        "main_exhibit": { "id": "ad_main", "src": "https://picsum.photos/seed/exhibit/800/600", "alt": "Museum main exhibit hall", "dataAiHint": "museum exhibit" },
+        "sculpture_garden": { "id": "ad_sculpture", "src": "https://picsum.photos/seed/sculpture/400/300", "alt": "Museum sculpture garden", "dataAiHint": "sculpture garden" },
+        "facade": { "id": "ad_facade", "src": "https://picsum.photos/seed/facade/400/300", "alt": "Museum exterior facade", "dataAiHint": "museum building" },
+        "interactive_display": { "id": "ad_interactive", "src": "https://picsum.photos/seed/interactive/400/300", "alt": "Interactive display for kids", "dataAiHint": "interactive museum" }
+    },
+    "visitor_photos": {
+        "selfie": { "id": "vp_selfie", "src": "https://picsum.photos/seed/selfie/150/100", "alt": "Visitor taking a selfie with a painting", "dataAiHint": "museum selfie" },
+        "admiring": { "id": "vp_admiring", "src": "https://picsum.photos/seed/admiring/150/100", "alt": "Visitor admiring a sculpture", "dataAiHint": "person art" },
+        "child": { "id": "vp_child", "src": "https://picsum.photos/seed/childmuseum/150/100", "alt": "A child interacting with an exhibit", "dataAiHint": "child museum" }
+    },
+    "avatars": {
+        "chris": { "id": "av_chris", "src": "https://picsum.photos/seed/chris/40/40", "dataAiHint": "person avatar" },
+        "jordan": { "id": "av_jordan", "src": "https://picsum.photos/seed/jordan/40/40", "dataAiHint": "person avatar" }
+    },
+    "bus_logos": {
+        "comfortlines": { "id": "bl_comfort", "url": "https://picsum.photos/seed/comfortbus/100/50", "hint": "bus company logo" },
+        "speedyways": { "id": "bl_speedy", "url": "https://picsum.photos/seed/speedybus/100/50", "hint": "bus company logo" }
+    },
+    "qr_code": {
+        "id": "qr_generic",
+        "url": "https://picsum.photos/seed/qrcode/200/200",
+        "hint": "qr code"
+    },
+    "map_placeholder": {
+        "id": "map_generic",
+        "url": "https://picsum.photos/seed/map/400/225",
+        "hint": "city map route"
+    },
+    "car_sale_photos": {
+        "corolla_front": { "id": "cs_corolla_front", "src": "https://picsum.photos/seed/corolla1/800/600", "alt": "Corolla front view", "dataAiHint": "sedan silver front" },
+        "corolla_interior": { "id": "cs_corolla_int", "src": "https://picsum.photos/seed/corolla2/400/300", "alt": "Corolla interior", "dataAiHint": "car interior dashboard" },
+        "corolla_side": { "id": "cs_corolla_side", "src": "https://picsum.photos/seed/corolla3/400/300", "alt": "Corolla side profile", "dataAiHint": "sedan silver side" },
+        "corolla_engine": { "id": "cs_corolla_eng", "src": "https://picsum.photos/seed/corolla4/400/300", "alt": "Corolla engine bay", "dataAiHint": "car engine" }
+    },
+    "seller_avatars": {
+        "john_doe": { "id": "sa_johndoe", "src": "https://picsum.photos/seed/johndoe/100/100", "dataAiHint": "man portrait" }
+    },
+    "partner_testimonials": {
+        "louis": { "id": "pt_louis", "avatar": "https://picsum.photos/seed/louis/100/100", "avatarHint": "man indoor" },
+        "zoey": { "id": "pt_zoey", "avatar": "https://picsum.photos/seed/zoey/100/100", "avatarHint": "woman indoor" },
+        "shawn": { "id": "pt_shawn", "avatar": "https://picsum.photos/seed/shawn/100/100", "avatarHint": "man outdoor" },
+        "parley": { "id": "pt_parley", "avatar": "https://picsum.photos/seed/parley/100/100", "avatarHint": "woman home" },
+        "martin": { "id": "pt_martin", "avatar": "https://picsum.photos/seed/martin/100/100", "avatarHint": "man office" },
+        "michel_asja": { "id": "pt_michel", "avatar": "https://picsum.photos/seed/michelasja/100/100", "avatarHint": "couple indoor" }
+    },
+    "hero_image": {
+        "id": "hero_living",
+        "url": "https://picsum.photos/seed/livingroom/1080/720",
+        "hint": "host house"
+    },
+    "world_map": {
+        "id": "world_map_bg",
+        "url": "https://picsum.photos/seed/worldmap/1080/720",
+        "hint": "world map"
+    },
+    "transport_suggestions": {
+        "ride": { "id": "ts_ride", "src": "https://picsum.photos/seed/carroad/800/600", "hint": "car road" },
+        "reserve": { "id": "ts_reserve", "src": "https://picsum.photos/seed/calendarcar/800/600", "hint": "calendar car" },
+        "rental": { "id": "ts_rental", "src": "https://picsum.photos/seed/rentalcars/800/600", "hint": "rental cars" },
+        "courier": { "id": "ts_courier", "src": "https://picsum.photos/seed/delivery/800/600", "hint": "delivery package" },
+        "food": { "id": "ts_food", "src": "https://picsum.photos/seed/fooddelivery/800/600", "hint": "food delivery" },
+        "grocery": { "id": "ts_grocery", "src": "https://picsum.photos/seed/grocerybag/800/600", "hint": "grocery bag" }
+    }
+}

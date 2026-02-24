@@ -46,7 +46,7 @@ export interface MockStay {
   dataAiHint: string; // For main image
   rating: number;
   category: string; // e.g., "Villa", "Cabin", "Apartment", "Hotel" - for display
-  type: "Hotel" | "Rental"; // For filtering: "HOTEL" or "RENTAL"
+  type: "Hotel" | "Rental" | "Sale"; // Distinguish for filtering
   maxGuests?: number;
   moods?: ("Peaceful" | "Romantic" | "Adventurous")[];
   isWheelchairAccessible?: boolean;
@@ -62,20 +62,20 @@ export interface MockStay {
   virtualTourLink?: string;
   floorPlanLink?: string;
   neighborhoodInsights?: NeighborhoodInsights;
-  // Fields for rentals and properties for sale can be added here or in specific types
+  // Fields for rentals and properties for sale
   bedrooms?: number;
   bathrooms?: number | string;
-  sizeSqft?: string | number; // Can be "2200 sqft" or just 2200
+  sizeSqft?: string | number; 
   sizeAcres?: string | number;
-  propertyType?: string; // More specific: "House", "Apartment", "Land"
-  zoning?: string; // For land/property sale
-  status?: string; // e.g., "Verified", "Title Deed Uploaded"
+  propertyType?: string; // "House", "Apartment", "Land"
+  zoning?: string; 
+  status?: string; 
   lastSalePrice?: number;
   marketTrend?: string;
   utilitiesIncluded?: string;
   walkabilityScore?: number;
-  nearbySchools?: string; // simplified version for some mocks
-  price?: number; // For total price in sales
+  nearbySchools?: string; 
+  price?: number; // Total price
 }
 
 export interface CarListing {
@@ -182,7 +182,7 @@ export const allMockStays: MockStay[] = [
     amenities: ["Hot Tub", "Fireplace", "WiFi", "Kitchenette", "Ski-in/Ski-out Access (nearby)"],
      photos: [
       { id: "p1s2", src: "https://images.unsplash.com/photo-1669394478167-a4965c32a98e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjYWJpbiUyMHNub3d8ZW58MHx8fHwxNzUyNzI4NDI0fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Cabin exterior in snow", dataAiHint: "cabin snow" },
-      { id: "p2s2", src: "https://images.unsplash.com/photo-1697807713050-b0e7d00956a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjYWJpbiUyMGZpcmVwbGFjZXxlbnwwfHx8fDE3NTI3Mjg0MjR8MA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Cozy cabin interior with fireplace", dataAiHint: "cabin fireplace" },
+      { id: "p2s2", src: "https://images.unsplash.com/photo-1697807713050-b0e7d00956a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjYWJpbiUyMGZpcmVwbGFjZXxlbnwwfHx8fDE3NTI3Mjg0MjR8MA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Cozy cabin interior with fireplace", dataAiHint: "cabin fireplace" },
     ],
     host: { name: "Mike R.", avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
     guestReviews: [
@@ -237,7 +237,7 @@ export const allMockStays: MockStay[] = [
     reviewsCount: 95,
     description: "A beautiful lodge by the river in the Scottish Highlands. Perfect for fishing, hiking, and relaxing in nature. Offers 3 bedrooms and a cozy fireplace.",
     amenities: ["River Access", "Fishing Gear (rental)", "WiFi", "Full Kitchen", "Log Burner"],
-    photos: [ { id: "p1s4", src: "https://images.unsplash.com/photo-1668597354945-b67f6a77ded5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyaXZlciUyMGxvZGdlJTIwc2NvdGxhbmR8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Lodge exterior", dataAiHint: "lodge highlands river" } ],
+    photos: [ { id: "p1s4", src: "https://images.unsplash.com/photo-1668597354945-b67f6a77ded5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyaXZlciUyMGxvZGdlJTIwc2NvdGxhbmR8ZW58MHx8fHwxNzUyNzI1Mzk2fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Lodge exterior", dataAiHint: "lodge highlands river" } ],
     host: { name: "Angus McTavish", avatar: "https://placehold.co/100x100.png", dataAiHint: "man portrait" },
     guestReviews: [ { id: "gr1s4", user: "Emily R.", rating: 5, comment: "Stunning location, very peaceful.", date: "2024-03-20", avatar: "https://placehold.co/40x40.png", dataAiHintAvatar: "person avatar"} ],
     policies: { checkIn: "After 4:00 PM", checkOut: "Before 10:00 AM", cancellation: "Moderate - Full refund 14 days prior." },
@@ -269,7 +269,7 @@ export const allMockStays: MockStay[] = [
     name: "Historic City Center Flat",
     location: "Rome, Italy",
     pricePerNight: 120,
-    image: "https://images.unsplash.com/photo-1724020538147-da2fe0a93751?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoaXN0b3JpYyUyMGJ1aWxkaW5nJTIwcm9tZXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1724020538147-da2fe0a93751?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoaXN0b3JpYyUyMGJ1aWxkaW5nJTIwcm9tZXxlbnwwfHx8fDE3NTI3MjUzOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
     dataAiHint: "historic building rome",
     rating: 4.5,
     category: "Flat",
@@ -356,7 +356,7 @@ export const carListings: CarListing[] = [
     pricePerDay: 150,
     pricePerHour: 30,
     pricePerWeek: 950,
-    image: "https://images.unsplash.com/photo-1635714612847-a515e7939326?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx2YW4lMjB2ZWhpY2xlfGVufDB8fHx8MTc1MjcyMjE4OXww&ixlib-rb-4.1.0&q=80&w=1080",
+    image: "https://images.unsplash.com/photo-1635714612847-a515e7939326?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx2YW4lMjB2ZWhpY2xlfGVufDB8fHx8MTc1MjcyMjE4OXww&ixlib=rb-4.1.0&q=80&w=1080",
      photos: [
       { id: "car3p1", src: "https://images.unsplash.com/photo-1635714612847-a515e7939326?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx2YW4lMjB2ZWhpY2xlfGVufDB8fHx8MTc1MjcyMjE4OXww&ixlib=rb-4.1.0&q=80&w=1080", alt: "Sprinter van exterior", dataAiHint: "white van" },
       { id: "car3p2", src: "https://placehold.co/800x600.png", alt: "Sprinter van interior seating", dataAiHint: "van interior" },
@@ -379,8 +379,8 @@ export const mockRentalProperties: MockStay[] = [
   { 
     id: "rent1", 
     name: "Chic Downtown Loft", 
-    pricePerNight: 73, // Assuming 2200/month ~ 73/night for consistency, though listing might be per month
-    price: 2200, // Monthly price
+    pricePerNight: 73, 
+    price: 2200, 
     location: "City Center", 
     category: "Apartment", 
     type: "Rental",
@@ -388,7 +388,7 @@ export const mockRentalProperties: MockStay[] = [
     bathrooms: 1,
     sizeSqft: "900 sqft",
     amenities: ["Gym", "Pool", "In-unit Laundry"], 
-    image: "https://images.unsplash.com/photo-1704428381312-0579346a779c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsb2Z0JTIwYXBhcnRtZW50fGVufDB8fHx8MTc1Mjc1NDU5NHww&ixlib-rb-4.1.0&q=80&w=1080", 
+    image: "https://images.unsplash.com/photo-1704428381312-0579346a779c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsb2Z0JTIwYXBhcnRtZW50fGVufDB8fHx8MTc1Mjc1NDU5NHww&ixlib=rb-4.1.0&q=80&w=1080", 
     dataAiHint: "loft apartment", 
     virtualTourLink: "#", 
     floorPlanLink: "#", 
@@ -398,7 +398,7 @@ export const mockRentalProperties: MockStay[] = [
     reviewsCount: 55,
     photos: [
         { id: "p1r1", src: "https://images.unsplash.com/photo-1704428381312-0579346a779c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsb2Z0JTIwYXBhcnRtZW50fGVufDB8fHx8MTc1Mjc1NDU5NHww&ixlib=rb-4.1.0&q=80&w=1080", alt: "Loft living area", dataAiHint: "loft interior" },
-        { id: "p2r1", src: "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxob21lfGVufDB8fHx8MTc1NTczMzk2MHww&ixlib-rb-4.1.0&q=80&w=1080", alt: "Loft kitchen", dataAiHint: "modern kitchen" },
+        { id: "p2r1", src: "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxob21lfGVufDB8fHx8MTc1NTczMzk2MHww&ixlib=rb-4.1.0&q=80&w=1080", alt: "Loft kitchen", dataAiHint: "modern kitchen" },
     ],
     host: { name: "Urban Living Inc.", avatar: "https://placehold.co/100x100.png", dataAiHint: "company logo" },
     neighborhoodInsights: { walkabilityScore: 95, crimeRate: "Low", schools: [{name: 'City High', rating: '4/5', type: 'Public'}, {name: 'Downtown Elementary', rating: '5/5', type: 'Public'}], publicTransport: [{type:'Subway', line: 'Blue Line', stopDistance: '2 blocks'}, {type:'Bus', line: 'C-3', stopDistance:'1 block'}], description: 'A vibrant urban neighborhood with easy access to restaurants, theaters, and parks. Highly walkable and excellent public transport links.' }
@@ -406,7 +406,7 @@ export const mockRentalProperties: MockStay[] = [
   { 
     id: "rent2", 
     name: "Suburban Family House", 
-    pricePerNight: 116, // Approx from 3500/month
+    pricePerNight: 116, 
     price: 3500,
     location: "Green Meadows", 
     category: "House", 
@@ -415,7 +415,7 @@ export const mockRentalProperties: MockStay[] = [
     bathrooms: 2,
     sizeSqft: "1800 sqft",
     amenities: ["Yard", "Garage", "Pet-friendly"], 
-    image: "https://images.unsplash.com/photo-1715249891396-653a32ff2d39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmYW1pbHklMjBob3VzZSUyMHN1YnVyYmFufGVufDB8fHx8MTc1Mjc1NDU5NHww&ixlib-rb-4.1.0&q=80&w=1080", 
+    image: "https://images.unsplash.com/photo-1715249891396-653a32ff2d39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmYW1pbHklMjBob3VzZSUyMHN1YnVyYmFufGVufDB8fHx8MTc1Mjc1NDU5NHww&ixlib=rb-4.1.0&q=80&w=1080", 
     dataAiHint: "family house suburban", 
     virtualTourLink: "#", 
     floorPlanLink: "#", 
@@ -424,38 +424,11 @@ export const mockRentalProperties: MockStay[] = [
     rating: 4.5,
     reviewsCount: 30,
     photos: [ 
-        { id: "p1r2", src: "https://images.unsplash.com/photo-1715249891396-653a32ff2d39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmYW1pbHklMjBob3VzZSUyMHN1YnVyYmFufGVufDB8fHx8MTc1Mjc1NDU5NHww&ixlib-rb-4.1.0&q=80&w=1080", alt: "Family house exterior", dataAiHint: "suburban house" },
+        { id: "p1r2", src: "https://images.unsplash.com/photo-1715249891396-653a32ff2d39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmYW1pbHklMjBob3VzZSUyMHN1YnVyYmFufGVufDB8fHx8MTc1Mjc1NDU5NHww&ixlib=rb-4.1.0&q=80&w=1080", alt: "Family house exterior", dataAiHint: "suburban house" },
         { id: "p2r2", src: "https://placehold.co/800x600.png", alt: "Family house backyard", dataAiHint: "house backyard" }
     ],
     host: { name: "Sarah Miller", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman portrait" },
     neighborhoodInsights: { walkabilityScore: 70, crimeRate: "Very Low", schools: [{name: 'Greenwood High', rating: '5/5', type: 'Public'}, {name: 'Meadowbrook Elementary', rating: '4/5', type: 'Public'}], publicTransport: [{type:'Bus', line: 'S-12', stopDistance:'0.5 miles'}], description: 'A peaceful, family-friendly area known for its excellent schools and community parks. Car recommended for commuting.' }
-  },
-  { 
-    id: "rent3", 
-    name: "Modern Townhouse", 
-    pricePerNight: 93, // Approx from 2800/month
-    price: 2800,
-    location: "North District", 
-    category: "Townhouse", 
-    type: "Rental",
-    bedrooms: 2, 
-    bathrooms: 2.5,
-    sizeSqft: "1500 sqft",
-    amenities: ["Rooftop Deck", "Smart Home"], 
-    image: "https://images.unsplash.com/photo-1667828369152-ddb46c1beebf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb2Rlcm4lMjB0b3duaG91c2V8ZW58MHx8fHwxNzUyNzU0NTk0fDA&ixlib-rb-4.1.0&q=80&w=1080", 
-    dataAiHint: "modern townhouse", 
-    virtualTourLink: "#", 
-    floorPlanLink: "#", 
-    isEcoFriendly: true,
-    description: "Contemporary townhouse with a private rooftop deck and smart home features. Two bedrooms, open-plan living, and close to city amenities.",
-    rating: 4.6,
-    reviewsCount: 42,
-    photos: [ 
-        { id: "p1r3", src: "https://images.unsplash.com/photo-1667828369152-ddb46c1beebf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb2Rlcm4lMjB0b3duaG91c2V8ZW58MHx8fHwxNzUyNzU0NTk0fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Townhouse rooftop deck", dataAiHint: "rooftop deck city" },
-        { id: "p2r3", src: "https://placehold.co/800x600.png", alt: "Townhouse interior", dataAiHint: "modern interior" }
-    ],
-    host: { name: "Tech Homes LLC", avatar: "https://placehold.co/100x100.png", dataAiHint: "company logo" },
-    neighborhoodInsights: { walkabilityScore: 85, crimeRate: "Low", schools: [{name: 'Northwood Academy', rating: '4.5/5', type: 'Charter'}], publicTransport: [{type:'Light Rail', line: 'Green', stopDistance:'5 min walk'}], description: 'An up-and-coming district with a mix of residential and commercial spaces. Great for young professionals.' }
   },
 ];
 
@@ -467,7 +440,7 @@ export const mockSaleProperties: MockStay[] = [
         price: 525000, 
         pricePerNight: 0,
         propertyType: "House", 
-        type: "Rental", // Note: This field may need to be 'Sale'
+        type: "Sale",
         category: "House",
         bedrooms: 4,
         bathrooms: 3,
@@ -488,50 +461,28 @@ export const mockSaleProperties: MockStay[] = [
         price: 374900, 
         pricePerNight: 0,
         propertyType: "House", 
-        type: "Rental",
+        type: "Sale",
         category: "House",
         bedrooms: 3,
         bathrooms: 2,
         sizeSqft: "1,660",
         sizeAcres: "0.34",
-        image: "https://images.unsplash.com/photo-1576941089067-2de3c901e126?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWFsbCUyMHN1YnVyYmFuJTIwaG91c2V8ZW58MHx8fHwxNzUyODEyNDAyfDA&ixlib-rb-4.1.0&q=80&w=1080", 
+        image: "https://images.unsplash.com/photo-1576941089067-2de3c901e126?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWFsbCUyMHN1YnVyYmFuJTIwaG91c2V8ZW58MHx8fHwxNzUyODEyNDAyfDA&ixlib=rb-4.1.0&q=80&w=1080", 
         dataAiHint: "small suburban house", 
         rating: 4.5,
         photos: [
-            { id: "p1s2", src: "https://images.unsplash.com/photo-1576941089067-2de3c901e126?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWFsbCUyMHN1YnVyYmFuJTIwaG91c2V8ZW58MHx8fHwxNzUyODEyNDAyfDA&ixlib-rb-4.1.0&q=80&w=1080", alt: "small house front", dataAiHint: "small suburban house" },
+            { id: "p1s2", src: "https://images.unsplash.com/photo-1576941089067-2de3c901e126?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWFsbCUyMHN1YnVyYmFuJTIwaG91c2V8ZW58MHx8fHwxNzUyODEyNDAyfDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "small house front", dataAiHint: "small suburban house" },
             { id: "p2s2", src: "https://placehold.co/800x600.png", alt: "small house living room", dataAiHint: "cozy living" },
-        ]
-    },
-    { 
-        id: "sale3", 
-        name: "17 S Main St", 
-        location: "Camden, DE 19934",
-        price: 249900, 
-        pricePerNight: 0,
-        propertyType: "House", 
-        type: "Rental",
-        category: "House",
-        bedrooms: 3,
-        bathrooms: 1.5,
-        sizeSqft: "1,814",
-        sizeAcres: "0.25",
-        image: "https://images.unsplash.com/photo-1600585152915-d208bec867a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0d28lMjBzdG9yeSUyMGhvdXNlfGVufDB8fHx8MTc1MjgxMjQwMnww&ixlib-rb-4.1.0&q=80&w=1080", 
-        dataAiHint: "two story house", 
-        rating: 4.3,
-        photos: [
-            { id: "p1s3", src: "https://images.unsplash.com/photo-1600585152915-d208bec867a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0d28lMjBzdG9yeSUyMGhvdXNlfGVufDB8fHx8MTc1MjgxMjQwMnww&ixlib-rb-4.1.0&q=80&w=1080", alt: "two story house front", dataAiHint: "two story house" },
         ]
     },
 ];
 
 export const mockCarsForSale = [
-  { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, isVerifiedSeller: true, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
-  { id: "carSale2", name: "Ford F-150 XLT 2020", price: 32000, location: "Suburbia", mileage: "30,000 miles", year: 2020, image: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck", vin: "DEMOVIN67890", historyHighlights: "One owner, Clean title", sellerRating: 4.5, isVerifiedSeller: false, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck"}, {id: 'p2', src: "https://images.unsplash.com/photo-1656110073986-ccf23039e402?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dHJ1Y2slMjBiZWR8ZW58MHx8fHwxNzU1MDIzMjYxfDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "truck bed"}] },
-  { id: "carSale3", name: "Honda Civic LX 2019", price: 17500, location: "Townsburd", mileage: "38,000 miles", year: 2019, image: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda", vin: "DEMOVIN11223", historyHighlights: "Fuel efficient, Great condition", sellerRating: 4.9, isVerifiedSeller: true, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1742230376664-ce990c7d7bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzZWRhbiUyMGhvbmRhfGVufDB8fHx8MTc1NTAyMzI2MHww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "sedan honda"}, {id: 'p2', src: "https://images.unsplash.com/photo-1549064233-945d7063292f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjYXIlMjBpbnRlcmlvcnxlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "car interior"}] },
+  { id: "carSale1", name: "Well-Maintained Toyota Corolla 2018", price: 15000, location: "Cityville", mileage: "45,000 miles", year: 2018, image: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota", vin: "DEMOVIN12345", historyHighlights: "No accidents, Regular service", sellerRating: 4.8, isVerifiedSeller: true, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1648197295778-433b7bed847d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWRhbiUyMHRveW90YXxlbnwwfHx8fDE3NTUwMjMyNjB8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan toyota"}, {id: 'p2', src: "https://images.unsplash.com/photo-1754471174693-e535c8ebcad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWRhbiUyMHNpZGV8ZW58MHx8fHwxNzU1MDIzMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "sedan side"}] },
+  { id: "carSale2", name: "Ford F-150 XLT 2020", price: 32000, location: "Suburbia", mileage: "30,000 miles", year: 2020, image: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck", vin: "DEMOVIN67890", historyHighlights: "One owner, Clean title", sellerRating: 4.5, isVerifiedSeller: false, photos: [{id: 'p1', src: "https://images.unsplash.com/photo-1624339024061-b435d9261c1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwaWNrdXAlMjB0cnVja3xlbnwwfHx8fDE3NTUwMjMzNTl8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "pickup truck"}, {id: 'p2', src: "https://images.unsplash.com/photo-1656110073986-ccf23039e402?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dHJ1Y2slMjBiZWR8ZW58MHx8fHwxNzU1MDIzMjYxfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "truck bed"}] },
 ];
 
 
-// Moved from attractions/[id]/page.tsx
 export const mockAttractionDetails: MockAttraction = {
   id: "attr1",
   name: "City Museum of Art",
@@ -564,9 +515,9 @@ export const mockAttractionDetails: MockAttraction = {
     { id: "deal3", title: "Student Tuesday", description: "50% off adult admission every Tuesday with a valid student ID." },
   ],
   visitorPhotos: [
-    { id: "vp1", src: "https://images.unsplash.com/photo-1645165102257-9963785edd8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtdXNldW0lMjBzZWxmaWV8ZW58MHx8fHwxNzUzMjAxMDM4fDA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Visitor taking a selfie with a painting", dataAiHint: "museum selfie" },
-    { id: "vp2", src: "https://images.unsplash.com/photo-1732996909415-8653208de4c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBhcnR8ZW58MHx8fHwxNzUzMjAxMDM4fDA&ixlib-rb-4.1.0&q=80&w=1080", alt: "Visitor admiring a sculpture", dataAiHint: "person art" },
-    { id: "vp3", src: "https://images.unsplash.com/photo-1561246806-04a48afaf9ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjaGlsZCUyMG11c2V1bXxlbnwwfHx8fDE3NTMyMDEwMzh8MA&ixlib-rb-4.1.0&q=80&w=1080", alt: "A child interacting with an exhibit", dataAiHint: "child museum" },
+    { id: "vp1", src: "https://images.unsplash.com/photo-1645165102257-9963785edd8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtdXNldW0lMjBzZWxmaWV8ZW58MHx8fHwxNzUzMjAxMDM4fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Visitor taking a selfie with a painting", dataAiHint: "museum selfie" },
+    { id: "vp2", src: "https://images.unsplash.com/photo-1732996909415-8653208de4c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBhcnR8ZW58MHx8fHwxNzUzODk0OTY2fDA&ixlib=rb-4.1.0&q=80&w=1080", alt: "Visitor admiring a sculpture", dataAiHint: "person art" },
+    { id: "vp3", src: "https://images.unsplash.com/photo-1561246806-04a48afaf9ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjaGlsZCUyMG11c2V1bXxlbnwwfHx8fDE3NTMyMDEwMzh8MA&ixlib=rb-4.1.0&q=80&w=1080", alt: "A child interacting with an exhibit", dataAiHint: "child museum" },
   ],
   topTips: [
       "Go early on a weekday to avoid the biggest crowds.",
@@ -576,11 +527,6 @@ export const mockAttractionDetails: MockAttraction = {
   ]
 };
 
-
-// You might want to combine or ensure IDs are unique if using allMockStays as a single source
-// For now, I'll keep them separate but the detail pages will need to know which list to pull from.
-// Or better, create a unified list or a getter function.
-// For simplicity of this step, I will assume detail pages will fetch from these specific arrays.
 
 export function findRentalPropertyById(id: string): MockStay | undefined {
   return mockRentalProperties.find(property => property.id === id);
