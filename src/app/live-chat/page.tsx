@@ -27,11 +27,12 @@ export default function LiveChatPage() {
 
   useEffect(() => {
     // Initialize with a welcome message on the client to avoid hydration mismatch
+    const now = new Date();
     setMessages([
       {
         sender: 'bot',
         text: "Hello! Welcome to RoamFree Live Support. How can I assist you today?",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        timestamp: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       }
     ]);
   }, []);
@@ -44,10 +45,11 @@ export default function LiveChatPage() {
     e.preventDefault();
     if (inputValue.trim() === '') return;
 
+    const now = new Date();
     const userMessage: Message = {
       sender: 'user',
       text: inputValue,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -56,10 +58,11 @@ export default function LiveChatPage() {
 
     // Simulate bot response
     setTimeout(() => {
+      const responseNow = new Date();
       const botResponse: Message = {
         sender: 'bot',
         text: "Thank you for your message. This is a demo of our live chat system. A human agent would typically respond here within a few moments. For immediate assistance, please check our FAQ or contact us via the main support page.",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        timestamp: responseNow.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setIsBotTyping(false);
       setMessages(prev => [...prev, botResponse]);
