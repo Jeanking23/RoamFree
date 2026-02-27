@@ -21,9 +21,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 // Mock data for nearby attractions (can be dynamic based on currentStay.location in a real app)
 const mockNearbyAttractions = [
-  { id: "attr1", name: "Local Landmark Example", category: "Landmark", image: "https://images.unsplash.com/photo-1723126906308-d42e5941f343?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsYW5kbWFyayUyMGhpc3RvcmljfGVufDB8fHx8MTc1MjcyODIzNnww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint:"landmark historic", distance: "0.5 miles" },
-  { id: "attr2", name: "Popular Park Example", category: "Nature", image: "https://images.unsplash.com/photo-1678195057327-78b9d245de36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwYXJrJTIwbmF0dXJlfGVufDB8fHx8MTc1MjcyODIzNnww&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint:"park nature", distance: "3 miles" },
-  { id: "attr3", name: "Famous Restaurant Example", category: "Dining", image: "https://images.unsplash.com/photo-1502998070258-dc1338445ac2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxyZXN0YXVyYW50JTIwZm9vZHxlbnwwfHx8fDE3NTI3MjgyMzZ8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint:"restaurant food", distance: "1 mile" },
+  { id: "attr1", name: "Local Landmark Example", category: "Landmark", image: "https://images.unsplash.com/photo-1723126906308-d42e5941f343?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsYW5kbWFyayUyMGhpc3RvcmljfGVufDB8fHx8MTc1MjcyODIzNnww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint:"landmark historic", distance: "0.5 miles" },
+  { id: "attr2", name: "Popular Park Example", category: "Nature", image: "https://images.unsplash.com/photo-1678195057327-78b9d245de36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwYXJrJTIwbmF0dXJlfGVufDB8fHx8MTc1MjcyODIzNnww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint:"park nature", distance: "3 miles" },
+  { id: "attr3", name: "Famous Restaurant Example", category: "Dining", image: "https://images.unsplash.com/photo-1502998070258-dc1338445ac2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxyZXN0YXVyYW50JTIwZm9vZHxlbnwwfHx8fDE3NTI3MjgyMzZ8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint:"restaurant food", distance: "1 mile" },
 ];
 
 async function getStayData(id: string): Promise<MockStay | null> {
@@ -49,10 +49,9 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
   const [numberOfGuests, setNumberOfGuests] = useState<number>(2);
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
   const [hasMounted, setHasMounted] = useState(false);
+  const [formattedReviewDates, setFormattedReviewDates] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    // This effect runs only on the client, after the initial render.
-    // This avoids a hydration mismatch between server-rendered and client-rendered HTML.
     setHasMounted(true);
     if (!checkInDate && !checkOutDate) {
       const today = new Date();
@@ -89,6 +88,16 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
       setTotalPrice(null);
     }
   }, [currentStay, checkInDate, checkOutDate]);
+
+  useEffect(() => {
+    if (currentStay?.guestReviews) {
+      const dates = currentStay.guestReviews.reduce((acc, review) => {
+        acc[review.id] = new Date(review.date).toLocaleDateString();
+        return acc;
+      }, {} as { [key: string]: string });
+      setFormattedReviewDates(dates);
+    }
+  }, [currentStay]);
 
 
   const handleBookNow = () => {
@@ -444,7 +453,7 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
                     <div>
                       <p className="font-semibold">{review.user}</p>
                       <div className="flex items-center gap-1">
-                        <p className="text-xs text-muted-foreground">{new Date(review.date).toLocaleDateString()}</p>
+                        <p className="text-xs text-muted-foreground">{formattedReviewDates[review.id] || ''}</p>
                         <BadgeCheck className="h-3 w-3 text-green-500" title="Verified Review"/>
                       </div>
                     </div>

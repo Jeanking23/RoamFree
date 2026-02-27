@@ -23,7 +23,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { changePassword } from '@/lib/auth';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/form-context'; // Updated alias if applicable or direct path
 
 
 // Mock data - replace with actual data fetching
@@ -159,6 +159,14 @@ export default withAuth(ProfilePage);
 const ProfileTab = ({ t }: { t: (key: keyof typeof translations) => string }) => {
   const { user } = useAuth();
   const [isLicenseUploaded, setIsLicenseUploaded] = useState(mockUser.driverLicenseUploaded);
+  const [formattedJoinDate, setFormattedJoinDate] = useState('');
+
+  useEffect(() => {
+    if (user?.metadata.creationTime) {
+      setFormattedJoinDate(new Date(user.metadata.creationTime).toLocaleDateString());
+    }
+  }, [user]);
+
   const handleSaveChanges = (section: string) => toast({ title: "Changes Saved (Demo)", description: `Your ${section} have been updated.`});
   
   const handleLicenseSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -189,7 +197,7 @@ const ProfileTab = ({ t }: { t: (key: keyof typeof translations) => string }) =>
           </div>
           <div>
             <Label htmlFor="joinDate">{t('joinedDate')}</Label>
-            <Input id="joinDate" defaultValue={user?.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : ''} readOnly />
+            <Input id="joinDate" value={formattedJoinDate} readOnly />
           </div>
             <div className="pt-2">
             <Label htmlFor="driverLicense">{t('driversLicense')}</Label>
@@ -626,6 +634,7 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
   const [topUpAmount, setTopUpAmount] = useState("");
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(initialPaymentMethods);
   const [selectedPaymentId, setSelectedPaymentId] = useState<string>(initialPaymentMethods.find(p => p.isDefault)?.id || initialPaymentMethods[0].id);
+  const [formattedTxDates, setFormattedTxDates] = useState<{ [key: string]: string }>({});
   
   // States for the "Add Card" dialog
   const [isAddCardOpen, setIsAddCardOpen] = useState(false);
@@ -636,6 +645,14 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
   // State for Mobile Money
   const [isAddMobileMoneyOpen, setIsAddMobileMoneyOpen] = useState(false);
   const [mobileMoneyNumber, setMobileMoneyNumber] = useState("");
+
+  useEffect(() => {
+    const dates = mockWalletTransactions.reduce((acc, tx) => {
+      acc[tx.id] = new Date(tx.date).toLocaleDateString();
+      return acc;
+    }, {} as { [key: string]: string });
+    setFormattedTxDates(dates);
+  }, []);
 
 
   const handleTopUpWallet = () => {
@@ -868,7 +885,7 @@ const WalletTab = ({ t, convertedBalance, currency }: { t: (key: string) => stri
                   <li key={tx.id} className="p-3 flex justify-between items-center">
                     <div>
                       <p className="font-medium">{tx.description}</p>
-                      <p className="text-xs text-muted-foreground">{new Date(tx.date).toLocaleDateString()}</p>
+                      <p className="text-xs text-muted-foreground">{formattedTxDates[tx.id] || ''}</p>
                     </div>
                     <p className={`font-semibold ${tx.amount > 0 ? 'text-green-500' : 'text-foreground'}`}>
                       {tx.amount > 0 ? '+' : ''}{currency.symbol}{(tx.amount * currency.rate).toFixed(2)}

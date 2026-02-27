@@ -30,7 +30,7 @@ export default function RootLayout({
   const useContainer = !hideNavElements && !pathname.startsWith('/list-property');
 
   return (
-    <html lang="en" suppressHydrationWarning={true}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <title>RoamFree</title>
         <meta name="description" content="Your ultimate travel companion for accommodation, transport, and exploration." />
@@ -39,7 +39,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased" suppressHydrationWarning={true}>
+      <body className="font-body antialiased">
         <AuthProvider>
           <GoogleMapsProvider>
             <LocaleProvider>
