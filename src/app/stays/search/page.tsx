@@ -52,16 +52,28 @@ function SearchResultsDisplay() {
       const allStays = await getAllStays();
       const results = allStays.filter(stay => {
         let matches = true;
-        if (destination && stay.location) matches = matches && stay.location.toLowerCase().includes(destination.toLowerCase());
+        if (destination && stay.location) {
+          matches = matches && stay.location.toLowerCase().includes(destination.toLowerCase());
+        }
         if (adults && stay.maxGuests) {
           const totalGuests = adults + (children || 0);
           matches = matches && totalGuests <= stay.maxGuests;
         }
-        if (propertyType && propertyType !== "ANY") matches = matches && stay.type === propertyType;
-        if (mood && mood !== "ANY" && stay.moods) matches = matches && stay.moods.includes(mood);
-        if (wheelchairAccessible && !stay.isWheelchairAccessible) matches = false;
-        if (ecoFriendly && !stay.isEcoFriendly) matches = false;
-        if (priceMax && stay.pricePerNight > priceMax) matches = false;
+        if (propertyType && propertyType !== "ANY") {
+          matches = matches && stay.type === propertyType;
+        }
+        if (mood && mood !== "ANY" && stay.moods) {
+          matches = matches && stay.moods.includes(mood);
+        }
+        if (wheelchairAccessible && !stay.isWheelchairAccessible) {
+          matches = false;
+        }
+        if (ecoFriendly && !stay.isEcoFriendly) {
+          matches = false;
+        }
+        if (priceMax && stay.pricePerNight > priceMax) {
+          matches = false;
+        }
         // Date filtering would be more complex, involving parsing dateFrom and dateTo and checking availability.
         // For this mock, we'll skip date filtering on the results page.
         return matches;

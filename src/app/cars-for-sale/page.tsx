@@ -13,7 +13,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Tabs, TabsList, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from '@/components/ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -30,7 +30,7 @@ const sellCarSchema = z.object({
   vin: z.string().length(17, "VIN must be 17 characters."),
   make: z.string().min(2, "Make is required."),
   model: z.string().min(1, "Model is required."),
-  year: z.coerce.number().min(1900, "Invalid year.").max(new Date().getFullYear() + 1, "Invalid year."),
+  year: z.coerce.number().min(1900, "Invalid year.").max(2030, "Invalid year."),
   mileage: z.coerce.number().min(0, "Mileage must be positive."),
 });
 type SellCarFormValues = z.infer<typeof sellCarSchema>;
@@ -208,8 +208,10 @@ export default function CarsForSalePage() {
   const [isOfferLoading, setIsOfferLoading] = useState(false);
   const [userLocation, setUserLocation] = useState<string>('Your Location...');
   const { isLoaded } = useGoogleMaps();
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    setHasMounted(true);
     if (navigator.geolocation && isLoaded) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -250,12 +252,8 @@ export default function CarsForSalePage() {
     console.log("Getting offer for:", values);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
-    const basePrice = 20000;
-    const yearFactor = (values.year - 2018) * 1000;
-    const mileageFactor = values.mileage * -0.1;
-    const randomFactor = (Math.random() - 0.5) * 2000;
-    const calculatedOffer = basePrice + yearFactor + mileageFactor + randomFactor;
-    setOfferValue(Math.max(500, Math.round(calculatedOffer / 100) * 100)); // Round to nearest 100
+    const calculatedOffer = 20000 + (values.year - 2018) * 1000 + values.mileage * -0.1 + (Math.random() - 0.5) * 2000;
+    setOfferValue(Math.max(500, Math.round(calculatedOffer / 100) * 100)); 
     setIsOfferLoading(false);
   };
 
@@ -276,6 +274,8 @@ export default function CarsForSalePage() {
     car.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if (!hasMounted) return null;
+
   return (
     <div className="space-y-8">
       <Card className="shadow-lg rounded-lg overflow-hidden">
@@ -290,11 +290,13 @@ export default function CarsForSalePage() {
         </CardHeader>
         <CardContent className="p-6">
           <div className="mb-8 p-4 border rounded-lg bg-muted/30">
-            <Tabs defaultValue="search" className="w-full">
+            <Tabs defaultValue="search" className="w-full" onValueChange={(val) => {
+                if (val === 'financing') toast({ title: "Feature Coming Soon", description: "Financing tools are being integrated." });
+            }}>
               <TabsList className="mb-4 bg-transparent p-0 h-auto">
                 <TabsTrigger value="search" className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2"><span className="flex items-center gap-2"><Search className="h-4 w-4"/>Search</span></TabsTrigger>
                 <TabsTrigger value="sell_trade" className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Sell/Trade</TabsTrigger>
-                <TabsTrigger value="financing" onClick={() => toast({title: "Feature Coming Soon"})} className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Financing</TabsTrigger>
+                <TabsTrigger value="financing" className="text-base data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-none rounded-full px-4 py-2">Financing</TabsTrigger>
               </TabsList>
               <TabsContent value="search" className="space-y-4">
                 <h4 className="font-semibold text-foreground">Used &amp; New Cars in your area</h4>
