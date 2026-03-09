@@ -2,7 +2,8 @@
 // src/app/stays/[id]/page.tsx
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,14 +33,14 @@ async function getStayData(id: string): Promise<MockStay | null> {
         return stay;
     } catch (error) {
         console.error("Failed to fetch stay:", error);
-        toast({ variant: "destructive", title: "Error", description: "Could not load accommodation details." });
         return null;
     }
 }
 
-
-export default function AccommodationProfilePage({ params }: { params: { id: string } }) {
+export default function AccommodationProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const { id } = React.use(params);
+  
   const [currentStay, setCurrentStay] = useState<MockStay | null | undefined>(undefined);
   const [isFavorited, setIsFavorited] = useState(false);
   const [currentImage, setCurrentImage] = useState<StayPhoto | null>(null);
@@ -53,16 +54,15 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
 
   useEffect(() => {
     setHasMounted(true);
-    if (!checkInDate && !checkOutDate) {
-      const today = new Date();
-      setCheckInDate(today);
-      setCheckOutDate(addDays(today, 7));
-    }
-  }, [checkInDate, checkOutDate]); 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    setCheckInDate(today);
+    setCheckOutDate(addDays(today, 7));
+  }, []); 
   
    useEffect(() => {
     async function fetchStay() {
-        const stayData = await getStayData(params.id);
+        const stayData = await getStayData(id);
         setCurrentStay(stayData);
         if (stayData) {
             if (stayData.photos && stayData.photos.length > 0) {
@@ -73,7 +73,7 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
         }
     }
     fetchStay();
-  }, [params.id]);
+  }, [id]);
 
 
   useEffect(() => {
@@ -102,22 +102,12 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
 
   const handleBookNow = () => {
     if (!currentStay) return;
-    let bookingDetails = `for ${currentStay.name}`;
-    if (checkInDate && checkOutDate) {
-      bookingDetails += ` from ${checkInDate.toLocaleDateString()} to ${checkOutDate.toLocaleDateString()}`;
-    }
-    if (numberOfGuests > 0) {
-      bookingDetails += ` for ${numberOfGuests} guest(s)`;
-    }
-    if (totalPrice !== null) {
-      bookingDetails += `. Total: $${totalPrice.toFixed(2)}`;
-    }
-    toast({ title: "Booking Initiated (Demo)", description: `Proceeding to payment ${bookingDetails}. Secure Escrow & Buy Now, Pay Later options available.` });
+    toast({ title: "Booking Initiated (Demo)", description: "Secure Escrow & Buy Now, Pay Later options available." });
   };
 
   const handleContactHost = () => {
     if (!currentStay?.host) return;
-    toast({ title: "Contact Host (Demo)", description: `Opening chat with ${currentStay.host.name}. This is a placeholder.`});
+    toast({ title: "Contact Host (Demo)", description: `Opening chat with ${currentStay.host.name}.`});
   }
   
   const handleShare = () => {
@@ -140,39 +130,14 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
   };
   
   const handleArView = () => {
-    toast({ title: "Augmented Reality View (Demo)", description: "AR property walkthrough feature using your phone's camera is under development." });
+    toast({ title: "AR View (Demo)", description: "AR property walkthrough is under development." });
   };
   
   const handle360Tour = () => {
-    if (!currentStay) return;
-    const description = currentStay.virtualTourLink 
-      ? `Starting immersive 360° video tour for ${currentStay.name} via ${currentStay.virtualTourLink}.`
-      : `Starting immersive 360° video tour for ${currentStay.name}. (Placeholder: No specific link for this stay)`;
-    toast({ title: "360° Video Tour (Demo)", description });
+    toast({ title: "360° Video Tour (Demo)", description: "Starting immersive 360° video tour." });
   };
 
-  const handleDroneView = () => {
-    toast({ title: "Drone View (Demo)", description: "Displaying top-down drone footage of the property area. (Placeholder)" });
-  };
-
-  const handleFloorPlan = () => {
-    if (!currentStay) return;
-     const description = currentStay.floorPlanLink
-      ? `Showing clickable 3D floor plan for ${currentStay.name} via ${currentStay.floorPlanLink}. (Room dimensions available)`
-      : `Showing clickable 3D floor plan for ${currentStay.name}. (Placeholder: No specific link for this stay)`;
-    toast({ title: "Interactive Floor Plan (Demo)", description });
-  };
-
-  const handleSuggestRides = () => {
-    const now = new Date();
-    toast({
-      title: "Ride Suggestions (Demo)",
-      description: `Uber: ETA 5 mins, Fare ~$25. Lyft: ETA 7 mins, Fare ~$23. Recommended departure for airport: ${new Date(now.getTime() + 2 * 60 * 60 * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}. (Current time: ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}) Based on your flight arrival (if provided).`,
-      duration: 10000,
-    });
-  };
-
-  if (currentStay === undefined) {
+  if (currentStay === undefined || !hasMounted) {
     return (
       <div className="space-y-8">
         <Card className="shadow-lg rounded-lg overflow-hidden">
@@ -195,6 +160,7 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
       </div>
     );
   }
+
   if (currentStay === null) {
     return (
         <div className="container mx-auto px-4 py-8 text-center">
@@ -206,7 +172,6 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
   }
   
   const displayPhotos = currentStay.photos && currentStay.photos.length > 0 ? currentStay.photos : [{id: 'main', src: currentStay.image, alt: currentStay.name, dataAiHint: currentStay.dataAiHint}];
-
 
   return (
     <div className="space-y-8">
@@ -235,36 +200,20 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
 
         <CardContent className="px-0 md:px-6 pt-0">
            <div className="flex flex-col md:flex-row gap-2 h-auto md:h-[450px]">
-                {/* Main Image */}
                 <div className="relative w-full md:w-1/2 h-64 md:h-full cursor-pointer" onClick={() => setCurrentImage(displayPhotos[0])}>
-                    {displayPhotos.length > 0 && 
-                        <Image src={displayPhotos[0].src} alt={displayPhotos[0].alt} fill className="object-cover rounded-lg md:rounded-l-lg md:rounded-r-none" data-ai-hint={displayPhotos[0].dataAiHint} />
-                    }
+                    <Image src={displayPhotos[0].src} alt={displayPhotos[0].alt} fill className="object-cover rounded-lg md:rounded-l-lg md:rounded-r-none" data-ai-hint={displayPhotos[0].dataAiHint} />
                 </div>
-                {/* Grid for smaller images */}
                 <div className="w-full md:w-1/2 grid grid-cols-2 grid-rows-2 gap-2 h-64 md:h-full">
                     {displayPhotos.slice(1, 5).map((photo, index) => (
                     <div key={photo.id} className="relative cursor-pointer" onClick={() => setCurrentImage(photo)}>
-                        <Image src={photo.src} alt={photo.alt} fill className={`object-cover ${
-                            index === 1 ? 'rounded-tr-lg' : ''
-                        } ${
-                            index === 3 ? 'rounded-br-lg' : ''
-                        }`} data-ai-hint={photo.dataAiHint} />
+                        <Image src={photo.src} alt={photo.alt} fill className={`object-cover ${index === 1 ? 'rounded-tr-lg' : ''} ${index === 3 ? 'rounded-br-lg' : ''}`} data-ai-hint={photo.dataAiHint} />
                     </div>
                     ))}
                 </div>
             </div>
-
-          <div className="mt-2 flex gap-2 overflow-x-auto p-2 md:hidden">
-             {displayPhotos.map(photo => (
-                 <Image key={photo.id} src={photo.src} alt={photo.alt} width={80} height={60} className={`rounded object-cover cursor-pointer ${currentImage?.id === photo.id ? 'ring-2 ring-primary' : ''}`} onClick={() => setCurrentImage(photo)} data-ai-hint={photo.dataAiHint}/>
-             ))}
-          </div>
            <div className="flex flex-wrap gap-2 justify-center mt-4">
              <Button variant="outline" onClick={handleArView}><Camera className="mr-2 h-4 w-4" /> Try AR View (Demo)</Button>
              <Button variant="outline" onClick={handle360Tour} disabled={!currentStay.virtualTourLink}><TvIcon className="mr-2 h-4 w-4" /> 360° Video Tour</Button>
-             <Button variant="outline" onClick={handleDroneView}><Plane className="mr-2 h-4 w-4" /> Drone View (Demo)</Button>
-             <Button variant="outline" onClick={handleFloorPlan} disabled={!currentStay.floorPlanLink}><Layers className="mr-2 h-4 w-4" /> Interactive Floor Plan</Button>
            </div>
         </CardContent>
         
@@ -286,76 +235,19 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
                 </ul>
                 </div>
             )}
-            {currentStay.policies && (
-                <div>
-                <h3 className="text-xl font-semibold mb-3">Policies</h3>
-                <p className="text-sm text-muted-foreground"><strong>Check-in:</strong> {currentStay.policies.checkIn}</p>
-                <p className="text-sm text-muted-foreground"><strong>Check-out:</strong> {currentStay.policies.checkOut}</p>
-                <p className="text-sm text-muted-foreground"><strong>Cancellation:</strong> {currentStay.policies.cancellation}</p>
-                </div>
-            )}
             
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><CloudSun className="h-5 w-5"/> Smart Trip Info (Demo)</CardTitle>
-              </CardHeader>
+              <CardHeader><CardTitle className="flex items-center gap-2"><CloudSun className="h-5 w-5"/> Smart Trip Info (Demo)</CardTitle></CardHeader>
               <CardContent className="space-y-2 text-sm">
-                <p className="flex items-center gap-1"><CloudSun className="h-4 w-4 text-blue-500"/> Weather: Sunny, 24°C. Perfect for the beach! (Dynamic weather integration demo)</p>
-                <p className="flex items-center gap-1"><Calendar className="h-4 w-4 text-purple-500"/> Local Event: Malibu Arts Festival (This Weekend) (Local event discovery demo)</p>
-                <p className="flex items-center gap-1"><Info className="h-4 w-4 text-orange-500"/> Cultural Tip: Tipping at restaurants is customary (15-20%). (Travel advisory demo)</p>
+                <p className="flex items-center gap-1"><CloudSun className="h-4 w-4 text-blue-500"/> Weather: Sunny, 24°C.</p>
+                <p className="flex items-center gap-1"><Calendar className="h-4 w-4 text-purple-500"/> Local Event: Malibu Arts Festival (This Weekend)</p>
               </CardContent>
             </Card>
 
-            {currentStay.neighborhoodInsights && (
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><HomeIconLucide className="h-5 w-5"/> Neighborhood Insights (Demo)</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3 text-sm">
-                        <p><strong>Walkability Score:</strong> {currentStay.neighborhoodInsights.walkabilityScore}/100</p>
-                        <p><strong>Crime Rate:</strong> {currentStay.neighborhoodInsights.crimeRate}</p>
-                        <div>
-                            <h4 className="font-medium">Nearby Schools:</h4>
-                            <ul className="list-disc list-inside ml-4">
-                                {currentStay.neighborhoodInsights.schools.map((school, i) => <li key={i}>{school.name} ({school.type}) - Rating: {school.rating}</li>)}
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-medium">Public Transport:</h4>
-                            <ul className="list-disc list-inside ml-4">
-                                {currentStay.neighborhoodInsights.publicTransport.map((pt, i) => <li key={i}>{pt.type} ({pt.line}) - Stop: {pt.stopDistance}</li>)}
-                            </ul>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-            
             <div className="md:hidden"> 
               <Separator className="my-6" />
               {currentStay.host && <HostInfo host={currentStay.host} onContact={handleContactHost} />}
               <Separator className="my-6" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-semibold my-4">Nearby Attractions (Demo)</h3>
-              <div className="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-2 md:overflow-x-visible no-scrollbar">
-                {mockNearbyAttractions.map(attraction => (
-                  <Card key={attraction.id} className="overflow-hidden w-[70vw] sm:w-[50vw] md:w-full flex-shrink-0">
-                    <Link href={`/attractions/${attraction.id}`} className="block relative w-full h-32 group">
-                        <Image src={attraction.image} alt={attraction.name} fill className="object-cover" data-ai-hint={attraction.dataAiHint}/>
-                         <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                            <LandmarkIcon className="h-8 w-8 text-white opacity-0 group-hover:opacity-75 transition-opacity" />
-                        </div>
-                    </Link>
-                    <CardHeader className="p-3">
-                      <CardTitle className="text-base hover:text-primary">
-                        <Link href={`/attractions/${attraction.id}`}>{attraction.name}</Link>
-                      </CardTitle>
-                      <CardDescription className="text-xs">{attraction.category} &bull; {attraction.distance}</CardDescription>
-                    </CardHeader>
-                  </Card>
-                ))}
-              </div>
-               <Button variant="link" asChild className="mt-2 px-0"><Link href="/attractions">Explore more attractions</Link></Button>
             </div>
           </div>
 
@@ -363,46 +255,41 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
             <Card className="shadow-md border sticky top-24">
               <CardHeader>
                 <CardTitle className="text-2xl">${currentStay.pricePerNight} <span className="text-base font-normal text-muted-foreground">/ night</span></CardTitle>
-                <CardDescription>{currentStay.availability || "Check dates for availability."} (Calendar sync - Demo)</CardDescription>
+                <CardDescription>{currentStay.availability || "Check dates for availability."}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label htmlFor="checkin" className="block text-sm font-medium text-muted-foreground">Check-in</label>
                     <Input 
-                        type="date" 
-                        id="checkin" 
-                        value={checkInDate ? checkInDate.toISOString().split('T')[0] : ''}
+                        type="date" id="checkin" 
+                        value={checkInDate ? format(checkInDate, 'yyyy-MM-dd') : ''}
                         onChange={(e) => setCheckInDate(e.target.value ? new Date(e.target.value) : undefined)} 
-                        min={hasMounted ? new Date().toISOString().split('T')[0] : undefined}
+                        min={hasMounted ? format(new Date(), 'yyyy-MM-dd') : undefined}
                     />
                   </div>
                   <div>
                     <label htmlFor="checkout" className="block text-sm font-medium text-muted-foreground">Check-out</label>
                     <Input 
-                        type="date" 
-                        id="checkout" 
-                        value={checkOutDate ? checkOutDate.toISOString().split('T')[0] : ''}
+                        type="date" id="checkout" 
+                        value={checkOutDate ? format(checkOutDate, 'yyyy-MM-dd') : ''}
                         onChange={(e) => setCheckOutDate(e.target.value ? new Date(e.target.value) : undefined)}
-                        min={hasMounted && checkInDate ? addDays(checkInDate, 1).toISOString().split('T')[0] : undefined}
+                        min={hasMounted && checkInDate ? format(addDays(checkInDate, 1), 'yyyy-MM-dd') : undefined}
                     />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="guests" className="block text-sm font-medium text-muted-foreground">Guests</label>
                   <Input 
-                    type="number" 
-                    id="guests" 
+                    type="number" id="guests" 
                     value={numberOfGuests} 
                     onChange={(e) => setNumberOfGuests(parseInt(e.target.value, 10) || 1)}
-                    min="1" 
-                    max={currentStay.maxGuests || 10} 
+                    min="1" max={currentStay.maxGuests || 10} 
                   />
                 </div>
                 {totalPrice !== null && (
                   <div className="pt-2">
                     <p className="text-lg font-semibold">Total Price: <span className="text-primary">${totalPrice.toFixed(2)}</span></p>
-                    <p className="text-xs text-muted-foreground">For {differenceInDays(checkOutDate || new Date(), checkInDate || new Date())} night(s)</p>
                   </div>
                 )}
                 <Button 
@@ -412,31 +299,12 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
                 >
                   <CreditCard className="mr-2 h-5 w-5" /> Book Now
                 </Button>
-                 <p className="text-xs text-muted-foreground text-center">You won't be charged yet (This is a demo)</p>
-                 <p className="text-xs text-muted-foreground text-center">Split Payment & Secure Escrow Available (Demo)</p>
-                 <p className="text-xs text-muted-foreground text-center">Pay with Klarna/Afterpay (Demo)</p>
               </CardContent>
             </Card>
 
             <div className="hidden md:block">
              {currentStay.host && <HostInfo host={currentStay.host} onContact={handleContactHost} />}
             </div>
-
-            <Card className="shadow-md border">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Car className="h-5 w-5"/> Transportation</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground mb-3">Need a ride? Auto-suggestions based on flight arrivals (Demo).</p>
-                    <Button variant="outline" className="w-full mb-2" onClick={handleSuggestRides}>
-                       <Clock className="mr-2 h-4 w-4"/> Suggest Rides (Demo)
-                    </Button>
-                    <div className="flex gap-2">
-                        <Button variant="outline" className="w-full" asChild><a href="https://m.uber.com" target="_blank" rel="noopener noreferrer">Open Uber</a></Button>
-                        <Button variant="outline" className="w-full" asChild><a href="https://www.lyft.com/rider" target="_blank" rel="noopener noreferrer">Open Lyft</a></Button>
-                    </div>
-                </CardContent>
-            </Card>
           </div>
         </CardContent>
         
@@ -462,45 +330,29 @@ export default function AccommodationProfilePage({ params }: { params: { id: str
                     {[...Array(5)].map((_, i) => <Star key={i} className={`h-5 w-5 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />)}
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">{review.comment}</p>
-                </CardContent>
+                <CardContent><p className="text-muted-foreground">{review.comment}</p></CardContent>
               </Card>
-            )) : <p className="text-muted-foreground">No reviews yet for this property.</p>}
-            {currentStay.guestReviews && currentStay.guestReviews.length > 0 && <Button variant="outline">Show all {currentStay.reviewsCount} reviews (Demo)</Button>}
+            )) : <p className="text-muted-foreground">No reviews yet.</p>}
           </div>
         </CardContent>
-        <CardFooter className="border-t pt-6 flex flex-col items-start gap-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <AlertTriangle className="h-5 w-5 text-orange-500"/>
-                <span>Report this listing if you find any issues. (Placeholder)</span>
-            </div>
-             <p className="text-xs text-muted-foreground">Calendar sync (Google/Apple/Airbnb) & Offline access for bookings are planned features.</p>
-             <p className="text-xs text-muted-foreground">Push notifications (price drops, trip reminders, traffic, weather) are planned.</p>
-        </CardFooter>
       </Card>
     </div>
   );
 }
 
-
-interface HostInfoProps {
-  host: Host;
-  onContact: () => void;
-}
+interface HostInfoProps { host: Host; onContact: () => void; }
 function HostInfo({ host, onContact }: HostInfoProps) {
   return (
     <Card className="border bg-background shadow-md">
         <CardHeader className="text-center">
         <Image src={host.avatar} alt={host.name} width={80} height={80} className="rounded-full mx-auto mb-2" data-ai-hint={host.dataAiHint} />
         <CardTitle className="text-xl">Hosted by {host.name}</CardTitle>
-        <CardDescription>Superhost (Placeholder)</CardDescription>
+        <CardDescription>Superhost (Demo)</CardDescription>
         </CardHeader>
         <CardContent className="text-center">
         <Button variant="outline" className="w-full" onClick={onContact}>
             <MessageSquare className="mr-2 h-4 w-4" /> Contact Host
         </Button>
-        <p className="text-xs text-muted-foreground mt-2">Response rate: 99% (Placeholder)</p>
         </CardContent>
     </Card>
   );

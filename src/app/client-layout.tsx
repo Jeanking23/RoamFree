@@ -35,14 +35,15 @@ export default function ClientLayout({
     
   const useContainer = !hideNavElements && !pathname.startsWith('/list-property');
 
-  // The structured structure is returned immediately to allow SSR to match the client's first pass.
-  // Dynamic features like the partner bot or specific nav states are handled deterministically.
+  // We render the dynamic parts conditionally based on hasMounted to ensure hydration safety.
+  // The core structure remains identical on both server and client.
   return (
     <AuthProvider>
       <GoogleMapsProvider>
         <LocaleProvider>
           <div className="relative flex min-h-screen flex-col">
-            {!hideNavElements && <Header />}
+            {hasMounted && !hideNavElements && <Header />}
+            {!hasMounted && !hideNavElements && <div className="h-16 w-full border-b bg-background/95" />}
             <main className="flex-1 flex flex-col">
               <div className={cn(
                 "flex-1 flex flex-col",
@@ -51,8 +52,8 @@ export default function ClientLayout({
                 {children}
               </div>
             </main>
-            {!hideNavElements && <Footer />}
-            {!hideNavElements && <BottomNavBar />}
+            {hasMounted && !hideNavElements && <Footer />}
+            {hasMounted && !hideNavElements && <BottomNavBar />}
             {hasMounted && showPartnerHelpBot && <PartnerHelpBot />}
           </div>
           <Toaster />
