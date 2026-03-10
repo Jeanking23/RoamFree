@@ -556,7 +556,9 @@ const SidebarMenuButton = React.forwardRef<
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
         {...props}
       >
-        {children}
+        <span className="flex items-center gap-2 w-full">
+          {children}
+        </span>
       </Comp>
     )
 
@@ -613,7 +615,9 @@ const SidebarMenuAction = React.forwardRef<
       )}
       {...props}
     >
-      {children}
+      <span className="flex items-center justify-center h-full w-full">
+        {children}
+      </span>
     </Comp>
   )
 })
@@ -728,7 +732,9 @@ const SidebarMenuSubButton = React.forwardRef<
       )}
       {...props}
     >
-      {children}
+      <span className="flex items-center gap-2 w-full">
+        {children}
+      </span>
     </Comp>
   )
 })

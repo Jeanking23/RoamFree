@@ -35,7 +35,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
   >
     <span className="flex items-center w-full">
       {children}
-      <ChevronRight className="ml-auto" />
+      <ChevronRight className="ml-auto h-4 w-4" />
     </span>
   </DropdownMenuPrimitive.SubTrigger>
 ))
@@ -93,7 +93,9 @@ const DropdownMenuItem = React.forwardRef<
     )}
     {...props}
   >
-    {children}
+    <span className="flex items-center gap-2 w-full">
+      {children}
+    </span>
   </DropdownMenuPrimitive.Item>
 ))
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
