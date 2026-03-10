@@ -38,8 +38,10 @@ export default function AttractionProfilePage() {
 
   // State for formatted dates to prevent hydration errors
   const [reviewDates, setReviewDates] = useState<{ [key: string]: string }>({});
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    setHasMounted(true);
     // Set a default visit date for the booking dialog
     if (!visitDate) {
       setVisitDate(format(new Date(), 'yyyy-MM-dd'));
@@ -57,9 +59,7 @@ export default function AttractionProfilePage() {
   
   useEffect(() => {
     // In a real app, this would be the place to fetch data based on params.id if it wasn't pre-loaded
-    // For this demo, we initialize the state directly with mock data for better performance.
     if (params.id && !attraction) {
-       // Logic to handle if data wasn't found initially or needs re-fetching
        console.log("Looking for attraction with ID:", params.id);
     }
   }, [params.id, attraction]);
@@ -280,7 +280,7 @@ export default function AttractionProfilePage() {
                             </div>
                             <div>
                                 <Label htmlFor="visit-date">Visit Date:</Label>
-                                <Input id="visit-date" type="date" value={visitDate} onChange={e => setVisitDate(e.target.value)} min={format(new Date(), 'yyyy-MM-dd')} />
+                                <Input id="visit-date" type="date" value={visitDate} onChange={e => setVisitDate(e.target.value)} min={hasMounted ? format(new Date(), 'yyyy-MM-dd') : undefined} />
                             </div>
                         </div>
                         <DialogFooter>

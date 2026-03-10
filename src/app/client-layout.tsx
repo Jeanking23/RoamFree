@@ -25,18 +25,21 @@ export default function ClientLayout({
     setHasMounted(true);
   }, []);
 
-  const hideNavElements = pathname === '/transport/search' || pathname === '/signin' || pathname === '/signup';
+  // Ensure navigation elements are stable during hydration
+  // We default to "false" on the server and initial client pass
+  const hideNavElements = hasMounted && (pathname === '/transport/search' || pathname === '/signin' || pathname === '/signup');
   
-  const showPartnerHelpBot = 
-    pathname.startsWith('/dashboard') || 
-    pathname.startsWith('/list-property') || 
-    pathname.startsWith('/cars-for-sale/new') || 
-    pathname.startsWith('/for-partners');
+  const showPartnerHelpBot = hasMounted && (
+    pathname?.startsWith('/dashboard') || 
+    pathname?.startsWith('/list-property') || 
+    pathname?.startsWith('/cars-for-sale/new') || 
+    pathname?.startsWith('/for-partners')
+  );
     
-  const useContainer = !hideNavElements && !pathname.startsWith('/list-property');
+  // Ensure container class is stable
+  const isListProperty = hasMounted && pathname?.startsWith('/list-property');
+  const useContainer = !hideNavElements && !isListProperty;
 
-  // We render the dynamic parts conditionally based on hasMounted to ensure hydration safety.
-  // The core structure remains identical on both server and client.
   return (
     <AuthProvider>
       <GoogleMapsProvider>
