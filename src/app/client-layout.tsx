@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Toaster } from "@/components/ui/toaster";
@@ -25,9 +24,12 @@ export default function ClientLayout({
     setHasMounted(true);
   }, []);
 
-  // Ensure navigation elements are stable during hydration
-  // We default to "false" on the server and initial client pass
-  const hideNavElements = hasMounted && (pathname === '/transport/search' || pathname === '/signin' || pathname === '/signup');
+  // On the server and during initial hydration, hasMounted is false.
+  // We want to ensure that the initial render matches the server exactly.
+  // pathname can be null on server or during early hydration in some cases.
+  const isAuthPage = hasMounted && (pathname === '/signin' || pathname === '/signup');
+  const isTransportSearch = hasMounted && pathname === '/transport/search';
+  const hideNavElements = isAuthPage || isTransportSearch;
   
   const showPartnerHelpBot = hasMounted && (
     pathname?.startsWith('/dashboard') || 
@@ -36,8 +38,10 @@ export default function ClientLayout({
     pathname?.startsWith('/for-partners')
   );
     
-  // Ensure container class is stable
   const isListProperty = hasMounted && pathname?.startsWith('/list-property');
+  // Only apply container if we are NOT on a page that hides navs AND NOT on list property.
+  // During hydration (hasMounted=false), hideNavElements and isListProperty are false,
+  // so useContainer will be true on both server and initial client render.
   const useContainer = !hideNavElements && !isListProperty;
 
   return (
@@ -45,8 +49,13 @@ export default function ClientLayout({
       <GoogleMapsProvider>
         <LocaleProvider>
           <div className="relative flex min-h-screen flex-col">
-            {hasMounted && !hideNavElements && <Header />}
-            {!hasMounted && !hideNavElements && <div className="h-16 w-full border-b bg-background/95" />}
+            {/* Header Placeholder/Wrapper */}
+            {!hideNavElements && (
+              <>
+                {hasMounted ? <Header /> : <div className="h-16 w-full border-b bg-background/95" />}
+              </>
+            )}
+            
             <main className="flex-1 flex flex-col">
               <div className={cn(
                 "flex-1 flex flex-col",
@@ -55,6 +64,7 @@ export default function ClientLayout({
                 {children}
               </div>
             </main>
+
             {hasMounted && !hideNavElements && <Footer />}
             {hasMounted && !hideNavElements && <BottomNavBar />}
             {hasMounted && showPartnerHelpBot && <PartnerHelpBot />}
