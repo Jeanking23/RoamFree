@@ -23,7 +23,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { changePassword } from '@/lib/auth';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/form-context'; // Updated alias if applicable or direct path
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 
 // Mock data - replace with actual data fetching

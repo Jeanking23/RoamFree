@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import "./globals.css";
 import ClientLayout from "./client-layout";
@@ -14,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="font-body antialiased" suppressHydrationWarning>
+      <body className="font-body antialiased min-h-screen bg-background" suppressHydrationWarning>
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
