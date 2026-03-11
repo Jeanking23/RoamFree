@@ -458,7 +458,7 @@ const SidebarGroupAction = React.forwardRef<
       )}
       {...props}
     >
-      {asChild ? children : <span className="flex items-center justify-center w-full h-full">{children}</span>}
+      <span className="flex items-center justify-center w-full h-full">{children}</span>
     </Comp>
   )
 })
@@ -558,7 +558,9 @@ const SidebarMenuButton = React.forwardRef<
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
         {...props}
       >
-        {asChild ? children : <span className="flex items-center gap-2 w-full">{children}</span>}
+        <span className="flex items-center gap-2 w-full">
+          {children}
+        </span>
       </Comp>
     )
 
@@ -615,7 +617,7 @@ const SidebarMenuAction = React.forwardRef<
       )}
       {...props}
     >
-      {asChild ? children : <span className="flex items-center justify-center h-full w-full">{children}</span>}
+      <span className="flex items-center justify-center h-full w-full">{children}</span>
     </Comp>
   )
 })
@@ -730,7 +732,7 @@ const SidebarMenuSubButton = React.forwardRef<
       )}
       {...props}
     >
-      {asChild ? children : <span className="flex items-center gap-2 w-full">{children}</span>}
+      <span className="flex items-center gap-2 w-full">{children}</span>
     </Comp>
   )
 })

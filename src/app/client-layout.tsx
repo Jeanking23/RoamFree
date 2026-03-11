@@ -25,7 +25,6 @@ export default function ClientLayout({
   }, []);
 
   // Ensure these values are stable during hydration by checking hasMounted.
-  // On the server and during initial hydration, hasMounted is false.
   const isAuthPage = hasMounted && (pathname === '/signin' || pathname === '/signup');
   const isTransportSearch = hasMounted && pathname === '/transport/search';
   const hideNavElements = isAuthPage || isTransportSearch;
@@ -39,8 +38,9 @@ export default function ClientLayout({
     
   const isListProperty = hasMounted && pathname?.startsWith('/list-property');
   
-  // To avoid hydration mismatch, useContainer must be consistent on server and initial client render.
-  // We'll assume useContainer is true by default and only change it after mounting if necessary.
+  // Deterministic rendering for the initial hydration pass.
+  // Both server and initial client render must match.
+  // We gate the conditional layout logic behind hasMounted to ensure this.
   const useContainer = !hideNavElements && !isListProperty;
 
   return (
@@ -48,12 +48,8 @@ export default function ClientLayout({
       <GoogleMapsProvider>
         <LocaleProvider>
           <div className="relative flex min-h-screen flex-col">
-            {/* Header Placeholder/Wrapper */}
-            {!hideNavElements && (
-              <div className="flex-none">
-                {hasMounted ? <Header /> : <div className="h-16 w-full border-b bg-background/95" />}
-              </div>
-            )}
+            {!hideNavElements && hasMounted && <Header />}
+            {!hideNavElements && !hasMounted && <div className="h-16 w-full border-b bg-background/95" />}
             
             <main className="flex-1 flex flex-col">
               <div 
@@ -61,14 +57,17 @@ export default function ClientLayout({
                   "flex-1 flex flex-col",
                   useContainer && "container mx-auto px-4 py-8 pb-24 md:pb-8"
                 )}
-                suppressHydrationWarning
               >
                 {children}
               </div>
             </main>
 
-            {hasMounted && !hideNavElements && <Footer />}
-            {hasMounted && !hideNavElements && <BottomNavBar />}
+            {hasMounted && !hideNavElements && (
+              <>
+                <Footer />
+                <BottomNavBar />
+              </>
+            )}
             {hasMounted && showPartnerHelpBot && <PartnerHelpBot />}
           </div>
           <Toaster />
