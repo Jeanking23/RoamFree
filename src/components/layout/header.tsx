@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -90,6 +89,7 @@ export default function Header() {
   };
 
   const isLinkActive = (itemHref: string) => {
+    if (!pathname) return false;
     if (itemHref === '/') return pathname === '/';
     return pathname.startsWith(itemHref);
   };
