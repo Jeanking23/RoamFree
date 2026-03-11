@@ -63,9 +63,13 @@ const MenubarTrigger = React.forwardRef<
     )}
     {...props}
   >
-    <span className="flex items-center gap-2">
-      {children}
-    </span>
+    {props.asChild ? (
+      children
+    ) : (
+      <span className="flex items-center gap-2">
+        {children}
+      </span>
+    )}
   </MenubarPrimitive.Trigger>
 ))
 MenubarTrigger.displayName = MenubarPrimitive.Trigger.displayName
@@ -85,10 +89,14 @@ const MenubarSubTrigger = React.forwardRef<
     )}
     {...props}
   >
-    <span className="flex items-center w-full">
-      {children}
-      <ChevronRight className="ml-auto h-4 w-4" />
-    </span>
+    {props.asChild ? (
+      children
+    ) : (
+      <span className="flex items-center w-full">
+        {children}
+        <ChevronRight className="ml-auto h-4 w-4" />
+      </span>
+    )}
   </MenubarPrimitive.SubTrigger>
 ))
 MenubarSubTrigger.displayName =
@@ -149,9 +157,13 @@ const MenubarItem = React.forwardRef<
     )}
     {...props}
   >
-    <span className="flex items-center gap-2 w-full">
-      {children}
-    </span>
+    {props.asChild ? (
+      children
+    ) : (
+      <span className="flex items-center gap-2 w-full">
+        {children}
+      </span>
+    )}
   </MenubarPrimitive.Item>
 ))
 MenubarItem.displayName = MenubarPrimitive.Item.displayName
