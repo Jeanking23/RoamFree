@@ -322,7 +322,7 @@ export default function AccommodationProfilePage({ params }: { params: Promise<{
                       <p className="font-semibold">{review.user}</p>
                       <div className="flex items-center gap-1">
                         <p className="text-xs text-muted-foreground">{formattedReviewDates[review.id] || ''}</p>
-                        <BadgeCheck className="h-3 w-3 text-green-500" title="Verified Review"/>
+                        <BadgeCheck className="h-3 w-3 text-green-500" />
                       </div>
                     </div>
                   </div>

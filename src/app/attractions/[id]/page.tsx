@@ -324,7 +324,7 @@ export default function AttractionProfilePage() {
                       <p className="font-semibold">{review.user}</p>
                       <div className="flex items-center">
                         <p className="text-xs text-muted-foreground">{reviewDates[review.id] || ''}</p>
-                        <BadgeCheck className="h-4 w-4 ml-1 text-green-500" title="Verified Review"/>
+                        <BadgeCheck className="h-4 w-4 ml-1 text-green-500" />
                       </div>
                     </div>
                   </div>
