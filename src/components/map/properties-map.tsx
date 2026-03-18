@@ -1,23 +1,22 @@
 
-'use client';
-
 import { GoogleMap, MarkerF as Marker, InfoWindowF as InfoWindow } from '@react-google-maps/api';
-import { Map } from 'lucide-react';
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useGoogleMaps } from '@/context/google-maps-provider';
-import type { MockStay } from '@/lib/mock-data';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 
-interface PropertiesMapProps {
-  properties: MockStay[];
-  basePath: 'buy-property' | 'rent-home';
+interface Property {
+  id: string;
+  name: string;
+  type: string;
+  price: string;
+  rating: number;
+  image: string;
+  position: google.maps.LatLngLiteral;
 }
 
-interface PropertyWithCoords extends MockStay {
-  coords: google.maps.LatLngLiteral;
+interface PropertiesMapProps {
+  properties: Property[];
+  activePropertyId?: string | null;
+  onActivePropertyChange: (id: string | null) => void;
 }
 
 const containerStyle = {
@@ -25,129 +24,86 @@ const containerStyle = {
   height: '100%',
 };
 
-export default function PropertiesMap({ properties, basePath }: PropertiesMapProps) {
-  const { isLoaded, loadError } = useGoogleMaps();
-  const [propertiesWithCoords, setPropertiesWithCoords] = useState<PropertyWithCoords[]>([]);
-  const [activeMarker, setActiveMarker] = useState<string | null>(null);
-  const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral>({ lat: 39.8283, lng: -98.5795 }); // Center of US
-  const [zoom, setZoom] = useState(4);
+export default function PropertiesMap({ properties, activePropertyId, onActivePropertyChange }: PropertiesMapProps) {
+    const { isLoaded, loadError } = useGoogleMaps();
+    const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral>({ lat: 40.7128, lng: -74.0060 }); // Default to NYC
+    const [zoom, setZoom] = useState(12);
+    const [activeMarker, setActiveMarker] = useState<string | null>(null);
+    const mapRef = useRef<google.maps.Map | null>(null);
 
-  const geocodeAddress = useCallback((address: string): Promise<google.maps.LatLngLiteral | null> => {
-    return new Promise((resolve) => {
-      if (!isLoaded) {
-        resolve(null);
-        return;
-      }
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ address }, (results, status) => {
-        if (status === 'OK' && results && results[0]) {
-          resolve({
-            lat: results[0].geometry.location.lat(),
-            lng: results[0].geometry.location.lng(),
-          });
+    useEffect(() => {
+        if (properties.length > 0) {
+            const bounds = new window.google.maps.LatLngBounds();
+            properties.forEach(p => bounds.extend(p.position));
+            if (mapRef.current) {
+                mapRef.current.fitBounds(bounds, 100);
+            }
         } else {
-          console.error(`Geocode failed for "${address}": ${status}`);
-          resolve(null);
+             setMapCenter({ lat: 40.7128, lng: -74.0060 });
+             setZoom(12);
         }
-      });
-    });
-  }, [isLoaded]);
+    }, [properties]);
 
-  useEffect(() => {
-    const processProperties = async () => {
-      const geocodedProperties = await Promise.all(
-        properties.map(async (prop) => {
-          if (!prop.location) return null;
-          const coords = await geocodeAddress(prop.location);
-          return coords ? { ...prop, coords } : null;
-        })
-      );
-      const validProperties = geocodedProperties.filter((p): p is PropertyWithCoords => p !== null);
-      setPropertiesWithCoords(validProperties);
-
-      if (validProperties.length > 0) {
-        // Calculate bounds and set map center/zoom
-        const bounds = new window.google.maps.LatLngBounds();
-        validProperties.forEach(({ coords }) => bounds.extend(coords));
-        if (validProperties.length === 1) {
-          setMapCenter(validProperties[0].coords);
-          setZoom(12);
-        } else {
-            // This is a simplified way to set center. fitBounds is better but requires a map instance.
-            setMapCenter(bounds.getCenter().toJSON());
-            // A proper zoom calculation would be more complex.
-            setZoom(4); 
+    useEffect(() => {
+        setActiveMarker(activePropertyId || null);
+         if (activePropertyId) {
+            const activeProperty = properties.find(p => p.id === activePropertyId);
+            if (activeProperty && mapRef.current) {
+                mapRef.current.panTo(activeProperty.position);
+                if(mapRef.current.getZoom()! < 15) {
+                     mapRef.current.setZoom(15);
+                }
+            }
         }
-      }
+    }, [activePropertyId, properties]);
+
+    const onLoad = useCallback((map: google.maps.Map) => {
+        mapRef.current = map;
+    }, []);
+
+    const handleMarkerClick = (propertyId: string) => {
+        onActivePropertyChange(propertyId);
     };
-    if (properties.length > 0) {
-        processProperties();
+    
+    const getPriceMarkerIcon = (price: string, isActive: boolean) => {
+        const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 30" width="80" height="30">
+                <rect x="0" y="0" width="80" height="30" rx="15" ry="15" fill="${isActive ? '#1d4ed8' : '#ffffff'}" stroke="${isActive ? '#ffffff' : '#e5e7eb'}" stroke-width="2" />
+                <text x="40" y="20" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="${isActive ? '#ffffff' : '#1f2937'}">${price}</text>
+            </svg>
+        `;
+        return { url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg) };
+    };
+
+    if (loadError) {
+        return <div>Error loading map</div>;
     }
-  }, [properties, geocodeAddress]);
 
-  if (loadError) return <div>Error loading map</div>;
-  if (!isLoaded) return <Skeleton className="w-full h-full" />;
+    if (!isLoaded) {
+        return <div>Loading Map...</div>;
+    }
 
-  const handleMarkerClick = (propertyId: string) => {
-    setActiveMarker(propertyId);
-  };
-  
-  return (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      center={mapCenter}
-      zoom={zoom}
-      options={{ disableDefaultUI: true, zoomControl: true }}
-    >
-      {propertiesWithCoords.map((prop) => {
-        const price = prop.price ?? prop.pricePerNight;
-        const priceDisplay = price > 1000 ? `${(price / 1000).toFixed(0)}k` : `${price}`;
-        return (
-            <Marker
-            key={prop.id}
-            position={prop.coords}
-            onClick={() => handleMarkerClick(prop.id)}
-            label={{
-                text: `$${priceDisplay}`,
-                color: 'white',
-                fontWeight: 'bold',
-                fontSize: '12px',
+    return (
+        <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={mapCenter}
+            zoom={zoom}
+            onLoad={onLoad}
+            options={{
+                disableDefaultUI: true,
+                zoomControl: true,
+                mapId: 'ROAMFREE_MAP_STYLE'
             }}
-            icon={{
-                path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z',
-                fillColor: 'hsl(var(--primary))',
-                fillOpacity: 1,
-                strokeWeight: 1,
-                strokeColor: 'white',
-                rotation: 0,
-                scale: 1.5,
-                anchor: new google.maps.Point(12, 24),
-                labelOrigin: new google.maps.Point(12, 10)
-            }}
-            >
-            {activeMarker === prop.id && (
-                <InfoWindow
-                position={prop.coords}
-                onCloseClick={() => setActiveMarker(null)}
-                >
-                <div className="w-48">
-                    <div className="relative h-24 w-full mb-2">
-                    <Image src={prop.image} alt={prop.name} fill className="object-cover rounded-t-md" />
-                    </div>
-                    <div className="p-1">
-                        <h4 className="font-bold text-sm truncate">{prop.name}</h4>
-                        <p className="text-primary font-semibold">${(price).toLocaleString()}{prop.pricePerNight && !prop.price ? '/night' : ''}</p>
-                        <p className="text-xs text-muted-foreground">{prop.bedrooms} bds | {prop.bathrooms} ba</p>
-                        <Button asChild variant="link" size="sm" className="p-0 h-auto mt-1">
-                            <Link href={`/${basePath}/${prop.id}`}>View Details</Link>
-                        </Button>
-                    </div>
-                </div>
-                </InfoWindow>
-            )}
-            </Marker>
-        )
-      })}
-    </GoogleMap>
-  );
+        >
+            {properties.map(property => (
+                <Marker
+                    key={property.id}
+                    position={property.position}
+                    icon={getPriceMarkerIcon(property.price, property.id === activeMarker)}
+                    onClick={() => handleMarkerClick(property.id)}
+                    zIndex={property.id === activeMarker ? 10 : 1}
+                />
+            ))}
+        </GoogleMap>
+    );
 }

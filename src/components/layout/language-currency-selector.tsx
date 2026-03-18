@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { Globe, Check, X } from 'lucide-react';
+import { Globe, Check } from 'lucide-react';
 import { languages, currencies, type Language, type Currency } from '@/lib/locales';
 import { cn } from '@/lib/utils';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -46,27 +46,28 @@ export default function LanguageCurrencySelector({ isMobile = false, isFooter = 
     setOpen(false);
   }, [setCurrency]);
 
-  const triggerContent = isFooter ? (
-    <span className="text-sm hover:text-primary hover:underline transition-colors cursor-pointer">
-      Language & Currency
-    </span>
-  ) : (
-    <>
-      <Globe className="h-5 w-5" />
-      <span className="sr-only">Select Language & Currency</span>
-    </>
-  );
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {isFooter ? (
-            <button className="text-sm text-muted-foreground hover:text-primary hover:underline transition-colors text-left w-full">Language & Currency</button>
+          <Button variant="link" className="h-auto p-0 text-sm text-muted-foreground hover:text-primary hover:no-underline">
+            Language & Currency
+          </Button>
         ) : (
-            <Button variant={isMobile ? "ghost" : "ghost"} size={isMobile ? "default" : "icon"} className={cn("h-9 w-9 text-muted-foreground", isMobile && "w-full justify-start gap-2 p-2 h-auto text-base")}>
-                {triggerContent}
+          <Button
+            variant={isMobile ? "ghost" : "ghost"}
+            size={isMobile ? "default" : "icon"}
+            className={cn(
+              "h-9 w-9 text-muted-foreground",
+              isMobile && "w-full justify-start gap-2 p-2 h-auto text-base"
+            )}
+          >
+            <span className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                <span className="sr-only">Select Language & Currency</span>
                 {isMobile && "Language & Currency"}
-            </Button>
+            </span>
+          </Button>
         )}
       </DialogTrigger>
       <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-0">

@@ -60,10 +60,10 @@ function SearchResultsDisplay() {
           matches = matches && totalGuests <= stay.maxGuests;
         }
         if (propertyType && propertyType !== "ANY") {
-          matches = matches && stay.type === propertyType;
+          matches = matches && stay.type.toUpperCase() === propertyType;
         }
         if (mood && mood !== "ANY" && stay.moods) {
-          matches = matches && stay.moods.includes(mood);
+          matches = matches && stay.moods.some(m => m.toUpperCase() === mood);
         }
         if (wheelchairAccessible && !stay.isWheelchairAccessible) {
           matches = false;

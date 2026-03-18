@@ -91,28 +91,21 @@ interface LocationInputProps {
   iconType: 'pickup' | 'dropoff';
   onMapSelectRequest: () => void;
   onUseCurrentLocation: () => void;
+  map: google.maps.Map | null;
 }
 
-function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelectRequest, onUseCurrentLocation }: LocationInputProps) {
+function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelectRequest, onUseCurrentLocation, map }: LocationInputProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
-  const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+  const [suggestions, setSuggestions] = useState<google.maps.places.Place[]>([]);
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
   const { isLoaded } = useGoogleMaps();
-  const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
 
   // For adding a new saved place
   const [isAddPlaceDialogOpen, setIsAddPlaceDialogOpen] = useState(false);
   const [newPlaceName, setNewPlaceName] = useState("");
   const [newPlaceAddress, setNewPlaceAddress] = useState("");
-
-
-  useEffect(() => {
-    if (isLoaded && !autocompleteService.current) {
-      autocompleteService.current = new window.google.maps.places.AutocompleteService();
-    }
-  }, [isLoaded]);
 
   useEffect(() => {
     setInputValue(value);
@@ -136,16 +129,21 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
     }
   }, [open, fetchPlaces]);
 
-  const handleInputChange = (term: string) => {
+  const handleInputChange = async (term: string) => {
     setInputValue(term);
-    if (autocompleteService.current && term) {
-      autocompleteService.current.getPlacePredictions({ input: term }, (predictions, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-          setSuggestions(predictions);
-        } else {
-          setSuggestions([]);
-        }
-      });
+    if (isLoaded && term && map) {
+      try {
+        const request = {
+          textQuery: term,
+          fields: ['displayName', 'formattedAddress', 'id'],
+          locationBias: map.getBounds()!,
+        };
+        const { places } = await google.maps.places.Place.searchByText(request);
+        setSuggestions(places || []);
+      } catch (error) {
+        console.error('Autocomplete error:', error);
+        setSuggestions([]);
+      }
     } else {
       setSuggestions([]);
     }
@@ -241,11 +239,11 @@ function LocationInput({ value, onValueChange, placeholder, iconType, onMapSelec
             <CommandGroup heading="Suggestions">
               {suggestions.map((prediction) => (
                 <CommandItem
-                  key={prediction.place_id}
-                  onSelect={() => handleSelect(prediction.description)}
+                  key={prediction.id}
+                  onSelect={() => handleSelect(prediction.formattedAddress || prediction.displayName || '')}
                 >
                   <MapPin className="mr-2 h-4 w-4" />
-                  {prediction.description}
+                  {prediction.displayName}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -302,6 +300,7 @@ export default function TransportPage() {
     const [riderName, setRiderName] = useState('');
     const [riderPhone, setRiderPhone] = useState('');
     const mapRef = useRef<google.maps.Map | null>(null);
+    const [map, setMap] = useState<google.maps.Map | null>(null);
     const { isLoaded } = useGoogleMaps();
     const mapClickListener = useRef<google.maps.MapsEventListener | null>(null);
     const [hasMounted, setHasMounted] = useState(false);
@@ -549,7 +548,10 @@ export default function TransportPage() {
                     dropoff={dropoffLocation} 
                     setPickup={setPickupLocation}
                     setDropoff={setDropoffLocation}
-                    onMapLoad={(map) => { mapRef.current = map; }}
+                    onMapLoad={(map) => { 
+                        mapRef.current = map;
+                        setMap(map);
+                    }}
                     availableVehicles={mockVehicles}
                 />
             </div>
@@ -580,6 +582,7 @@ export default function TransportPage() {
                                     iconType="pickup"
                                     onMapSelectRequest={() => setupMapClickListener('pickup')}
                                     onUseCurrentLocation={() => handleUseCurrentLocation('pickup')}
+                                    map={map}
                                 />
                                 <LocationInput
                                     value={dropoffLocation}
@@ -588,6 +591,7 @@ export default function TransportPage() {
                                     iconType="dropoff"
                                     onMapSelectRequest={() => setupMapClickListener('dropoff')}
                                     onUseCurrentLocation={() => handleUseCurrentLocation('dropoff')}
+                                    map={map}
                                 />
                             </div>
                         </div>
@@ -733,9 +737,12 @@ export default function TransportPage() {
                         </AnimatePresence>
 
                         <div className="p-1">
-                            <Button className="w-full" onClick={handleSearch}>
-                                <span><Search className="mr-2 h-4 w-4" />Search Rides</span>
-                            </Button>
+                          <Button className="w-full" onClick={handleSearch}>
+                            <span className="flex items-center gap-2">
+                              <Search className="h-4 w-4" />
+                              Search Rides
+                            </span>
+                          </Button>
                         </div>
                       </div>
                     </CardContent>

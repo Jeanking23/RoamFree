@@ -1,16 +1,15 @@
-
 'use client';
 
 import AccommodationSearchForm from '@/components/search/accommodation-search-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BedDouble, MapPin, Star, Search, Leaf, Sparkles, HomeIcon, Building, Waves, MountainSnow, Users, DollarSign, Heart, Bell, Landmark } from 'lucide-react';
+import { BedDouble, MapPin, Star, Search, Leaf, Sparkles, HomeIcon, Building, Waves, MountainSnow, Users, DollarSign, Heart, Bell } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
-import { type MockStay, allMockStays } from '@/lib/mock-data';
+import { allMockStays } from '@/lib/mock-data';
 import type { AccommodationSearchFormValues } from '@/components/search/accommodation-search-form';
 import { Progress } from '@/components/ui/progress';
 import { useRouter } from 'next/navigation';
@@ -156,7 +155,7 @@ export default function HomePage() {
   return (
     <div className="space-y-12 md:space-y-16">
       {/* Hero Section */}
-      <section className="relative -mx-4 md:mx-0 h-[60vh] md:h-[70vh] flex items-center justify-center rounded-xl shadow-sm overflow-hidden">
+      <section className="relative -mx-4 md:mx-0 min-h-[600px] md:h-[70vh] flex items-center justify-center rounded-xl shadow-sm overflow-hidden py-12 md:py-0">
         <AnimatePresence>
             <motion.div
                 key={currentImageIndex}
@@ -178,14 +177,14 @@ export default function HomePage() {
         </AnimatePresence>
         <div className="absolute inset-0 bg-black/40 z-10"></div>
         <div className="container mx-auto px-4 text-center relative z-20">
-          <h1 className="text-4xl md:text-5xl font-headline font-bold text-white mb-4 leading-tight shadow-text">
+          <h1 className="text-4xl md:text-5xl font-headline font-bold text-white mb-4 leading-tight drop-shadow-lg">
             Find Your Perfect Stay
           </h1>
-          <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto shadow-text">
+          <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto drop-shadow-md">
             Discover amazing places to stay for your next adventure, from cozy cabins to luxury villas.
           </p>
-          <div className="max-w-4xl mx-auto bg-card/70 backdrop-blur-sm p-3 md:p-4 rounded-xl shadow-lg border">
-            <AccommodationSearchForm onSearch={() => { /* This prop is for navigating, handled by the form itself */ }} />
+          <div className="max-w-4xl mx-auto bg-card/80 md:bg-card/70 backdrop-blur-md p-4 sm:p-6 rounded-2xl shadow-2xl border border-white/20">
+            <AccommodationSearchForm onSearch={() => {}} />
           </div>
         </div>
       </section>
@@ -406,8 +405,10 @@ export default function HomePage() {
               className="bg-card hover:bg-accent/20 hover:border-accent text-foreground hover:text-accent-foreground shadow-sm border-border min-w-[150px] py-6 flex-col items-center h-auto group"
               onClick={() => handleFilterAndNavigate(vibe.filter as any)}
             >
-              <vibe.icon className="h-7 w-7 mb-1.5 text-primary group-hover:text-accent transition-colors" />
-              {vibe.name}
+              <span className="flex flex-col items-center">
+                <vibe.icon className="h-7 w-7 mb-1.5 text-primary group-hover:text-accent transition-colors" />
+                {vibe.name}
+              </span>
             </Button>
           ))}
         </div>

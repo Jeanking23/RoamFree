@@ -1,7 +1,8 @@
+
 'use client';
 
 import { Toaster } from "@/components/ui/toaster";
-import Header from '@/components/layout/header';
+import { MainHeader as Header } from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import BottomNavBar from '@/components/layout/bottom-nav-bar';
 import { LocaleProvider } from '@/context/locale-provider';
@@ -24,23 +25,35 @@ export default function ClientLayout({
     setHasMounted(true);
   }, []);
 
-  // Ensure these values are stable during hydration by checking hasMounted.
-  const isAuthPage = hasMounted && (pathname === '/signin' || pathname === '/signup');
-  const isTransportSearch = hasMounted && pathname === '/transport/search';
+  if (!hasMounted) {
+    // Return a static, non-interactive version that won't cause hydration errors.
+    // This ensures the server-rendered output and the initial client render are identical.
+    return (
+        <div className="relative flex min-h-screen flex-col">
+            {/* Static placeholder for the header */}
+            <div className="h-16 w-full border-b bg-background/95" />
+            <main className="flex-1 flex flex-col">
+              {/* Static container that matches the most common layout */}
+              <div className="flex-1 flex flex-col container mx-auto px-4 py-8 pb-24 md:pb-8" />
+            </main>
+        </div>
+    );
+  }
+
+  // Once mounted, render the full client-side layout with dynamic content
+  const isAuthPage = pathname === '/signin' || pathname === '/signup';
+  const isTransportSearch = pathname === '/transport/search';
   const hideNavElements = isAuthPage || isTransportSearch;
   
-  const showPartnerHelpBot = hasMounted && (
+  const showPartnerHelpBot = (
     pathname?.startsWith('/dashboard') || 
     pathname?.startsWith('/list-property') || 
     pathname?.startsWith('/cars-for-sale/new') || 
     pathname?.startsWith('/for-partners')
   );
     
-  const isListProperty = hasMounted && pathname?.startsWith('/list-property');
+  const isListProperty = pathname?.startsWith('/list-property');
   
-  // Deterministic rendering for the initial hydration pass.
-  // Both server and initial client render must match.
-  // We gate the conditional layout logic behind hasMounted to ensure this.
   const useContainer = !hideNavElements && !isListProperty;
 
   return (
@@ -48,8 +61,7 @@ export default function ClientLayout({
       <GoogleMapsProvider>
         <LocaleProvider>
           <div className="relative flex min-h-screen flex-col">
-            {!hideNavElements && hasMounted && <Header />}
-            {!hideNavElements && !hasMounted && <div className="h-16 w-full border-b bg-background/95" />}
+            {!hideNavElements && <Header />}
             
             <main className="flex-1 flex flex-col">
               <div 
@@ -62,13 +74,13 @@ export default function ClientLayout({
               </div>
             </main>
 
-            {hasMounted && !hideNavElements && (
+            {!hideNavElements && (
               <>
                 <Footer />
                 <BottomNavBar />
               </>
             )}
-            {hasMounted && showPartnerHelpBot && <PartnerHelpBot />}
+            {showPartnerHelpBot && <PartnerHelpBot />}
           </div>
           <Toaster />
         </LocaleProvider>

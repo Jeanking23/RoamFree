@@ -9,7 +9,7 @@ import InteractiveMapPlaceholder from '@/components/map/interactive-map-placehol
 import { ArrowLeft, CreditCard, Check, Wallet, Smartphone, PlusCircle, User, Star, Car, Clock, ShieldCheck, HelpCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import RideOptionCard, { rideOptions } from './ride-option-card';
+import RideOptionCard, { rideOptions, RideOption } from './ride-option-card';
 import { Card, CardContent, CardTitle, CardDescription, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from "@/components/ui/dialog";
@@ -42,126 +42,24 @@ const mockDriver = {
     dataAiHint: 'man portrait',
 };
 
-function RideSearchResults() {
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const from = searchParams.get('from') || 'your location';
-    const to = searchParams.get('to') || 'your destination';
-
-    const [selectedRide, setSelectedRide] = useState<string | null>(null);
-    const [paymentOptions, setPaymentOptions] = useState<PaymentMethod[]>(initialPaymentOptions);
-    const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>(paymentOptions[0]);
-    
-    // Dialog states
-    const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-    const [isAddCardOpen, setIsAddCardOpen] = useState(false);
-    const [isMobileMoneyOpen, setIsMobileMoneyOpen] = useState(false);
-
-    // Form states for dialogs
-    const [cardNumber, setCardNumber] = useState('');
-    const [cardExpiry, setCardExpiry] = useState('');
-    const [cardCVC, setCardCVC] = useState('');
-    const [mobileMoneyNumber, setMobileMoneyNumber] = useState('');
-
-    const [hasMounted, setHasMounted] = useState(false);
-
-    // Drag controls for the bottom sheet
-    const controls = useAnimation();
-    const dragControls = useDragControls();
-    const sheetRef = useRef<HTMLDivElement>(null);
-
-
-    const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-        const sheetHeight = sheetRef.current?.offsetHeight || window.innerHeight;
-        const velocity = info.velocity.y;
-        const offset = info.offset.y;
-
-        if (offset > sheetHeight * 0.4 || velocity > 500) {
-            controls.start({ y: "80%", transition: { type: "spring", stiffness: 400, damping: 40 } });
-        } else {
-            controls.start({ y: 0, transition: { type: "spring", stiffness: 400, damping: 40 } });
-        }
-    }, [controls]);
-    
-    useEffect(() => {
-        setHasMounted(true);
-        // Animate the sheet to its initial "peeking" state
-        controls.start({ y: "80%", transition: { duration: 0.5, ease: "easeOut" } });
-    }, [controls]);
-
-    const handleRideSelection = (rideId: string) => {
-        setSelectedRide(rideId);
-        setIsConfirmationOpen(true); // Open confirmation dialog on ride selection
-    };
-
-    const handleConfirmRide = () => {
-        setIsConfirmationOpen(false); // Close the confirmation dialog
-        const ride = rideOptions.find(r => r.id === selectedRide);
-        toast({
-            title: `Ride Confirmed!`,
-            description: `${ride?.name} is on the way. Driver: ${mockDriver.name}.`,
-        });
-        // In a real app, navigate to a live tracking page.
-    }
-    
-    const handleAddCard = () => {
-        if (cardNumber.length < 16 || cardExpiry.length < 4 || cardCVC.length < 3) {
-            toast({ title: "Invalid Card Details", description: "Please check your card information.", variant: "destructive" });
-            return;
-        }
-        const last4 = cardNumber.slice(-4);
-        const newCard: PaymentMethod = { id: 'card', name: `Visa **** ${last4}`, icon: CreditCard, details: `Expires ${cardExpiry}` };
-        setPaymentOptions(prev => {
-            const existing = prev.find(p => p.id === 'card' && p.name.includes(last4));
-            if (existing) return prev;
-            return [...prev, newCard].filter(p => p.name !== 'Add Credit/Debit Card');
-        });
-        setSelectedPayment(newCard);
-        toast({ title: "Card Added", description: `Visa ending in ${last4} has been saved.` });
-        setIsAddCardOpen(false);
-        setIsConfirmationOpen(true); // Re-open confirmation dialog
-        setCardNumber(''); setCardExpiry(''); setCardCVC('');
-    };
-    
-    const handleAddMobileMoney = () => {
-        if (mobileMoneyNumber.length < 9) {
-            toast({ title: "Invalid Phone Number", description: "Please enter a valid phone number.", variant: "destructive" });
-            return;
-        }
-        const newMobileMoney: PaymentMethod = { id: 'mobile_money', name: 'Mobile Money', icon: Smartphone, details: mobileMoneyNumber };
-        setPaymentOptions(prev => {
-            const existing = prev.find(p => p.id === 'mobile_money' && p.details === mobileMoneyNumber);
-            if(existing) return prev;
-            const placeholderExists = prev.some(p => p.name === 'Mobile Money' && !p.details);
-            if(placeholderExists) {
-                return prev.map(p => p.id === 'mobile_money' ? newMobileMoney : p);
-            }
-            return [...prev, newMobileMoney];
-        });
-        setSelectedPayment(newMobileMoney);
-        toast({ title: "Mobile Money Added", description: `Using number: ${mobileMoneyNumber}.` });
-        setIsMobileMoneyOpen(false);
-        setIsConfirmationOpen(true); // Re-open confirmation dialog
-        setMobileMoneyNumber('');
-    };
-    
-    const handlePaymentSelect = (option: PaymentMethod) => {
-        if (option.name === 'Add Credit/Debit Card') {
-            setIsConfirmationOpen(false);
-            setIsAddCardOpen(true);
-        } else if (option.name === 'Mobile Money' && !option.details) {
-            setIsConfirmationOpen(false);
-            setIsMobileMoneyOpen(true);
-        } else {
-            setSelectedPayment(option);
-        }
-    };
-
-    const selectedRideDetails = rideOptions.find(r => r.id === selectedRide);
-    
-    if (!hasMounted) {
-        return null; 
-    }
+// Moved component outside to accept props and for cleaner structure
+const ConfirmationDialogContent = ({ 
+    ride, 
+    from, 
+    to,
+    paymentOptions,
+    selectedPayment,
+    onPaymentSelect,
+    onConfirm 
+}: { 
+    ride: RideOption, 
+    from: string, 
+    to: string,
+    paymentOptions: PaymentMethod[],
+    selectedPayment: PaymentMethod,
+    onPaymentSelect: (option: PaymentMethod) => void,
+    onConfirm: () => void
+}) => {
 
     const PaymentOptionsDialogContent = () => (
         <div className="space-y-2">
@@ -174,7 +72,7 @@ function RideSearchResults() {
                             ? "border-primary bg-primary/10"
                             : "hover:bg-muted/50"
                     )}
-                    onClick={() => handlePaymentSelect(option)}
+                    onClick={() => onPaymentSelect(option)}
                 >
                     <option.icon className="mr-3 h-6 w-6 text-muted-foreground" />
                     <div className="flex-grow">
@@ -186,8 +84,8 @@ function RideSearchResults() {
             ))}
         </div>
     );
-    
-    const ConfirmationDialogContent = () => (
+
+    return (
         <>
             <DialogHeader className="flex-shrink-0">
                 <DialogTitle>Confirm your ride</DialogTitle>
@@ -218,15 +116,15 @@ function RideSearchResults() {
                 <Card>
                     <CardContent className="p-4 flex items-center gap-4">
                         <div className="flex-shrink-0 w-24 h-12 text-primary">
-                            {selectedRideDetails && <selectedRideDetails.icon />}
+                            <ride.icon />
                         </div>
                         <div className="flex-grow">
-                            <h4 className="font-bold text-lg">{selectedRideDetails?.name}</h4>
-                            <p className="text-sm text-muted-foreground">{selectedRideDetails?.description}</p>
+                            <h4 className="font-bold text-lg">{ride.name}</h4>
+                            <p className="text-sm text-muted-foreground">{ride.description}</p>
                         </div>
                         <div className="text-right">
-                        <p className="font-bold text-lg">${selectedRideDetails?.price.toFixed(2)}</p>
-                        {selectedRideDetails?.originalPrice && <p className="text-xs text-muted-foreground line-through">${selectedRideDetails.originalPrice.toFixed(2)}</p>}
+                        <p className="font-bold text-lg">${ride.price.toFixed(2)}</p>
+                        {ride.originalPrice && <p className="text-xs text-muted-foreground line-through">${ride.originalPrice.toFixed(2)}</p>}
                         </div>
                     </CardContent>
                 </Card>
@@ -253,9 +151,9 @@ function RideSearchResults() {
                 <div>
                     <h4 className="font-semibold mb-2">Price Breakdown (Demo)</h4>
                     <div className="text-sm space-y-1 text-muted-foreground">
-                        <div className="flex justify-between"><span>Base Fare</span><span>${(selectedRideDetails?.price * 0.8).toFixed(2)}</span></div>
-                        <div className="flex justify-between"><span>Taxes & Fees</span><span>${(selectedRideDetails?.price * 0.2).toFixed(2)}</span></div>
-                        <div className="flex justify-between font-bold text-foreground pt-1 border-t mt-1"><span>Total</span><span>${selectedRideDetails?.price.toFixed(2)}</span></div>
+                        <div className="flex justify-between"><span>Base Fare</span><span>${(ride.price * 0.8).toFixed(2)}</span></div>
+                        <div className="flex justify-between"><span>Taxes & Fees</span><span>${(ride.price * 0.2).toFixed(2)}</span></div>
+                        <div className="flex justify-between font-bold text-foreground pt-1 border-t mt-1"><span>Total</span><span>${ride.price.toFixed(2)}</span></div>
                     </div>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
@@ -265,13 +163,129 @@ function RideSearchResults() {
             </div>
             <DialogFooter className="flex-shrink-0 pt-4 border-t -mx-6 px-6 -mb-6 pb-6 bg-background">
                 <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-                <Button onClick={handleConfirmRide} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
+                <Button onClick={onConfirm} className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
                     Confirm & Request Ride
                 </Button>
             </DialogFooter>
         </>
-    );
+    )
+};
 
+function RideSearchResults() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const from = searchParams.get('from') || 'your location';
+    const to = searchParams.get('to') || 'your destination';
+
+    const [selectedRide, setSelectedRide] = useState<string | null>(null);
+    const [paymentOptions, setPaymentOptions] = useState<PaymentMethod[]>(initialPaymentOptions);
+    const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>(paymentOptions[0]);
+    
+    const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+    const [isAddCardOpen, setIsAddCardOpen] = useState(false);
+    const [isMobileMoneyOpen, setIsMobileMoneyOpen] = useState(false);
+
+    const [cardNumber, setCardNumber] = useState('');
+    const [cardExpiry, setCardExpiry] = useState('');
+    const [cardCVC, setCardCVC] = useState('');
+    const [mobileMoneyNumber, setMobileMoneyNumber] = useState('');
+
+    const [hasMounted, setHasMounted] = useState(false);
+
+    const controls = useAnimation();
+    const dragControls = useDragControls();
+    const sheetRef = useRef<HTMLDivElement>(null);
+
+
+    const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+        const sheetHeight = sheetRef.current?.offsetHeight || window.innerHeight;
+        const velocity = info.velocity.y;
+        const offset = info.offset.y;
+
+        if (offset > sheetHeight * 0.4 || velocity > 500) {
+            controls.start({ y: "80%", transition: { type: "spring", stiffness: 400, damping: 40 } });
+        } else {
+            controls.start({ y: 0, transition: { type: "spring", stiffness: 400, damping: 40 } });
+        }
+    }, [controls]);
+    
+    useEffect(() => {
+        setHasMounted(true);
+        controls.start({ y: "80%", transition: { duration: 0.5, ease: "easeOut" } });
+    }, [controls]);
+
+    const handleRideSelection = (rideId: string) => {
+        setSelectedRide(rideId);
+        setIsConfirmationOpen(true);
+    };
+
+    const handleConfirmRide = () => {
+        setIsConfirmationOpen(false);
+        const ride = rideOptions.find(r => r.id === selectedRide);
+        toast({
+            title: `Ride Confirmed!`,
+            description: `${ride?.name} is on the way. Driver: ${mockDriver.name}.`,
+        });
+    }
+    
+    const handleAddCard = () => {
+        if (cardNumber.length < 16 || cardExpiry.length < 4 || cardCVC.length < 3) {
+            toast({ title: "Invalid Card Details", description: "Please check your card information.", variant: "destructive" });
+            return;
+        }
+        const last4 = cardNumber.slice(-4);
+        const newCard: PaymentMethod = { id: 'card', name: `Visa **** ${last4}`, icon: CreditCard, details: `Expires ${cardExpiry}` };
+        setPaymentOptions(prev => {
+            const existing = prev.find(p => p.id === 'card' && p.name.includes(last4));
+            if (existing) return prev;
+            return [...prev, newCard].filter(p => p.name !== 'Add Credit/Debit Card');
+        });
+        setSelectedPayment(newCard);
+        toast({ title: "Card Added", description: `Visa ending in ${last4} has been saved.` });
+        setIsAddCardOpen(false);
+        setIsConfirmationOpen(true);
+        setCardNumber(''); setCardExpiry(''); setCardCVC('');
+    };
+    
+    const handleAddMobileMoney = () => {
+        if (mobileMoneyNumber.length < 9) {
+            toast({ title: "Invalid Phone Number", description: "Please enter a valid phone number.", variant: "destructive" });
+            return;
+        }
+        const newMobileMoney: PaymentMethod = { id: 'mobile_money', name: 'Mobile Money', icon: Smartphone, details: mobileMoneyNumber };
+        setPaymentOptions(prev => {
+            const existing = prev.find(p => p.id === 'mobile_money' && p.details === mobileMoneyNumber);
+            if(existing) return prev;
+            const placeholderExists = prev.some(p => p.name === 'Mobile Money' && !p.details);
+            if(placeholderExists) {
+                return prev.map(p => p.id === 'mobile_money' ? newMobileMoney : p);
+            }
+            return [...prev, newMobileMoney];
+        });
+        setSelectedPayment(newMobileMoney);
+        toast({ title: "Mobile Money Added", description: `Using number: ${mobileMoneyNumber}.` });
+        setIsMobileMoneyOpen(false);
+        setIsConfirmationOpen(true);
+        setMobileMoneyNumber('');
+    };
+    
+    const handlePaymentSelect = (option: PaymentMethod) => {
+        if (option.name === 'Add Credit/Debit Card') {
+            setIsConfirmationOpen(false);
+            setIsAddCardOpen(true);
+        } else if (option.name === 'Mobile Money' && !option.details) {
+            setIsConfirmationOpen(false);
+            setIsMobileMoneyOpen(true);
+        } else {
+            setSelectedPayment(option);
+        }
+    };
+
+    const selectedRideDetails = rideOptions.find(r => r.id === selectedRide);
+    
+    if (!hasMounted) {
+        return null; 
+    }
 
     return (
       <>
@@ -283,7 +297,9 @@ function RideSearchResults() {
             <div className="flex flex-col h-full bg-background border-l">
                  <div className="p-4 border-b flex-shrink-0">
                     <Button variant="ghost" onClick={() => router.back()} className="mb-2 -ml-4">
-                        <span><ArrowLeft className="mr-2 h-4 w-4" /> Back to Search</span>
+                        <span className="flex items-center">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Search
+                        </span>
                     </Button>
                     <div className="space-y-1">
                         <div className="flex items-start gap-2">
@@ -388,7 +404,22 @@ function RideSearchResults() {
         {/* Confirmation Dialog */}
         <Dialog open={isConfirmationOpen} onOpenChange={setIsConfirmationOpen}>
             <DialogContent className="max-h-[90vh] flex flex-col">
-                <ConfirmationDialogContent />
+                {selectedRideDetails ? (
+                    <ConfirmationDialogContent 
+                        ride={selectedRideDetails} 
+                        from={from} 
+                        to={to} 
+                        paymentOptions={paymentOptions}
+                        selectedPayment={selectedPayment}
+                        onPaymentSelect={handlePaymentSelect}
+                        onConfirm={handleConfirmRide}
+                    />
+                ) : (
+                    <DialogHeader>
+                        <DialogTitle>Error</DialogTitle>
+                        <DialogDescription>The selected ride could not be found. Please try again.</DialogDescription>
+                    </DialogHeader>
+                )}
             </DialogContent>
         </Dialog>
 

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +22,7 @@ import { CalendarIcon, MapPin, Users, Search, ChevronsUpDown, Building2, Smile, 
 import type { DateRange } from "react-day-picker";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation';
 
 const accommodationSearchSchema = z.object({
   destination: z.string().optional(),
@@ -50,9 +49,8 @@ interface AccommodationSearchFormProps {
   isResultsPage?: boolean;
 }
 
-
 export default function AccommodationSearchForm({ onSearch, isResultsPage = false }: AccommodationSearchFormProps) {
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
   const [hasMounted, setHasMounted] = useState(false);
 
   const form = useForm<AccommodationSearchFormValues>({
@@ -75,7 +73,6 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
   
   useEffect(() => {
     setHasMounted(true);
-    // Set default dates on the client to avoid hydration mismatch
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const oneWeekFromNow = addDays(today, 7);
@@ -86,13 +83,10 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
     }
   }, [form]);
 
-
   function onSubmit(values: AccommodationSearchFormValues) {
     if (isResultsPage) {
-        // If on results page, call onSearch to update results in place
         onSearch(values);
     } else {
-        // If on homepage or other pages, navigate to search results page
         const queryParams = new URLSearchParams();
         if (values.destination) queryParams.set('destination', values.destination);
         if (values.dateRange?.from) queryParams.set('dateFrom', values.dateRange.from.toISOString());
@@ -114,25 +108,30 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
   const children = watch("children", 0);
   const rooms = watch("rooms", 1);
 
+  const labelColorClass = isResultsPage ? "text-foreground" : "text-white drop-shadow-md";
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-12 gap-4 items-end p-0 bg-transparent rounded-lg">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-12 gap-y-4 md:gap-4 items-end p-0 bg-transparent rounded-lg">
         {/* Destination */}
         <FormField
           control={form.control}
           name="destination"
           render={({ field }) => (
             <FormItem className="col-span-12 md:col-span-3">
-              <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
-                <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Destination</div>
+              <FormLabel className={cn("flex items-center gap-2 mb-1.5 font-semibold", labelColorClass)}>
+                <MapPin className="h-4 w-4 text-primary shrink-0" />
+                <span>Destination</span>
               </FormLabel>
               <FormControl>
                 <Input
                   placeholder="e.g., Paris, France"
                   {...field}
                   value={field.value || ''}
-                  className={cn(!isResultsPage && "bg-background/80 hover:bg-background/90 text-foreground border-white/50")}
+                  className={cn(
+                    "h-12 md:h-10",
+                    !isResultsPage && "bg-background/90 hover:bg-background text-foreground border-white/30"
+                  )}
                 />
               </FormControl>
               <FormMessage />
@@ -145,8 +144,9 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           name="dateRange"
           render={({ field }) => (
             <FormItem className="flex flex-col col-span-12 md:col-span-3">
-              <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
-                <div className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" />Check-in - Check-out</div>
+              <FormLabel className={cn("flex items-center gap-2 mb-1.5 font-semibold", labelColorClass)}>
+                <CalendarIcon className="h-4 w-4 text-primary shrink-0" />
+                <span>Check-in - Check-out</span>
               </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -154,22 +154,21 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                     <Button
                       variant={"outline"}
                       className={cn(
-                        "w-full justify-start text-left font-normal h-10",
+                        "w-full justify-start text-left font-normal h-12 md:h-10",
                         !field.value?.from && "text-muted-foreground",
-                        !isResultsPage && "bg-background/80 hover:bg-background/90 text-foreground border-white/50"
+                        !isResultsPage && "bg-background/90 hover:bg-background text-foreground border-white/30"
                       )}
                     >
                       {hasMounted && field.value?.from ? (
                         field.value.to ? (
                           <>
-                            {format(field.value.from, "LLL dd, y")} - {" "}
-                            {format(field.value.to, "LLL dd, y")}
+                            {format(field.value.from, "MMM dd")} - {format(field.value.to, "MMM dd, y")}
                           </>
                         ) : (
-                          format(field.value.from, "LLL dd, y")
+                          format(field.value.from, "MMM dd, y")
                         )
                       ) : (
-                        <span>Check-in - Check-out</span>
+                        <span>Pick Dates</span>
                       )}
                     </Button>
                   </FormControl>
@@ -179,7 +178,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                     mode="range"
                     selected={field.value as DateRange | undefined} 
                     onSelect={(range) => field.onChange(range || { from: undefined, to: undefined })}
-                    numberOfMonths={2}
+                    numberOfMonths={hasMounted && window.innerWidth < 768 ? 1 : 2}
                     disabled={(date) => hasMounted ? date < new Date(new Date().setHours(0, 0, 0, 0)) : true} 
                     initialFocus
                   />
@@ -196,103 +195,106 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
           name="adults" 
           render={() => ( 
             <FormItem className="flex flex-col col-span-12 md:col-span-3">
-              <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
-                <div className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" />Guests & Rooms</div>
+              <FormLabel className={cn("flex items-center gap-2 mb-1.5 font-semibold", labelColorClass)}>
+                <Users className="h-4 w-4 text-primary shrink-0" />
+                <span>Guests & Rooms</span>
               </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-between text-left font-normal flex items-center h-10",
-                      !isResultsPage && "bg-background/80 hover:bg-background/90 text-foreground border-white/50"
+                      "w-full justify-between text-left font-normal flex items-center h-12 md:h-10",
+                      !isResultsPage && "bg-background/90 hover:bg-background text-foreground border-white/30"
                     )}
                   >
-                    <span className="truncate">{`${adults} adult${adults !== 1 ? 's' : ''} · ${children} child${children !== 1 ? 'ren' : ''} · ${rooms} room${rooms !== 1 ? 's' : ''}`}</span>
+                    <span className="truncate">{`${adults + children} guest${(adults + children) !== 1 ? 's' : ''} · ${rooms} room${rooms !== 1 ? 's' : ''}`}</span>
                     <ChevronsUpDown className="ml-auto h-4 w-4 opacity-50 shrink-0" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[300px] p-4" align="start">
+                <PopoverContent className="w-full sm:w-[300px] p-4" align="start">
                   <div className="space-y-4">
-                    <FormField control={form.control} name="adults" render={({ field: adultField }) => ( <FormItem><FormLabel>Adults</FormLabel><FormControl><Input type="number" min="1" max="10" {...adultField} value={adultField.value || 1} onChange={e => adultField.onChange(parseInt(e.target.value,10) || 1)}/></FormControl><FormMessage /></FormItem> )}/>
-                    <FormField control={form.control} name="children" render={({ field: childrenField }) => ( <FormItem><FormLabel>Children</FormLabel><FormControl><Input type="number" min="0" max="10" {...childrenField} value={childrenField.value || 0} onChange={e => childrenField.onChange(parseInt(e.target.value,10) || 0)}/></FormControl><FormMessage /></FormItem> )}/>
-                    <FormField control={form.control} name="rooms" render={({ field: roomField }) => ( <FormItem><FormLabel>Rooms</FormLabel><FormControl><Input type="number" min="1" max="5" {...roomField} value={roomField.value || 1} onChange={e => roomField.onChange(parseInt(e.target.value,10) || 1)}/></FormControl><FormMessage /></FormItem> )}/>
+                    <FormField control={form.control} name="adults" render={({ field: adultField }) => ( <FormItem className="flex items-center justify-between space-y-0"> <FormLabel className="text-sm">Adults</FormLabel> <FormControl><Input type="number" min="1" max="10" className="w-20" {...adultField} value={adultField.value || 1} onChange={e => adultField.onChange(parseInt(e.target.value,10) || 1)}/></FormControl> </FormItem> )}/>
+                    <FormField control={form.control} name="children" render={({ field: childrenField }) => ( <FormItem className="flex items-center justify-between space-y-0"> <FormLabel className="text-sm">Children</FormLabel> <FormControl><Input type="number" min="0" max="10" className="w-20" {...childrenField} value={childrenField.value || 0} onChange={e => childrenField.onChange(parseInt(e.target.value,10) || 0)}/></FormControl> </FormItem> )}/>
+                    <FormField control={form.control} name="rooms" render={({ field: roomField }) => ( <FormItem className="flex items-center justify-between space-y-0"> <FormLabel className="text-sm">Rooms</FormLabel> <FormControl><Input type="number" min="1" max="5" className="w-20" {...roomField} value={roomField.value || 1} onChange={e => roomField.onChange(parseInt(e.target.value,10) || 1)}/></FormControl> </FormItem> )}/>
                   </div>
                 </PopoverContent>
               </Popover>
-               <FormMessage>{form.formState.errors.adults?.message || form.formState.errors.children?.message || form.formState.errors.rooms?.message}</FormMessage>
+               <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
         
-        {/* Search Button (Desktop/Tablet) */}
+        {/* Search Button */}
         <div className="col-span-12 md:col-span-3">
-            <Button type="submit" className="w-full h-10 bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Search className="mr-2 h-4 w-4" /> Search
+            <Button type="submit" className="w-full h-12 md:h-10 bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
+                <Search className="mr-2 h-5 w-5" /> Search
             </Button>
         </div>
         
-        {/* Advanced Filters (Desktop/Tablet) */}
-        <div className="col-span-12 grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+        {/* Advanced Filters */}
+        <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-2 pt-4 border-t border-white/20 md:border-t-0 md:mt-0 md:pt-0">
             <FormField control={form.control} name="propertyType" render={({ field }) => ( <FormItem>
-                <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
-                    <div className="flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" />Type</div>
+                <FormLabel className={cn("flex items-center gap-2 mb-1 md:hidden lg:flex font-semibold", labelColorClass)}>
+                    <Building2 className="h-4 w-4 text-primary" />
+                    <span>Type</span>
                 </FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                        <SelectTrigger className={cn(!isResultsPage && "bg-background/80 hover:bg-background/90 text-foreground border-white/50")}>
-                            <SelectValue/>
+                        <SelectTrigger className={cn("h-11 md:h-9", !isResultsPage && "bg-background/90 hover:bg-background text-foreground border-white/30")}>
+                            <SelectValue placeholder="Property Type" />
                         </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                        <SelectItem value="ANY">Any</SelectItem>
+                        <SelectItem value="ANY">Any Type</SelectItem>
                         <SelectItem value="HOTEL">Hotel</SelectItem>
                         <SelectItem value="RENTAL">Rental</SelectItem>
                     </SelectContent>
                 </Select>
-                <FormMessage />
             </FormItem> )}/>
             <FormField control={form.control} name="mood" render={({ field }) => ( <FormItem>
-                <FormLabel className={cn("flex items-center gap-2", !isResultsPage && "text-white")}>
-                    <div className="flex items-center gap-2"><Smile className="h-4 w-4 text-primary" />Mood</div>
+                <FormLabel className={cn("flex items-center gap-2 mb-1 md:hidden lg:flex font-semibold", labelColorClass)}>
+                    <Smile className="h-4 w-4 text-primary" />
+                    <span>Mood</span>
                 </FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                        <SelectTrigger className={cn(!isResultsPage && "bg-background/80 hover:bg-background/90 text-foreground border-white/50")}>
-                            <SelectValue/>
+                        <SelectTrigger className={cn("h-11 md:h-9", !isResultsPage && "bg-background/90 hover:bg-background text-foreground border-white/30")}>
+                            <SelectValue placeholder="Vibe / Mood" />
                         </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                        <SelectItem value="ANY">Any</SelectItem>
+                        <SelectItem value="ANY">Any Mood</SelectItem>
                         <SelectItem value="PEACEFUL">Peaceful</SelectItem>
                         <SelectItem value="ROMANTIC">Romantic</SelectItem>
                         <SelectItem value="ADVENTUROUS">Adventurous</SelectItem>
                     </SelectContent>
                 </Select>
-                <FormMessage />
             </FormItem> )}/>
-            <FormField control={form.control} name="wheelchairAccessible" render={({ field }) => ( <FormItem className="flex flex-row items-end space-x-2 pb-2">
+            <FormField control={form.control} name="wheelchairAccessible" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-2 space-y-0 h-11 md:h-9">
                 <FormControl>
                     <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        className={cn(!isResultsPage && "border-white/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground")}
+                        className={cn("h-5 w-5", !isResultsPage && "border-white/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground")}
                     />
                 </FormControl>
-                <FormLabel className={cn("font-normal flex items-center gap-2 text-sm", !isResultsPage && "text-white")}>
-                    <div className="flex items-center gap-2"><Accessibility className="h-4 w-4 text-primary"/>Accessible</div>
+                <FormLabel className={cn("font-normal flex items-center gap-2 text-sm", labelColorClass)}>
+                    <Accessibility className="h-4 w-4 text-primary shrink-0"/>
+                    <span>Accessible</span>
                 </FormLabel>
             </FormItem> )}/>
-            <FormField control={form.control} name="ecoFriendly" render={({ field }) => ( <FormItem className="flex flex-row items-end space-x-2 pb-2">
+            <FormField control={form.control} name="ecoFriendly" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-2 space-y-0 h-11 md:h-9">
                 <FormControl>
                     <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        className={cn(!isResultsPage && "border-white/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground")}
+                        className={cn("h-5 w-5", !isResultsPage && "border-white/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground")}
                     />
                 </FormControl>
-                <FormLabel className={cn("font-normal flex items-center gap-2 text-sm", !isResultsPage && "text-white")}>
-                    <div className="flex items-center gap-2"><Leaf className="h-4 w-4 text-primary"/>Eco-Friendly</div>
+                <FormLabel className={cn("font-normal flex items-center gap-2 text-sm", labelColorClass)}>
+                    <Leaf className="h-4 w-4 text-primary shrink-0"/>
+                    <span>Eco-Friendly</span>
                 </FormLabel>
             </FormItem> )}/>
         </div>
@@ -301,7 +303,3 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
     </Form>
   );
 }
-
-    
-
-    
