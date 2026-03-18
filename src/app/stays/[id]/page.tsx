@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { getStayById } from '@/services/stays';
 import { type MockStay, type Host, type StayPhoto } from '@/lib/mock-data';
-import { addDays, differenceInDays } from 'date-fns';
+import { addDays, differenceInDays, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Mock data for nearby attractions (can be dynamic based on currentStay.location in a real app)

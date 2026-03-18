@@ -11,6 +11,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -36,7 +37,7 @@ const accommodationSearchSchema = z.object({
   adults: z.coerce.number().min(1, "At least 1 adult is required").max(10, "Max 10 adults").optional(),
   children: z.coerce.number().min(0, "Children cannot be negative").max(10, "Max 10 children").optional(),
   rooms: z.coerce.number().min(1, "At least 1 room is required").max(5, "Max 5 rooms").optional(),
-  propertyType: z.enum(["ANY", "HOTEL", "RENTAL"]).default("ANY").optional(),
+  propertyType: z.enum(["ANY", "HOTEL", "RENTAL", "GUEST_HOUSE"]).default("ANY").optional(),
   mood: z.enum(["ANY", "PEACEFUL", "ROMANTIC", "ADVENTUROUS"]).default("ANY").optional(),
   wheelchairAccessible: z.boolean().default(false).optional(),
   ecoFriendly: z.boolean().default(false).optional(),
@@ -249,6 +250,7 @@ export default function AccommodationSearchForm({ onSearch, isResultsPage = fals
                         <SelectItem value="ANY">Any Type</SelectItem>
                         <SelectItem value="HOTEL">Hotel</SelectItem>
                         <SelectItem value="RENTAL">Rental</SelectItem>
+                        <SelectItem value="GUEST_HOUSE">Guest House</SelectItem>
                     </SelectContent>
                 </Select>
             </FormItem> )}/>
