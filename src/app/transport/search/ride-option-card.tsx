@@ -185,8 +185,10 @@ export const rideOptions = [
     },
 ];
 
+export type RideOption = typeof rideOptions[0];
+
 interface RideOptionCardProps {
-  ride: typeof rideOptions[0];
+  ride: RideOption;
   isSelected: boolean;
   onSelect: (rideId: string) => void;
 }
